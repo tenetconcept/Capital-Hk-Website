@@ -42,7 +42,7 @@ window.initHomeAnimations = function(){
       pagination: { el: '.banner-pagination', clickable: true },
       effect: 'slide',
       speed: 600,
-      spaceBetween: 0
+      spaceBetween: 24
     });
   }
   // News carousel (mobile only)

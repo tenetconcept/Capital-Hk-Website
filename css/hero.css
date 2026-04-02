@@ -1,18 +1,18 @@
 /* ============================
-   HERO SECTION
+   HERO SECTION — Pink/warm gradient background
    ============================ */
 .hero {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #0a1628 0%, #0d2847 25%, #142850 45%, #1a1a2e 70%, #2d1a10 90%, #3d1a0a 100%);
-  min-height: 540px;
+  background: linear-gradient(135deg, #FFF5F0 0%, #FFE8E0 25%, #FFDDD4 45%, #F6D5CC 65%, #F0C8BD 80%, #EBB8AC 100%);
+  min-height: 480px;
 }
 .hero-content {
   position: relative;
   z-index: 2;
   text-align: center;
-  color: var(--white);
-  padding: 140px 24px 80px;
+  color: var(--text);
+  padding: 100px 24px 70px;
   max-width: 800px;
   margin: 0 auto;
 }
@@ -21,28 +21,28 @@
   align-items: center;
   gap: 6px;
   padding: 6px 16px;
-  background: rgba(255,255,255,.12);
-  border: 1px solid rgba(255,255,255,.2);
+  background: rgba(204,51,0,.08);
+  border: 1px solid rgba(204,51,0,.15);
   border-radius: var(--radius-full);
   font-size: 13px;
   font-weight: 600;
-  color: rgba(255,255,255,.9);
-  backdrop-filter: blur(8px);
+  color: var(--brand);
   margin-bottom: 24px;
 }
 .hero-badge svg { width: 14px; height: 14px; }
 .hero-title {
-  font-size: clamp(32px, 5vw, 56px);
+  font-size: clamp(32px, 5vw, 52px);
   font-weight: 800;
   line-height: 1.15;
   margin-bottom: 16px;
   letter-spacing: -0.5px;
+  color: var(--text);
 }
 .hero-subtitle {
-  font-size: clamp(15px, 2vw, 20px);
+  font-size: clamp(15px, 2vw, 18px);
   font-weight: 400;
-  color: rgba(255,255,255,.8);
-  line-height: 1.6;
+  color: var(--text-sec);
+  line-height: 1.7;
   margin-bottom: 32px;
   max-width: 600px;
   margin-left: auto;
@@ -55,6 +55,15 @@
   flex-wrap: wrap;
 }
 .hero-ctas .btn { padding: 14px 32px; font-size: 16px; }
+.hero-ctas .btn-white {
+  background: var(--white);
+  color: var(--brand);
+  border: 1.5px solid var(--brand);
+}
+.hero-ctas .btn-white:hover {
+  background: var(--brand);
+  color: var(--white);
+}
 
 /* Hero decorative elements - hidden for clean look */
 .hero-deco { display: none; }

@@ -4,14 +4,14 @@
 
 /* Banner Carousel */
 .banner-sec {
-  padding: 60px 0;
+  padding: 40px 0;
   overflow: hidden;
 }
 .banner-swiper {
-  max-width: var(--mod-max-xl);
+  max-width: var(--mod-max);
   margin: 0 auto;
   overflow: visible !important;
-  padding-bottom: 48px;
+  padding: 0 24px 48px;
 }
 .banner-slide {
   position: relative;
@@ -20,7 +20,7 @@
 }
 .banner-slide img {
   width: 100%;
-  aspect-ratio: 900 / 420;
+  aspect-ratio: 1200 / 420;
   object-fit: cover;
   border-radius: var(--radius-lg);
 }

@@ -45,6 +45,13 @@ function setLang(lang){
   currentLang = lang;
   window.currentLang = lang;
   localStorage.setItem("ecap_lang", lang);
+  // Update html lang attribute for proper CJK rendering
+  var htmlLangs = {"zh-Hant":"zh-Hant","zh-Hans":"zh-Hans","en":"en"};
+  document.documentElement.lang = htmlLangs[lang] || "zh-Hant";
+  // Swap font priority: SC first for simplified, TC first for traditional
+  document.documentElement.style.fontFamily = lang === 'zh-Hans'
+    ? '"Noto Sans SC","Noto Sans TC","Open Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif'
+    : '';
   route();
 }
 window.setLang = setLang;

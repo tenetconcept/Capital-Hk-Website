@@ -1,51 +1,114 @@
 /* ============================
-   SUBPAGE CONTENT STYLES
+   SUBPAGE CONTENT STYLES — rd.group-inspired
    ============================ */
+
+/* Subpage wrapper */
 .subpage {
-  padding: 120px 0 80px;
+  padding: 0 0 80px;
   min-height: 80vh;
 }
-.subpage-header {
+
+/* Page hero banner */
+.subpage-hero {
+  background: linear-gradient(135deg, #FFF5F0 0%, #FFE8E0 40%, #FFDDD4 70%, #F6D5CC 100%);
+  padding: 100px 0 48px;
   margin-bottom: 48px;
-  padding-bottom: 24px;
-  border-bottom: 2px solid var(--border-light);
+}
+.subpage-hero h1 {
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+.subpage-hero .breadcrumb {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+.subpage-hero .breadcrumb a {
+  color: var(--brand);
+  font-weight: 500;
+}
+.subpage-hero .breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+/* Legacy subpage-header (fallback for JS-generated HTML) */
+.subpage-header {
+  background: linear-gradient(135deg, #FFF5F0 0%, #FFE8E0 40%, #FFDDD4 70%, #F6D5CC 100%);
+  margin: 0 calc(-1 * max(24px, (100vw - var(--mod-max)) / 2));
+  padding: 100px max(24px, (100vw - var(--mod-max)) / 2) 48px;
+  margin-bottom: 48px;
+  border-bottom: none;
 }
 .subpage-header h1 {
-  font-size: clamp(28px, 3.5vw, 38px);
-  font-weight: 700;
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 800;
+  color: var(--text);
   margin-bottom: 8px;
 }
 .subpage-header .breadcrumb {
   font-size: 13px;
   color: var(--text-muted);
 }
-.subpage-header .breadcrumb a { color: var(--brand); }
+.subpage-header .breadcrumb a { color: var(--brand); font-weight: 500; }
+.subpage-header .breadcrumb a:hover { text-decoration: underline; }
+
+/* Content body */
 .subpage-body {
   font-size: 15px;
   line-height: 1.9;
   color: var(--text-sec);
+  max-width: 900px;
 }
-.subpage-body h2 { font-size: 22px; font-weight: 600; color: var(--text); margin: 32px 0 16px; }
+.subpage-body h2 { font-size: 22px; font-weight: 700; color: var(--text); margin: 32px 0 16px; }
 .subpage-body h3 { font-size: 18px; font-weight: 600; color: var(--text); margin: 24px 0 12px; }
 .subpage-body p { margin-bottom: 16px; }
 .subpage-body ul { margin: 12px 0 16px 24px; list-style: disc; }
 .subpage-body ul li { margin-bottom: 6px; }
+.subpage-body a { color: var(--brand); }
+.subpage-body a:hover { text-decoration: underline; }
 
-/* Legacy table layout fix (multi-table-per-row pages) */
-.subpage-body table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; table-layout: fixed; }
+/* Tables */
+.subpage-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 14px;
+  table-layout: fixed;
+  background: var(--white);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+}
 .subpage-body table+table { margin: 0; }
-.subpage-body th { background: var(--brand); color: var(--white); padding: 10px 14px; text-align: left; font-weight: 600; }
-.subpage-body td { padding: 10px 14px; border-bottom: 1px solid var(--border-light); word-wrap: break-word; overflow-wrap: break-word; }
+.subpage-body th {
+  background: var(--brand);
+  color: var(--white);
+  padding: 12px 14px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 13px;
+}
+.subpage-body td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border-light);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
 .subpage-body tr:nth-child(even) { background: var(--bg-light); }
+.subpage-body tr:hover { background: rgba(204,51,0,.03); }
 .subpage-body input[type="submit"] {
-  padding: 5px 14px;
+  padding: 6px 16px;
   border: 1.5px solid var(--brand);
   background: var(--white);
   color: var(--brand);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-size: 12px;
   cursor: pointer;
   font-family: inherit;
+  font-weight: 500;
   transition: all 0.2s;
 }
 .subpage-body input[type="submit"]:hover { background: var(--brand); color: var(--white); }
@@ -55,7 +118,7 @@
 .subpage-body .info-card {
   background: var(--bg-light);
   border: 1px solid var(--border-light);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   padding: 24px;
   margin: 20px 0;
 }
@@ -71,9 +134,9 @@
   font-size: 13px;
   color: var(--brand);
   font-weight: 500;
-  transition: background 0.2s;
+  transition: all 0.2s;
 }
-.subpage-body .dl-link:hover { background: var(--bg-accent); }
+.subpage-body .dl-link:hover { background: var(--bg-accent); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
 
 /* Legacy ASPX link styling */
 .subpage-body .navN, .subpage-body .navL, .subpage-body .navF {
@@ -84,4 +147,11 @@
 }
 .subpage-body .navN:hover, .subpage-body .navL:hover, .subpage-body .navF:hover {
   text-decoration: underline;
+}
+
+/* Images in subpage body */
+.subpage-body img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
 }

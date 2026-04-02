@@ -22,11 +22,11 @@
 .cms-main-header{background:var(--white);border-bottom:1px solid rgba(0,0,0,.06);padding:16px 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;position:sticky;top:0;z-index:10}
 .cms-main-header h3{font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px}
 .cms-main-header .cms-header-acts{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.cms-editor-area{padding:24px 32px}
+.cms-editor-area{padding:24px 32px;max-width:100%}
 .cms-lang-tabs{display:flex;gap:4px;margin-bottom:20px}
 .cms-lang-tab{padding:8px 18px;border-radius:100px;font-size:12px;font-weight:500;border:1.5px solid var(--border);background:var(--white);color:var(--text-sec);cursor:pointer;transition:all .2s}
 .cms-lang-tab:hover,.cms-lang-tab.active{background:var(--brand);color:var(--white);border-color:var(--brand)}
-.cms-field-group{background:var(--white);border-radius:var(--radius);padding:24px;margin-bottom:16px;border:1px solid rgba(0,0,0,.06);box-shadow:var(--shadow-sm)}
+.cms-field-group{background:var(--white);border-radius:var(--radius);padding:24px;margin-bottom:16px;border:1px solid rgba(0,0,0,.06);box-shadow:var(--shadow-sm);width:100%;box-sizing:border-box}
 .cms-field-group h4{font-size:13px;font-weight:600;color:var(--text-sec);margin-bottom:14px;display:flex;align-items:center;gap:6px}
 .cms-field-group h4::before{content:"";width:3px;height:14px;background:var(--brand-gradient);border-radius:2px}
 .cms-preview-toggle{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:100px;font-size:12px;font-weight:500;border:1.5px solid var(--border);background:var(--white);color:var(--text-sec);cursor:pointer;transition:all .2s}
@@ -37,7 +37,7 @@
 .cms-section-btn{padding:7px 18px;border-radius:100px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:var(--white);color:var(--text-sec);cursor:pointer;transition:all .2s}
 .cms-section-btn:hover{border-color:var(--brand);color:var(--brand)}
 .cms-section-btn.active{background:var(--brand);color:var(--white);border-color:var(--brand)}
-.cms-panel{padding:24px 32px}
+.cms-panel{padding:24px 32px;max-width:800px}
 .cms-files-table{width:100%;border-collapse:collapse;margin-top:14px}
 .cms-files-table th{text-align:left;font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:.5px;padding:8px 12px;border-bottom:2px solid var(--border)}
 .cms-files-table td{padding:10px 12px;border-bottom:1px solid rgba(0,0,0,.05);font-size:13px;vertical-align:middle}
@@ -89,7 +89,7 @@
 .admin-field label{display:block;font-size:12px;font-weight:600;color:var(--text-sec);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
 .admin-field input,.admin-field select{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--bg-input);transition:border-color .2s;box-sizing:border-box}
 .admin-field input:focus,.admin-field select:focus{outline:none;border-color:var(--brand)}
-.admin-field textarea{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:monospace;background:var(--bg-input);transition:border-color .2s;box-sizing:border-box;resize:vertical;line-height:1.5}
+.admin-field textarea{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:monospace;background:var(--bg-input);transition:border-color .2s;box-sizing:border-box;resize:vertical;line-height:1.5;min-height:200px}
 .admin-field textarea:focus{outline:none;border-color:var(--brand)}
 
 /* Admin Buttons */

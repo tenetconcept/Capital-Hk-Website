@@ -135,15 +135,22 @@ function buildNav(){
     brandText.textContent = names[currentLang] || names["zh-Hant"];
   }
 
+  // Update nav CTA buttons text
+  var ctaLogin = document.getElementById('navCtaLogin');
+  var ctaOpen = document.getElementById('navCtaOpen');
+  if(ctaLogin) ctaLogin.textContent = T("nav_login");
+  if(ctaOpen) ctaOpen.textContent = T("nav_open");
+
   // Build mobile menu
   buildMobileMenu(items);
 }
 
+var DD_ARROW = '<svg class="dd-arrow" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>';
 function buildDdItem(item){
   if(item.page){
-    return '<a class="nav-dd-item" href="#/page/' + escAttr(item.page) + '" data-spa>' + esc(item.label) + '</a>';
+    return '<a class="nav-dd-item" href="#/page/' + escAttr(item.page) + '" data-spa><span>' + esc(item.label) + '</span>' + DD_ARROW + '</a>';
   } else if(item.ext){
-    return '<a class="nav-dd-item" href="' + escAttr(item.ext) + '" target="_blank" rel="noopener">' + esc(item.label) + ' ' + ICONS.link + '</a>';
+    return '<a class="nav-dd-item" href="' + escAttr(item.ext) + '" target="_blank" rel="noopener"><span>' + esc(item.label) + '</span>' + DD_ARROW + '</a>';
   }
   return '';
 }

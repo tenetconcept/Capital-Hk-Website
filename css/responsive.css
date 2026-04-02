@@ -5,6 +5,7 @@
 /* Tablet and below */
 @media (max-width: 1024px) {
   .nav-links { display: none; }
+  .nav-bar { display: none; }
   .nav-ham { display: flex; }
   .nav-cta .btn-outline { display: none; }
 
@@ -39,6 +40,7 @@
 @media (max-width: 768px) {
   :root {
     --nav-h: 60px;
+    --nav-bar-h: 0px;
   }
 
   .section { padding: 48px 0; }

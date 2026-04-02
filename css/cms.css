@@ -2,8 +2,8 @@
    CMS ADMIN PANEL STYLES
    ============================ */
 
-.cms-layout{display:flex;gap:0;min-height:calc(100vh - var(--nav-h));padding-top:var(--nav-h)}
-.cms-sidebar{width:280px;background:var(--white);border-right:1px solid rgba(0,0,0,.06);padding:24px 0;overflow-y:auto;flex-shrink:0;position:sticky;top:var(--nav-h);height:calc(100vh - var(--nav-h))}
+.cms-layout{display:flex;gap:0;min-height:calc(100vh - var(--nav-h) - var(--nav-bar-h));padding-top:calc(var(--nav-h) + var(--nav-bar-h))}
+.cms-sidebar{width:280px;background:var(--white);border-right:1px solid rgba(0,0,0,.06);padding:24px 0;overflow-y:auto;flex-shrink:0;position:sticky;top:calc(var(--nav-h) + var(--nav-bar-h));height:calc(100vh - var(--nav-h) - var(--nav-bar-h))}
 .cms-sidebar-hdr{padding:0 20px 16px;border-bottom:1px solid rgba(0,0,0,.06)}
 .cms-sidebar-hdr h2{font-size:16px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px}
 .cms-sidebar-hdr p{font-size:11px;color:var(--text-muted)}
@@ -85,7 +85,7 @@
 .cms-empty p{font-size:14px;max-width:300px;line-height:1.7}
 
 /* CMS Login Page */
-.admin-login{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - var(--nav-h));padding:40px 20px;background:var(--bg-body)}
+.admin-login{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - var(--nav-h) - var(--nav-bar-h));padding:40px 20px;background:var(--bg-body)}
 .admin-login-box{width:100%;max-width:400px;background:var(--white);border-radius:var(--radius);padding:40px 36px;box-shadow:0 4px 24px rgba(0,0,0,.08);border:1px solid rgba(0,0,0,.06);text-align:center}
 .admin-login-box h2{font-size:22px;font-weight:700;margin-bottom:4px;color:var(--text)}
 .login-icon{margin-bottom:16px}

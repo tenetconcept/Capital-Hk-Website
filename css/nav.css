@@ -1,5 +1,5 @@
 /* ============================
-   NAVIGATION — Utility bar + Fixed nav + Dropdowns + Mobile
+   NAVIGATION — Utility bar + Two-row nav + rd.group-style Dropdowns + Mobile
    ============================ */
 
 /* Utility Bar */
@@ -42,27 +42,31 @@
   color: var(--white);
 }
 
-/* Main Nav */
+/* ===== Main Nav — Two-Row Layout ===== */
 .nav {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: rgba(255,255,255,.92);
+  background: rgba(255,255,255,.95);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  transition: all var(--dur-slow) var(--ease);
+  transition: box-shadow var(--dur-slow) var(--ease), border-color var(--dur-slow) var(--ease);
   border-bottom: 1px solid transparent;
 }
 .nav.scrolled {
   box-shadow: 0 2px 20px rgba(0,0,0,.06);
   border-bottom-color: var(--border-light);
 }
-.nav-inner {
+
+/* Row 1: Logo + CTA */
+.nav-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: var(--nav-h);
-  gap: 20px;
+  padding: 0 clamp(16px, 3vw, 40px);
+  max-width: var(--mod-max-xl);
+  margin: 0 auto;
 }
 .nav-logo {
   display: flex;
@@ -79,25 +83,39 @@
   white-space: nowrap;
 }
 
+/* Row 2: Nav Links Bar */
+.nav-bar {
+  border-top: 1px solid var(--border-light);
+  background: var(--white);
+  height: var(--nav-bar-h);
+}
+.nav-bar .mw {
+  display: flex;
+  justify-content: center;
+  height: 100%;
+}
+
 /* Nav Links */
 .nav-links {
   display: flex;
-  align-items: center;
-  gap: 4px;
+  align-items: stretch;
+  gap: 0;
+  height: 100%;
 }
 .nav-item {
-  position: static;
+  position: relative;
+  display: flex;
+  align-items: stretch;
 }
 .nav-item > a, .nav-item > .nav-label {
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 10px 16px;
+  padding: 14px 24px;
   font-size: 15px;
   font-weight: 600;
   color: var(--text);
-  border-radius: var(--radius-sm);
-  transition: all var(--dur) var(--ease);
+  transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
   cursor: pointer;
   white-space: nowrap;
 }
@@ -112,20 +130,19 @@
 }
 .nav-item:hover .nav-chevron { transform: rotate(180deg); }
 
-/* Dropdown — full-width mega-dropdown like rd.group */
+/* ===== Dropdown — rd.group card style ===== */
 .nav-dropdown {
   position: absolute;
   top: 100%;
-  left: 0;
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 360px;
+  padding-top: 4px;
   opacity: 0;
   visibility: hidden;
   transition: opacity var(--dur) var(--ease), visibility var(--dur) var(--ease);
   pointer-events: none;
   z-index: 999;
-  background: var(--white);
-  border-top: 1px solid var(--border-light);
-  box-shadow: 0 12px 40px rgba(0,0,0,.08);
 }
 .nav-item:hover > .nav-dropdown {
   opacity: 1;
@@ -133,42 +150,47 @@
   pointer-events: auto;
 }
 .nav-dropdown-inner {
-  padding: 28px 0;
-  max-width: var(--mw);
-  margin: 0 auto;
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 32px rgba(0,0,0,.12);
+  padding: 12px;
   display: flex;
+  flex-direction: column;
   gap: 0;
 }
-/* Dropdown with sub-categories */
+
+/* Dropdown with sub-categories (grid) */
 .nav-dropdown-multi {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
   gap: 0;
   width: 100%;
-  max-width: var(--mw);
-  margin: 0 auto;
-  padding: 0 32px;
+}
+/* Auto-expand for Products dropdown with groups */
+.nav-dropdown:has(.nav-dropdown-multi) {
+  min-width: 520px;
 }
 .nav-dd-group {
-  padding: 0 16px;
-  border-right: 1px solid var(--border-light);
+  padding: 8px;
 }
-.nav-dd-group:last-child { border-right: none; }
 .nav-dd-group-title {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--brand);
-  padding: 4px 8px 12px;
-  border-bottom: 2px solid var(--brand);
-  margin-bottom: 8px;
+  padding: 6px 12px 10px;
+  margin-bottom: 4px;
 }
+
+/* Dropdown Items — rd.group hover style */
 .nav-dd-item {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 10px;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 14px;
   border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: 500;
@@ -177,11 +199,20 @@
   line-height: 1.4;
 }
 .nav-dd-item:hover {
-  background: var(--bg-light);
-  color: var(--brand);
-  padding-left: 14px;
+  background: var(--brand-gradient);
+  color: var(--white);
 }
-.nav-dd-item svg { width: 14px; height: 14px; flex-shrink: 0; vertical-align: middle; opacity: .4; }
+.nav-dd-item .dd-arrow {
+  width: 16px;
+  height: 16px;
+  opacity: 0;
+  flex-shrink: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+.nav-dd-item:hover .dd-arrow {
+  opacity: 1;
+}
+.nav-dd-item svg.ext-icon { display: none; }
 
 /* Nav CTA */
 .nav-cta { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }

@@ -46,7 +46,7 @@ function setLang(lang){
 window.setLang = setLang;
 
 // ---------- Utils ----------
-function esc(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+function esc(s){ if(s==null) return ''; var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
 function escAttr(s){ return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 window.esc = esc;
@@ -180,14 +180,14 @@ function buildMobileMenu(items){
   });
   // CTA buttons
   html += '<div class="mm-cta">';
-  html += '<a class="btn btn-gradient" href="#/page/stock-account-opening" data-spa onclick="window._mmClose()">' + esc(T("open_account")) + '</a>';
-  html += '<a class="btn btn-outline" href="https://itrade.e-capital.com.hk:8888/" target="_blank">' + esc(T("trade_now")) + '</a>';
+  html += '<a class="btn btn-gradient" href="#/page/stock-account-opening" data-spa onclick="window._mmClose()">' + esc(T("nav_open")) + '</a>';
+  html += '<a class="btn btn-outline" href="https://itrade.e-capital.com.hk:8888/" target="_blank">' + esc(T("nav_login")) + '</a>';
   html += '</div>';
   // Language switcher
   html += '<div class="mm-lang" style="display:flex;gap:8px;justify-content:center;margin-top:20px">';
-  html += '<a data-lang="zh-Hant" onclick="setLang(\'zh-Hant\')" class="' + (currentLang==='zh-Hant'?'active':'') + '" style="padding:6px 14px;border-radius:99px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border)">繁體</a>';
-  html += '<a data-lang="zh-Hans" onclick="setLang(\'zh-Hans\')" class="' + (currentLang==='zh-Hans'?'active':'') + '" style="padding:6px 14px;border-radius:99px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border)">简体</a>';
-  html += '<a data-lang="en" onclick="setLang(\'en\')" class="' + (currentLang==='en'?'active':'') + '" style="padding:6px 14px;border-radius:99px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border)">EN</a>';
+  html += '<a href="#" data-lang="zh-Hant" class="' + (currentLang==='zh-Hant'?'active':'') + '" style="padding:6px 14px;border-radius:99px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border)">繁體</a>';
+  html += '<a href="#" data-lang="zh-Hans" class="' + (currentLang==='zh-Hans'?'active':'') + '" style="padding:6px 14px;border-radius:99px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border)">简体</a>';
+  html += '<a href="#" data-lang="en" class="' + (currentLang==='en'?'active':'') + '" style="padding:6px 14px;border-radius:99px;font-size:13px;font-weight:600;cursor:pointer;border:1.5px solid var(--border)">EN</a>';
   html += '</div>';
   el.innerHTML = html;
 }
@@ -269,17 +269,16 @@ function homeView(){
 function heroSection(u){
   var h = '';
   h += '<section class="hero">';
-  h += '<div class="hero-bg"><img src="images/ecap-hero-bg.svg" alt="" loading="eager"></div>';
-  h += '<div class="hero-overlay"></div>';
   h += '<div class="hero-deco hero-deco-circle"></div>';
   h += '<div class="hero-deco hero-deco-circle-2"></div>';
+  h += '<div class="hero-deco hero-deco-circle-3"></div>';
   h += '<div class="hero-content anim-fade-up">';
-  h += '<div class="hero-badge">' + ICONS.shield + ' ' + esc(currentLang==='en' ? 'SFC Licensed' : '香港證監會持牌') + '</div>';
-  h += '<h1 class="hero-title">' + (currentLang==='en' ? 'Your Professional<br>Securities & Futures Partner' : '您的專業<br>證券及期貨交易夥伴') + '</h1>';
-  h += '<p class="hero-subtitle">' + esc(currentLang==='en' ? 'Over 30 years of experience in Hong Kong financial markets. Trade equities, futures, options and access Shanghai-HK Stock Connect.' : '逾三十年香港金融市場經驗，提供證券、期貨、期權交易及滬港通服務。') + '</p>';
+  h += '<div class="hero-badge">' + ICONS.shield + ' ' + esc(currentLang==='en' ? 'SFC Licensed' : (currentLang==='zh-Hans' ? '香港证监会持牌' : '香港證監會持牌')) + '</div>';
+  h += '<h1 class="hero-title">' + (currentLang==='en' ? 'Your Professional<br>Securities & Futures Partner' : (currentLang==='zh-Hans' ? '您的专业<br>证券及期货交易伙伴' : '您的專業<br>證券及期貨交易夥伴')) + '</h1>';
+  h += '<p class="hero-subtitle">' + esc(currentLang==='en' ? 'Over 30 years of experience in Hong Kong financial markets. Trade equities, futures, options and access Shanghai-HK Stock Connect.' : (currentLang==='zh-Hans' ? '逾三十年香港金融市场经验，提供证券、期货、期权交易及沪港通服务。' : '逾三十年香港金融市場經驗，提供證券、期貨、期權交易及滬港通服務。')) + '</p>';
   h += '<div class="hero-ctas">';
-  h += '<a class="btn btn-gradient" href="#/page/stock-account-opening" data-spa>' + esc(T("open_account")) + '</a>';
-  h += '<a class="btn btn-white" href="https://itrade.e-capital.com.hk:8888/" target="_blank">' + esc(T("trade_now")) + '</a>';
+  h += '<a class="btn btn-gradient" href="#/page/stock-account-opening" data-spa>' + esc(currentLang==='en' ? 'Open Account' : (currentLang==='zh-Hans' ? '开立帐户' : '開立帳戶')) + '</a>';
+  h += '<a class="btn btn-white" href="https://itrade.e-capital.com.hk:8888/" target="_blank">' + esc(currentLang==='en' ? 'Trade Now' : (currentLang==='zh-Hans' ? '立即交易' : '立即交易')) + '</a>';
   h += '</div>';
   h += '</div>';
   h += '</section>';
@@ -288,10 +287,13 @@ function heroSection(u){
 
 // ---------- BANNER CAROUSEL ----------
 function bannerSection(u){
-  var banners = [
-    { img: 'images/ecap-banner-1.svg', alt: 'iTrader' },
-    { img: 'images/ecap-banner-2.svg', alt: 'Stock Connect' },
-    { img: 'images/ecap-banner-3.svg', alt: 'Open Account' }
+  // Read banners from CMS (localStorage) or use defaults
+  var cmsBanners = null;
+  try { cmsBanners = JSON.parse(localStorage.getItem('ecap_cms_banners')); } catch(e){}
+  var banners = (cmsBanners && cmsBanners.length > 0) ? cmsBanners : [
+    { img: 'images/ecap-banner-1.png', alt: currentLang==='en' ? 'iTrader Platform' : 'iTrader 交易平台', link: '#/page/stock-ipo' },
+    { img: 'images/ecap-banner-2.png', alt: currentLang==='en' ? 'Stock Connect' : '滬港通服務', link: '#/page/shh-hk' },
+    { img: 'images/ecap-banner-3.png', alt: currentLang==='en' ? 'Open Account' : '開立帳戶', link: '#/page/stock-account-opening' }
   ];
   var h = '<section class="banner-sec anim-fade-up">';
   h += '<div class="mw-xl">';
@@ -299,7 +301,11 @@ function bannerSection(u){
   h += '<div class="swiper-wrapper">';
   banners.forEach(function(b){
     h += '<div class="swiper-slide banner-slide">';
-    h += '<img src="' + escAttr(b.img) + '" alt="' + escAttr(b.alt) + '" loading="lazy">';
+    if(b.link){
+      h += '<a href="' + escAttr(b.link) + '"' + (b.link.indexOf('http') === 0 ? ' target="_blank" rel="noopener"' : ' data-spa') + '>';
+    }
+    h += '<img src="' + escAttr(b.img) + '" alt="' + escAttr(b.alt || '') + '" loading="lazy">';
+    if(b.link) h += '</a>';
     h += '<div class="banner-slide-shadow"><img src="' + escAttr(b.img) + '" alt="" aria-hidden="true"></div>';
     h += '</div>';
   });
@@ -583,7 +589,7 @@ document.addEventListener('click', function(e){
 // Language switch
 document.addEventListener('click', function(e){
   var a = e.target.closest('[data-lang]');
-  if(a && !a.closest('.mm-lang')){
+  if(a){
     e.preventDefault();
     setLang(a.getAttribute('data-lang'));
   }

@@ -5,11 +5,14 @@
 var CMS_KEY = "ecap_cms_pages";
 var CMS_FILES_KEY = "ecap_cms_files";
 var CMS_USERS_KEY = "ecap_cms_users";
+var CMS_BANNERS_KEY = "ecap_cms_banners";
 var _adminCurrentUser = null;
 function getCmsFiles(){ try{var d=JSON.parse(localStorage.getItem(CMS_FILES_KEY));return d||[];}catch(e){return[];} }
 function saveCmsFiles(d){ localStorage.setItem(CMS_FILES_KEY,JSON.stringify(d)); }
 function getCmsUsers(){ try{var d=JSON.parse(localStorage.getItem(CMS_USERS_KEY));return d||[];}catch(e){return[];} }
 function saveCmsUsers(d){ localStorage.setItem(CMS_USERS_KEY,JSON.stringify(d)); }
+function getCmsBanners(){ try{var d=JSON.parse(localStorage.getItem(CMS_BANNERS_KEY));return d||[];}catch(e){return[];} }
+function saveCmsBanners(d){ localStorage.setItem(CMS_BANNERS_KEY,JSON.stringify(d)); }
 function sha256hex(s){ return crypto.subtle.digest("SHA-256",new TextEncoder().encode(s)).then(function(b){return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,"0");}).join("");}); }
 var CMS_2FA_KEY = "ecap_cms_2fa";
 function get2FAConfig(){ try{ return JSON.parse(localStorage.getItem(CMS_2FA_KEY))||{}; }catch(e){ return {}; } }
@@ -127,7 +130,7 @@ function adminView(){
     +'<span class="role-badge role-'+_curRole+'" style="margin-left:4px">'+_curRole+'</span>'
     +'<button class="admin-btn secondary" onclick="window._adminLogout()" style="margin-left:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Logout</button>'
     +'</div></div>'
-    +'<div class="cms-section-bar"><button class="cms-section-btn active" id="stab_pages" onclick="window._cmsSectionSwitch(0)">Pages</button><button class="cms-section-btn" id="stab_files" onclick="window._cmsSectionSwitch(1)">Downloads</button>'+(_isAdmin?'<button class="cms-section-btn" id="stab_users" onclick="window._cmsSectionSwitch(2)">Users</button>':'')+'</div>'
+    +'<div class="cms-section-bar"><button class="cms-section-btn active" id="stab_pages" onclick="window._cmsSectionSwitch(0)">Pages</button><button class="cms-section-btn" id="stab_banners" onclick="window._cmsSectionSwitch(3)">Banners</button><button class="cms-section-btn" id="stab_files" onclick="window._cmsSectionSwitch(1)">Downloads</button>'+(_isAdmin?'<button class="cms-section-btn" id="stab_users" onclick="window._cmsSectionSwitch(2)">Users</button>':'')+'</div>'
     +'<div class="cms-editor-area" id="cmsEditor">'
     +'<div class="cms-empty"><div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><p>Select a page from the sidebar to start editing</p></div>'
     +'</div></div></div>';
@@ -367,10 +370,10 @@ window._cmsReset = function(){
 // ————————————————————— CMS SECTION SWITCHER —————————————————————
 var _cmsSection = "pages";
 window._cmsSectionSwitch = function(sec){
-  var secs = ["pages","files","users"];
+  var secs = ["pages","files","users","banners"];
   if(typeof sec === "number") sec = secs[sec] || "pages";
   _cmsSection = sec;
-  ["pages","files","users"].forEach(function(s){
+  ["pages","files","users","banners"].forEach(function(s){
     var b = document.getElementById("stab_"+s);
     if(b) b.classList.toggle("active", s===sec);
   });
@@ -383,6 +386,8 @@ window._cmsSectionSwitch = function(sec){
   } else if(sec==="users") {
     if(!_cmsHasPermission("users")){ showToast("Admin access required"); return; }
     window._cmsUsersView();
+  } else if(sec==="banners") {
+    window._cmsBannersView();
   }
 };
 
@@ -411,9 +416,9 @@ window._cmsFilesView = function(){
     +'<p style="color:var(--text-muted);font-size:13px;margin-bottom:20px">Upload files (stored in browser) or add external links. Copy the HTML snippet to paste into any page body.</p>'
     +(_canUpload ? '<div class="cms-upload-zone" id="cmsDropZone">' : '<div style="display:none">')
     +'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom:8px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>'
-    +'<p><strong>Drag &amp; drop</strong> PDF, DOC, or DOCX files here</p>'
+    +'<p><strong>Drag &amp; drop</strong> PDF, DOC, DOCX, JPG or PNG files here</p>'
     +'<p style="font-size:12px;color:var(--text-muted)">or click to browse (max 2MB each)</p>'
-    +'<input type="file" id="cmsFileInput" accept=".pdf,.doc,.docx" style="display:none" onchange="window._cmsFileUpload(event)"/>'
+    +'<input type="file" id="cmsFileInput" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="display:none" onchange="window._cmsFileUpload(event)"/>'
     +'<button class="admin-btn primary" onclick="window._cmsChooseFile()" style="margin-top:8px">Choose File</button>'
     +'</div>'
     +(_canUpload ? '<div class="cms-add-url-row">' : '<div style="display:none">')
@@ -443,9 +448,9 @@ window._cmsInitDragDrop = function(){
   });
 };
 window._cmsProcessDroppedFile = function(file){
-  var allowed = ['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-  var allowedExt = /\.(pdf|doc|docx)$/i;
-  if(!allowed.includes(file.type) && !allowedExt.test(file.name)){ showToast('Only PDF, DOC, DOCX: '+file.name); return; }
+  var allowed = ['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document','image/jpeg','image/png','image/webp'];
+  var allowedExt = /\.(pdf|doc|docx|jpg|jpeg|png|webp)$/i;
+  if(!allowed.includes(file.type) && !allowedExt.test(file.name)){ showToast('Only PDF, DOC, DOCX, JPG, PNG: '+file.name); return; }
   if(file.size > 2*1024*1024){ showToast('Too large (max 2MB): '+file.name); return; }
   var reader = new FileReader();
   reader.onload = function(ev){
@@ -460,10 +465,10 @@ window._cmsProcessDroppedFile = function(file){
 window._cmsFileUpload = function(e){
   var file = e.target.files[0];
   if(!file) return;
-  var allowed = ["application/pdf","application/msword","application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
-  var allowedExt = /\.(pdf|doc|docx)$/i;
+  var allowed = ["application/pdf","application/msword","application/vnd.openxmlformats-officedocument.wordprocessingml.document","image/jpeg","image/png","image/webp"];
+  var allowedExt = /\.(pdf|doc|docx|jpg|jpeg|png|webp)$/i;
   if(!allowed.includes(file.type) && !allowedExt.test(file.name)){
-    showToast("Only PDF, DOC, DOCX files are allowed"); e.target.value=""; return;
+    showToast("Only PDF, DOC, DOCX, JPG, PNG files are allowed"); e.target.value=""; return;
   }
   if(file.size > 2*1024*1024){ showToast("File too large (max 2MB)"); return; }
   var reader = new FileReader();
@@ -818,6 +823,116 @@ window._cmsToolbarAction = function(taId, action){
     case 'br':  insert('<br/>\n'); break;
     case 'hr':  insert('\n<hr/>\n'); break;
   }
+};
+
+// ————————————————————— CMS BANNERS MANAGER —————————————————————
+window._cmsBannersView = function(){
+  var banners = getCmsBanners();
+  var _canUpload = _cmsHasPermission("upload");
+  var rows = banners.length ? banners.map(function(b,i){
+    return '<div class="cms-banner-item" style="display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--border-light);border-radius:8px;margin-bottom:8px;background:var(--white)">'
+      +'<img src="'+escAttr(b.img)+'" style="width:120px;height:60px;object-fit:cover;border-radius:6px;flex-shrink:0;background:#f3f4f6"/>'
+      +'<div style="flex:1;min-width:0">'
+      +'<div style="font-weight:600;font-size:14px">'+esc(b.alt||'Banner '+(i+1))+'</div>'
+      +'<div style="font-size:11px;color:var(--text-muted);margin-top:2px">'+esc(b.link||'No link')+'</div>'
+      +'</div>'
+      +'<div style="display:flex;gap:4px;flex-shrink:0">'
+      +(i>0?'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerMove('+i+',-1)">&uarr;</button>':'')
+      +(i<banners.length-1?'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerMove('+i+',1)">&darr;</button>':'')
+      +(_canUpload?'<button class="admin-btn danger" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerDelete('+i+')">Delete</button>':'')
+      +'</div></div>';
+  }).join("") : '<div style="color:var(--text-muted);font-size:13px;padding:12px 0">No custom banners. Using default banner images. Add banners below to customize the homepage carousel.</div>';
+
+  document.getElementById("cmsEditor").innerHTML =
+    '<div class="cms-panel">'
+    +'<h3 style="font-size:20px;font-weight:700;margin-bottom:6px">Banner Management</h3>'
+    +'<p style="color:var(--text-muted);font-size:13px;margin-bottom:20px">Upload JPG/PNG images for the homepage carousel. Recommended size: 1200×500px. Max 5MB each.</p>'
+    +'<div class="cms-banners-list" id="cmsBannersList">' + rows + '</div>'
+    +(_canUpload ?
+      '<div style="border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;margin-top:16px;cursor:pointer;transition:all .2s" id="cmsBannerDropZone">'
+      +'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom:8px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>'
+      +'<p><strong>Drag &amp; drop</strong> JPG or PNG images here</p>'
+      +'<p style="font-size:12px;color:var(--text-muted)">or click to browse (max 5MB each)</p>'
+      +'<input type="file" id="cmsBannerInput" accept=".jpg,.jpeg,.png,.webp" style="display:none" onchange="window._cmsBannerUpload(event)" multiple/>'
+      +'<button class="admin-btn primary" onclick="document.getElementById(\'cmsBannerInput\').click()" style="margin-top:8px">Choose Image</button>'
+      +'</div>'
+      +'<div style="display:flex;gap:8px;align-items:end;margin-top:16px">'
+      +'<div class="admin-field" style="flex:1;margin:0"><label>Or paste image URL</label><input type="url" id="cmsBannerUrl" placeholder="https://..."/></div>'
+      +'<div class="admin-field" style="flex:1;margin:0"><label>Alt text / Title</label><input type="text" id="cmsBannerAlt" placeholder="Banner description"/></div>'
+      +'<div class="admin-field" style="flex:1;margin:0"><label>Link (optional)</label><input type="text" id="cmsBannerLink" placeholder="#/page/slug or https://..."/></div>'
+      +'<button class="admin-btn primary" onclick="window._cmsBannerAddUrl()" style="height:44px;white-space:nowrap">Add Banner</button>'
+      +'</div>'
+    : '<div style="background:#fef9c3;border:1px solid #fde68a;border-radius:6px;padding:10px 14px;font-size:13px;margin-top:12px">View only — editor or admin access needed to manage banners.</div>')
+    +'</div>';
+  setTimeout(function(){ window._cmsBannerInitDrop(); },50);
+};
+
+window._cmsBannerInitDrop = function(){
+  var zone = document.getElementById('cmsBannerDropZone');
+  if(!zone) return;
+  zone.addEventListener('click', function(e){ if(e.target===zone||e.target.tagName==='P'||e.target.tagName==='svg'||e.target.tagName==='path'||e.target.tagName==='polyline'||e.target.tagName==='line') document.getElementById('cmsBannerInput').click(); });
+  zone.addEventListener('dragover', function(e){ e.preventDefault(); e.stopPropagation(); zone.style.borderColor='var(--brand)'; zone.style.background='rgba(204,51,0,.04)'; });
+  zone.addEventListener('dragleave', function(e){ e.preventDefault(); e.stopPropagation(); zone.style.borderColor=''; zone.style.background=''; });
+  zone.addEventListener('drop', function(e){
+    e.preventDefault(); e.stopPropagation(); zone.style.borderColor=''; zone.style.background='';
+    var files = e.dataTransfer.files;
+    if(!files||!files.length) return;
+    for(var i=0;i<files.length;i++) window._cmsBannerProcessFile(files[i]);
+  });
+};
+
+window._cmsBannerProcessFile = function(file){
+  var allowedTypes = ['image/jpeg','image/png','image/webp'];
+  var allowedExt = /\.(jpg|jpeg|png|webp)$/i;
+  if(!allowedTypes.includes(file.type) && !allowedExt.test(file.name)){ showToast('Only JPG, PNG, WebP: '+file.name); return; }
+  if(file.size > 5*1024*1024){ showToast('Too large (max 5MB): '+file.name); return; }
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    var banners = getCmsBanners();
+    banners.push({ img:ev.target.result, alt:file.name.replace(/\.[^.]+$/,''), link:'', isLocal:true });
+    saveCmsBanners(banners);
+    showToast('Added banner: '+file.name);
+    window._cmsBannersView();
+  };
+  reader.readAsDataURL(file);
+};
+
+window._cmsBannerUpload = function(e){
+  var files = e.target.files;
+  if(!files) return;
+  for(var i=0;i<files.length;i++) window._cmsBannerProcessFile(files[i]);
+  e.target.value="";
+};
+
+window._cmsBannerAddUrl = function(){
+  var url = document.getElementById('cmsBannerUrl').value.trim();
+  var alt = document.getElementById('cmsBannerAlt').value.trim();
+  var link = document.getElementById('cmsBannerLink').value.trim();
+  if(!url){ showToast('Enter an image URL'); return; }
+  var banners = getCmsBanners();
+  banners.push({ img:url, alt:alt||'Banner', link:link, isLocal:false });
+  saveCmsBanners(banners);
+  showToast('Added banner');
+  window._cmsBannersView();
+};
+
+window._cmsBannerDelete = function(idx){
+  if(!confirm('Delete this banner?')) return;
+  var banners = getCmsBanners();
+  banners.splice(idx,1);
+  saveCmsBanners(banners);
+  window._cmsBannersView();
+};
+
+window._cmsBannerMove = function(idx, dir){
+  var banners = getCmsBanners();
+  var newIdx = idx + dir;
+  if(newIdx < 0 || newIdx >= banners.length) return;
+  var tmp = banners[idx];
+  banners[idx] = banners[newIdx];
+  banners[newIdx] = tmp;
+  saveCmsBanners(banners);
+  window._cmsBannersView();
 };
 
 // CMS initialization

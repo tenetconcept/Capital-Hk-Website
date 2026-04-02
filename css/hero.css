@@ -4,25 +4,8 @@
 .hero {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #1a0a05 0%, #2d1a10 40%, #1a1a2e 100%);
+  background: linear-gradient(135deg, #0a1628 0%, #0d2847 25%, #142850 45%, #1a1a2e 70%, #2d1a10 90%, #3d1a0a 100%);
   min-height: 540px;
-}
-.hero-bg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-.hero-bg img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0.6;
-}
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(26,10,5,.3) 0%, rgba(26,10,5,.6) 100%);
-  z-index: 1;
 }
 .hero-content {
   position: relative;
@@ -73,25 +56,32 @@
 }
 .hero-ctas .btn { padding: 14px 32px; font-size: 16px; }
 
-/* Hero decorative elements */
+/* Hero decorative circles — rd.group style large overlapping shapes */
 .hero-deco {
   position: absolute;
   z-index: 1;
   pointer-events: none;
+  border-radius: 50%;
 }
 .hero-deco-circle {
-  width: 400px;
-  height: 400px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(204,51,0,.15), transparent 70%);
-  right: -100px;
-  top: -100px;
+  width: 550px;
+  height: 550px;
+  background: radial-gradient(circle, rgba(204,51,0,.22) 0%, rgba(204,51,0,.06) 50%, transparent 70%);
+  right: -120px;
+  top: -120px;
 }
 .hero-deco-circle-2 {
-  width: 300px;
-  height: 300px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(232,69,10,.1), transparent 70%);
-  left: -50px;
-  bottom: -50px;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, rgba(232,100,30,.14) 0%, rgba(232,100,30,.04) 50%, transparent 70%);
+  left: -100px;
+  bottom: -100px;
+}
+.hero-deco-circle-3 {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(204,51,0,.12) 0%, transparent 60%);
+  right: 15%;
+  top: 50%;
+  transform: translateY(-50%);
 }

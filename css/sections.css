@@ -8,7 +8,7 @@
   position: relative;
   overflow: hidden;
 }
-.feature-block:nth-child(even) { background: var(--white); }
+.feature-block:nth-child(even) { background: rgba(255,255,255,.5); }
 .feature-inner {
   display: grid;
   grid-template-columns: 1fr 1fr;

@@ -1,18 +1,18 @@
 /* ============================
-   HERO SECTION — Pink/warm gradient background
+   HERO SECTION
    ============================ */
 .hero {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #FFF5F0 0%, #FFE8E0 25%, #FFDDD4 45%, #F6D5CC 65%, #F0C8BD 80%, #EBB8AC 100%);
-  min-height: 480px;
+  background: transparent;
+  min-height: 420px;
 }
 .hero-content {
   position: relative;
   z-index: 2;
   text-align: center;
   color: var(--text);
-  padding: 100px 24px 70px;
+  padding: 80px 24px 60px;
   max-width: 800px;
   margin: 0 auto;
 }

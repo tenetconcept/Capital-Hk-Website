@@ -37,7 +37,7 @@
 .cms-section-btn{padding:7px 18px;border-radius:100px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:var(--white);color:var(--text-sec);cursor:pointer;transition:all .2s}
 .cms-section-btn:hover{border-color:var(--brand);color:var(--brand)}
 .cms-section-btn.active{background:var(--brand);color:var(--white);border-color:var(--brand)}
-.cms-panel{padding:24px 32px;max-width:800px}
+.cms-panel{padding:24px 32px;max-width:680px;margin:0 auto}
 .cms-files-table{width:100%;border-collapse:collapse;margin-top:14px}
 .cms-files-table th{text-align:left;font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:.5px;padding:8px 12px;border-bottom:2px solid var(--border)}
 .cms-files-table td{padding:10px 12px;border-bottom:1px solid rgba(0,0,0,.05);font-size:13px;vertical-align:middle}
@@ -57,9 +57,9 @@
 .cms-user-row .u-avatar{width:36px;height:36px;border-radius:50%;background:var(--brand-gradient);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--white);flex-shrink:0}
 .cms-user-row .u-name{font-weight:600;font-size:14px;flex:1}
 .cms-user-row .u-tag{font-size:11px;color:var(--brand);background:var(--bg-box);padding:2px 8px;border-radius:100px}
-.cms-chpwd-box{background:var(--white);border-radius:var(--radius);padding:24px;border:1px solid rgba(0,0,0,.06);box-shadow:var(--shadow-sm);max-width:480px;margin-bottom:24px}
+.cms-chpwd-box{background:var(--white);border-radius:var(--radius);padding:24px;border:1px solid rgba(0,0,0,.06);box-shadow:var(--shadow-sm);max-width:100%;margin:0 auto 24px}
 .cms-chpwd-box h4{font-size:15px;font-weight:700;margin-bottom:16px}
-.cms-add-user-box{background:var(--white);border-radius:var(--radius);padding:24px;border:1px solid rgba(0,0,0,.06);box-shadow:var(--shadow-sm);max-width:480px}
+.cms-add-user-box{background:var(--white);border-radius:var(--radius);padding:24px;border:1px solid rgba(0,0,0,.06);box-shadow:var(--shadow-sm);max-width:100%;margin:0 auto}
 .cms-add-user-box h4{font-size:15px;font-weight:700;margin-bottom:16px}
 .cms-toolbar{display:flex;flex-wrap:wrap;gap:3px;padding:6px 8px;background:#f8f9fa;border:1.5px solid var(--border);border-bottom:none;border-radius:var(--radius-sm) var(--radius-sm) 0 0}
 .cms-tb-btn{min-width:28px;height:26px;padding:0 6px;border:1px solid var(--border);background:var(--white);border-radius:4px;cursor:pointer;font-size:12px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;color:var(--text);transition:all .15s;font-family:inherit}

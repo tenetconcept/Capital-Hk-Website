@@ -8,18 +8,15 @@
   min-height: 80vh;
 }
 
-/* Page hero banner */
+/* ===== Page Hero — rd.group style ===== */
 .subpage-hero {
-  background: linear-gradient(135deg, #FFF5F0 0%, #FFE8E0 40%, #FFDDD4 70%, #F6D5CC 100%);
-  padding: 100px 0 48px;
-  margin-bottom: 48px;
+  padding: 100px 0 0;
 }
-.subpage-hero h1 {
-  font-size: clamp(28px, 4vw, 42px);
+.subpage-title {
+  font-size: clamp(28px, 4vw, 48px);
   font-weight: 800;
-  color: var(--text);
   line-height: 1.2;
-  margin-bottom: 8px;
+  margin-bottom: 24px;
 }
 .subpage-hero .breadcrumb {
   font-size: 13px;
@@ -34,12 +31,49 @@
   text-decoration: underline;
 }
 
-/* Legacy subpage-header (fallback for JS-generated HTML) */
+/* ===== Sibling Tabs — rd.group "Blog/Newsroom/..." style ===== */
+.subpage-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-light);
+}
+.subpage-tab {
+  position: relative;
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-radius: var(--radius-full);
+  transition: all var(--dur) var(--ease);
+  white-space: nowrap;
+}
+.subpage-tab:hover {
+  color: var(--text);
+  background: rgba(204,51,0,.05);
+}
+.subpage-tab.active {
+  color: var(--white);
+  background: var(--brand-gradient);
+}
+
+/* ===== Content Area ===== */
+.subpage-content {
+  padding-top: 40px;
+}
+.subpage-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 40px;
+  border: 1px solid rgba(0,0,0,.06);
+  box-shadow: 0 2px 12px rgba(0,0,0,.04);
+}
+
+/* Legacy subpage-header (fallback) */
 .subpage-header {
-  background: linear-gradient(135deg, #FFF5F0 0%, #FFE8E0 40%, #FFDDD4 70%, #F6D5CC 100%);
-  margin: 0 calc(-1 * max(24px, (100vw - var(--mod-max)) / 2));
-  padding: 100px max(24px, (100vw - var(--mod-max)) / 2) 48px;
-  margin-bottom: 48px;
+  padding: 100px 0 24px;
+  margin-bottom: 0;
   border-bottom: none;
 }
 .subpage-header h1 {
@@ -55,12 +89,11 @@
 .subpage-header .breadcrumb a { color: var(--brand); font-weight: 500; }
 .subpage-header .breadcrumb a:hover { text-decoration: underline; }
 
-/* Content body */
+/* ===== Content Body ===== */
 .subpage-body {
   font-size: 15px;
   line-height: 1.9;
   color: var(--text-sec);
-  max-width: 900px;
 }
 .subpage-body h2 { font-size: 22px; font-weight: 700; color: var(--text); margin: 32px 0 16px; }
 .subpage-body h3 { font-size: 18px; font-weight: 600; color: var(--text); margin: 24px 0 12px; }
@@ -97,7 +130,7 @@
   word-wrap: break-word;
   overflow-wrap: break-word;
 }
-.subpage-body tr:nth-child(even) { background: var(--bg-light); }
+.subpage-body tr:nth-child(even) { background: rgba(255,245,240,.5); }
 .subpage-body tr:hover { background: rgba(204,51,0,.03); }
 .subpage-body input[type="submit"] {
   padding: 6px 16px;
@@ -116,7 +149,7 @@
 
 /* Info card */
 .subpage-body .info-card {
-  background: var(--bg-light);
+  background: rgba(255,245,240,.6);
   border: 1px solid var(--border-light);
   border-radius: var(--radius);
   padding: 24px;

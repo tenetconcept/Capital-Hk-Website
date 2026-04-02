@@ -476,7 +476,27 @@ function ctaSection(u){
   return h;
 }
 
-// ---------- PAGE VIEW ----------
+// ---------- PAGE VIEW (rd.group-style) ----------
+function findSiblingPages(slug){
+  var items = SITE.nav[currentLang] || SITE.nav["zh-Hant"];
+  for(var i=0;i<items.length;i++){
+    var top = items[i];
+    if(top.children){
+      // Check flat children
+      for(var j=0;j<top.children.length;j++){
+        var ch = top.children[j];
+        if(ch.page === slug) return { parent: top.label, siblings: top.children, current: slug };
+        if(ch.children){
+          for(var k=0;k<ch.children.length;k++){
+            if(ch.children[k].page === slug) return { parent: ch.label, siblings: ch.children, current: slug };
+          }
+        }
+      }
+    }
+  }
+  return null;
+}
+
 function pageView(slug){
   var pg = getPage(slug, currentLang);
   if(!pg){
@@ -486,11 +506,40 @@ function pageView(slug){
       +'<p><a href="#/" data-spa style="color:var(--brand)">' + esc(T("home")) + '</a></p></div>'
       +'</div></section>';
   }
-  return '<section class="subpage"><div class="mw">'
-    +'<div class="subpage-header"><div class="breadcrumb"><a href="#/" data-spa>' + esc(T("home")) + '</a> / ' + esc(pg.title) + '</div>'
-    +'<h1>' + esc(pg.title) + '</h1></div>'
-    +'<div class="subpage-body">' + pg.body + '</div>'
-    +'</div></section>';
+
+  var sibs = findSiblingPages(slug);
+  var h = '<section class="subpage">';
+
+  // rd.group-style page header
+  h += '<div class="subpage-hero">';
+  h += '<div class="mw">';
+  h += '<div class="breadcrumb"><a href="#/" data-spa>' + esc(T("home")) + '</a>';
+  if(sibs) h += ' / <span>' + esc(sibs.parent) + '</span>';
+  h += '</div>';
+  h += '<h1 class="subpage-title gradient-text">' + esc(pg.title) + '</h1>';
+
+  // Sibling tabs (rd.group style)
+  if(sibs && sibs.siblings && sibs.siblings.length > 1){
+    h += '<div class="subpage-tabs">';
+    sibs.siblings.forEach(function(sib){
+      if(sib.page){
+        var active = sib.page === slug ? ' active' : '';
+        h += '<a href="#/page/' + escAttr(sib.page) + '" class="subpage-tab' + active + '" data-spa>' + esc(sib.label) + '</a>';
+      }
+    });
+    h += '</div>';
+  }
+  h += '</div></div>';
+
+  // Content area
+  h += '<div class="subpage-content"><div class="mw">';
+  h += '<div class="subpage-card">';
+  h += '<div class="subpage-body">' + pg.body + '</div>';
+  h += '</div>';
+  h += '</div></div>';
+
+  h += '</section>';
+  return h;
 }
 
 // ---------- FOOTER ----------

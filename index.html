@@ -179,10 +179,16 @@ button{font-family:inherit;cursor:pointer}
 .subpage-body p{margin-bottom:16px}
 .subpage-body ul{margin:12px 0 16px 24px;list-style:disc}
 .subpage-body ul li{margin-bottom:6px}
-.subpage-body table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px}
+.subpage-body table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px;table-layout:fixed}
+.subpage-body table+table{margin:0}
 .subpage-body th{background:var(--brand);color:var(--white);padding:10px 14px;text-align:left;font-weight:600}
-.subpage-body td{padding:10px 14px;border-bottom:1px solid var(--border)}
+.subpage-body td{padding:10px 14px;border-bottom:1px solid var(--border);word-wrap:break-word;overflow-wrap:break-word}
 .subpage-body tr:nth-child(even){background:var(--bg-light)}
+.subpage-body input[type="submit"]{padding:5px 14px;border:1.5px solid var(--brand);background:var(--white);color:var(--brand);border-radius:4px;font-size:12px;cursor:pointer;font-family:inherit;transition:all .2s}
+.subpage-body input[type="submit"]:hover{background:var(--brand);color:var(--white)}
+.subpage-body form{margin:0;padding:0}
+.subpage-body .navN,.subpage-body .navL,.subpage-body .navF{color:var(--brand);font-size:13px;text-decoration:none;padding:4px 8px}
+.subpage-body .navN:hover,.subpage-body .navL:hover,.subpage-body .navF:hover{text-decoration:underline}
 .subpage-body .info-card{background:var(--bg-light);border:1px solid var(--border);border-radius:var(--radius-sm);padding:24px;margin:20px 0}
 .subpage-body .dl-link{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:var(--bg-box);border:1px solid var(--border);border-radius:var(--radius-sm);margin:4px;font-size:13px;color:var(--brand);font-weight:500;transition:background .2s}
 .subpage-body .dl-link:hover{background:var(--bg-accent)}
@@ -1727,6 +1733,7 @@ function route(){
     // Disable all legacy ASPX forms and javascript: links in rendered content
     app.querySelectorAll('form').forEach(function(f){ f.addEventListener('submit', function(e){ e.preventDefault(); }); });
     app.querySelectorAll('a[href^="javascript:"]').forEach(function(a){ a.setAttribute('href','#'); });
+    app.querySelectorAll('a[href*=".aspx"]').forEach(function(a){ a.setAttribute('href','#'); a.style.pointerEvents='none'; a.style.opacity='.4'; });
     window.scrollTo(0,0);
   } else if(hash === "#/admin"){
     app.innerHTML = adminView();

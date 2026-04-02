@@ -29,25 +29,26 @@
 .footer-brand {}
 .footer-brand img { height: 36px; margin-bottom: 16px; }
 .footer-brand-name {
-  font-size: 0.875rem;
+  font-size: 1.0625rem;
   font-weight: 700;
   margin-bottom: 12px;
 }
 .footer-brand-addr {
-  font-size: 0.8125rem;
+  font-size: 1rem;
   color: var(--text-sec);
   line-height: 1.65;
+  font-weight: 500;
 }
 .footer-col {}
 .footer-col-title {
-  font-size: 0.875rem;
+  font-size: 1.0625rem;
   font-weight: 700;
   margin-bottom: 16px;
   color: var(--text);
 }
 .footer-col a {
   display: block;
-  font-size: 0.8125rem;
+  font-size: 1rem;
   font-weight: 500;
   color: var(--text-sec);
   padding: 4px 0;

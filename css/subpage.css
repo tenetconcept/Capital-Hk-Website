@@ -14,16 +14,17 @@
   animation: fadeInUp .6s var(--ease) both;
 }
 .subpage-title {
-  font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+  font-size: clamp(2.25rem, 5vw, 3.75rem);
   font-weight: 700;
-  line-height: 1.2;
-  margin-bottom: 20px;
+  line-height: 1.15;
+  margin-bottom: 24px;
   letter-spacing: -0.01em;
 }
 .subpage-hero .breadcrumb {
-  font-size: 13px;
+  font-size: 1rem;
   color: var(--text-muted);
   margin-bottom: 16px;
+  font-weight: 500;
 }
 .subpage-hero .breadcrumb a {
   color: var(--brand);
@@ -47,8 +48,8 @@
 .subpage-tabs::-webkit-scrollbar { display: none; }
 .subpage-tab {
   position: relative;
-  padding: 14px 20px;
-  font-size: clamp(0.9375rem, 1.5vw, 1.125rem);
+  padding: 18px 28px;
+  font-size: clamp(1.25rem, 2vw, 1.625rem);
   font-weight: 700;
   color: var(--text-muted);
   transition: all var(--dur) var(--ease);
@@ -207,21 +208,22 @@
 /* First cell = title (bold, full width) */
 .subpage-body td:first-child {
   flex: 1 1 100%;
-  font-size: 1rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--text);
   line-height: 1.5;
 }
 /* Date cell */
 .subpage-body td:nth-child(2) {
-  font-size: 13px;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text-muted);
 }
 /* Publisher cell */
 .subpage-body td:nth-child(3) {
-  font-size: 13px;
+  font-size: 1rem;
   color: var(--text-muted);
+  font-weight: 500;
 }
 /* Action cell (submit button) */
 .subpage-body td:last-child {
@@ -230,13 +232,13 @@
 
 /* Submit buttons inside cards */
 .subpage-body input[type="submit"] {
-  padding: 7px 18px;
+  padding: 10px 24px;
   border: 1.5px solid var(--brand);
   background: var(--white);
   color: var(--brand);
   border-radius: var(--radius-full);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 0.9375rem;
+  font-weight: 700;
   cursor: pointer;
   font-family: inherit;
   transition: all .25s var(--ease);
@@ -281,7 +283,7 @@
 }
 .subpage-body > div > div > div > span > strong,
 .subpage-body > div > div > span > strong {
-  font-size: 16px;
+  font-size: 1.25rem;
   color: var(--brand);
   display: block;
   margin-bottom: 8px;
@@ -301,28 +303,30 @@
   border-bottom: none;
 }
 .subpage-header h1 {
-  font-size: clamp(1.75rem, 4vw, 2.625rem);
+  font-size: clamp(2.25rem, 5vw, 3.75rem);
   font-weight: 700;
   color: var(--text);
   margin-bottom: 8px;
   letter-spacing: -0.01em;
 }
 .subpage-header .breadcrumb {
-  font-size: 13px;
+  font-size: 1rem;
   color: var(--text-muted);
+  font-weight: 500;
 }
 .subpage-header .breadcrumb a { color: var(--brand); font-weight: 500; }
 .subpage-header .breadcrumb a:hover { text-decoration: underline; }
 
 /* ===== Content Body — General ===== */
 .subpage-body {
-  font-size: 1rem;
+  font-size: 1.125rem;
   line-height: 1.75;
   color: var(--text-sec);
   letter-spacing: -0.01em;
+  font-weight: 500;
 }
-.subpage-body h2 { font-size: 1.3125rem; font-weight: 700; color: var(--text); margin: 32px 0 16px; }
-.subpage-body h3 { font-size: 1.125rem; font-weight: 700; color: var(--text); margin: 24px 0 12px; }
+.subpage-body h2 { font-size: 1.75rem; font-weight: 700; color: var(--text); margin: 32px 0 16px; }
+.subpage-body h3 { font-size: 1.375rem; font-weight: 700; color: var(--text); margin: 24px 0 12px; }
 .subpage-body p { margin-bottom: 16px; }
 .subpage-body ul { margin: 12px 0 16px 24px; list-style: disc; }
 .subpage-body ul li { margin-bottom: 6px; }
@@ -509,16 +513,17 @@
 .news-hub-card-icon svg { width: 24px; height: 24px; }
 .news-hub-card-body { flex: 1; }
 .news-hub-card-title {
-  font-size: 16px;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--text);
   margin-bottom: 4px;
   transition: color .35s var(--ease);
 }
 .news-hub-card-desc {
-  font-size: 13px;
+  font-size: 1rem;
   color: var(--text-muted);
   line-height: 1.5;
+  font-weight: 500;
   transition: color .35s var(--ease);
 }
 .news-hub-arrow {

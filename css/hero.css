@@ -20,31 +20,31 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 16px;
+  padding: 8px 20px;
   background: rgba(180,21,64,.08);
   border: 1px solid rgba(180,21,64,.15);
   border-radius: var(--radius-full);
-  font-size: 0.8125rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 700;
   color: var(--brand);
   margin-bottom: 24px;
 }
-.hero-badge svg { width: 14px; height: 14px; }
+.hero-badge svg { width: 16px; height: 16px; }
 .hero-title {
-  font-size: clamp(2rem, 5vw, 3.25rem);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
   font-weight: 700;
-  line-height: 1.15;
-  margin-bottom: 16px;
+  line-height: 1.1;
+  margin-bottom: 20px;
   letter-spacing: -0.02em;
   color: var(--text);
 }
 .hero-subtitle {
-  font-size: clamp(0.9375rem, 2vw, 1.125rem);
-  font-weight: 400;
+  font-size: clamp(1.125rem, 2vw, 1.5rem);
+  font-weight: 500;
   color: var(--text-sec);
-  line-height: 1.75;
-  margin-bottom: 32px;
-  max-width: 600px;
+  line-height: 1.65;
+  margin-bottom: 36px;
+  max-width: 640px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -54,7 +54,7 @@
   justify-content: center;
   flex-wrap: wrap;
 }
-.hero-ctas .btn { padding: 14px 32px; font-size: 1rem; }
+.hero-ctas .btn { padding: 16px 36px; font-size: 1.125rem; font-weight: 700; }
 .hero-ctas .btn-white {
   background: var(--white);
   color: var(--brand);

@@ -77,8 +77,8 @@
 }
 .nav-logo img { height: 36px; }
 .nav-logo-text {
-  font-size: 0.8125rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 700;
   color: var(--text);
   line-height: 1.2;
   white-space: nowrap;
@@ -112,9 +112,9 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 14px 20px;
-  font-size: 0.875rem;
-  font-weight: 500;
+  padding: 14px 24px;
+  font-size: 1.0625rem;
+  font-weight: 700;
   color: var(--text);
   transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
   cursor: pointer;
@@ -126,8 +126,9 @@
   color: var(--brand);
 }
 .nav-chevron {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
+  color: var(--brand);
   transition: transform var(--dur) var(--ease);
 }
 .nav-item:hover .nav-chevron { transform: rotate(180deg); }
@@ -177,12 +178,12 @@
   border-left: 1px solid var(--border-light);
 }
 .nav-dd-group-title {
-  font-size: 11px;
+  font-size: 0.8125rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--brand);
-  padding: 8px 14px 8px;
+  padding: 10px 16px 8px;
   margin-bottom: 2px;
 }
 
@@ -192,10 +193,10 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 10px 14px;
+  padding: 12px 16px;
   border-radius: 14px;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 600;
   color: var(--text);
   transition: all var(--dur) var(--ease);
   line-height: 1.4;
@@ -220,8 +221,8 @@
 }
 
 /* Nav CTA */
-.nav-cta { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
-.nav-cta .btn { padding: 10px 22px; font-size: 14px; }
+.nav-cta { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
+.nav-cta .btn { padding: 12px 24px; font-size: 1rem; font-weight: 700; }
 
 /* Hamburger */
 .nav-ham {
@@ -266,9 +267,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 0;
-  font-size: 17px;
-  font-weight: 600;
+  padding: 18px 0;
+  font-size: 1.25rem;
+  font-weight: 700;
   color: var(--text);
   cursor: pointer;
 }
@@ -283,9 +284,9 @@
 .mobile-menu .mm-sub.open { display: block; }
 .mobile-menu .mm-sub a {
   display: block;
-  padding: 8px 0 8px 16px;
-  font-size: 15px;
-  font-weight: 500;
+  padding: 10px 0 10px 16px;
+  font-size: 1.0625rem;
+  font-weight: 600;
   color: var(--text-sec);
 }
 .mobile-menu .mm-sub a:hover { color: var(--brand); }

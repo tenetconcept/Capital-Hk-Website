@@ -48,23 +48,24 @@
 }
 .feature-text {}
 .feature-label {
-  font-size: 0.8125rem;
+  font-size: 1rem;
   font-weight: 700;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   margin-bottom: 12px;
 }
 .feature-title {
-  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-size: clamp(2rem, 4vw, 3.25rem);
   font-weight: 700;
-  line-height: 1.2;
+  line-height: 1.15;
   margin-bottom: 16px;
 }
 .feature-desc {
-  font-size: 1rem;
+  font-size: 1.25rem;
   color: var(--text-sec);
   line-height: 1.65;
   margin-bottom: 28px;
+  font-weight: 500;
 }
 .feature-list {
   display: flex;
@@ -89,14 +90,15 @@
 }
 .feature-list-icon svg { width: 22px; height: 22px; }
 .feature-list-title {
-  font-size: 1rem;
+  font-size: 1.25rem;
   font-weight: 700;
   margin-bottom: 2px;
 }
 .feature-list-desc {
-  font-size: 0.875rem;
+  font-size: 1.0625rem;
   color: var(--text-muted);
   line-height: 1.5;
+  font-weight: 500;
 }
 
 /* Stats Bar */
@@ -113,8 +115,8 @@
 }
 .stat-item {}
 .stat-num {
-  font-size: clamp(32px, 4vw, 48px);
-  font-weight: 800;
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
   line-height: 1;
   margin-bottom: 8px;
   background: var(--brand-gradient);
@@ -123,7 +125,7 @@
   background-clip: text;
 }
 .stat-label {
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 1.0625rem;
+  font-weight: 600;
   color: rgba(255,255,255,.7);
 }

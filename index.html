@@ -287,6 +287,15 @@ button{font-family:inherit;cursor:pointer}
 .cms-chpwd-box h4{font-size:15px;font-weight:700;margin-bottom:16px}
 .cms-add-user-box{background:var(--white);border-radius:var(--radius);padding:24px;border:1px solid rgba(0,0,0,.06);box-shadow:var(--shadow-sm);max-width:480px}
 .cms-add-user-box h4{font-size:15px;font-weight:700;margin-bottom:16px}
+.cms-toolbar{display:flex;flex-wrap:wrap;gap:3px;padding:6px 8px;background:#f8f9fa;border:1.5px solid var(--border);border-bottom:none;border-radius:var(--radius-sm) var(--radius-sm) 0 0}
+.cms-tb-btn{min-width:28px;height:26px;padding:0 6px;border:1px solid var(--border);background:var(--white);border-radius:4px;cursor:pointer;font-size:12px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;color:var(--text);transition:all .15s;font-family:inherit}
+.cms-tb-btn:hover{background:var(--brand);color:var(--white);border-color:var(--brand)}
+.cms-tb-sep{width:1px;height:18px;background:var(--border);margin:3px 2px;display:inline-block;vertical-align:middle}
+.cms-toolbar+textarea{border-radius:0 0 var(--radius-sm) var(--radius-sm) !important}
+.role-badge{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:100px}
+.role-admin{background:#fee2e2;color:#dc2626}
+.role-editor{background:#dbeafe;color:#1d4ed8}
+.role-viewer{background:#d1fae5;color:#059669}
 .cms-insert-file-btn{font-size:11px;font-weight:500;padding:3px 10px;border-radius:100px;border:1.5px solid var(--border);background:var(--white);color:var(--text-sec);cursor:pointer;transition:all .2s;line-height:1.4}
 .cms-insert-file-btn:hover{border-color:var(--brand);color:var(--brand)}
 .cms-file-picker{position:fixed;z-index:9999;background:var(--white);border:1px solid rgba(0,0,0,.14);border-radius:var(--radius);box-shadow:0 8px 32px rgba(0,0,0,.18);min-width:280px;max-width:380px;overflow:hidden}
@@ -875,12 +884,24 @@ function checkAdminLogin(username, pass){
   return sha256hex(pass).then(function(hash){
     var users = getCmsUsers();
     if(users.length > 0){
-      return users.some(function(u){ return u.username===username && u.hash===hash; }) ? username : null;
+      var found = users.find(function(u){ return u.username===username && u.hash===hash; });
+      return found ? {username:found.username, role:found.role||"admin"} : null;
     }
-    if(username==="admin" && hash===ADMIN_HASH) return "admin";
+    if(username==="admin" && hash===ADMIN_HASH) return {username:"admin", role:"admin"};
     return null;
   });
 }
+// ————— ROLE SYSTEM —————
+var CMS_ROLE_PERMS = {
+  admin:  {save:true,  upload:true,  deleteFile:true,  users:true,  export:true,  reset:true},
+  editor: {save:true,  upload:true,  deleteFile:true,  users:false, export:false, reset:false},
+  viewer: {save:false, upload:false, deleteFile:false, users:false, export:false, reset:false}
+};
+function _cmsHasPermission(action){
+  var role = sessionStorage.getItem("ecap_admin_role")||"admin";
+  return (CMS_ROLE_PERMS[role]||CMS_ROLE_PERMS.admin)[action]===true;
+}
+function _cmsCurrentRole(){ return sessionStorage.getItem("ecap_admin_role")||"admin"; }
 
 function getPage(slug, lang){
   var cms = getCmsPages();
@@ -1066,6 +1087,9 @@ function adminView(){
   // --- Authenticated CMS View ---
   var allPages = Object.keys(SITE.pages);
   var cms = getCmsPages();
+  var _curRole = _cmsCurrentRole();
+  var _isAdmin = _curRole === "admin";
+  var _canEdit = _curRole === "admin" || _curRole === "editor";
   return '<div class="cms-layout">'
     // Sidebar
     +'<aside class="cms-sidebar">'
@@ -1083,13 +1107,14 @@ function adminView(){
     +'<div class="cms-main-header"><h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>CMS Content Manager</h3>'
     +'<div class="cms-header-acts">'
     +'<button class="cms-preview-toggle" id="previewToggle" onclick="window._cmsPreviewPage()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Preview</button>'
-    +'<button class="admin-btn primary" onclick="window._cmsExport()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export</button>'
+    +(_isAdmin ? '<button class="admin-btn primary" onclick="window._cmsExport()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export</button>'
     +'<button class="admin-btn secondary" onclick="document.getElementById(\'cmsImportFile\').click()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Import</button>'
     +'<input type="file" id="cmsImportFile" accept=".json" style="display:none" onchange="window._cmsImport(event)"/>'
-    +'<button class="admin-btn danger" onclick="window._cmsReset()">&#x21BA; Reset</button>'
+    +'<button class="admin-btn danger" onclick="window._cmsReset()">&#x21BA; Reset</button>' : '')
+    +'<span class="role-badge role-'+_curRole+'" style="margin-left:4px">'+_curRole+'</span>'
     +'<button class="admin-btn secondary" onclick="window._adminLogout()" style="margin-left:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Logout</button>'
     +'</div></div>'
-    +'<div class="cms-section-bar"><button class="cms-section-btn active" id="stab_pages" onclick="window._cmsSectionSwitch(0)">Pages</button><button class="cms-section-btn" id="stab_files" onclick="window._cmsSectionSwitch(1)">Downloads</button><button class="cms-section-btn" id="stab_users" onclick="window._cmsSectionSwitch(2)">Users</button></div>'
+    +'<div class="cms-section-bar"><button class="cms-section-btn active" id="stab_pages" onclick="window._cmsSectionSwitch(0)">Pages</button><button class="cms-section-btn" id="stab_files" onclick="window._cmsSectionSwitch(1)">Downloads</button>'+(_isAdmin?'<button class="cms-section-btn" id="stab_users" onclick="window._cmsSectionSwitch(2)">Users</button>':'')+'</div>'
     +'<div class="cms-editor-area" id="cmsEditor">'
     +'<div class="cms-empty"><div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><p>Select a page from the sidebar to start editing</p></div>'
     +'</div></div></div>';
@@ -1118,8 +1143,9 @@ window._adminLogin = function(e){
   checkAdminLogin(user, pass).then(function(matched){
     if(matched){
       sessionStorage.setItem(ADMIN_SESSION_KEY, "1");
-      sessionStorage.setItem("ecap_admin_user", matched);
-      _adminCurrentUser = matched;
+      sessionStorage.setItem("ecap_admin_user", matched.username||matched);
+      sessionStorage.setItem("ecap_admin_role", matched.role||"admin");
+      _adminCurrentUser = matched.username||matched;
       route();
     } else {
       errEl.textContent = "Incorrect username or password.";
@@ -1164,23 +1190,27 @@ window._cmsEditPage = function(slug){
   var langNames = {"zh-Hant":"繁體中文","zh-Hans":"简体中文","en":"English"};
   var html = '<h3 style="font-size:20px;font-weight:700;margin-bottom:16px">'+esc(slug)+'</h3>';
 
+    var _canEditPages = _cmsHasPermission('save');
   langs.forEach(function(lang){
     var pg = getPage(slug, lang);
     var title = pg ? pg.title : '';
     var body = pg ? pg.body : '';
+    var taId = 'cms_b_'+slug+'_'+lang;
+    var tbHtml = _canEditPages ? _cmsBuildToolbar(taId) : '';
     html += '<div class="cms-field-group"><h4>'+esc(langNames[lang])+' ('+lang+')</h4>'
-      +'<div class="admin-field"><label>Title</label><input type="text" id="cms_t_'+slug+'_'+lang+'" value="'+escAttr(title)+'" oninput="window._cmsLivePreview(\''+slug+'\')"/></div>'
+      +'<div class="admin-field"><label>Title</label><input type="text" id="cms_t_'+slug+'_'+lang+'" value="'+escAttr(title)+'"'+(!_canEditPages?' readonly style="background:#f3f4f6;color:var(--text-muted)"':'')+'/></div>'
       +'<div class="admin-field">'
       +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
       +'<label style="margin:0">Body (HTML)</label>'
-      +'<button class="cms-insert-file-btn" data-slug="'+slug+'" data-lang="'+lang+'" onclick="window._cmsShowFilePicker(this)">Insert Download Link</button>'
+      +(_canEditPages ? '<button class="cms-insert-file-btn" data-slug="'+slug+'" data-lang="'+lang+'" onclick="window._cmsShowFilePicker(this)">Insert Download Link</button>' : '<span class="role-badge role-viewer">Read-only</span>')
       +'</div>'
-      +'<textarea id="cms_b_'+slug+'_'+lang+'" style="min-height:160px;font-family:monospace;font-size:13px">'+ escHtml(body)+'</textarea>'
+      +tbHtml
+      +'<textarea id="'+taId+'" style="min-height:200px;font-family:monospace;font-size:13px"'+(!_canEditPages?' readonly':'')+'>'+escHtml(body)+'</textarea>'
       +'</div></div>';
   });
 
   html += '<div style="display:flex;gap:8px;margin-top:8px">'
-    +'<button class="admin-btn primary" onclick="window._cmsSavePage(\''+slug+'\')"> Save Changes</button>'
+    +(_canEditPages ? '<button class="admin-btn primary" onclick="window._cmsSavePage(\''+slug+'\')"> Save Changes</button>' : '<span style="font-size:12px;color:var(--text-muted);align-self:center">Viewer mode — cannot save</span>')
     +'<a href="#/page/'+esc(slug)+'" target="_blank" class="admin-btn secondary" style="text-decoration:none;display:inline-flex;align-items:center"> View Page</a></div>';
 
   if(_cmsPreviewOn){
@@ -1191,6 +1221,20 @@ window._cmsEditPage = function(slug){
   }
 
   document.getElementById("cmsEditor").innerHTML = html;
+
+  // Attach toolbar events
+  document.querySelectorAll('.cms-toolbar').forEach(function(tb){
+    tb.addEventListener('click', function(e){
+      var btn = e.target.closest('.cms-tb-btn');
+      if(!btn) return;
+      window._cmsToolbarAction(tb.getAttribute('data-ta'), btn.getAttribute('data-a'));
+    });
+  });
+  // Auto-resize textareas
+  document.querySelectorAll('.cms-editor-area textarea').forEach(function(ta){
+    ta.addEventListener('input', function(){ this.style.height='auto'; this.style.height=this.scrollHeight+'px'; });
+    ta.style.height = ta.scrollHeight+'px';
+  });
 
   // Highlight active page in sidebar
   document.querySelectorAll('.cms-page-item').forEach(function(el){
@@ -1284,6 +1328,7 @@ window._cmsSectionSwitch = function(sec){
   } else if(sec==="files") {
     window._cmsFilesView();
   } else if(sec==="users") {
+    if(!_cmsHasPermission("users")){ showToast("Admin access required"); return; }
     window._cmsUsersView();
   }
 };
@@ -1291,33 +1336,40 @@ window._cmsSectionSwitch = function(sec){
 // ————————————————————— CMS FILES MANAGER —————————————————————
 window._cmsFilesView = function(){
   var files = getCmsFiles();
+  var _canUpload = _cmsHasPermission("upload");
+  var _canDelFile = _cmsHasPermission("deleteFile");
   var rows = files.length ? files.map(function(f,i){
     var sizeStr = f.size ? (f.size < 1024 ? f.size+"B" : f.size < 1048576 ? Math.round(f.size/1024)+"KB" : Math.round(f.size/1048576)+"MB") : "—";
+    var dateStr = f.uploadedAt ? new Date(f.uploadedAt).toLocaleDateString("zh-HK",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}) : "—";
+    var byStr = f.uploadedBy || "—";
     return '<tr><td><span class="file-name">'+esc(f.name)+'</span>'+(f.desc?'<br/><span style="font-size:11px;color:var(--text-muted)">'+esc(f.desc)+'</span>':'')+'</td>'
       +'<td><span class="file-type">'+esc(f.type||"link")+'</span></td>'
       +'<td class="file-size">'+sizeStr+'</td>'
+      +'<td style="font-size:12px;color:var(--text-muted)">'+dateStr+'<br/>'+esc(byStr)+'</td>'
       +'<td style="white-space:nowrap">'
       +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px;margin-right:4px" onclick="window._cmsFileCopy('+i+')">Copy Link</button>'
-      +'<button class="admin-btn danger" style="font-size:11px;padding:4px 10px" onclick="window._cmsFileDelete('+i+')">Delete</button>'
+      +(_canDelFile?'<button class="admin-btn danger" style="font-size:11px;padding:4px 10px" onclick="window._cmsFileDelete('+i+')">Delete</button>':'')
       +'</td></tr>';
-  }).join("") : '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:24px">No files yet. Upload a file or add a URL below.</td></tr>';
+  }).join("") : '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:24px">No files yet.'+(  _canUpload?' Upload a file or add a URL below.':' Contact an admin to upload files.')+'</td></tr>';
 
   document.getElementById("cmsEditor").innerHTML =
     '<div class="cms-panel">'
     +'<h3 style="font-size:20px;font-weight:700;margin-bottom:6px">Downloads Manager</h3>'
     +'<p style="color:var(--text-muted);font-size:13px;margin-bottom:20px">Upload files (stored in browser) or add external links. Copy the HTML snippet to paste into any page body.</p>'
-    +'<div class="cms-upload-zone">'
+    +(_canUpload ? '<div class="cms-upload-zone">' : '<div style="display:none">')
     +'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom:8px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>'
     +'<p>Upload PDF, DOC, or DOCX files (max 2MB each)</p>'
     +'<input type="file" id="cmsFileInput" accept=".pdf,.doc,.docx" style="display:none" onchange="window._cmsFileUpload(event)"/>'
     +'<button class="admin-btn primary" onclick="window._cmsChooseFile()">Choose File</button>'
     +'</div>'
-    +'<div class="cms-add-url-row">'
+    +(_canUpload ? '<div class="cms-add-url-row">' : '<div style="display:none">')
     +'<input type="text" id="cmsUrlName" placeholder="Link title (e.g. Account Opening Form)"/>'
     +'<input type="url" id="cmsUrlHref" placeholder="External URL (https://...)"/>'
     +'<button class="admin-btn secondary" onclick="window._cmsAddUrl()">Add URL</button>'
     +'</div>'
-    +'<table class="cms-files-table"><thead><tr><th>Name / Description</th><th>Type</th><th>Size</th><th>Actions</th></tr></thead><tbody>'+rows+'</tbody></table>'
+    +(_canUpload ? '' : '</div>')
+    +(   _canUpload ? '' : '<div style="background:#fef9c3;border:1px solid #fde68a;border-radius:6px;padding:10px 14px;font-size:13px;margin-bottom:12px">View only — editor or admin access needed to upload or delete files.</div>')
+    +'<table class="cms-files-table"><thead><tr><th>Name / Description</th><th>Type</th><th>Size</th><th>Uploaded</th><th>Actions</th></tr></thead><tbody>'+rows+'</tbody></table>'
     +'</div>';
 };
 
@@ -1334,7 +1386,7 @@ window._cmsFileUpload = function(e){
   var reader = new FileReader();
   reader.onload = function(ev){
     var files = getCmsFiles();
-    files.push({id:"f"+Date.now(), name:file.name, desc:"", type:file.type||"application/octet-stream", size:file.size, url:ev.target.result, isLocal:true});
+    files.push({id:"f"+Date.now(), name:file.name, desc:"", type:file.type||"application/octet-stream", size:file.size, url:ev.target.result, isLocal:true, uploadedAt:new Date().toISOString(), uploadedBy:sessionStorage.getItem("ecap_admin_user")||"admin"});
     saveCmsFiles(files);
     showToast("Uploaded: "+file.name);
     window._cmsFilesView();
@@ -1348,7 +1400,7 @@ window._cmsAddUrl = function(){
   var url = document.getElementById("cmsUrlHref").value.trim();
   if(!name || !url){ showToast("Enter both name and URL"); return; }
   var files = getCmsFiles();
-  files.push({id:"u"+Date.now(), name:name, desc:"", type:"external", size:0, url:url, isLocal:false});
+  files.push({id:"u"+Date.now(), name:name, desc:"", type:"external", size:0, url:url, isLocal:false, uploadedAt:new Date().toISOString(), uploadedBy:sessionStorage.getItem("ecap_admin_user")||"admin"});
   saveCmsFiles(files);
   showToast("Added: "+name);
   window._cmsFilesView();
@@ -1377,10 +1429,12 @@ window._cmsUsersView = function(){
   var currentUser = sessionStorage.getItem("ecap_admin_user") || "admin";
   var userRows = users.length ? users.map(function(u,i){
     var isMe = u.username===currentUser;
+    var uRole = u.role||"admin";
     return '<div class="cms-user-row"><div class="u-avatar">'+esc(u.username[0].toUpperCase())+'</div>'
       +'<div class="u-name">'+esc(u.username)+'</div>'
-      +(isMe?'<span class="u-tag">You</span>':'')
-      +(!isMe?'<button class="admin-btn danger" style="font-size:12px;padding:5px 14px" onclick="window._cmsUserDelete('+i+')">Remove</button>':'')
+      +'<span class="role-badge role-'+uRole+'">'+uRole+'</span>'
+      +(isMe?'<span class="u-tag" style="margin-left:4px">You</span>':'')
+      +(!isMe?'<button class="admin-btn danger" style="font-size:12px;padding:5px 14px;margin-left:auto" onclick="window._cmsUserDelete('+i+')">Remove</button>':'')
       +'</div>';
   }).join("") : '<div style="color:var(--text-muted);font-size:13px;padding:8px 0">Using default admin account. Add users below to replace it.</div>';
 
@@ -1404,6 +1458,15 @@ window._cmsUsersView = function(){
     +'<h4>Add New User</h4>'
     +'<div class="admin-field"><label>Username</label><input type="text" id="newUsername" placeholder="e.g. editor1"/></div>'
     +'<div class="admin-field"><label>Password</label><input type="password" id="newUserPass" placeholder="Min 6 characters"/></div>'
+    +'<div class="admin-field"><label>Role</label><select id="newUserRole" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--white)">'
+    +'<option value="admin">Admin — Full access (pages, files, users, export)</option>'
+    +'<option value="editor" selected>Editor — Edit pages &amp; uploads, no user management</option>'
+    +'<option value="viewer">Viewer — Read-only, cannot save or upload</option>'
+    +'</select></div>'
+    +'<div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:6px;padding:10px 12px;font-size:12px;color:#0369a1;margin-bottom:12px">'
+    +'<strong>Admin</strong>: Full access including user management &amp; export/import.<br/>'
+    +'<strong>Editor</strong>: Edit all pages &amp; manage downloads, no admin settings.<br/>'
+    +'<strong>Viewer</strong>: Read-only access — review content without editing.</div>'
     +'<button class="admin-btn primary" onclick="window._cmsUserAdd()">Add User</button>'
     +'<div id="addUserMsg" style="font-size:13px;margin-top:8px;min-height:20px"></div>'
     +'</div>'
@@ -1447,10 +1510,12 @@ window._cmsUserAdd = function(){
   if(pass.length < 6){ msg.style.color="#dc3545"; msg.textContent="Password must be at least 6 characters."; return; }
   var users = getCmsUsers();
   if(users.some(function(u){return u.username===uname;})){ msg.style.color="#dc3545"; msg.textContent="Username already exists."; return; }
+  var roleEl = document.getElementById("newUserRole");
+  var role = roleEl ? roleEl.value : "editor";
   sha256hex(pass).then(function(hash){
-    users.push({username:uname, hash:hash});
+    users.push({username:uname, hash:hash, role:role});
     saveCmsUsers(users);
-    msg.style.color="#28a745"; msg.textContent="User '"+uname+"' added.";
+    msg.style.color="#28a745"; msg.textContent="User '"+uname+"' added as "+role+".";
     document.getElementById("newUsername").value="";
     document.getElementById("newUserPass").value="";
     window._cmsUsersView();
@@ -1539,6 +1604,77 @@ window._cmsInsertFile = function(textareaId, idx){
   ta.selectionStart = ta.selectionEnd = s + snippet.length;
   ta.focus();
   showToast('Inserted: '+f.name);
+};
+
+
+// ————————————————————— EDITOR TOOLBAR —————————————————————
+function _cmsBuildToolbar(taId){
+  var btns = [
+    {a:'bold',   t:'Bold',          l:'<b>B</b>'},
+    {a:'italic', t:'Italic',        l:'<i>I</i>'},
+    {a:'under',  t:'Underline',     l:'<u>U</u>'},
+    {a:'sep'},
+    {a:'h2',     t:'Heading 2',     l:'H2'},
+    {a:'h3',     t:'Heading 3',     l:'H3'},
+    {a:'sep'},
+    {a:'link',   t:'Insert Link',   l:'&#128279;'},
+    {a:'img',    t:'Insert Image',  l:'&#128247;'},
+    {a:'sep'},
+    {a:'ul',     t:'Bullet List',   l:'&#8226; List'},
+    {a:'ol',     t:'Numbered List', l:'1. List'},
+    {a:'table',  t:'Table',         l:'&#9638; Table'},
+    {a:'sep'},
+    {a:'br',     t:'Line Break',    l:'&#8629; BR'},
+    {a:'hr',     t:'Divider Line',  l:'&#8212; HR'}
+  ];
+  var h = '<div class="cms-toolbar" data-ta="'+taId+'">';
+  btns.forEach(function(b){
+    if(b.a==='sep'){ h += '<span class="cms-tb-sep"></span>'; }
+    else { h += '<button class="cms-tb-btn" data-a="'+b.a+'" title="'+b.t+'">'+b.l+'</button>'; }
+  });
+  return h + '</div>';
+}
+
+window._cmsToolbarAction = function(taId, action){
+  var ta = document.getElementById(taId);
+  if(!ta) return;
+  var s = ta.selectionStart, e = ta.selectionEnd;
+  var sel = ta.value.substring(s, e);
+  var v = ta.value;
+  function wrap(open, close){ var inner=sel||'text'; insert(open+inner+close, open.length, open.length+(sel?sel.length:4)); }
+  function insert(text, selStart, selEnd){
+    ta.value = v.substring(0,s)+text+v.substring(e);
+    ta.selectionStart = s+(selStart||text.length);
+    ta.selectionEnd   = s+(selEnd!==undefined?selEnd:text.length);
+    ta.focus();
+    ta.dispatchEvent(new Event('input'));
+  }
+  switch(action){
+    case 'bold':  wrap('<strong>','</strong>'); break;
+    case 'italic':wrap('<em>','</em>'); break;
+    case 'under': wrap('<u>','</u>'); break;
+    case 'h2':    wrap('\n<h2>','</h2>\n'); break;
+    case 'h3':    wrap('\n<h3>','</h3>\n'); break;
+    case 'link':
+      var url=prompt('Link URL (e.g. https://example.com):','https://');
+      if(url) wrap('<a href="'+url+'">','</a>');
+      break;
+    case 'img':
+      var src=prompt('Image URL:','https://');
+      if(src){ var alt=prompt('Alt text (description)','Image')||''; insert('\n<img src="'+src+'" alt="'+alt+'" style="max-width:100%"/>\n'); }
+      break;
+    case 'ul':
+      insert('\n<ul>\n<li>'+(sel||'Item 1')+'</li>\n<li>Item 2</li>\n</ul>\n');
+      break;
+    case 'ol':
+      insert('\n<ol>\n<li>'+(sel||'Item 1')+'</li>\n<li>Item 2</li>\n</ol>\n');
+      break;
+    case 'table':
+      insert('\n<table>\n<tr><th>Header 1</th><th>Header 2</th></tr>\n<tr><td>'+(sel||'Data')+'</td><td>Data</td></tr>\n</table>\n');
+      break;
+    case 'br':  insert('<br/>\n'); break;
+    case 'hr':  insert('\n<hr/>\n'); break;
+  }
 };
 
 

@@ -51,6 +51,10 @@
   .hero-ctas .btn { width: 100%; max-width: 280px; }
 
   .subpage-header { padding-top: 80px; }
+  .subpage-hero { padding-top: 80px; }
+  .subpage-tab { font-size: 14px; padding: 12px 16px; }
+  .subpage-body tr { padding: 16px; }
+  .subpage-body td:first-child { font-size: 14px; }
 
   .banner-sec { padding: 32px 0; }
   .banner-slide img { aspect-ratio: 2 / 1; }

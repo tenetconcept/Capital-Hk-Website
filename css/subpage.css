@@ -8,15 +8,16 @@
   min-height: 80vh;
 }
 
-/* ===== Page Hero — rd.group style ===== */
+/* ===== Page Hero — rd.group "What's new" style ===== */
 .subpage-hero {
   padding: 100px 0 0;
+  animation: fadeInUp .6s var(--ease) both;
 }
 .subpage-title {
-  font-size: clamp(28px, 4vw, 48px);
+  font-size: clamp(30px, 4.5vw, 52px);
   font-weight: 800;
-  line-height: 1.2;
-  margin-bottom: 24px;
+  line-height: 1.15;
+  margin-bottom: 28px;
 }
 .subpage-hero .breadcrumb {
   font-size: 13px;
@@ -31,46 +32,194 @@
   text-decoration: underline;
 }
 
-/* ===== Sibling Tabs — rd.group "Blog/Newsroom/..." style ===== */
+/* ===== Sibling Tabs — rd.group large text tabs with underline ===== */
 .subpage-tabs {
   display: flex;
-  gap: 8px;
+  gap: 0;
   flex-wrap: wrap;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--border-light);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  border-bottom: 2px solid var(--border-light);
+  animation: fadeInUp .6s var(--ease) .1s both;
 }
+.subpage-tabs::-webkit-scrollbar { display: none; }
 .subpage-tab {
   position: relative;
-  padding: 10px 20px;
-  font-size: 15px;
-  font-weight: 600;
+  padding: 16px 24px;
+  font-size: clamp(16px, 2vw, 22px);
+  font-weight: 700;
   color: var(--text-muted);
-  border-radius: var(--radius-full);
   transition: all var(--dur) var(--ease);
   white-space: nowrap;
+  border-radius: 0;
+}
+.subpage-tab::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 24px;
+  right: 24px;
+  height: 4px;
+  border-radius: 4px 4px 0 0;
+  background: transparent;
+  transition: background var(--dur) var(--ease);
 }
 .subpage-tab:hover {
   color: var(--text);
-  background: rgba(204,51,0,.05);
 }
 .subpage-tab.active {
-  color: var(--white);
+  color: var(--brand);
+  background: transparent;
+}
+.subpage-tab.active::after {
   background: var(--brand-gradient);
 }
 
 /* ===== Content Area ===== */
 .subpage-content {
   padding-top: 40px;
-}
-.subpage-card {
-  background: var(--white);
-  border-radius: var(--radius);
-  padding: 40px;
-  border: 1px solid rgba(0,0,0,.06);
-  box-shadow: 0 2px 12px rgba(0,0,0,.04);
+  animation: fadeInUp .6s var(--ease) .2s both;
 }
 
-/* Legacy subpage-header (fallback) */
+/* No wrapping card — content sits directly on the gradient bg */
+.subpage-card {
+  background: none;
+  border-radius: 0;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+}
+
+/* ===== rd.group Newsroom-style table rows → card items ===== */
+.subpage-body table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+  margin: 0;
+  font-size: 14px;
+  table-layout: auto;
+  background: none;
+  border-radius: 0;
+  border: none;
+}
+.subpage-body table + table {
+  margin-top: 0;
+}
+
+/* Hide legacy table headers — we don't need "名稱/日期/出版者" row */
+.subpage-body table:first-of-type tr:first-child {
+  display: none;
+}
+
+/* Each row becomes a card */
+.subpage-body tr {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  background: rgba(247, 248, 250, .8);
+  border-radius: 12px;
+  padding: 20px 24px;
+  transition: all .35s var(--ease);
+  position: relative;
+  cursor: pointer;
+}
+.subpage-body tr::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: var(--brand-gradient);
+  opacity: 0;
+  transition: opacity .35s var(--ease);
+  z-index: 0;
+}
+.subpage-body tr:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(204,51,0,.12);
+}
+.subpage-body tr:hover::before {
+  opacity: 1;
+}
+.subpage-body tr:hover td {
+  color: var(--white);
+  position: relative;
+  z-index: 1;
+}
+
+/* Table cells in card mode */
+.subpage-body td {
+  border: none;
+  padding: 0;
+  position: relative;
+  z-index: 1;
+  transition: color .35s var(--ease);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+/* First cell = title (bold, full width) */
+.subpage-body td:first-child {
+  flex: 1 1 100%;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.5;
+}
+/* Date cell */
+.subpage-body td:nth-child(2) {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+/* Publisher cell */
+.subpage-body td:nth-child(3) {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+/* Action cell (submit button) */
+.subpage-body td:last-child {
+  margin-left: auto;
+}
+
+/* Submit buttons inside cards */
+.subpage-body input[type="submit"] {
+  padding: 7px 18px;
+  border: 1.5px solid var(--brand);
+  background: var(--white);
+  color: var(--brand);
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .25s var(--ease);
+  position: relative;
+  z-index: 1;
+}
+.subpage-body tr:hover input[type="submit"] {
+  background: var(--white);
+  color: var(--brand);
+  border-color: var(--white);
+}
+.subpage-body input[type="submit"]:hover {
+  transform: scale(1.05);
+}
+
+/* Hidden form elements */
+.subpage-body input[type="hidden"] { display: none; }
+.subpage-body form { margin: 0; padding: 0; }
+
+/* ===== FAQ-style content (Q&A divs) ===== */
+.subpage-body > div > div > div {
+  margin-bottom: 12px;
+}
+.subpage-body > div > div > div > span > strong {
+  font-size: 16px;
+  color: var(--text);
+}
+
+/* ===== Legacy subpage-header (fallback) ===== */
 .subpage-header {
   padding: 100px 0 24px;
   margin-bottom: 0;
@@ -89,7 +238,7 @@
 .subpage-header .breadcrumb a { color: var(--brand); font-weight: 500; }
 .subpage-header .breadcrumb a:hover { text-decoration: underline; }
 
-/* ===== Content Body ===== */
+/* ===== Content Body — General ===== */
 .subpage-body {
   font-size: 15px;
   line-height: 1.9;
@@ -103,19 +252,10 @@
 .subpage-body a { color: var(--brand); }
 .subpage-body a:hover { text-decoration: underline; }
 
-/* Tables */
-.subpage-body table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 20px 0;
-  font-size: 14px;
-  table-layout: fixed;
-  background: var(--white);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  border: 1px solid var(--border-light);
+/* Legacy table header row (the first table with column labels) */
+.subpage-body table:first-of-type {
+  border-spacing: 0;
 }
-.subpage-body table+table { margin: 0; }
 .subpage-body th {
   background: var(--brand);
   color: var(--white);
@@ -123,29 +263,8 @@
   text-align: left;
   font-weight: 600;
   font-size: 13px;
+  display: none;
 }
-.subpage-body td {
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--border-light);
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-}
-.subpage-body tr:nth-child(even) { background: rgba(255,245,240,.5); }
-.subpage-body tr:hover { background: rgba(204,51,0,.03); }
-.subpage-body input[type="submit"] {
-  padding: 6px 16px;
-  border: 1.5px solid var(--brand);
-  background: var(--white);
-  color: var(--brand);
-  border-radius: var(--radius-sm);
-  font-size: 12px;
-  cursor: pointer;
-  font-family: inherit;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-.subpage-body input[type="submit"]:hover { background: var(--brand); color: var(--white); }
-.subpage-body form { margin: 0; padding: 0; }
 
 /* Info card */
 .subpage-body .info-card {
@@ -176,10 +295,17 @@
   color: var(--brand);
   font-size: 13px;
   text-decoration: none;
-  padding: 4px 8px;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  display: inline-block;
+  margin: 2px;
+  transition: all .2s;
 }
 .subpage-body .navN:hover, .subpage-body .navL:hover, .subpage-body .navF:hover {
-  text-decoration: underline;
+  background: var(--brand);
+  color: var(--white);
+  border-color: var(--brand);
 }
 
 /* Images in subpage body */
@@ -188,3 +314,50 @@
   height: auto;
   border-radius: var(--radius-sm);
 }
+
+/* Search form styling */
+.subpage-body input[type="text"] {
+  padding: 10px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-full);
+  font-size: 14px;
+  font-family: inherit;
+  background: var(--white);
+  transition: border-color .2s;
+  min-width: 200px;
+}
+.subpage-body input[type="text"]:focus {
+  outline: none;
+  border-color: var(--brand);
+}
+.subpage-body input[type="radio"] {
+  accent-color: var(--brand);
+}
+.subpage-body input[type="image"] {
+  display: inline-block;
+  vertical-align: middle;
+  border-radius: var(--radius-sm);
+  transition: opacity .2s;
+}
+.subpage-body input[type="image"]:hover { opacity: .8; }
+
+/* ===== Animations ===== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Staggered card animation */
+.subpage-body tr {
+  animation: fadeInUp .5s var(--ease) both;
+}
+.subpage-body table:nth-of-type(2) tr:nth-child(1) { animation-delay: .05s; }
+.subpage-body table:nth-of-type(2) tr:nth-child(2) { animation-delay: .1s; }
+.subpage-body table:nth-of-type(2) tr:nth-child(3) { animation-delay: .15s; }
+.subpage-body table:nth-of-type(2) tr:nth-child(4) { animation-delay: .2s; }
+.subpage-body table:nth-of-type(2) tr:nth-child(5) { animation-delay: .25s; }
+.subpage-body table:nth-of-type(2) tr:nth-child(6) { animation-delay: .3s; }
+.subpage-body table:nth-of-type(2) tr:nth-child(7) { animation-delay: .35s; }
+.subpage-body table:nth-of-type(2) tr:nth-child(8) { animation-delay: .4s; }
+.subpage-body table:nth-of-type(2) tr:nth-child(9) { animation-delay: .45s; }
+.subpage-body table:nth-of-type(2) tr:nth-child(10) { animation-delay: .5s; }

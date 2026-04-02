@@ -2,6 +2,7 @@
 // CMS MODULE — Auth, 2FA, RBAC, Editor, Files, Users
 // ============================================
 
+var CMS_KEY = "ecap_cms_pages";
 var CMS_FILES_KEY = "ecap_cms_files";
 var CMS_USERS_KEY = "ecap_cms_users";
 var _adminCurrentUser = null;
@@ -78,171 +79,7 @@ function _cmsHasPermission(action){
 }
 function _cmsCurrentRole(){ return sessionStorage.getItem("ecap_admin_role")||"admin"; }
 
-function getPage(slug, lang){
-  var cms = getCmsPages();
-  if(cms[slug] && cms[slug][lang]) return cms[slug][lang];
-  if(SITE.pages[slug]){
-    if(SITE.pages[slug][lang]) return SITE.pages[slug][lang];
-    if(SITE.pages[slug]["zh-Hant"]) return SITE.pages[slug]["zh-Hant"]; // fallback
-  }
-  return null;
-}
-
-function T(key){ return (SITE.ui[currentLang] && SITE.ui[currentLang][key]) || key; }
-
-// ————————————————————— NAV BUILD —————————————————————
-function buildNavItem(ch){
-  if(ch.ext){
-    return '<a href="'+esc(ch.ext)+'" target="_blank" rel="noopener">'+esc(ch.label)+'</a>';
-  } else if(ch.children){
-    var h = '<div class="has-sub"><a href="#">'+esc(ch.label)+' </a><div class="sub-dropdown"><div class="dropdown-inner">';
-    ch.children.forEach(function(sub){ h += buildNavItem(sub); });
-    h += '</div></div></div>';
-    return h;
-  } else if(ch.page){
-    return '<a href="#/page/'+esc(ch.page)+'" data-spa>'+esc(ch.label)+'</a>';
-  }
-  return '';
-}
-
-function buildNav(){
-  var items = SITE.nav[currentLang] || SITE.nav["zh-Hant"];
-  var html = "";
-  items.forEach(function(item){
-    if(item.ext){
-      html += '<li><a href="'+esc(item.ext)+'" target="_blank" rel="noopener">'+esc(item.label)+'</a></li>';
-    } else if(item.children){
-      html += '<li><a href="#">'+esc(item.label)+'</a><div class="dropdown"><div class="dropdown-inner">';
-      item.children.forEach(function(ch){ html += buildNavItem(ch); });
-      html += '</div></div></li>';
-    } else if(item.page){
-      html += '<li><a href="#/page/'+esc(item.page)+'" data-spa>'+esc(item.label)+'</a></li>';
-    }
-  });
-  document.getElementById("navLinks").innerHTML = html;
-  // Mobile menu
-  var mhtml = '<a href="#/" data-spa>'+esc(T("home"))+'</a>';
-  function buildMobile(list, depth){
-    list.forEach(function(item){
-      if(item.ext){
-        mhtml += '<a href="'+esc(item.ext)+'" target="_blank" rel="noopener" style="padding-left:'+(12+depth*16)+'px">'+esc(item.label)+'</a>';
-      } else if(item.children){
-        mhtml += '<a href="#" style="padding-left:'+(12+depth*16)+'px;font-weight:'+(depth===0?'500':'400')+'">'+esc(item.label)+'</a>';
-        mhtml += '<div class="mm-sub">';
-        buildMobile(item.children, depth+1);
-        mhtml += '</div>';
-      } else if(item.page){
-        mhtml += '<a href="#/page/'+esc(item.page)+'" data-spa style="padding-left:'+(12+depth*16)+'px">'+esc(item.label)+'</a>';
-      }
-    });
-  }
-  buildMobile(items, 0);
-  document.getElementById("mobileMenu").innerHTML = mhtml;
-  // Update top buttons
-  var loginBtn = document.querySelector('.nav-cta .btn-o');
-  var openBtn = document.querySelector('.nav-cta .btn-p');
-  if(loginBtn) loginBtn.textContent = T("nav_login");
-  if(openBtn) openBtn.textContent = T("nav_open");
-}
-
-// ————————————————————— VIEWS —————————————————————
-function homeView(){
-  var u = SITE.ui[currentLang] || SITE.ui["zh-Hant"];
-  return '<section class="hero"><div class="mw hero-inner">'
-    +'<div class="hero-content">'
-    +'<div class="hero-badge"><span class="hero-badge-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span> '+esc(u.hero_badge)+'</div>'
-    +'<h1>'+esc(u.hero_h1_1)+'<span class="gt">'+esc(u.hero_h1_gt)+'</span><br/>'+esc(u.hero_h1_2)+'</h1>'
-    +'<p class="hero-sub">'+esc(u.hero_sub)+'</p>'
-    +'<div class="hero-acts">'
-    +'<a href="#/page/stock-account-opening" data-spa class="btn-hero primary">'+esc(u.hero_cta1)+' &#8594;</a>'
-    +'<a href="https://itrade.e-capital.com.hk:8888/" target="_blank" rel="noopener" class="btn-hero secondary">'+esc(u.hero_cta2)+'</a>'
-    +'</div></div>'
-    +'<div class="hero-vis"><div class="hero-card">'
-    +'<img src="https://www.e-capital.com.hk/en/images/logo_09.png" alt="e-Capital" width="180"/>'
-    +'<div style="color:var(--brand);font-weight:600;font-size:14px">'+esc(u.hero_card_t)+'</div>'
-    +'<div style="color:var(--text-muted);font-size:12px;margin-top:4px">'+esc(u.hero_card_s)+'</div>'
-    +'</div>'
-    +'<div class="hero-float"><div class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div style="font-size:13px;font-weight:500">'+esc(u.hero_float)+'<span style="display:block;font-size:11px;color:var(--text-muted);font-weight:400">'+esc(u.hero_float_s)+'</span></div></div>'
-    +'</div></div></section>'
-    // Marquee
-    +'<section class="marquee-sec"><div class="marquee-label">'+esc(u.marquee_label)+'</div>'
-    +'<div class="marquee-track" aria-hidden="true">'
-    + (u.marquee_items||[]).concat(u.marquee_items||[]).map(function(m){return '<span class="marquee-item">'+esc(m)+'</span>';}).join('')
-    +'</div></section>'
-    // Services
-    + servicesView(u)
-    // Stats
-    +'<section class="stats-sec"><div class="mw"><div class="stats-grid">'
-    +'<div><div class="stat-num">'+esc(u.stat1)+'</div><div class="stat-lbl">'+esc(u.stat1l)+'</div></div>'
-    +'<div><div class="stat-num">'+esc(u.stat2)+'</div><div class="stat-lbl">'+esc(u.stat2l)+'</div></div>'
-    +'<div><div class="stat-num">'+esc(u.stat3)+'</div><div class="stat-lbl">'+esc(u.stat3l)+'</div></div>'
-    +'<div><div class="stat-num">'+esc(u.stat4)+'</div><div class="stat-lbl">'+esc(u.stat4l)+'</div></div>'
-    +'</div></div></section>'
-    // News
-    + newsView(u)
-    // CTA
-    + ctaView(u);
-}
-
-function servicesView(u){
-  function svcBlock(lbl,title,desc,feats,visIcon,visT,visS){
-    return '<div class="mw"><div class="svc-block"><div class="svc-text">'
-      +'<div class="sec-label">'+esc(lbl)+'</div>'
-      +'<h3 class="sec-title">'+title+'</h3>'
-      +'<p class="sec-desc">'+esc(desc)+'</p>'
-      +'<div class="svc-feats">'
-      + feats.map(function(f){return '<div class="svc-feat"><div class="svc-feat-ic">'+f[0]+'</div><div class="svc-feat-tx">'+esc(f[1])+'<span>'+esc(f[2])+'</span></div></div>';}).join('')
-      +'</div></div>'
-      +'<div class="svc-vis"><div class="svc-vis-in"><div style="text-align:center">'
-      +'<img src="'+visIcon+'" alt="'+esc(visT)+'" style="width:100%;max-width:320px;border-radius:12px;margin-bottom:16px"/>'
-      +'<div style="font-size:20px;font-weight:600;color:var(--brand)">'+esc(visT)+'</div>'
-      +'<div style="font-size:13px;color:var(--text-muted);margin-top:8px">'+esc(visS)+'</div></div></div></div>'
-      +'</div></div>';
-  }
-  return '<section class="section" id="services"><div class="mw">'
-    +'<div class="sec-label">'+esc(u.svc_label)+'</div>'
-    +'<h2 class="sec-title">'+esc(u.svc_title)+'</h2>'
-    +'<p class="sec-desc">'+esc(u.svc_desc)+'</p></div>'
-    + svcBlock(u.svc1_label, u.svc1_title, u.svc1_desc, [['<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',u.svc1_f1,u.svc1_f1s],['<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',u.svc1_f2,u.svc1_f2s],['<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',u.svc1_f3,u.svc1_f3s],['<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8l-4 4-4-4"/><line x1="12" y1="16" x2="12" y2="12"/></svg>',u.svc1_f4,u.svc1_f4s]], "images/ecap-svc-securities.png", u.svc1_vis, u.svc1_vis_s)
-    + svcBlock(u.svc2_label, u.svc2_title, u.svc2_desc, [['<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2"><path d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.66 0 3-4.03 3-9s-1.34-9-3-9m0 18c-1.66 0-3-4.03-3-9s1.34-9 3-9m-9 9a9 9 0 019-9"/></svg>',u.svc2_f1,u.svc2_f1s],['<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18.01"/></svg>',u.svc2_f2,u.svc2_f2s],['<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>',u.svc2_f3,u.svc2_f3s],['<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>',u.svc2_f4,u.svc2_f4s]], "images/ecap-svc-connect.png", u.svc2_vis, u.svc2_vis_s)
-    + svcBlock(u.svc3_label, u.svc3_title, u.svc3_desc, [['<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>',u.svc3_f1,u.svc3_f1s],['<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',u.svc3_f2,u.svc3_f2s],['<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',u.svc3_f3,u.svc3_f3s],['<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>',u.svc3_f4,u.svc3_f4s]], "images/ecap-svc-futures.png", u.svc3_vis, u.svc3_vis_s)
-    +'</section>';
-}
-
-function newsView(u){
-  return '<section class="section" id="news"><div class="mw">'
-    +'<div class="news-hdr"><div><div class="sec-label">'+esc(u.news_label)+'</div><h2 class="sec-title">'+esc(u.news_title)+'</h2></div>'
-    +'<a href="#/page/news" data-spa class="link-arr">'+esc(u.news_all)+'</a></div>'
-    +'<div class="news-grid">'
-    +'<article class="news-card"><div class="news-card-img"><img src="images/ecap-news-1.png" alt="" style="width:100%;height:100%;object-fit:cover"/></div><div class="news-card-body"><div class="news-card-date">2020-12-31</div><h3 class="news-card-title"><a href="#/page/report-daily" data-spa>'+esc(currentLang==="en"?"China/HK Daily Investment Report":"中國/香港投資日報")+'</a></h3><p class="news-card-ex">'+esc(currentLang==="en"?"Daily market commentary and investment advice.":"每日市場評論及投資建議。")+'</p></div></article>'
-    +'<article class="news-card"><div class="news-card-img"><img src="images/ecap-news-2.png" alt="" style="width:100%;height:100%;object-fit:cover"/></div><div class="news-card-body"><div class="news-card-date">2020-10-30</div><h3 class="news-card-title"><a href="#/page/report-stock" data-spa>'+esc(currentLang==="en"?"CITIC Securities":"中信證券")+' (600030/6030.HK)</a></h3><p class="news-card-ex">'+esc(currentLang==="en"?"Individual stock analysis report.":"個股推薦深度分析。")+'</p></div></article>'
-    +'<article class="news-card"><div class="news-card-img"><img src="images/ecap-news-3.png" alt="" style="width:100%;height:100%;object-fit:cover"/></div><div class="news-card-body"><div class="news-card-date">2020-03-12</div><h3 class="news-card-title"><a href="#/page/report-ipo" data-spa>'+esc(currentLang==="en"?"Innovent Biologics":"諾誠健華")+' (9969.HK)</a></h3><p class="news-card-ex">'+esc(currentLang==="en"?"IPO analysis report.":"新股上市分析報告。")+'</p></div></article>'
-    +'</div></div></section>';
-}
-
-function ctaView(u){
-  return '<section class="cta-sec"><div class="mw"><div class="cta-card">'
-    +'<div class="cta-cont"><h2>'+u.cta_h+'</h2><p>'+esc(u.cta_p)+'</p>'
-    +'<div class="cta-acts"><a href="#/page/stock-account-opening" data-spa class="btn-w">'+esc(u.cta_btn1)+' &#8594;</a>'
-    +'<a href="#/page/futures-account" data-spa class="btn-gw">'+esc(u.cta_btn2)+'</a></div></div>'
-    +'<div class="cta-vis"><div class="cta-steps">'
-    +'<div class="cta-step"><div class="cta-step-n">1</div><div>'+esc(u.cta_s1)+'</div></div>'
-    +'<div class="cta-step"><div class="cta-step-n">2</div><div>'+esc(u.cta_s2)+'</div></div>'
-    +'<div class="cta-step"><div class="cta-step-n">3</div><div>'+esc(u.cta_s3)+'</div></div>'
-    +'<div class="cta-step"><div class="cta-step-n">4</div><div>'+esc(u.cta_s4)+'</div></div>'
-    +'</div></div></div></div></section>';
-}
-
-function pageView(slug){
-  var pg = getPage(slug, currentLang);
-  if(!pg) return '<section class="subpage"><div class="mw"><div class="subpage-header"><div class="breadcrumb"><a href="#/" data-spa>'+esc(T("home"))+'</a> / '+esc(slug)+'</div><h1>Page Not Found</h1></div><div class="subpage-body"><p>This page is not yet available.</p></div></div></section>';
-  return '<section class="subpage"><div class="mw">'
-    +'<div class="subpage-header"><div class="breadcrumb"><a href="#/" data-spa>'+esc(T("home"))+'</a> / '+esc(pg.title)+'</div>'
-    +'<h1>'+esc(pg.title)+'</h1></div>'
-    +'<div class="subpage-body">'+pg.body+'</div>'
-    +'</div></section>';
-}
-
+// ————————————————————— ADMIN VIEW —————————————————————
 function adminView(){
   // --- Admin Login Gate ---
   if(!isAdminLoggedIn()){
@@ -295,6 +132,8 @@ function adminView(){
     +'<div class="cms-empty"><div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><p>Select a page from the sidebar to start editing</p></div>'
     +'</div></div></div>';
 }
+// Expose for router
+window.adminView = adminView;
 
 // ————————————————————— ADMIN AUTH —————————————————————
 // Default password: "admin" — SHA-256 hash below
@@ -302,6 +141,7 @@ var ADMIN_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a9
 var ADMIN_SESSION_KEY = "ecap_admin_auth";
 
 function isAdminLoggedIn(){ return sessionStorage.getItem(ADMIN_SESSION_KEY) === "1"; }
+window.isAdminLoggedIn = isAdminLoggedIn;
 
 window._adminLogout = function(){
   sessionStorage.removeItem(ADMIN_SESSION_KEY);
@@ -341,7 +181,7 @@ window._adminLogin = function(e){
             sessionStorage.setItem('ecap_admin_user', matched.username||matched);
             sessionStorage.setItem('ecap_admin_role', matched.role||'admin');
             _adminCurrentUser = matched.username||matched;
-            route();
+            window.route();
           } else {
             errEl.textContent='Invalid 2FA code. Try again.';
             errEl.style.color='';
@@ -358,7 +198,7 @@ window._adminLogin = function(e){
       sessionStorage.setItem("ecap_admin_user", matched.username||matched);
       sessionStorage.setItem("ecap_admin_role", matched.role||"admin");
       _adminCurrentUser = matched.username||matched;
-      route();
+      window.route();
     } else {
       errEl.textContent = "Incorrect username or password.";
       errEl.style.color='';
@@ -509,7 +349,7 @@ window._cmsImport = function(e){
       var data = JSON.parse(ev.target.result);
       saveCmsPages(data);
       showToast("Imported successfully");
-      route();
+      window.route();
     } catch(err){ showToast("Invalid JSON file"); }
   };
   reader.readAsText(file);
@@ -520,7 +360,7 @@ window._cmsReset = function(){
   if(confirm("Reset all CMS edits to default?")) {
     localStorage.removeItem(CMS_KEY);
     showToast("Reset to defaults");
-    route();
+    window.route();
   }
 };
 
@@ -855,7 +695,7 @@ window._cmsShowFilePicker = function(btn){
     inner += '<div class="cfp-title">Insert Download Link</div>'
       +'<div class="cfp-empty">No files yet.<br/>Go to the <strong>Downloads</strong> tab to upload PDF/DOC files first.</div>';
   } else {
-    inner += '<div class="cfp-title">Select file to insert (中文/English)</div>';
+    inner += '<div class="cfp-title">Select file to insert</div>';
     files.forEach(function(f, i){
       var icon = f.type==='external'
         ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>'
@@ -979,118 +819,6 @@ window._cmsToolbarAction = function(taId, action){
     case 'hr':  insert('\n<hr/>\n'); break;
   }
 };
-
-
-// ————————————————————— FOOTER —————————————————————
-function footerView(){
-  var u = SITE.ui[currentLang] || SITE.ui["zh-Hant"];
-  return '<footer class="footer"><div class="mw">'
-    +'<div class="footer-grid">'
-    +'<div class="footer-brand"><img src="https://www.e-capital.com.hk/en/images/logo_09.png" alt="e-Capital" width="180"/><p>'+u.ft_addr+'</p></div>'
-    +'<div class="footer-col"><h4>'+esc(u.ft_svc)+'</h4>'
-    +'<a href="#/page/stock-ipo" data-spa>'+esc(currentLang==="en"?"Securities":"股票交易")+'</a>'
-    +'<a href="#/page/shh-hk" data-spa>'+esc(currentLang==="en"?"SH-HK Connect":"滬港通")+'</a>'
-    +'<a href="http://futures.e-capital.com.hk/" target="_blank" rel="noopener">'+esc(currentLang==="en"?"Futures & Options":"期貨及期權")+'</a>'
-    +'<a href="#/page/stock-ipo" data-spa>'+esc(currentLang==="en"?"IPO":"IPO 新股")+'</a></div>'
-    +'<div class="footer-col"><h4>'+esc(u.ft_news)+'</h4>'
-    +'<a href="#/page/news" data-spa>'+esc(currentLang==="en"?"News":"香港新聞")+'</a>'
-    +'<a href="#/page/report-daily" data-spa>'+esc(currentLang==="en"?"Daily Update":"每日評論")+'</a>'
-    +'<a href="#/page/report-stock" data-spa>'+esc(currentLang==="en"?"Stock Reports":"個股推薦")+'</a>'
-    +'<a href="#/page/report-view" data-spa>'+esc(currentLang==="en"?"CSC\'s View":"群益觀點")+'</a>'
-    +'<a href="#/page/shh-hk-mag" data-spa>'+esc(currentLang==="en"?"Monthly":"滬港通月刊")+'</a></div>'
-    +'<div class="footer-col"><h4>'+esc(u.ft_acct)+'</h4>'
-    +'<a href="#/page/stock-account-opening" data-spa>'+esc(currentLang==="en"?"Securities Account":"股票開戶")+'</a>'
-    +'<a href="#/page/futures-account" data-spa>'+esc(currentLang==="en"?"Futures Account":"期貨開戶")+'</a>'
-    +'<a href="#/page/stock-fee" data-spa>'+esc(currentLang==="en"?"Fee Schedule":"佣金及收費")+'</a>'
-    +'<a href="#/page/fund-deposit" data-spa>'+esc(currentLang==="en"?"Funds":"款項提存")+'</a>'
-    +'<a href="#/page/stock-faq" data-spa>'+esc(currentLang==="en"?"FAQ":"常見問題")+'</a></div>'
-    +'<div class="footer-col"><h4>'+esc(u.ft_legal)+'</h4>'
-    +'<a href="#/page/trade-statement" data-spa>'+esc(currentLang==="en"?"Trading Declaration":"網上交易聲明")+'</a>'
-    +'<a href="#/page/risk-disclosure" data-spa>'+esc(currentLang==="en"?"Risk Disclosure":"風險披露聲明")+'</a>'
-    +'<a href="#/page/privacy" data-spa>'+esc(currentLang==="en"?"Privacy":"個人私隱政策")+'</a></div>'
-    +'</div>'
-    +'<div class="footer-btm"><div class="footer-btm-text">'+esc(u.ft_copy)+'</div>'
-    +'<div style="display:flex;gap:8px"><a href="#/admin" data-spa style="font-size:11px;color:rgba(255,255,255,.3)">CMS</a></div>'
-    +'</div></div></footer>';
-}
-
-// ————————————————————— ROUTER —————————————————————
-function route(){
-  var hash = location.hash || "#/";
-  var app = document.getElementById("app");
-  buildNav();
-  closeMobile();
-
-  if(hash === "#/" || hash === "#" || hash === ""){
-    app.innerHTML = homeView() + footerView();
-    window.scrollTo(0,0);
-  } else if(hash.indexOf("#/page/") === 0){
-    var slug = hash.replace("#/page/","").split("?")[0];
-    app.innerHTML = pageView(slug) + footerView();
-    // Disable all legacy ASPX forms and javascript: links in rendered content
-    app.querySelectorAll('form').forEach(function(f){ f.addEventListener('submit', function(e){ e.preventDefault(); }); });
-    app.querySelectorAll('a[href^="javascript:"]').forEach(function(a){ a.setAttribute('href','#'); });
-    app.querySelectorAll('a[href*=".aspx"]').forEach(function(a){ a.setAttribute('href','#'); a.style.pointerEvents='none'; a.style.opacity='.4'; });
-    window.scrollTo(0,0);
-  } else if(hash === "#/admin"){
-    app.innerHTML = adminView();
-    window.scrollTo(0,0);
-  } else {
-    app.innerHTML = '<section class="subpage"><div class="mw"><h1>404</h1><p><a href="#/" data-spa>'+esc(T("home"))+'</a></p></div></section>' + footerView();
-  }
-
-  // Update lang highlight
-  document.querySelectorAll('[data-lang]').forEach(function(el){
-    el.classList.toggle('active', el.getAttribute('data-lang') === currentLang);
-  });
-  // Update html lang
-  document.documentElement.lang = currentLang === "zh-Hans" ? "zh-Hans" : currentLang === "en" ? "en" : "zh-Hant";
-}
-
-// ————————————————————— EVENTS —————————————————————
-window.addEventListener("hashchange", route);
-
-// Language switch
-document.addEventListener("click", function(e){
-  var langEl = e.target.closest("[data-lang]");
-  if(langEl){
-    e.preventDefault();
-    currentLang = langEl.getAttribute("data-lang");
-    localStorage.setItem("ecap_lang", currentLang);
-    route();
-    return;
-  }
-  // SPA link
-  var spaLink = e.target.closest("[data-spa]");
-  if(spaLink){
-    closeMobile();
-  }
-});
-
-// Nav scroll
-var nav = document.getElementById("mainNav");
-var navScrolled = false;
-window.addEventListener("scroll", function(){
-  var y = window.scrollY || window.pageYOffset;
-  if(y > 40 && !navScrolled){ nav.classList.add("scrolled"); navScrolled = true; }
-  else if(y <= 40 && navScrolled){ nav.classList.remove("scrolled"); navScrolled = false; }
-}, {passive:true});
-
-// Hamburger
-document.getElementById("navHam").addEventListener("click", function(){
-  document.getElementById("mobileMenu").classList.toggle("open");
-});
-function closeMobile(){ document.getElementById("mobileMenu").classList.remove("open"); }
-
-// ————————————————————— UTIL —————————————————————
-function esc(s){ if(!s) return ""; var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
-function escAttr(s){ return esc(s).replace(/"/g,"&quot;"); }
-function escHtml(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
-function showToast(msg){
-  var t = document.getElementById("toast");
-  t.textContent = msg; t.classList.add("show");
-  setTimeout(function(){ t.classList.remove("show"); }, 2500);
-}
 
 // CMS initialization
 _adminCurrentUser = sessionStorage.getItem("ecap_admin_user");

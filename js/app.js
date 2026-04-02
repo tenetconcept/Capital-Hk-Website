@@ -538,7 +538,7 @@ function route(){
   if(hash === "#/" || hash === "#" || hash === ""){
     app.innerHTML = homeView() + footerView();
     window.scrollTo(0,0);
-    if(typeof initHomeAnimations === 'function') setTimeout(initHomeAnimations, 50);
+    if(typeof window.initHomeAnimations === 'function') setTimeout(window.initHomeAnimations, 50);
   } else if(hash.indexOf("#/page/") === 0){
     var slug = hash.replace("#/page/","").split("?")[0];
     app.innerHTML = pageView(slug) + footerView();
@@ -548,8 +548,8 @@ function route(){
     app.querySelectorAll('a[href*=".aspx"]').forEach(function(a){ a.setAttribute('href','#'); a.style.pointerEvents='none'; a.style.opacity='.4'; });
     window.scrollTo(0,0);
   } else if(hash === "#/admin"){
-    if(typeof adminView === 'function'){
-      app.innerHTML = adminView();
+    if(typeof window.adminView === 'function'){
+      app.innerHTML = window.adminView();
     } else {
       app.innerHTML = '<div style="padding:200px 24px;text-align:center"><h2>CMS Loading...</h2></div>';
     }

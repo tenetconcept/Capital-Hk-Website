@@ -287,6 +287,15 @@ button{font-family:inherit;cursor:pointer}
 .cms-chpwd-box h4{font-size:15px;font-weight:700;margin-bottom:16px}
 .cms-add-user-box{background:var(--white);border-radius:var(--radius);padding:24px;border:1px solid rgba(0,0,0,.06);box-shadow:var(--shadow-sm);max-width:480px}
 .cms-add-user-box h4{font-size:15px;font-weight:700;margin-bottom:16px}
+.cms-insert-file-btn{font-size:11px;font-weight:500;padding:3px 10px;border-radius:100px;border:1.5px solid var(--border);background:var(--white);color:var(--text-sec);cursor:pointer;transition:all .2s;line-height:1.4}
+.cms-insert-file-btn:hover{border-color:var(--brand);color:var(--brand)}
+.cms-file-picker{position:fixed;z-index:9999;background:var(--white);border:1px solid rgba(0,0,0,.14);border-radius:var(--radius);box-shadow:0 8px 32px rgba(0,0,0,.18);min-width:280px;max-width:380px;overflow:hidden}
+.cfp-title{padding:10px 14px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:1px solid rgba(0,0,0,.06)}
+.cfp-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;font-size:13px;transition:background .15s;border-bottom:1px solid rgba(0,0,0,.04)}
+.cfp-item:hover{background:var(--bg-box);color:var(--brand)}
+.cfp-empty{padding:16px 14px;font-size:13px;color:var(--text-muted);line-height:1.6}
+.cfp-close{padding:9px 14px;font-size:12px;color:var(--text-muted);cursor:pointer;text-align:center;transition:background .15s}
+.cfp-close:hover{background:var(--bg-light)}
 .cms-preview-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:12px;display:flex;align-items:center;gap:6px}
 .cms-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;color:var(--text-muted);text-align:center;padding:40px}
 .cms-empty .empty-icon{font-size:48px;margin-bottom:16px;opacity:.5}
@@ -1073,7 +1082,7 @@ function adminView(){
     +'<div class="cms-main">'
     +'<div class="cms-main-header"><h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>CMS Content Manager</h3>'
     +'<div class="cms-header-acts">'
-    +'<button class="cms-preview-toggle" id="previewToggle" onclick="window._cmsTogglePreview()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Preview</button>'
+    +'<button class="cms-preview-toggle" id="previewToggle" onclick="window._cmsPreviewPage()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Preview</button>'
     +'<button class="admin-btn primary" onclick="window._cmsExport()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export</button>'
     +'<button class="admin-btn secondary" onclick="document.getElementById(\'cmsImportFile\').click()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Import</button>'
     +'<input type="file" id="cmsImportFile" accept=".json" style="display:none" onchange="window._cmsImport(event)"/>'
@@ -1133,11 +1142,20 @@ window._cmsFilter = function(q){
   });
 };
 
-window._cmsTogglePreview = function(){
-  _cmsPreviewOn = !_cmsPreviewOn;
-  var btn = document.getElementById('previewToggle');
-  if(btn) btn.classList.toggle('active', _cmsPreviewOn);
-  if(_cmsCurrentSlug) window._cmsEditPage(_cmsCurrentSlug);
+window._cmsPreviewPage = function(){
+  if(!_cmsCurrentSlug){ showToast("Select a page first"); return; }
+  var slug = _cmsCurrentSlug;
+  var bodyEl = document.getElementById('cms_b_'+slug+'_'+currentLang);
+  var titleEl = document.getElementById('cms_t_'+slug+'_'+currentLang);
+  var pg = getPage(slug, currentLang) || {};
+  var body = bodyEl ? bodyEl.value : (pg.body||'');
+  var title = titleEl ? titleEl.value : (pg.title||slug);
+  var css = '';
+  try{ css = document.querySelector('style').textContent; }catch(e){}
+  var pw = window.open('', '_blank', 'width=960,height=720,scrollbars=yes,resizable=yes');
+  if(!pw){ showToast("Pop-up blocked. Allow pop-ups and try again."); return; }
+  pw.document.write('<!DOCTYPE html><html lang="'+currentLang+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Preview — '+title+'</title><style>'+css+'</style></head><body style="padding-top:0"><div style="background:#f59e0b;color:#fff;font-size:12px;font-weight:600;padding:6px 20px;text-align:center;letter-spacing:.5px">PREVIEW MODE — unsaved changes included</div><section class="subpage"><div class="mw"><div class="subpage-header"><div class="breadcrumb">Preview</div><h1>'+title+'</h1></div><div class="subpage-body">'+body+'</div></div></section></body></html>');
+  pw.document.close();
 };
 
 window._cmsEditPage = function(slug){
@@ -1152,7 +1170,13 @@ window._cmsEditPage = function(slug){
     var body = pg ? pg.body : '';
     html += '<div class="cms-field-group"><h4>'+esc(langNames[lang])+' ('+lang+')</h4>'
       +'<div class="admin-field"><label>Title</label><input type="text" id="cms_t_'+slug+'_'+lang+'" value="'+escAttr(title)+'" oninput="window._cmsLivePreview(\''+slug+'\')"/></div>'
-      +'<div class="admin-field"><label>Body (HTML)</label><textarea id="cms_b_'+slug+'_'+lang+'" style="min-height:160px;font-family:monospace;font-size:13px" oninput="window._cmsLivePreview(\''+slug+'\')">'+escHtml(body)+'</textarea></div></div>';
+      +'<div class="admin-field">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
+      +'<label style="margin:0">Body (HTML)</label>'
+      +'<button class="cms-insert-file-btn" data-slug="'+slug+'" data-lang="'+lang+'" onclick="window._cmsShowFilePicker(this)">Insert Download Link</button>'
+      +'</div>'
+      +'<textarea id="cms_b_'+slug+'_'+lang+'" style="min-height:160px;font-family:monospace;font-size:13px">'+ escHtml(body)+'</textarea>'
+      +'</div></div>';
   });
 
   html += '<div style="display:flex;gap:8px;margin-top:8px">'
@@ -1284,8 +1308,8 @@ window._cmsFilesView = function(){
     +'<p style="color:var(--text-muted);font-size:13px;margin-bottom:20px">Upload files (stored in browser) or add external links. Copy the HTML snippet to paste into any page body.</p>'
     +'<div class="cms-upload-zone">'
     +'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom:8px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>'
-    +'<p>Drag & drop or click to upload PDF, DOC, DOCX, or any file (max 2MB)</p>'
-    +'<input type="file" id="cmsFileInput" style="display:none" onchange="window._cmsFileUpload(event)"/>'
+    +'<p>Upload PDF, DOC, or DOCX files (max 2MB each)</p>'
+    +'<input type="file" id="cmsFileInput" accept=".pdf,.doc,.docx" style="display:none" onchange="window._cmsFileUpload(event)"/>'
     +'<button class="admin-btn primary" onclick="window._cmsChooseFile()">Choose File</button>'
     +'</div>'
     +'<div class="cms-add-url-row">'
@@ -1301,6 +1325,11 @@ window._cmsChooseFile = function(){ document.getElementById('cmsFileInput').clic
 window._cmsFileUpload = function(e){
   var file = e.target.files[0];
   if(!file) return;
+  var allowed = ["application/pdf","application/msword","application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+  var allowedExt = /\.(pdf|doc|docx)$/i;
+  if(!allowed.includes(file.type) && !allowedExt.test(file.name)){
+    showToast("Only PDF, DOC, DOCX files are allowed"); e.target.value=""; return;
+  }
   if(file.size > 2*1024*1024){ showToast("File too large (max 2MB)"); return; }
   var reader = new FileReader();
   reader.onload = function(ev){
@@ -1437,6 +1466,79 @@ window._cmsUserDelete = function(idx){
   saveCmsUsers(users);
   showToast("Removed: "+username);
   window._cmsUsersView();
+};
+
+
+// ————————————————————— FILE PICKER FOR EDITOR —————————————————————
+window._cmsShowFilePicker = function(btn){
+  var existingPicker = document.getElementById('cmsFilePicker');
+  if(existingPicker){ existingPicker.remove(); return; }
+  var slug = btn.getAttribute('data-slug');
+  var lang = btn.getAttribute('data-lang');
+  var textareaId = 'cms_b_'+slug+'_'+lang;
+  var files = getCmsFiles();
+
+  var div = document.createElement('div');
+  div.id = 'cmsFilePicker';
+  div.className = 'cms-file-picker';
+
+  var inner = '';
+  if(files.length === 0){
+    inner += '<div class="cfp-title">Insert Download Link</div>'
+      +'<div class="cfp-empty">No files yet.<br/>Go to the <strong>Downloads</strong> tab to upload PDF/DOC files first.</div>';
+  } else {
+    inner += '<div class="cfp-title">Select file to insert (中文/English)</div>';
+    files.forEach(function(f, i){
+      var icon = f.type==='external'
+        ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>'
+        : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+      inner += '<div class="cfp-item" data-file-idx="'+i+'" data-ta-id="'+textareaId+'">'+icon+'<span>'+esc(f.name)+'</span></div>';
+    });
+  }
+  inner += '<div class="cfp-close">Cancel</div>';
+  div.innerHTML = inner;
+
+  // Event delegation for item clicks
+  div.addEventListener('click', function(e){
+    var item = e.target.closest('.cfp-item');
+    if(item){
+      var idx = parseInt(item.getAttribute('data-file-idx'));
+      var taId = item.getAttribute('data-ta-id');
+      window._cmsInsertFile(taId, idx);
+      div.remove();
+      return;
+    }
+    if(e.target.closest('.cfp-close')){ div.remove(); return; }
+  });
+
+  // Position picker below the button
+  var rect = btn.getBoundingClientRect();
+  document.body.appendChild(div);
+  var pw = div.offsetWidth;
+  var left = Math.max(8, Math.min(rect.right - pw, window.innerWidth - pw - 8));
+  div.style.top = (rect.bottom + window.scrollY + 6)+'px';
+  div.style.left = left+'px';
+
+  // Close on outside click
+  setTimeout(function(){
+    function outsideClick(e){ if(!div.contains(e.target) && e.target!==btn){ div.remove(); document.removeEventListener('click', outsideClick); } }
+    document.addEventListener('click', outsideClick);
+  }, 10);
+};
+
+window._cmsInsertFile = function(textareaId, idx){
+  var f = getCmsFiles()[idx];
+  if(!f) return;
+  var snippet = f.isLocal
+    ? '<a href="'+f.url+'" download="'+f.name.replace(/"/g,'&quot;')+'">'+f.name+'</a>'
+    : '<a href="'+f.url+'" target="_blank" rel="noopener">'+f.name+'</a>';
+  var ta = document.getElementById(textareaId);
+  if(!ta){ showToast('Textarea not found'); return; }
+  var s = ta.selectionStart, en = ta.selectionEnd;
+  ta.value = ta.value.substring(0,s) + snippet + ta.value.substring(en);
+  ta.selectionStart = ta.selectionEnd = s + snippet.length;
+  ta.focus();
+  showToast('Inserted: '+f.name);
 };
 
 

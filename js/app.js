@@ -483,6 +483,31 @@ function ctaSection(u){
   return h;
 }
 
+// ---------- NEWS HUB (rd.group newsroom style) ----------
+function newsHubContent(){
+  var categories = [
+    { icon: ICONS.chart, title: L('Daily Market Commentary','每日市场评论','每日市場評論'), desc: L('Daily analysis on Hong Kong and A-share markets.','每日港股及A股市场分析报告。','每日港股及A股市場分析報告。'), page:'report-daily' },
+    { icon: ICONS.trending, title: L('IPO Reports','新股上市分析','新股上市分析'), desc: L('Latest IPO listings and subscription analysis.','最新新股上市分析及认购资讯。','最新新股上市分析及認購資訊。'), page:'report-ipo' },
+    { icon: ICONS.award, title: L('Stock Recommendations','个股推荐报告','個股推薦報告'), desc: L('Individual stock research and recommendations.','精选个股研究推荐报告。','精選個股研究推薦報告。'), page:'report-stock' },
+    { icon: ICONS.monitor, title: L("CSC's View",'群益观点','群益觀點'), desc: L('Our expert views on market trends.','群益专家对市况走势的独到见解。','群益專家對市況走勢的獨到見解。'), page:'report-view' },
+    { icon: ICONS.globe, title: L('Stock Connect Magazine','沪港通月刊','滬港通月刊'), desc: L('Monthly updates on Shanghai-HK Stock Connect.','每月沪港通最新动态。','每月滬港通最新動態。'), page:'shh-hk-mag' },
+    { icon: ICONS.zap, title: L('A-Share Research','A股研究报告','A股研究報告'), desc: L('Research reports on A-share market.','A股市场研究报告。','A股市場研究報告。'), page:'shh-hk-report' }
+  ];
+  var h = '<div class="news-hub-grid">';
+  categories.forEach(function(cat,i){
+    h += '<a href="#/page/' + escAttr(cat.page) + '" class="news-hub-card" data-spa style="animation-delay:' + (i*0.06+0.05).toFixed(2) + 's">';
+    h += '<div class="news-hub-card-icon">' + cat.icon + '</div>';
+    h += '<div class="news-hub-card-body">';
+    h += '<h3 class="news-hub-card-title">' + esc(cat.title) + '</h3>';
+    h += '<p class="news-hub-card-desc">' + esc(cat.desc) + '</p>';
+    h += '</div>';
+    h += '<svg class="news-hub-arrow" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>';
+    h += '</a>';
+  });
+  h += '</div>';
+  return h;
+}
+
 // ---------- PAGE VIEW (rd.group-style) ----------
 function findSiblingPages(slug){
   var items = SITE.nav[currentLang] || SITE.nav["zh-Hant"];
@@ -541,7 +566,11 @@ function pageView(slug){
   // Content area
   h += '<div class="subpage-content"><div class="mw">';
   h += '<div class="subpage-card">';
-  h += '<div class="subpage-body">' + pg.body + '</div>';
+  if(slug === 'news'){
+    h += '<div class="subpage-body">' + newsHubContent() + '</div>';
+  } else {
+    h += '<div class="subpage-body">' + pg.body + '</div>';
+  }
   h += '</div>';
   h += '</div></div>';
 

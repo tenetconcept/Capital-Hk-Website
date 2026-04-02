@@ -319,7 +319,7 @@
 }
 .subpage-body .dl-link:hover { background: var(--bg-accent); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
 
-/* Legacy ASPX link styling */
+/* Legacy ASPX link styling — pagination */
 .subpage-body .navN, .subpage-body .navL, .subpage-body .navF {
   color: var(--brand);
   font-size: 13px;
@@ -335,6 +335,18 @@
   background: var(--brand);
   color: var(--white);
   border-color: var(--brand);
+}
+/* Pagination row */
+.subpage-body .navFx, .subpage-body .navPx, .subpage-body .navMain {
+  font-size: 13px;
+  color: var(--text-muted);
+  padding: 6px 14px;
+  display: inline-block;
+  margin: 2px;
+}
+.subpage-body .navMain {
+  font-weight: 600;
+  color: var(--text);
 }
 
 /* Images in subpage body */
@@ -376,17 +388,92 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Staggered card animation */
+/* Staggered card animation — each table wraps one report row */
 .subpage-body tr {
   animation: fadeInUp .5s var(--ease) both;
 }
-.subpage-body table:nth-of-type(2) tr:nth-child(1) { animation-delay: .05s; }
-.subpage-body table:nth-of-type(2) tr:nth-child(2) { animation-delay: .1s; }
-.subpage-body table:nth-of-type(2) tr:nth-child(3) { animation-delay: .15s; }
-.subpage-body table:nth-of-type(2) tr:nth-child(4) { animation-delay: .2s; }
-.subpage-body table:nth-of-type(2) tr:nth-child(5) { animation-delay: .25s; }
-.subpage-body table:nth-of-type(2) tr:nth-child(6) { animation-delay: .3s; }
-.subpage-body table:nth-of-type(2) tr:nth-child(7) { animation-delay: .35s; }
-.subpage-body table:nth-of-type(2) tr:nth-child(8) { animation-delay: .4s; }
-.subpage-body table:nth-of-type(2) tr:nth-child(9) { animation-delay: .45s; }
-.subpage-body table:nth-of-type(2) tr:nth-child(10) { animation-delay: .5s; }
+.subpage-body table:nth-of-type(2) tr { animation-delay: .05s; }
+.subpage-body table:nth-of-type(3) tr { animation-delay: .1s; }
+.subpage-body table:nth-of-type(4) tr { animation-delay: .15s; }
+.subpage-body table:nth-of-type(5) tr { animation-delay: .2s; }
+.subpage-body table:nth-of-type(6) tr { animation-delay: .25s; }
+.subpage-body table:nth-of-type(7) tr { animation-delay: .3s; }
+.subpage-body table:nth-of-type(8) tr { animation-delay: .35s; }
+.subpage-body table:nth-of-type(9) tr { animation-delay: .4s; }
+.subpage-body table:nth-of-type(10) tr { animation-delay: .45s; }
+.subpage-body table:nth-of-type(11) tr { animation-delay: .5s; }
+
+/* ===== News Hub Grid (rd.group card style) ===== */
+.news-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+.news-hub-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(247, 248, 250, .8);
+  border-radius: 16px;
+  padding: 24px;
+  transition: all .35s var(--ease);
+  position: relative;
+  overflow: hidden;
+  animation: fadeInUp .5s var(--ease) both;
+  text-decoration: none;
+}
+.news-hub-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  background: var(--brand-gradient);
+  opacity: 0;
+  transition: opacity .35s var(--ease);
+  z-index: 0;
+}
+.news-hub-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(204,51,0,.15);
+}
+.news-hub-card:hover::before { opacity: 1; }
+.news-hub-card > * { position: relative; z-index: 1; }
+.news-hub-card:hover .news-hub-card-icon { background: rgba(255,255,255,.2); color: var(--white); }
+.news-hub-card:hover .news-hub-card-title,
+.news-hub-card:hover .news-hub-card-desc { color: var(--white); }
+.news-hub-card:hover .news-hub-arrow { opacity: 1; color: var(--white); }
+.news-hub-card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--bg-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--brand);
+  transition: all .35s var(--ease);
+}
+.news-hub-card-icon svg { width: 24px; height: 24px; }
+.news-hub-card-body { flex: 1; }
+.news-hub-card-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+  transition: color .35s var(--ease);
+}
+.news-hub-card-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  transition: color .35s var(--ease);
+}
+.news-hub-arrow {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--brand);
+  opacity: 0;
+  transition: all .35s var(--ease);
+}

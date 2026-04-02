@@ -56,6 +56,8 @@
   .subpage-body tr { padding: 16px; }
   .subpage-body td:first-child { font-size: 14px; }
 
+  .news-hub-grid { grid-template-columns: 1fr; }
+
   .banner-sec { padding: 32px 0; }
   .banner-slide img { aspect-ratio: 2 / 1; }
 

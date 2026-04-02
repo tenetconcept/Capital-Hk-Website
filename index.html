@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>群益證券(香港) — e-Capital Securities</title>
+<meta name="description" content="群益證券(香港)有限公司 — 香港持牌證券商"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --brand:#CC3300;--brand-dark:#A02800;--brand-darker:#7A1A1A;
+  --brand-gradient:linear-gradient(135deg,#CC3300,#E8450A);
+  --bg-body:#FAFAFA;--bg-pink:#F6EEEE;--bg-box:#FFE6E7;--bg-accent:#FFDEDE;
+  --bg-light:#FFF5F5;--bg-input:#FFF1F1;--border:#E8C4C4;
+  --text:#1A1A1A;--text-sec:#555;--text-muted:#888;--white:#FFF;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06);--shadow-md:0 4px 20px rgba(0,0,0,.08);
+  --shadow-lg:0 12px 40px rgba(0,0,0,.12);
+  --radius:16px;--radius-sm:8px;--nav-h:72px;--mod-max:1200px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{font:16px/1.7 "Noto Sans TC","Noto Sans SC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text);background:var(--bg-body)}
+a{color:var(--brand);text-decoration:none;transition:color .2s}
+a:hover{color:var(--brand-dark)}
+img{max-width:100%;height:auto;display:block;border:0}
+ul{list-style:none}
+button{font-family:inherit;cursor:pointer}
+.mw{max-width:var(--mod-max);margin:0 auto;padding:0 24px}
+
+/* ===== NAV ===== */
+.nav{position:fixed;top:0;left:0;right:0;z-index:9999;height:var(--nav-h);transition:background .3s,box-shadow .3s}
+.nav.scrolled{background:rgba(255,255,255,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 1px 20px rgba(0,0,0,.06)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:var(--nav-h);gap:8px}
+.nav-logo{display:flex;align-items:center;gap:12px;flex-shrink:0}
+.nav-logo img{height:38px;width:auto}
+.nav-logo-text{font-size:13px;font-weight:600;color:var(--text);line-height:1.3}
+.nav-logo-text small{display:block;font-size:10px;font-weight:400;color:var(--text-muted)}
+.nav-links{display:flex;align-items:center;gap:4px}
+.nav-links>li{position:relative}
+.nav-links>li>a{font-size:13px;font-weight:500;color:var(--text);padding:10px 12px;display:block;transition:color .2s;white-space:nowrap}
+.nav-links>li>a:hover{color:var(--brand)}
+/* DROPDOWN FIX — hover bridge with padding-top */
+.nav-links li .dropdown{
+  display:none;position:absolute;top:100%;left:50%;transform:translateX(-50%);
+  min-width:230px;padding-top:8px;z-index:9999;
+}
+.nav-links li .dropdown-inner{
+  background:var(--white);border-radius:var(--radius-sm);
+  box-shadow:var(--shadow-lg);padding:8px 0;border:1px solid rgba(0,0,0,.06);
+}
+.nav-links li:hover>.dropdown{display:block}
+.nav-links li .dropdown-inner::before{
+  content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
+  border:8px solid transparent;border-bottom-color:var(--white);border-top:0;
+}
+.nav-links li .dropdown a{display:block;padding:9px 20px;font-size:13px;color:var(--text);transition:background .15s,color .15s}
+.nav-links li .dropdown a:hover{background:var(--bg-light);color:var(--brand)}
+/* Sub-dropdown for nested items */
+.nav-links .dropdown .has-sub{position:relative}
+.nav-links .dropdown .has-sub>.sub-dropdown{display:none;position:absolute;top:-8px;left:100%;padding-left:4px;min-width:200px}
+.nav-links .dropdown .has-sub:hover>.sub-dropdown{display:block}
+.nav-links .dropdown .has-sub>.sub-dropdown .dropdown-inner{padding:6px 0}
+.nav-cta{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.nav-lang{font-size:11px;color:var(--text-muted);display:flex;gap:4px;align-items:center}
+.nav-lang a{color:var(--text-muted);font-size:11px}
+.nav-lang a:hover,.nav-lang a.active{color:var(--brand);font-weight:600}
+.btn-o{font-size:12px;font-weight:500;padding:7px 16px;border:1.5px solid var(--brand);color:var(--brand);border-radius:100px;background:0 0;transition:all .2s;white-space:nowrap}
+.btn-o:hover{background:var(--brand);color:var(--white)}
+.btn-p{font-size:12px;font-weight:600;padding:7px 16px;background:var(--brand-gradient);color:var(--white);border:none;border-radius:100px;transition:opacity .2s;display:inline-block;white-space:nowrap}
+.btn-p:hover{opacity:.9;color:var(--white)}
+.nav-ham{display:none;flex-direction:column;gap:5px;background:0 0;border:0;padding:4px}
+.nav-ham span{display:block;width:22px;height:2px;background:var(--text);border-radius:2px}
+/* Mobile nav */
+.mobile-menu{display:none;position:fixed;top:var(--nav-h);left:0;right:0;bottom:0;background:var(--white);z-index:9998;overflow-y:auto;padding:16px 24px 40px}
+.mobile-menu.open{display:block}
+.mobile-menu a{display:block;padding:10px 0;font-size:15px;color:var(--text);border-bottom:1px solid rgba(0,0,0,.05)}
+.mobile-menu .mm-sub{padding-left:16px}
+.mobile-menu .mm-sub a{font-size:13px;color:var(--text-sec)}
+
+/* ===== HERO ===== */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden;background:linear-gradient(170deg,var(--bg-pink) 0%,var(--white) 50%,var(--bg-light) 100%)}
+.hero::before{content:"";position:absolute;top:-30%;right:-20%;width:800px;height:800px;border-radius:50%;background:radial-gradient(circle,rgba(204,51,0,.06) 0%,transparent 70%);pointer-events:none}
+.hero-inner{display:flex;align-items:center;gap:60px;padding-top:var(--nav-h)}
+.hero-content{flex:1;min-width:0}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--bg-box);border:1px solid var(--border);border-radius:100px;padding:6px 16px 6px 8px;font-size:12px;font-weight:500;color:var(--brand);margin-bottom:24px}
+.hero-badge-icon{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;background:var(--brand);color:var(--white);border-radius:50%;font-size:11px;flex-shrink:0}
+.hero h1{font-size:clamp(34px,5vw,54px);font-weight:700;line-height:1.2;letter-spacing:-.5px;margin-bottom:20px}
+.hero h1 .gt{background:var(--brand-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{font-size:17px;line-height:1.8;color:var(--text-sec);max-width:520px;margin-bottom:36px}
+.hero-acts{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.btn-hero{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;font-size:15px;font-weight:600;border:none;border-radius:100px;transition:transform .2s,box-shadow .2s}
+.btn-hero.primary{background:var(--brand-gradient);color:var(--white);box-shadow:0 4px 20px rgba(204,51,0,.3)}
+.btn-hero.primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(204,51,0,.35);color:var(--white)}
+.btn-hero.secondary{background:var(--white);color:var(--text);border:1.5px solid var(--border)}
+.btn-hero.secondary:hover{border-color:var(--brand);color:var(--brand)}
+.hero-vis{flex:0 0 400px;position:relative}
+.hero-card{background:linear-gradient(135deg,var(--bg-pink),var(--bg-box));border-radius:24px;padding:32px;min-height:340px;display:flex;flex-direction:column;justify-content:center;align-items:center;box-shadow:var(--shadow-lg);text-align:center}
+.hero-card img{width:180px;margin-bottom:16px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.15))}
+.hero-float{position:absolute;bottom:-20px;left:-30px;background:var(--white);border-radius:var(--radius);padding:14px 18px;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:10px;animation:float 4s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.hero-float .ic{width:36px;height:36px;border-radius:50%;background:var(--bg-box);display:flex;align-items:center;justify-content:center;font-size:16px}
+
+/* ===== MARQUEE ===== */
+.marquee-sec{padding:36px 0;background:var(--white);border-top:1px solid rgba(0,0,0,.04);border-bottom:1px solid rgba(0,0,0,.04);overflow:hidden}
+.marquee-label{text-align:center;font-size:12px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:20px}
+.marquee-track{display:flex;gap:50px;animation:mq 30s linear infinite;width:max-content;align-items:center}
+@keyframes mq{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.marquee-item{white-space:nowrap;font-size:14px;color:#999;padding:0 16px;font-weight:500}
+
+/* ===== SECTIONS ===== */
+.section{padding:100px 0}
+.sec-label{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--brand);margin-bottom:16px}
+.sec-label::before{content:"";display:block;width:20px;height:2px;background:var(--brand-gradient);border-radius:2px}
+.sec-title{font-size:clamp(26px,3.5vw,40px);font-weight:700;line-height:1.25;margin-bottom:16px;letter-spacing:-.3px}
+.sec-desc{font-size:16px;color:var(--text-sec);max-width:600px;line-height:1.8}
+
+/* ===== SERVICE BLOCKS ===== */
+.svc-block{display:flex;align-items:center;gap:80px;padding:80px 0}
+.svc-block:nth-child(even){flex-direction:row-reverse}
+.svc-text{flex:1;min-width:0}
+.svc-vis{flex:0 0 400px}
+.svc-vis-in{background:linear-gradient(135deg,var(--bg-pink),var(--bg-box));border-radius:24px;padding:40px;display:flex;align-items:center;justify-content:center;aspect-ratio:1;box-shadow:var(--shadow-md)}
+.svc-feats{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:32px}
+.svc-feat{display:flex;gap:12px;align-items:flex-start}
+.svc-feat-ic{width:36px;height:36px;border-radius:10px;background:var(--bg-box);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.svc-feat-tx{font-size:14px;font-weight:500;line-height:1.5}
+.svc-feat-tx span{display:block;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:2px}
+
+/* ===== STATS ===== */
+.stats-sec{background:linear-gradient(135deg,var(--brand-darker),var(--brand));color:var(--white);padding:60px 0}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:40px;text-align:center}
+.stat-num{font-size:42px;font-weight:700;line-height:1.2}
+.stat-lbl{font-size:14px;opacity:.8;margin-top:4px}
+
+/* ===== NEWS ===== */
+.news-hdr{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:40px}
+.news-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.news-card{background:var(--white);border-radius:var(--radius);overflow:hidden;border:1px solid rgba(0,0,0,.04);transition:transform .3s,box-shadow .3s}
+.news-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.news-card-img{width:100%;aspect-ratio:16/9;background:var(--bg-box);display:flex;align-items:center;justify-content:center;font-size:32px}
+.news-card-body{padding:24px}
+.news-card-date{font-size:12px;color:var(--text-muted);margin-bottom:8px}
+.news-card-title{font-size:16px;font-weight:600;line-height:1.5;margin-bottom:8px}
+.news-card-title a{color:var(--text)}
+.news-card-title a:hover{color:var(--brand)}
+.news-card-ex{font-size:13px;color:var(--text-muted);line-height:1.6}
+.link-arr{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:var(--brand)}
+.link-arr:hover{gap:10px}
+.link-arr::after{content:"\2192";transition:margin-left .2s}
+
+/* ===== CTA ===== */
+.cta-sec{padding:80px 0}
+.cta-card{background:linear-gradient(135deg,var(--brand-darker),var(--brand),#E8450A);border-radius:24px;padding:64px;color:var(--white);display:flex;align-items:center;gap:60px;position:relative;overflow:hidden}
+.cta-card::before{content:"";position:absolute;top:-50%;right:-20%;width:600px;height:600px;border-radius:50%;background:rgba(255,255,255,.05);pointer-events:none}
+.cta-cont{flex:1;position:relative;z-index:1}
+.cta-cont h2{font-size:32px;font-weight:700;margin-bottom:16px}
+.cta-cont p{font-size:16px;opacity:.85;margin-bottom:32px;max-width:450px;line-height:1.8}
+.cta-acts{display:flex;gap:16px;flex-wrap:wrap}
+.btn-w{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;background:var(--white);color:var(--brand);font-size:15px;font-weight:600;border:none;border-radius:100px;transition:transform .2s,box-shadow .2s}
+.btn-w:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,.15);color:var(--brand-dark)}
+.btn-gw{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;background:0 0;color:var(--white);font-size:15px;font-weight:500;border:1.5px solid rgba(255,255,255,.4);border-radius:100px;transition:border-color .2s,background .2s}
+.btn-gw:hover{border-color:var(--white);background:rgba(255,255,255,.1);color:var(--white)}
+.cta-vis{flex:0 0 280px;position:relative;z-index:1}
+.cta-steps{display:flex;flex-direction:column;gap:16px}
+.cta-step{display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.12);border-radius:var(--radius-sm);padding:14px 18px;backdrop-filter:blur(8px)}
+.cta-step-n{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+
+/* ===== SUBPAGE ===== */
+.subpage{padding:120px 0 80px;min-height:80vh}
+.subpage-header{margin-bottom:48px;padding-bottom:24px;border-bottom:2px solid var(--border)}
+.subpage-header h1{font-size:clamp(28px,3.5vw,38px);font-weight:700;margin-bottom:8px}
+.subpage-header .breadcrumb{font-size:13px;color:var(--text-muted)}
+.subpage-header .breadcrumb a{color:var(--brand)}
+.subpage-body{font-size:15px;line-height:1.9;color:var(--text-sec)}
+.subpage-body h2{font-size:22px;font-weight:600;color:var(--text);margin:32px 0 16px}
+.subpage-body h3{font-size:18px;font-weight:600;color:var(--text);margin:24px 0 12px}
+.subpage-body p{margin-bottom:16px}
+.subpage-body ul{margin:12px 0 16px 24px;list-style:disc}
+.subpage-body ul li{margin-bottom:6px}
+.subpage-body table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px}
+.subpage-body th{background:var(--brand);color:var(--white);padding:10px 14px;text-align:left;font-weight:600}
+.subpage-body td{padding:10px 14px;border-bottom:1px solid var(--border)}
+.subpage-body tr:nth-child(even){background:var(--bg-light)}
+.subpage-body .info-card{background:var(--bg-light);border:1px solid var(--border);border-radius:var(--radius-sm);padding:24px;margin:20px 0}
+.subpage-body .dl-link{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:var(--bg-box);border:1px solid var(--border);border-radius:var(--radius-sm);margin:4px;font-size:13px;color:var(--brand);font-weight:500;transition:background .2s}
+.subpage-body .dl-link:hover{background:var(--bg-accent)}
+
+/* ===== CMS ADMIN ===== */
+.admin{padding:100px 0 60px;min-height:100vh;background:var(--bg-light)}
+.admin-header{margin-bottom:32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.admin-header h1{font-size:28px;font-weight:700}
+.admin-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.admin-tab{padding:8px 20px;border-radius:100px;font-size:13px;font-weight:500;border:1.5px solid var(--border);background:var(--white);color:var(--text-sec);transition:all .2s}
+.admin-tab:hover,.admin-tab.active{background:var(--brand);color:var(--white);border-color:var(--brand)}
+.admin-card{background:var(--white);border-radius:var(--radius);padding:24px;margin-bottom:16px;border:1px solid rgba(0,0,0,.06);box-shadow:var(--shadow-sm)}
+.admin-card h3{font-size:16px;font-weight:600;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.admin-field{margin-bottom:16px}
+.admin-field label{display:block;font-size:12px;font-weight:600;color:var(--text-sec);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.admin-field input,.admin-field textarea,.admin-field select{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--bg-input);transition:border-color .2s}
+.admin-field input:focus,.admin-field textarea:focus{outline:none;border-color:var(--brand)}
+.admin-field textarea{min-height:120px;resize:vertical}
+.admin-actions{display:flex;gap:8px;flex-wrap:wrap}
+.admin-btn{padding:8px 20px;border-radius:100px;font-size:13px;font-weight:500;border:none;transition:all .2s}
+.admin-btn.primary{background:var(--brand-gradient);color:var(--white)}
+.admin-btn.primary:hover{opacity:.9}
+.admin-btn.secondary{background:var(--white);color:var(--text);border:1.5px solid var(--border)}
+.admin-btn.secondary:hover{border-color:var(--brand);color:var(--brand)}
+.admin-btn.danger{background:#dc3545;color:var(--white)}
+.admin-btn.danger:hover{opacity:.9}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:var(--white);padding:14px 24px;border-radius:var(--radius-sm);font-size:14px;z-index:99999;transform:translateY(100px);opacity:0;transition:all .3s}
+.toast.show{transform:translateY(0);opacity:1}
+
+/* ===== ADMIN LOGIN ===== */
+.admin-login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:120px 24px 60px;background:linear-gradient(170deg,var(--bg-pink) 0%,var(--white) 50%,var(--bg-light) 100%)}
+.admin-login-box{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow-lg);padding:48px 40px;width:100%;max-width:400px;text-align:center}
+.admin-login-box .login-icon{width:64px;height:64px;border-radius:50%;background:var(--bg-box);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px}
+.admin-login-box h2{font-size:22px;font-weight:700;margin-bottom:8px}
+.admin-login-box .login-sub{font-size:13px;color:var(--text-muted);margin-bottom:28px}
+.admin-login-box .login-field{text-align:left;margin-bottom:16px;position:relative}
+.admin-login-box .login-field label{display:block;font-size:12px;font-weight:600;color:var(--text-sec);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.admin-login-box .login-field input{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--bg-input);transition:border-color .2s}
+.admin-login-box .login-field input:focus{outline:none;border-color:var(--brand)}
+.admin-login-box .login-btn{width:100%;padding:13px;background:var(--brand-gradient);color:var(--white);border:none;border-radius:100px;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;transition:opacity .2s;margin-top:8px}
+.admin-login-box .login-btn:hover{opacity:.9}
+.admin-login-box .login-btn:disabled{opacity:.5;cursor:default}
+.admin-login-box .login-err{color:#dc3545;font-size:13px;margin-top:12px;min-height:20px}
+.admin-login-box .login-hint{font-size:11px;color:var(--text-muted);margin-top:16px;padding-top:16px;border-top:1px solid rgba(0,0,0,.06)}
+
+/* ===== CMS REDESIGN ===== */
+.cms-layout{display:flex;gap:0;min-height:calc(100vh - var(--nav-h));padding-top:var(--nav-h)}
+.cms-sidebar{width:280px;background:var(--white);border-right:1px solid rgba(0,0,0,.06);padding:24px 0;overflow-y:auto;flex-shrink:0;position:sticky;top:var(--nav-h);height:calc(100vh - var(--nav-h))}
+.cms-sidebar-hdr{padding:0 20px 16px;border-bottom:1px solid rgba(0,0,0,.06)}
+.cms-sidebar-hdr h2{font-size:16px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.cms-sidebar-hdr p{font-size:11px;color:var(--text-muted)}
+.cms-search{padding:12px 20px}
+.cms-search input{width:100%;padding:9px 14px 9px 36px;border:1.5px solid var(--border);border-radius:100px;font-size:13px;font-family:inherit;background:var(--bg-input) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cline x1='21' y1='21' x2='16.65' y2='16.65'/%3E%3C/svg%3E") 12px center no-repeat;transition:border-color .2s}
+.cms-search input:focus{outline:none;border-color:var(--brand)}
+.cms-page-list{padding:8px 12px}
+.cms-page-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-sm);cursor:pointer;transition:background .15s;font-size:13px;color:var(--text-sec)}
+.cms-page-item:hover{background:var(--bg-light)}
+.cms-page-item.active{background:var(--bg-box);color:var(--brand);font-weight:600}
+.cms-page-item .page-dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0}
+.cms-page-item.active .page-dot{background:var(--brand)}
+.cms-page-item.edited .page-dot{background:#28a745}
+.cms-page-item .page-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cms-main{flex:1;background:var(--bg-body);min-width:0;overflow-y:auto}
+.cms-main-header{background:var(--white);border-bottom:1px solid rgba(0,0,0,.06);padding:16px 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;position:sticky;top:0;z-index:10}
+.cms-main-header h3{font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px}
+.cms-main-header .cms-header-acts{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.cms-editor-area{padding:24px 32px}
+.cms-lang-tabs{display:flex;gap:4px;margin-bottom:20px}
+.cms-lang-tab{padding:8px 18px;border-radius:100px;font-size:12px;font-weight:500;border:1.5px solid var(--border);background:var(--white);color:var(--text-sec);cursor:pointer;transition:all .2s}
+.cms-lang-tab:hover,.cms-lang-tab.active{background:var(--brand);color:var(--white);border-color:var(--brand)}
+.cms-field-group{background:var(--white);border-radius:var(--radius);padding:24px;margin-bottom:16px;border:1px solid rgba(0,0,0,.06);box-shadow:var(--shadow-sm)}
+.cms-field-group h4{font-size:13px;font-weight:600;color:var(--text-sec);margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.cms-field-group h4::before{content:"";width:3px;height:14px;background:var(--brand-gradient);border-radius:2px}
+.cms-preview-toggle{display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:100px;font-size:12px;font-weight:500;border:1.5px solid var(--border);background:var(--white);color:var(--text-sec);cursor:pointer;transition:all .2s}
+.cms-preview-toggle.active{background:var(--brand);color:var(--white);border-color:var(--brand)}
+.cms-preview-panel{background:var(--white);border:2px dashed var(--border);border-radius:var(--radius);padding:32px;margin-top:20px;min-height:200px}
+.cms-preview-panel .subpage-body{all:unset}
+.cms-preview-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.cms-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;color:var(--text-muted);text-align:center;padding:40px}
+.cms-empty .empty-icon{font-size:48px;margin-bottom:16px;opacity:.5}
+.cms-empty p{font-size:14px;max-width:300px;line-height:1.7}
+@media(max-width:768px){
+  .cms-layout{flex-direction:column}
+  .cms-sidebar{width:100%;position:relative;top:0;height:auto;max-height:300px;border-right:0;border-bottom:1px solid rgba(0,0,0,.06)}
+  .cms-editor-area{padding:16px}
+  .cms-main-header{padding:12px 16px}
+  .admin-login-box{padding:32px 24px}
+}
+
+/* ===== FOOTER ===== */
+.footer{background:var(--text);color:rgba(255,255,255,.7);padding:80px 0 40px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:40px;margin-bottom:48px}
+.footer-brand p{font-size:13px;line-height:1.8;margin-top:16px;max-width:280px}
+.footer-brand img{height:36px;margin-bottom:8px;filter:brightness(2)}
+.footer-col h4{font-size:12px;font-weight:600;color:var(--white);text-transform:uppercase;letter-spacing:1px;margin-bottom:20px}
+.footer-col a{display:block;font-size:13px;color:rgba(255,255,255,.6);padding:4px 0;transition:color .2s}
+.footer-col a:hover{color:var(--white)}
+.footer-btm{border-top:1px solid rgba(255,255,255,.1);padding-top:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-btm-text{font-size:12px;opacity:.5}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:1024px){
+  .hero-vis{flex:0 0 300px}.svc-block{gap:40px}.svc-vis{flex:0 0 300px}
+  .footer-grid{grid-template-columns:1fr 1fr 1fr}.footer-brand{grid-column:1/-1}
+}
+@media(max-width:768px){
+  :root{--nav-h:60px}
+  .nav-links,.nav-cta{display:none}.nav-ham{display:flex}
+  .hero-inner{flex-direction:column;text-align:center;padding-top:100px;gap:40px}
+  .hero-vis{flex:none;width:100%;max-width:300px}.hero-sub{margin:0 auto 36px}.hero-acts{justify-content:center}
+  .hero-float{display:none}
+  .svc-block,.svc-block:nth-child(even){flex-direction:column;text-align:center;gap:32px}
+  .svc-vis{flex:none;width:100%;max-width:340px;margin:0 auto}.svc-feats{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:1fr 1fr;gap:24px}.stat-num{font-size:28px}
+  .news-grid{grid-template-columns:1fr}
+  .cta-card{flex-direction:column;padding:40px 24px;text-align:center}.cta-cont p{margin:0 auto 32px}.cta-acts{justify-content:center}.cta-vis{flex:none;width:100%;max-width:280px}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .admin-header{flex-direction:column;align-items:flex-start}
+}
+@media(max-width:480px){.stats-grid{grid-template-columns:1fr 1fr}.footer-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<header class="nav" id="mainNav">
+  <div class="mw nav-inner">
+    <a href="#/" class="nav-logo" data-spa>
+      <img src="https://www.e-capital.com.hk/en/images/logo_09.png" alt="群益證券(香港)" width="258" height="57"/>
+      <div class="nav-logo-text" data-i18n="nav_brand">群益證券(香港)<small>Capital Securities (HK)</small></div>
+    </a>
+    <nav><ul class="nav-links" id="navLinks"></ul></nav>
+    <div class="nav-cta">
+      <div class="nav-lang">
+        <a href="#" data-lang="zh-Hant" class="active">繁</a><span>|</span>
+        <a href="#" data-lang="zh-Hans">簡</a><span>|</span>
+        <a href="#" data-lang="en">EN</a>
+      </div>
+      <a href="https://itrade.e-capital.com.hk:8888/" target="_blank" rel="noopener" class="btn-o" data-i18n="nav_login">登入交易</a>
+      <a href="#/page/stock-account-opening" data-spa class="btn-p" data-i18n="nav_open">開立帳戶</a>
+    </div>
+    <button class="nav-ham" aria-label="Menu" id="navHam"><span></span><span></span><span></span></button>
+  </div>
+</header>
+<div class="mobile-menu" id="mobileMenu"></div>
+
+<!-- MAIN CONTENT CONTAINER -->
+<div id="app"></div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ==========================================================================
+   e-Capital v5 SPA — i18n + hash routing + subpages + CMS
+   ========================================================================== */
+
+(function(){
+"use strict";
+
+// ————————————————————— SITE DATA —————————————————————
+// All page content is stored here. CMS edits override via localStorage.
+
+var SITE = {
+  // Navigation structure per language
+  nav: {
+    "zh-Hant": [
+      {label:"股市", children:[
+        {label:"最近招股資訊", page:"stock-ipo"}
+      ]},
+      {label:"滬股通", children:[
+        {label:"滬港通通識", page:"shh-hk"},
+        {label:"滬港通月刊", page:"shh-hk-mag"},
+        {label:"A股研究報告", page:"shh-hk-report"}
+      ]},
+      {label:"期貨及期權", ext:"http://futures.e-capital.com.hk/"},
+      {label:"新聞與評論", children:[
+        {label:"香港新聞", page:"news"},
+        {label:"香港研究報告", children:[
+          {label:"每日評論", page:"report-daily"},
+          {label:"新股上市", page:"report-ipo"},
+          {label:"個股推薦", page:"report-stock"},
+          {label:"群益觀點", page:"report-view"}
+        ]}
+      ]},
+      {label:"交易資料", children:[
+        {label:"股票", children:[
+          {label:"開戶程序", page:"stock-account-opening"},
+          {label:"開戶文件核對清單", page:"stock-checklist"},
+          {label:"下載開戶合約", page:"stock-download"},
+          {label:"佣金及收費", page:"stock-fee"}
+        ]},
+        {label:"期貨及期權", children:[
+          {label:"開戶程序", page:"futures-account"},
+          {label:"開戶文件核對清單", page:"futures-checklist"},
+          {label:"下載開戶合約", page:"futures-download"},
+          {label:"佣金及收費", page:"futures-fee"}
+        ]},
+        {label:"基金", page:"fund"},
+        {label:"交易時間表", page:"trade-hours"},
+        {label:"風險披露聲明", page:"risk-disclosure"},
+        {label:"網上交易聲明", page:"trade-statement"},
+        {label:"個人私隱政策", page:"privacy"},
+        {label:"款項提存方法", page:"fund-deposit"},
+        {label:"專業投資者", page:"pro-investor"},
+        {label:"下載其他表格", page:"forms-download"}
+      ]},
+      {label:"網路下單", children:[
+        {label:"港股、A股下單", children:[
+          {label:"iTrader", ext:"https://itrade.e-capital.com.hk:8888/"},
+          {label:"證券下單示範", page:"stock-demo"},
+          {label:"系統需求", page:"stock-sysreq"},
+          {label:"IPO招股上市", page:"stock-ipo-know"},
+          {label:"常見問題", page:"stock-faq"}
+        ]},
+        {label:"期貨及期權下單", children:[
+          {label:"Sharp Point", ext:"https://www.e-capital.com.hk/Futures/default.aspx"},
+          {label:"關於Sharp Point", ext:"https://www.e-capital.com.hk/Futures/default.aspx"},
+          {label:"常見問題", page:"futures-faq"}
+        ]},
+        {label:"應急安排", page:"contingency"}
+      ]},
+      {label:"台股資訊", ext:"https://www.capital.com.tw/rank/index3.asp?l=StkPrice.html&xy=0"}
+    ],
+    "zh-Hans": [
+      {label:"股市", children:[
+        {label:"最近招股资讯", page:"stock-ipo"}
+      ]},
+      {label:"沪股通", children:[
+        {label:"沪港通通识", page:"shh-hk"},
+        {label:"沪港通月刊", page:"shh-hk-mag"},
+        {label:"A股研究报告", page:"shh-hk-report"}
+      ]},
+      {label:"期货及期权", ext:"http://futures.e-capital.com.hk/cn/"},
+      {label:"新闻与评论", children:[
+        {label:"香港新闻", page:"news"},
+        {label:"香港研究报告", children:[
+          {label:"每日评论", page:"report-daily"},
+          {label:"新股上市", page:"report-ipo"},
+          {label:"个股推荐", page:"report-stock"},
+          {label:"群益观点", page:"report-view"}
+        ]}
+      ]},
+      {label:"交易资料", children:[
+        {label:"股票", children:[
+          {label:"开户程序", page:"stock-account-opening"},
+          {label:"开户文件核对清单", page:"stock-checklist"},
+          {label:"下载开户合约", page:"stock-download"},
+          {label:"佣金及收费", page:"stock-fee"}
+        ]},
+        {label:"期货及期权", children:[
+          {label:"开户程序", page:"futures-account"},
+          {label:"开户文件核对清单", page:"futures-checklist"},
+          {label:"下载开户合约", page:"futures-download"},
+          {label:"佣金及收费", page:"futures-fee"}
+        ]},
+        {label:"基金", page:"fund"},
+        {label:"交易时间表", page:"trade-hours"},
+        {label:"网上交易声明", page:"trade-statement"},
+        {label:"个人私隐政策", page:"privacy"},
+        {label:"款项提存方法", page:"fund-deposit"},
+        {label:"下载其他表格", page:"forms-download"}
+      ]},
+      {label:"网路下单", children:[
+        {label:"证券下单", children:[
+          {label:"iTrader", ext:"https://itrade.e-capital.com.hk:8888/"},
+          {label:"证券下单示范", page:"stock-demo"},
+          {label:"系统需求", page:"stock-sysreq"},
+          {label:"IPO招股上市", page:"stock-ipo-know"},
+          {label:"常见问题", page:"stock-faq"}
+        ]},
+        {label:"期货及期权下单", children:[
+          {label:"Sharp Point", ext:"https://www.e-capital.com.hk/Futures/default.aspx"},
+          {label:"关於Sharp Point", ext:"https://www.e-capital.com.hk/Futures/default.aspx"},
+          {label:"常见问题", page:"futures-faq"}
+        ]},
+        {label:"应急安排", page:"contingency"}
+      ]},
+      {label:"台股资讯", ext:"https://www.capital.com.tw/Rank/default.asp?xy=1&xt=1"}
+    ],
+    "en": [
+      {label:"Securities", children:[
+        {label:"Latest IPO Information", page:"stock-ipo"}
+      ]},
+      {label:"Futures & Option", ext:"http://futures.e-capital.com.hk/en/"},
+      {label:"News & Research", children:[
+        {label:"News", page:"news"},
+        {label:"Research Reports", children:[
+          {label:"Daily Market Update", page:"report-daily"},
+          {label:"IPO Summary", page:"report-ipo"},
+          {label:"Individual Stock Report", page:"report-stock"},
+          {label:"CSC's View", page:"report-view"}
+        ]}
+      ]},
+      {label:"Trading Information", children:[
+        {label:"Securities", children:[
+          {label:"Account Opening", page:"stock-account-opening"},
+          {label:"Checklist", page:"stock-checklist"},
+          {label:"Document Download", page:"stock-download"},
+          {label:"Fee Schedule", page:"stock-fee"}
+        ]},
+        {label:"Futures & Options", children:[
+          {label:"Account Opening", page:"futures-account"},
+          {label:"Checklist", page:"futures-checklist"},
+          {label:"Document Download", page:"futures-download"},
+          {label:"Fee Schedule", page:"futures-fee"}
+        ]},
+        {label:"Funds", page:"fund"},
+        {label:"Trade Hours", page:"trade-hours"},
+        {label:"Risk Disclosure", page:"risk-disclosure"},
+        {label:"Trading Declaration", page:"trade-statement"},
+        {label:"Personal Data Privacy", page:"privacy"},
+        {label:"Funds Deposit/Withdrawal", page:"fund-deposit"},
+        {label:"Forms Download", page:"forms-download"}
+      ]},
+      {label:"Online Trading", children:[
+        {label:"Securities Trading", children:[
+          {label:"iTrader", ext:"https://itrade.e-capital.com.hk:8888/"},
+          {label:"Trading Demo", page:"stock-demo"},
+          {label:"System Requirement", page:"stock-sysreq"},
+          {label:"IPO Subscription", page:"stock-ipo-know"},
+          {label:"FAQ", page:"stock-faq"}
+        ]},
+        {label:"Futures & Options Trading", children:[
+          {label:"Sharp Point", ext:"http://www.e-capital.com.hk/en/Futures/"},
+          {label:"System Requirement", ext:"https://www.e-capital.com.hk/en/Futures/default.aspx"},
+          {label:"FAQ", page:"futures-faq"}
+        ]},
+        {label:"Emergency Arrangement", page:"contingency"}
+      ]},
+      {label:"Taiwan Stocks", ext:"https://www.capital.com.tw/Rank/default.asp?xy=1&xt=1"}
+    ]
+  },
+
+  // UI strings
+  ui: {
+    "zh-Hant": {
+      nav_login:"登入交易", nav_open:"開立帳戶", home:"首頁",
+      hero_badge:"香港持牌證券商 \u00b7 SFC 受監管",
+      hero_h1_1:"您的", hero_h1_gt:"專業證券", hero_h1_2:"及期貨交易夥伴",
+      hero_sub:"群益證券(香港)提供股票、期貨、期權及滬港通等全方位交易服務，配備專業研究團隊及先進交易平台，助您把握每個投資機遇。",
+      hero_cta1:"開立帳戶", hero_cta2:"立即交易",
+      hero_card_t:"iTrader 交易平台", hero_card_s:"股票 \u00b7 期貨 \u00b7 期權 \u00b7 滬股通",
+      hero_float:"全球市場", hero_float_s:"股票、期貨及期權交易",
+      marquee_label:"群益金融集團",
+      marquee_items:["群益金融網","群益期貨","群益投信","群益保代","群益股代","群益上海","群益證券(香港)"],
+      svc_label:"服務項目", svc_title:"全方位交易服務",
+      svc_desc:"為個人及機構投資者提供多元化的金融產品和專業服務，覆蓋港股、A股、期貨及期權市場。",
+      svc1_label:"股票交易", svc1_title:"港股及環球股票<br/>交易服務",
+      svc1_desc:"透過 iTrader 網上交易平台，輕鬆買賣港股及環球股票，享受快速執行及具競爭力的佣金收費。",
+      svc1_f1:"iTrader 交易平台", svc1_f1s:"快速下單、即時報價",
+      svc1_f2:"具競爭力佣金", svc1_f2s:"低至 0.15% 交易佣金",
+      svc1_f3:"IPO 新股申購", svc1_f3s:"輕鬆參與新股招股",
+      svc1_f4:"環球市場", svc1_f4s:"港股及海外市場",
+      svc1_vis:"股票交易", svc1_vis_s:"港股 \u00b7 美股 \u00b7 IPO",
+      svc2_label:"滬港通", svc2_title:"滬港通<br/>互聯互通交易",
+      svc2_desc:"透過滬港通機制直接買賣上海A股，獲取群益專業A股研究報告及市場月刊，掌握內地市場脈搏。",
+      svc2_f1:"直接買賣A股", svc2_f1s:"透過滬港通機制",
+      svc2_f2:"A股研究報告", svc2_f2s:"專業分析及推薦",
+      svc2_f3:"滬港通月刊", svc2_f3s:"定期市場資訊",
+      svc2_f4:"滬港通通識", svc2_f4s:"制度規則詳解",
+      svc2_vis:"滬港通", svc2_vis_s:"直接買賣上海 A 股",
+      svc3_label:"期貨及期權", svc3_title:"期貨及期權<br/>交易服務",
+      svc3_desc:"透過 Sharp Point 專業期貨交易平台，買賣恆生指數期貨、期權及環球期貨商品，配備即時行情及風控工具。",
+      svc3_f1:"Sharp Point 平台", svc3_f1s:"專業期貨交易系統",
+      svc3_f2:"風險管理工具", svc3_f2s:"即時監控及止損",
+      svc3_f3:"夜市交易", svc3_f3s:"24 小時交易機會",
+      svc3_f4:"環球期貨", svc3_f4s:"指數、商品及外匯",
+      svc3_vis:"期貨及期權", svc3_vis_s:"恆指期貨 \u00b7 環球商品",
+      stat1:"30+", stat1l:"年金融服務經驗", stat2:"SFC", stat2l:"香港證監會監管",
+      stat3:"24/7", stat3l:"全天候客戶服務", stat4:"多市場", stat4l:"港股、A股、期貨",
+      news_label:"最新動態", news_title:"新聞與評論", news_all:"查看全部",
+      cta_h:"立即開戶<br/>把握投資先機",
+      cta_p:"只需簡單幾步，即可開立群益證券帳戶，享受專業交易服務、每日研究報告及具競爭力的佣金收費。",
+      cta_btn1:"股票開戶", cta_btn2:"期貨開戶",
+      cta_s1:"下載開戶合約", cta_s2:"填寫及提交文件", cta_s3:"帳戶審批完成", cta_s4:"登入交易平台",
+      ft_svc:"交易服務", ft_news:"新聞與研究", ft_acct:"開戶與支援", ft_legal:"法律聲明",
+      ft_addr:"群益證券(香港)有限公司<br/>香港德輔道中308號富衞金融中心3樓<br/>TEL：(852) 2530-9966<br/>FAX：(852) 2104-6006",
+      ft_copy:"\u00a9 群益金融集團 The Capital Group. All Rights Reserved.",
+      admin_title:"CMS 內容管理", admin_save:"儲存", admin_export:"匯出 JSON", admin_import:"匯入 JSON", admin_reset:"重設預設"
+    },
+    "zh-Hans": {
+      nav_login:"登入交易", nav_open:"开立帐户", home:"首页",
+      hero_badge:"香港持牌证券商 \u00b7 SFC 受监管",
+      hero_h1_1:"您的", hero_h1_gt:"专业证券", hero_h1_2:"及期货交易伙伴",
+      hero_sub:"群益证券(香港)提供股票、期货、期权及沪港通等全方位交易服务，配备专业研究团队及先进交易平台，助您把握每个投资机遇。",
+      hero_cta1:"开立帐户", hero_cta2:"立即交易",
+      hero_card_t:"iTrader 交易平台", hero_card_s:"股票 \u00b7 期货 \u00b7 期权 \u00b7 沪股通",
+      hero_float:"全球市场", hero_float_s:"股票、期货及期权交易",
+      marquee_label:"群益金融集团",
+      marquee_items:["群益金融网","群益期货","群益投信","群益保代","群益股代","群益上海","群益证券(香港)"],
+      svc_label:"服务项目", svc_title:"全方位交易服务",
+      svc_desc:"为个人及机构投资者提供多元化的金融产品和专业服务，覆盖港股、A股、期货及期权市场。",
+      svc1_label:"股票交易", svc1_title:"港股及环球股票<br/>交易服务",
+      svc1_desc:"透过 iTrader 网上交易平台，轻松买卖港股及环球股票，享受快速执行及具竞争力的佣金收费。",
+      svc1_f1:"iTrader 交易平台", svc1_f1s:"快速下单、即时报价",
+      svc1_f2:"具竞争力佣金", svc1_f2s:"低至 0.15% 交易佣金",
+      svc1_f3:"IPO 新股申购", svc1_f3s:"轻松参与新股招股",
+      svc1_f4:"环球市场", svc1_f4s:"港股及海外市场",
+      svc1_vis:"股票交易", svc1_vis_s:"港股 \u00b7 美股 \u00b7 IPO",
+      svc2_label:"沪港通", svc2_title:"沪港通<br/>互联互通交易",
+      svc2_desc:"透过沪港通机制直接买卖上海A股，获取群益专业A股研究报告及市场月刊，掌握内地市场脉搏。",
+      svc2_f1:"直接买卖A股", svc2_f1s:"透过沪港通机制",
+      svc2_f2:"A股研究报告", svc2_f2s:"专业分析及推荐",
+      svc2_f3:"沪港通月刊", svc2_f3s:"定期市场资讯",
+      svc2_f4:"沪港通通识", svc2_f4s:"制度规则详解",
+      svc2_vis:"沪港通", svc2_vis_s:"直接买卖上海 A 股",
+      svc3_label:"期货及期权", svc3_title:"期货及期权<br/>交易服务",
+      svc3_desc:"透过 Sharp Point 专业期货交易平台，买卖恒生指数期货、期权及环球期货商品，配备即时行情及风控工具。",
+      svc3_f1:"Sharp Point 平台", svc3_f1s:"专业期货交易系统",
+      svc3_f2:"风险管理工具", svc3_f2s:"即时监控及止损",
+      svc3_f3:"夜市交易", svc3_f3s:"24 小时交易机会",
+      svc3_f4:"环球期货", svc3_f4s:"指数、商品及外汇",
+      svc3_vis:"期货及期权", svc3_vis_s:"恒指期货 \u00b7 环球商品",
+      stat1:"30+", stat1l:"年金融服务经验", stat2:"SFC", stat2l:"香港证监会监管",
+      stat3:"24/7", stat3l:"全天候客户服务", stat4:"多市场", stat4l:"港股、A股、期货",
+      news_label:"最新动态", news_title:"新闻与评论", news_all:"查看全部",
+      cta_h:"立即开户<br/>把握投资先机",
+      cta_p:"只需简单几步，即可开立群益证券帐户，享受专业交易服务、每日研究报告及具竞争力的佣金收费。",
+      cta_btn1:"股票开户", cta_btn2:"期货开户",
+      cta_s1:"下载开户合约", cta_s2:"填写及提交文件", cta_s3:"帐户审批完成", cta_s4:"登入交易平台",
+      ft_svc:"交易服务", ft_news:"新闻与研究", ft_acct:"开户与支援", ft_legal:"法律声明",
+      ft_addr:"群益证券(香港)有限公司<br/>香港德辅道中308号富卫金融中心3楼<br/>TEL：(852) 2530-9966<br/>FAX：(852) 2104-6006",
+      ft_copy:"\u00a9 群益金融集团 The Capital Group. All Rights Reserved.",
+      admin_title:"CMS 内容管理", admin_save:"储存", admin_export:"导出 JSON", admin_import:"导入 JSON", admin_reset:"重设预设"
+    },
+    "en": {
+      nav_login:"Login", nav_open:"Open Account", home:"Home",
+      hero_badge:"SFC Licensed Securities Dealer \u00b7 Regulated",
+      hero_h1_1:"Your ", hero_h1_gt:"Professional", hero_h1_2:" Securities & Futures Partner",
+      hero_sub:"Capital Securities (HK) provides comprehensive trading services for equities, futures, options and Shanghai-Hong Kong Stock Connect, powered by professional research and advanced trading platforms.",
+      hero_cta1:"Open Account", hero_cta2:"Trade Now",
+      hero_card_t:"iTrader Platform", hero_card_s:"Stocks \u00b7 Futures \u00b7 Options \u00b7 SH-HK Connect",
+      hero_float:"Global Markets", hero_float_s:"Equities, Futures & Options",
+      marquee_label:"The Capital Group",
+      marquee_items:["Capital Securities","Capital Futures","Capital Fund","Capital Agency","Capital Shanghai","Capital HK"],
+      svc_label:"Services", svc_title:"Comprehensive Trading Services",
+      svc_desc:"Diversified financial products and professional services for individual and institutional investors, covering HK stocks, A-shares, futures and options.",
+      svc1_label:"Securities", svc1_title:"HK & Global Equities<br/>Trading",
+      svc1_desc:"Trade HK and global equities easily via iTrader platform, with fast execution and competitive commission rates.",
+      svc1_f1:"iTrader Platform", svc1_f1s:"Fast order execution & real-time quotes",
+      svc1_f2:"Competitive Commission", svc1_f2s:"As low as 0.15% commission",
+      svc1_f3:"IPO Subscription", svc1_f3s:"Participate in new listings",
+      svc1_f4:"Global Markets", svc1_f4s:"HK stocks & overseas markets",
+      svc1_vis:"Securities", svc1_vis_s:"HK \u00b7 US \u00b7 IPO",
+      svc2_label:"SH-HK Connect", svc2_title:"Shanghai-HK<br/>Stock Connect",
+      svc2_desc:"Trade Shanghai A-shares directly via Stock Connect. Access professional A-share research reports and market publications.",
+      svc2_f1:"Trade A-Shares", svc2_f1s:"Via Stock Connect",
+      svc2_f2:"Research Reports", svc2_f2s:"Professional analysis",
+      svc2_f3:"Monthly Publication", svc2_f3s:"Regular market updates",
+      svc2_f4:"Connect Guide", svc2_f4s:"System rules explained",
+      svc2_vis:"SH-HK Connect", svc2_vis_s:"Trade Shanghai A-Shares",
+      svc3_label:"Futures & Options", svc3_title:"Futures & Options<br/>Trading",
+      svc3_desc:"Trade HSI futures, options and global commodities via Sharp Point professional platform, with real-time data and risk management tools.",
+      svc3_f1:"Sharp Point", svc3_f1s:"Professional futures platform",
+      svc3_f2:"Risk Management", svc3_f2s:"Real-time monitoring",
+      svc3_f3:"After-Hours Trading", svc3_f3s:"24-hour opportunities",
+      svc3_f4:"Global Futures", svc3_f4s:"Indices, commodities & FX",
+      svc3_vis:"Futures & Options", svc3_vis_s:"HSI Futures \u00b7 Commodities",
+      stat1:"30+", stat1l:"Years in Financial Services", stat2:"SFC", stat2l:"Regulated by SFC",
+      stat3:"24/7", stat3l:"Customer Support", stat4:"Multi-Market", stat4l:"HK, A-Shares, Futures",
+      news_label:"What's New", news_title:"News & Research", news_all:"View All",
+      cta_h:"Open an Account<br/>Seize Opportunities",
+      cta_p:"Open a Capital Securities account in just a few simple steps. Enjoy professional trading services, daily research reports and competitive commission rates.",
+      cta_btn1:"Securities Account", cta_btn2:"Futures Account",
+      cta_s1:"Download Agreement", cta_s2:"Submit Documents", cta_s3:"Account Approved", cta_s4:"Start Trading",
+      ft_svc:"Trading Services", ft_news:"News & Research", ft_acct:"Account & Support", ft_legal:"Legal",
+      ft_addr:"Capital Securities (HK) Limited<br/>3/F, FWD Financial Centre, 308 Des Voeux Road Central, HK<br/>TEL: (852) 2530-9966<br/>FAX: (852) 2104-6006",
+      ft_copy:"\u00a9 The Capital Group. All Rights Reserved.",
+      admin_title:"CMS Admin", admin_save:"Save", admin_export:"Export JSON", admin_import:"Import JSON", admin_reset:"Reset Default"
+    }
+  },
+
+  // Subpage content — CMS editable
+  pages: {
+    "stock-ipo": {
+      "zh-Hant": {title:"最近招股資訊", body:"<h2>最近招股資訊</h2><p>此頁面展示近期公開招股之新股資訊，包括招股價、招股日期、股票代號等。</p><div class='info-card'><h3>如何申請新股？</h3><p>客戶可透過 iTrader 網上交易平台或致電我們的客戶服務熱線申請認購新股。</p><ul><li>登入 iTrader 交易平台</li><li>選擇「IPO申請」功能</li><li>輸入申請股數及確認</li><li>系統將自動扣除所需資金</li></ul></div><p>如有查詢，請致電 (852) 2530-9966。</p>"},
+      "zh-Hans": {title:"最近招股资讯", body:"<h2>最近招股资讯</h2><p>此页面展示近期公开招股之新股资讯，包括招股价、招股日期、股票代号等。</p><div class='info-card'><h3>如何申请新股？</h3><p>客户可透过 iTrader 网上交易平台或致电我们的客户服务热线申请认购新股。</p><ul><li>登入 iTrader 交易平台</li><li>选择「IPO申请」功能</li><li>输入申请股数及确认</li><li>系统将自动扣除所需资金</li></ul></div><p>如有查询，请致电 (852) 2530-9966。</p>"},
+      "en": {title:"Latest IPO Information", body:"<h2>Latest IPO Information</h2><p>This page displays recent IPO information including offer price, subscription dates, and stock codes.</p><div class='info-card'><h3>How to Apply for IPO?</h3><p>Clients can apply for IPO via iTrader online trading platform or call our customer service hotline.</p><ul><li>Login to iTrader Platform</li><li>Select 'IPO Application'</li><li>Enter number of shares and confirm</li><li>System will automatically deduct required funds</li></ul></div><p>For enquiries, please call (852) 2530-9966.</p>"}
+    },
+    "stock-ipo-know": {
+      "zh-Hant": {title:"IPO 招股上市", body:"<h2>IPO 招股上市須知</h2><p>新股上市（IPO）是指公司首次在證券交易所公開發行股票。群益證券(香港)為客戶提供便捷的新股認購服務。</p><h3>新股認購步驟</h3><ul><li>確認帳戶內有足夠資金</li><li>於招股期間透過 iTrader 提交申請</li><li>等待配售結果公佈</li><li>中籤股份將自動存入帳戶</li></ul><h3>注意事項</h3><ul><li>每位客戶只可提交一次申請</li><li>申請一經提交不可撤回</li><li>未中籤之資金將於公佈結果後退回</li></ul>"},
+      "zh-Hans": {title:"IPO 招股上市", body:"<h2>IPO 招股上市须知</h2><p>新股上市（IPO）是指公司首次在证券交易所公开发行股票。群益证券(香港)为客户提供便捷的新股认购服务。</p><h3>新股认购步骤</h3><ul><li>确认帐户内有足够资金</li><li>于招股期间透过 iTrader 提交申请</li><li>等待配售结果公布</li><li>中签股份将自动存入帐户</li></ul><h3>注意事项</h3><ul><li>每位客户只可提交一次申请</li><li>申请一经提交不可撤回</li><li>未中签之资金将于公布结果后退回</li></ul>"},
+      "en": {title:"IPO Subscription", body:"<h2>IPO Subscription Guide</h2><p>An IPO (Initial Public Offering) is when a company first offers shares to the public on a stock exchange. Capital Securities (HK) provides convenient IPO subscription services.</p><h3>Subscription Steps</h3><ul><li>Ensure sufficient funds in your account</li><li>Submit application via iTrader during subscription period</li><li>Wait for allotment results</li><li>Allotted shares will be credited to your account</li></ul><h3>Important Notes</h3><ul><li>Each client may submit only one application</li><li>Applications cannot be withdrawn once submitted</li><li>Refund for unsuccessful applications after results announcement</li></ul>"}
+    },
+    "shh-hk": {
+      "zh-Hant": {title:"滬港通通識", body:"<h2>滬港通通識</h2><p>滬港通是上海證券交易所和香港聯合交易所之間的互聯互通機制，允許兩地投資者通過當地證券公司買賣對方交易所上市的股票。</p><h3>交易規則</h3><ul><li>交易貨幣：人民幣</li><li>交易時間：按上海交易所時間</li><li>T+1 交收制度</li><li>每日額度限制</li></ul><div class='info-card'><h3>如何開通滬港通？</h3><p>現有客戶可致電客服或親臨辦公室申請開通滬港通交易功能。新客戶可在開戶時一併申請。</p></div>"},
+      "zh-Hans": {title:"沪港通通识", body:"<h2>沪港通通识</h2><p>沪港通是上海证券交易所和香港联合交易所之间的互联互通机制，允许两地投资者通过当地证券公司买卖对方交易所上市的股票。</p><h3>交易规则</h3><ul><li>交易货币：人民币</li><li>交易时间：按上海交易所时间</li><li>T+1 交收制度</li><li>每日额度限制</li></ul><div class='info-card'><h3>如何开通沪港通？</h3><p>现有客户可致电客服或亲临办公室申请开通沪港通交易功能。新客户可在开户时一并申请。</p></div>"},
+      "en": {title:"Shanghai-HK Stock Connect Guide", body:"<h2>Shanghai-HK Stock Connect</h2><p>Stock Connect is a mutual market access program between Shanghai Stock Exchange and Hong Kong Stock Exchange, allowing investors to trade shares listed on the other exchange through their local broker.</p><h3>Trading Rules</h3><ul><li>Trading currency: RMB</li><li>Trading hours: follow Shanghai exchange</li><li>T+1 settlement</li><li>Daily quota limits</li></ul><div class='info-card'><h3>How to Activate Stock Connect?</h3><p>Existing clients can call customer service or visit our office. New clients can apply when opening an account.</p></div>"}
+    },
+    "shh-hk-mag": {
+      "zh-Hant": {title:"滬港通月刊", body:"<h2>滬港通月刊</h2><p>群益證券(香港)定期出版滬港通月刊，為投資者提供A股市場最新動態、政策分析及投資策略。</p><p>月刊內容涵蓋：</p><ul><li>A股市場月度回顧</li><li>宏觀經濟分析</li><li>行業板塊分析</li><li>重點個股推薦</li><li>滬港通政策更新</li></ul><p>如欲訂閱月刊，請聯絡客戶服務部。TEL：(852) 2530-9966</p>"},
+      "zh-Hans": {title:"沪港通月刊", body:"<h2>沪港通月刊</h2><p>群益证券(香港)定期出版沪港通月刊，为投资者提供A股市场最新动态、政策分析及投资策略。</p><p>月刊内容涵盖：</p><ul><li>A股市场月度回顾</li><li>宏观经济分析</li><li>行业板块分析</li><li>重点个股推荐</li><li>沪港通政策更新</li></ul><p>如欲订阅月刊，请联络客户服务部。TEL：(852) 2530-9966</p>"},
+      "en": {title:"Stock Connect Monthly", body:"<h2>Stock Connect Monthly Publication</h2><p>Capital Securities (HK) regularly publishes the Stock Connect Monthly, providing investors with the latest A-share market updates, policy analysis and investment strategies.</p><p>Contents include:</p><ul><li>Monthly A-share market review</li><li>Macro-economic analysis</li><li>Sector analysis</li><li>Featured stock recommendations</li><li>Stock Connect policy updates</li></ul><p>To subscribe, please contact our Customer Service. TEL: (852) 2530-9966</p>"}
+    },
+    "shh-hk-report": {
+      "zh-Hant": {title:"A股研究報告", body:"<h2>A股研究報告</h2><p>群益證券(香港)研究部定期發布A股研究報告，涵蓋個股深度分析、行業研究及市場展望。</p><h3>報告類型</h3><ul><li>個股深度研究報告</li><li>行業追蹤報告</li><li>策略週報</li><li>宏觀經濟研究</li></ul><p>研究報告僅供群益證券客戶參閱。如需獲取報告，請登入客戶專區或聯絡您的客戶經理。</p>"},
+      "zh-Hans": {title:"A股研究报告", body:"<h2>A股研究报告</h2><p>群益证券(香港)研究部定期发布A股研究报告，涵盖个股深度分析、行业研究及市场展望。</p><h3>报告类型</h3><ul><li>个股深度研究报告</li><li>行业追踪报告</li><li>策略周报</li><li>宏观经济研究</li></ul><p>研究报告仅供群益证券客户参阅。如需获取报告，请登入客户专区或联络您的客户经理。</p>"},
+      "en": {title:"A-Share Research Reports", body:"<h2>A-Share Research Reports</h2><p>The research department of Capital Securities (HK) regularly publishes A-share research reports covering in-depth stock analysis, industry research and market outlook.</p><h3>Report Types</h3><ul><li>In-depth individual stock reports</li><li>Industry tracking reports</li><li>Weekly strategy reports</li><li>Macro-economic research</li></ul><p>Reports are available exclusively to Capital Securities clients. Please login to the client portal or contact your account manager.</p>"}
+    },
+    "news": {
+      "zh-Hant": {title:"香港新聞", body:"<h2>香港新聞</h2><p>群益證券(香港)為您提供最新的香港金融市場新聞及分析。</p><div class='info-card'><p><strong>【 2020-12-31 】</strong> 2020-12-31 中國/香港投資日報</p><p><strong>【 2020-12-30 】</strong> 2020-12-30 中國/香港投資日報</p><p><strong>【 2020-10-30 】</strong> 中信證券(600030/6030.HK)</p><p><strong>【 2020-10-30 】</strong> 福耀玻璃 (600660.SH/03606.HK)</p><p><strong>【 2020-03-12 】</strong> 諾誠健華 (9969.HK)</p><p><strong>【 2020-03-03 】</strong> 燁星集團 (1941.HK)</p></div>"},
+      "zh-Hans": {title:"香港新闻", body:"<h2>香港新闻</h2><p>群益证券(香港)为您提供最新的香港金融市场新闻及分析。</p><div class='info-card'><p><strong>【 2020-12-31 】</strong> 2020-12-31 中国/香港投资日报</p><p><strong>【 2020-12-30 】</strong> 2020-12-30 中国/香港投资日报</p><p><strong>【 2020-10-30 】</strong> 中信证券(600030/6030.HK)</p><p><strong>【 2020-10-30 】</strong> 福耀玻璃 (600660.SH/03606.HK)</p><p><strong>【 2020-03-12 】</strong> 诺诚健华 (9969.HK)</p><p><strong>【 2020-03-03 】</strong> 烨星集团 (1941.HK)</p></div>"},
+      "en": {title:"Hong Kong News", body:"<h2>Hong Kong News</h2><p>Capital Securities (HK) provides the latest Hong Kong financial market news and analysis.</p><div class='info-card'><p><strong>[2020-12-31]</strong> China/HK Daily Investment Report</p><p><strong>[2020-12-30]</strong> China/HK Daily Investment Report</p><p><strong>[2020-10-30]</strong> CITIC Securities (600030/6030.HK)</p><p><strong>[2020-10-30]</strong> Fuyao Glass (600660.SH/03606.HK)</p><p><strong>[2020-03-12]</strong> Innovent Biologics (9969.HK)</p><p><strong>[2020-03-03]</strong> Epsitar Group (1941.HK)</p></div>"}
+    },
+    "report-daily": {
+      "zh-Hant": {title:"每日評論", body:"<h2>每日評論</h2><p>群益證券(香港)研究團隊每日發布市場評論，涵蓋港股及A股市場走勢分析、投資策略建議。</p><h3>今日焦點</h3><p>報告內容包括：</p><ul><li>大市回顧及展望</li><li>板塊輪動分析</li><li>技術分析圖表</li><li>重要經濟數據回顧</li></ul><p>如需訂閱每日評論，請聯絡客戶服務部。</p>"},
+      "zh-Hans": {title:"每日评论", body:"<h2>每日评论</h2><p>群益证券(香港)研究团队每日发布市场评论，涵盖港股及A股市场走势分析、投资策略建议。</p><h3>今日焦点</h3><p>报告内容包括：</p><ul><li>大市回顾及展望</li><li>板块轮动分析</li><li>技术分析图表</li><li>重要经济数据回顾</li></ul><p>如需订阅每日评论，请联络客户服务部。</p>"},
+      "en": {title:"Daily Market Update", body:"<h2>Daily Market Update</h2><p>Our research team publishes daily market commentary covering HK and A-share market analysis and investment strategy recommendations.</p><h3>Today's Focus</h3><p>Report contents include:</p><ul><li>Market review and outlook</li><li>Sector rotation analysis</li><li>Technical analysis charts</li><li>Key economic data review</li></ul><p>To subscribe, please contact Customer Service.</p>"}
+    },
+    "report-ipo": {
+      "zh-Hant": {title:"新股上市", body:"<h2>新股上市報告</h2><p>群益證券(香港)研究部為即將上市的新股提供詳細分析報告，包括公司概況、業務分析、財務數據及投資評級。</p><h3>最近報告</h3><div class='info-card'><p><strong>【 2020-03-12 】</strong> 諾誠健華 (9969.HK) — 生物科技公司</p><p><strong>【 2020-03-03 】</strong> 燁星集團 (1941.HK) — 物業管理</p></div>"},
+      "zh-Hans": {title:"新股上市", body:"<h2>新股上市报告</h2><p>群益证券(香港)研究部为即将上市的新股提供详细分析报告，包括公司概况、业务分析、财务数据及投资评级。</p><h3>最近报告</h3><div class='info-card'><p><strong>【 2020-03-12 】</strong> 诺诚健华 (9969.HK) — 生物科技公司</p><p><strong>【 2020-03-03 】</strong> 烨星集团 (1941.HK) — 物业管理</p></div>"},
+      "en": {title:"IPO Summary", body:"<h2>IPO Summary Reports</h2><p>Our research department provides detailed analysis reports for upcoming IPOs, including company overview, business analysis, financial data and investment ratings.</p><h3>Recent Reports</h3><div class='info-card'><p><strong>[2020-03-12]</strong> Innovent Biologics (9969.HK) — Biotech</p><p><strong>[2020-03-03]</strong> Epsitar Group (1941.HK) — Property Management</p></div>"}
+    },
+    "report-stock": {
+      "zh-Hant": {title:"個股推薦", body:"<h2>個股推薦</h2><p>群益證券(香港)研究部精選優質個股，提供深度分析及投資建議。</p><div class='info-card'><p><strong>【 2020-10-30 】</strong> 中信證券(600030/6030.HK)</p><p><strong>【 2020-10-30 】</strong> 福耀玻璃 (600660.SH/03606.HK)</p></div><p>以上推薦僅供參考，不構成投資建議。投資涉及風險，過往業績並不代表將來表現。</p>"},
+      "zh-Hans": {title:"个股推荐", body:"<h2>个股推荐</h2><p>群益证券(香港)研究部精选优质个股，提供深度分析及投资建议。</p><div class='info-card'><p><strong>【 2020-10-30 】</strong> 中信证券(600030/6030.HK)</p><p><strong>【 2020-10-30 】</strong> 福耀玻璃 (600660.SH/03606.HK)</p></div><p>以上推荐仅供参考，不构成投资建议。投资涉及风险，过往业绩并不代表将来表现。</p>"},
+      "en": {title:"Individual Stock Report", body:"<h2>Individual Stock Reports</h2><p>Our research team selects quality stocks with in-depth analysis and investment recommendations.</p><div class='info-card'><p><strong>[2020-10-30]</strong> CITIC Securities (600030/6030.HK)</p><p><strong>[2020-10-30]</strong> Fuyao Glass (600660.SH/03606.HK)</p></div><p>The above are for reference only and do not constitute investment advice. Investment involves risk.</p>"}
+    },
+    "report-view": {
+      "zh-Hant": {title:"群益觀點", body:"<h2>群益觀點</h2><p>群益證券(香港)研究團隊的市場觀點及投資策略分享，涵蓋宏觀經濟、行業趨勢及市場展望。</p><p>群益觀點文章定期在公司網站及研究報告中發布。如有興趣接收最新觀點，請聯絡您的客戶經理。</p>"},
+      "zh-Hans": {title:"群益观点", body:"<h2>群益观点</h2><p>群益证券(香港)研究团队的市场观点及投资策略分享，涵盖宏观经济、行业趋势及市场展望。</p><p>群益观点文章定期在公司网站及研究报告中发布。如有兴趣接收最新观点，请联络您的客户经理。</p>"},
+      "en": {title:"CSC's View", body:"<h2>CSC's View</h2><p>Market views and investment strategy insights from our research team, covering macro-economics, industry trends and market outlook.</p><p>CSC's View articles are published regularly on our website and research reports. Please contact your account manager to receive the latest insights.</p>"}
+    },
+    "stock-account-opening": {
+      "zh-Hant": {title:"股票開戶程序", body:"<h2>股票開戶程序</h2><h3>開戶步驟</h3><ul><li><strong>步驟一：</strong>下載及填寫開戶文件</li><li><strong>步驟二：</strong>準備所需證明文件（身份證/護照副本、住址證明、銀行帳單）</li><li><strong>步驟三：</strong>親臨本公司或以郵遞方式提交文件</li><li><strong>步驟四：</strong>帳戶審批（約2-3個工作天）</li><li><strong>步驟五：</strong>收到帳戶號碼及密碼後即可開始交易</li></ul><h3>所需文件</h3><table><tr><th>文件</th><th>要求</th></tr><tr><td>身份證明</td><td>香港身份證或護照副本</td></tr><tr><td>住址證明</td><td>三個月內之公用事業帳單或銀行月結單</td></tr><tr><td>銀行證明</td><td>銀行帳戶月結單或存摺副本</td></tr></table><div class='info-card'><p>如有查詢，請致電 (852) 2530-9966 或電郵至 info@e-capital.com.hk</p></div><p><a href='#/page/stock-download' data-spa class='dl-link'>&#x1F4E5; 下載開戶合約</a> <a href='#/page/stock-checklist' data-spa class='dl-link'>&#x2705; 核對清單</a></p>"},
+      "zh-Hans": {title:"股票开户程序", body:"<h2>股票开户程序</h2><h3>开户步骤</h3><ul><li><strong>步骤一：</strong>下载及填写开户文件</li><li><strong>步骤二：</strong>准备所需证明文件（身份证/护照副本、住址证明、银行帐单）</li><li><strong>步骤三：</strong>亲临本公司或以邮递方式提交文件</li><li><strong>步骤四：</strong>帐户审批（约2-3个工作天）</li><li><strong>步骤五：</strong>收到帐户号码及密码后即可开始交易</li></ul><h3>所需文件</h3><table><tr><th>文件</th><th>要求</th></tr><tr><td>身份证明</td><td>香港身份证或护照副本</td></tr><tr><td>住址证明</td><td>三个月内之公用事业帐单或银行月结单</td></tr><tr><td>银行证明</td><td>银行帐户月结单或存折副本</td></tr></table><div class='info-card'><p>如有查询，请致电 (852) 2530-9966 或电邮至 info@e-capital.com.hk</p></div><p><a href='#/page/stock-download' data-spa class='dl-link'>&#x1F4E5; 下载开户合约</a> <a href='#/page/stock-checklist' data-spa class='dl-link'>&#x2705; 核对清单</a></p>"},
+      "en": {title:"Securities Account Opening", body:"<h2>Securities Account Opening</h2><h3>Steps</h3><ul><li><strong>Step 1:</strong> Download and complete account opening documents</li><li><strong>Step 2:</strong> Prepare supporting documents (ID/passport copy, proof of address, bank statement)</li><li><strong>Step 3:</strong> Submit in person or by post</li><li><strong>Step 4:</strong> Account approval (approx. 2-3 business days)</li><li><strong>Step 5:</strong> Start trading with your account credentials</li></ul><h3>Required Documents</h3><table><tr><th>Document</th><th>Requirement</th></tr><tr><td>Identity Proof</td><td>HKID or passport copy</td></tr><tr><td>Address Proof</td><td>Utility bill or bank statement within 3 months</td></tr><tr><td>Bank Proof</td><td>Bank statement or passbook copy</td></tr></table><div class='info-card'><p>For enquiries: TEL (852) 2530-9966 or email info@e-capital.com.hk</p></div><p><a href='#/page/stock-download' data-spa class='dl-link'>&#x1F4E5; Download Agreement</a> <a href='#/page/stock-checklist' data-spa class='dl-link'>&#x2705; Checklist</a></p>"}
+    },
+    "stock-checklist": {
+      "zh-Hant": {title:"開戶文件核對清單", body:"<h2>開戶文件核對清單</h2><h3>個人客戶</h3><ul><li>&#x2610; 已簽署之開戶合約</li><li>&#x2610; 香港身份證/護照副本</li><li>&#x2610; 三個月內住址證明</li><li>&#x2610; 銀行帳單或存摺副本</li><li>&#x2610; W-8BEN 表格（如適用）</li></ul><h3>公司客戶</h3><ul><li>&#x2610; 公司註冊證書副本</li><li>&#x2610; 商業登記證副本</li><li>&#x2610; 董事及股東身份證明文件</li><li>&#x2610; 公司章程細則及組織大綱</li><li>&#x2610; 最近期經審核財務報表</li><li>&#x2610; 董事會決議案</li></ul>"},
+      "zh-Hans": {title:"开户文件核对清单", body:"<h2>开户文件核对清单</h2><h3>个人客户</h3><ul><li>&#x2610; 已签署之开户合约</li><li>&#x2610; 香港身份证/护照副本</li><li>&#x2610; 三个月内住址证明</li><li>&#x2610; 银行帐单或存折副本</li><li>&#x2610; W-8BEN 表格（如适用）</li></ul><h3>公司客户</h3><ul><li>&#x2610; 公司注册证书副本</li><li>&#x2610; 商业登记证副本</li><li>&#x2610; 董事及股东身份证明文件</li><li>&#x2610; 公司章程细则及组织大纲</li><li>&#x2610; 最近期经审核财务报表</li><li>&#x2610; 董事会决议案</li></ul>"},
+      "en": {title:"Account Opening Checklist", body:"<h2>Account Opening Checklist</h2><h3>Individual Client</h3><ul><li>&#x2610; Signed account agreement</li><li>&#x2610; HKID / passport copy</li><li>&#x2610; Address proof (within 3 months)</li><li>&#x2610; Bank statement or passbook copy</li><li>&#x2610; W-8BEN form (if applicable)</li></ul><h3>Corporate Client</h3><ul><li>&#x2610; Certificate of incorporation</li><li>&#x2610; Business registration certificate</li><li>&#x2610; Directors & shareholders ID documents</li><li>&#x2610; Articles of association & memorandum</li><li>&#x2610; Latest audited financial statements</li><li>&#x2610; Board resolution</li></ul>"}
+    },
+    "stock-download": {
+      "zh-Hant": {title:"下載開戶合約", body:"<h2>下載開戶合約</h2><p>請下載以下開戶文件，填妥後連同所需證明文件交回本公司。</p><div class='info-card'><h3>股票帳戶開戶文件</h3><p>&#x1F4C4; 個人帳戶開戶合約書<br/>&#x1F4C4; 聯名帳戶開戶合約書<br/>&#x1F4C4; 公司帳戶開戶合約書<br/>&#x1F4C4; W-8BEN 表格</p></div><p>文件可親臨本公司索取或致電 (852) 2530-9966 申請郵寄。</p><p>地址：香港德輔道中308號富衞金融中心3樓</p>"},
+      "zh-Hans": {title:"下载开户合约", body:"<h2>下载开户合约</h2><p>请下载以下开户文件，填妥后连同所需证明文件交回本公司。</p><div class='info-card'><h3>股票帐户开户文件</h3><p>&#x1F4C4; 个人帐户开户合约书<br/>&#x1F4C4; 联名帐户开户合约书<br/>&#x1F4C4; 公司帐户开户合约书<br/>&#x1F4C4; W-8BEN 表格</p></div><p>文件可亲临本公司索取或致电 (852) 2530-9966 申请邮寄。</p><p>地址：香港德辅道中308号富卫金融中心3楼</p>"},
+      "en": {title:"Document Download", body:"<h2>Account Opening Document Download</h2><p>Please download the following documents, complete and return to our office with supporting documents.</p><div class='info-card'><h3>Securities Account Documents</h3><p>&#x1F4C4; Individual Account Agreement<br/>&#x1F4C4; Joint Account Agreement<br/>&#x1F4C4; Corporate Account Agreement<br/>&#x1F4C4; W-8BEN Form</p></div><p>Documents can also be collected at our office or mailed upon request. TEL: (852) 2530-9966</p><p>Address: 3/F, FWD Financial Centre, 308 Des Voeux Road Central, HK</p>"}
+    },
+    "stock-fee": {
+      "zh-Hant": {title:"佣金及收費", body:"<h2>股票佣金及收費</h2><table><tr><th>收費項目</th><th>收費標準</th></tr><tr><td>佣金</td><td>成交金額之 0.25%（最低 HK$100）</td></tr><tr><td>交易徵費 (SFC)</td><td>成交金額之 0.0027%</td></tr><tr><td>交易費 (HKEX)</td><td>成交金額之 0.00565%</td></tr><tr><td>印花稅</td><td>成交金額之 0.13%（不足 HK$1 亦作 HK$1 計）</td></tr><tr><td>中央結算費</td><td>成交金額之 0.002%（最低 HK$2，最高 HK$100）</td></tr><tr><td>代收股息費</td><td>股息金額之 0.5%（最低 HK$30）</td></tr></table><p>以上收費可能會不時修改，恕不另行通知。</p>"},
+      "zh-Hans": {title:"佣金及收费", body:"<h2>股票佣金及收费</h2><table><tr><th>收费项目</th><th>收费标准</th></tr><tr><td>佣金</td><td>成交金额之 0.25%（最低 HK$100）</td></tr><tr><td>交易征费 (SFC)</td><td>成交金额之 0.0027%</td></tr><tr><td>交易费 (HKEX)</td><td>成交金额之 0.00565%</td></tr><tr><td>印花税</td><td>成交金额之 0.13%（不足 HK$1 亦作 HK$1 计）</td></tr><tr><td>中央结算费</td><td>成交金额之 0.002%（最低 HK$2，最高 HK$100）</td></tr><tr><td>代收股息费</td><td>股息金额之 0.5%（最低 HK$30）</td></tr></table><p>以上收费可能会不时修改，恕不另行通知。</p>"},
+      "en": {title:"Fee Schedule", body:"<h2>Securities Fee Schedule</h2><table><tr><th>Charge</th><th>Rate</th></tr><tr><td>Commission</td><td>0.25% of transaction amount (min HK$100)</td></tr><tr><td>SFC Transaction Levy</td><td>0.0027%</td></tr><tr><td>HKEX Trading Fee</td><td>0.00565%</td></tr><tr><td>Stamp Duty</td><td>0.13% (min HK$1)</td></tr><tr><td>CCASS Fee</td><td>0.002% (min HK$2, max HK$100)</td></tr><tr><td>Dividend Collection</td><td>0.5% (min HK$30)</td></tr></table><p>Charges are subject to change without prior notice.</p>"}
+    },
+    "futures-account": {
+      "zh-Hant": {title:"期貨開戶程序", body:"<h2>期貨開戶程序</h2><h3>開戶步驟</h3><ul><li><strong>步驟一：</strong>下載及填寫期貨開戶文件</li><li><strong>步驟二：</strong>準備所需證明文件</li><li><strong>步驟三：</strong>提交文件至本公司</li><li><strong>步驟四：</strong>帳戶審批</li><li><strong>步驟五：</strong>安裝 Sharp Point 交易軟件並開始交易</li></ul><div class='info-card'><p>期貨交易涉及高風險，未必適合所有投資者。請確保您已充分了解相關風險。</p></div><p><a href='#/page/futures-download' data-spa class='dl-link'>&#x1F4E5; 下載開戶合約</a> <a href='#/page/futures-checklist' data-spa class='dl-link'>&#x2705; 核對清單</a></p>"},
+      "zh-Hans": {title:"期货开户程序", body:"<h2>期货开户程序</h2><h3>开户步骤</h3><ul><li><strong>步骤一：</strong>下载及填写期货开户文件</li><li><strong>步骤二：</strong>准备所需证明文件</li><li><strong>步骤三：</strong>提交文件至本公司</li><li><strong>步骤四：</strong>帐户审批</li><li><strong>步骤五：</strong>安装 Sharp Point 交易软件并开始交易</li></ul><div class='info-card'><p>期货交易涉及高风险，未必适合所有投资者。请确保您已充分了解相关风险。</p></div><p><a href='#/page/futures-download' data-spa class='dl-link'>&#x1F4E5; 下载开户合约</a> <a href='#/page/futures-checklist' data-spa class='dl-link'>&#x2705; 核对清单</a></p>"},
+      "en": {title:"Futures Account Opening", body:"<h2>Futures Account Opening</h2><h3>Steps</h3><ul><li><strong>Step 1:</strong> Download and complete futures account documents</li><li><strong>Step 2:</strong> Prepare supporting documents</li><li><strong>Step 3:</strong> Submit to our office</li><li><strong>Step 4:</strong> Account approval</li><li><strong>Step 5:</strong> Install Sharp Point and start trading</li></ul><div class='info-card'><p>Futures trading involves high risk and may not be suitable for all investors. Please ensure you fully understand the risks involved.</p></div><p><a href='#/page/futures-download' data-spa class='dl-link'>&#x1F4E5; Download Agreement</a> <a href='#/page/futures-checklist' data-spa class='dl-link'>&#x2705; Checklist</a></p>"}
+    },
+    "futures-checklist": {
+      "zh-Hant": {title:"期貨開戶核對清單", body:"<h2>期貨開戶核對清單</h2><ul><li>&#x2610; 已簽署之期貨開戶合約</li><li>&#x2610; 香港身份證/護照副本</li><li>&#x2610; 三個月內住址證明</li><li>&#x2610; 銀行帳單或存摺副本</li><li>&#x2610; 財務狀況聲明</li></ul>"},
+      "zh-Hans": {title:"期货开户核对清单", body:"<h2>期货开户核对清单</h2><ul><li>&#x2610; 已签署之期货开户合约</li><li>&#x2610; 香港身份证/护照副本</li><li>&#x2610; 三个月内住址证明</li><li>&#x2610; 银行帐单或存折副本</li><li>&#x2610; 财务状况声明</li></ul>"},
+      "en": {title:"Futures Checklist", body:"<h2>Futures Account Opening Checklist</h2><ul><li>&#x2610; Signed futures account agreement</li><li>&#x2610; HKID / passport copy</li><li>&#x2610; Address proof (within 3 months)</li><li>&#x2610; Bank statement or passbook copy</li><li>&#x2610; Financial status declaration</li></ul>"}
+    },
+    "futures-download": {
+      "zh-Hant": {title:"期貨下載合約", body:"<h2>期貨開戶合約下載</h2><div class='info-card'><p>&#x1F4C4; 個人期貨帳戶開戶合約<br/>&#x1F4C4; 公司期貨帳戶開戶合約<br/>&#x1F4C4; 期貨及期權風險披露聲明</p></div><p>請填妥後連同所需文件交回：香港德輔道中308號富衞金融中心3樓</p>"},
+      "zh-Hans": {title:"期货下载合约", body:"<h2>期货开户合约下载</h2><div class='info-card'><p>&#x1F4C4; 个人期货帐户开户合约<br/>&#x1F4C4; 公司期货帐户开户合约<br/>&#x1F4C4; 期货及期权风险披露声明</p></div><p>请填妥后连同所需文件交回：香港德辅道中308号富卫金融中心3楼</p>"},
+      "en": {title:"Futures Document Download", body:"<h2>Futures Account Document Download</h2><div class='info-card'><p>&#x1F4C4; Individual Futures Account Agreement<br/>&#x1F4C4; Corporate Futures Account Agreement<br/>&#x1F4C4; Futures & Options Risk Disclosure</p></div><p>Please return completed forms to: 3/F, FWD Financial Centre, 308 Des Voeux Road Central, HK</p>"}
+    },
+    "futures-fee": {
+      "zh-Hant": {title:"期貨佣金及收費", body:"<h2>期貨佣金及收費</h2><table><tr><th>合約</th><th>佣金（每張）</th></tr><tr><td>恒生指數期貨</td><td>HK$100</td></tr><tr><td>小型恒生指數期貨</td><td>HK$50</td></tr><tr><td>H股指數期貨</td><td>HK$100</td></tr><tr><td>恒生指數期權</td><td>HK$100</td></tr><tr><td>小型恒生指數期權</td><td>HK$50</td></tr></table><p>以上收費可能會不時修改，恕不另行通知。如需了解更多收費詳情，請致電 (852) 2530-9966。</p>"},
+      "zh-Hans": {title:"期货佣金及收费", body:"<h2>期货佣金及收费</h2><table><tr><th>合约</th><th>佣金（每张）</th></tr><tr><td>恒生指数期货</td><td>HK$100</td></tr><tr><td>小型恒生指数期货</td><td>HK$50</td></tr><tr><td>H股指数期货</td><td>HK$100</td></tr><tr><td>恒生指数期权</td><td>HK$100</td></tr><tr><td>小型恒生指数期权</td><td>HK$50</td></tr></table><p>以上收费可能会不时修改，恕不另行通知。如需了解更多收费详情，请致电 (852) 2530-9966。</p>"},
+      "en": {title:"Futures Fee Schedule", body:"<h2>Futures Fee Schedule</h2><table><tr><th>Contract</th><th>Commission (per lot)</th></tr><tr><td>Hang Seng Index Futures</td><td>HK$100</td></tr><tr><td>Mini HSI Futures</td><td>HK$50</td></tr><tr><td>H-shares Index Futures</td><td>HK$100</td></tr><tr><td>HSI Options</td><td>HK$100</td></tr><tr><td>Mini HSI Options</td><td>HK$50</td></tr></table><p>Charges are subject to change without prior notice. For details, please call (852) 2530-9966.</p>"}
+    },
+    "fund": {
+      "zh-Hant": {title:"基金", body:"<h2>基金服務</h2><p>群益證券(香港)為客戶提供基金買賣服務，涵蓋多種基金類型。如需了解詳情，請聯絡客戶服務部。</p><p>TEL：(852) 2530-9966</p>"},
+      "zh-Hans": {title:"基金", body:"<h2>基金服务</h2><p>群益证券(香港)为客户提供基金买卖服务，涵盖多种基金类型。如需了解详情，请联络客户服务部。</p><p>TEL：(852) 2530-9966</p>"},
+      "en": {title:"Funds", body:"<h2>Fund Services</h2><p>Capital Securities (HK) provides fund trading services covering various fund types. For details, please contact Customer Service.</p><p>TEL: (852) 2530-9966</p>"}
+    },
+    "trade-hours": {
+      "zh-Hant": {title:"交易時間表", body:"<h2>交易時間表</h2><h3>股票市場</h3><table><tr><th>時段</th><th>時間</th></tr><tr><td>開市前時段</td><td>09:00 - 09:30</td></tr><tr><td>上午交易時段</td><td>09:30 - 12:00</td></tr><tr><td>午間休市</td><td>12:00 - 13:00</td></tr><tr><td>下午交易時段</td><td>13:00 - 16:00</td></tr><tr><td>收市競價時段</td><td>16:00 - 16:10</td></tr></table><h3>期貨市場</h3><table><tr><th>合約</th><th>交易時間</th></tr><tr><td>恒指期貨（日市）</td><td>09:15 - 12:00, 13:00 - 16:30</td></tr><tr><td>恒指期貨（夜市）</td><td>17:15 - 03:00（翌日）</td></tr></table>"},
+      "zh-Hans": {title:"交易时间表", body:"<h2>交易时间表</h2><h3>股票市场</h3><table><tr><th>时段</th><th>时间</th></tr><tr><td>开市前时段</td><td>09:00 - 09:30</td></tr><tr><td>上午交易时段</td><td>09:30 - 12:00</td></tr><tr><td>午间休市</td><td>12:00 - 13:00</td></tr><tr><td>下午交易时段</td><td>13:00 - 16:00</td></tr><tr><td>收市竞价时段</td><td>16:00 - 16:10</td></tr></table><h3>期货市场</h3><table><tr><th>合约</th><th>交易时间</th></tr><tr><td>恒指期货（日市）</td><td>09:15 - 12:00, 13:00 - 16:30</td></tr><tr><td>恒指期货（夜市）</td><td>17:15 - 03:00（翌日）</td></tr></table>"},
+      "en": {title:"Trade Hours", body:"<h2>Trading Hours</h2><h3>Securities Market</h3><table><tr><th>Session</th><th>Time</th></tr><tr><td>Pre-opening</td><td>09:00 - 09:30</td></tr><tr><td>Morning Session</td><td>09:30 - 12:00</td></tr><tr><td>Lunch Break</td><td>12:00 - 13:00</td></tr><tr><td>Afternoon Session</td><td>13:00 - 16:00</td></tr><tr><td>Closing Auction</td><td>16:00 - 16:10</td></tr></table><h3>Futures Market</h3><table><tr><th>Contract</th><th>Hours</th></tr><tr><td>HSI Futures (Day)</td><td>09:15 - 12:00, 13:00 - 16:30</td></tr><tr><td>HSI Futures (After-Hours)</td><td>17:15 - 03:00 (next day)</td></tr></table>"}
+    },
+    "risk-disclosure": {
+      "zh-Hant": {title:"風險披露聲明", body:"<h2>風險披露聲明</h2><p>證券交易的風險：證券價格有時可能會非常波動。證券價格可升可跌，甚至變成毫無價值。買賣證券未必一定能夠賺取利潤，反而可能會招致損失。</p><p>期貨及期權交易的風險：買賣期貨合約或期權的虧蝕風險可以極大。在若干情況下，你所蒙受的虧蝕可能會超過最初存入的保證金數額。</p><div class='info-card'><p>投資涉及風險，過往業績並不代表將來表現。在作出任何投資決定前，投資者應考慮本身情況，包括但不限於財務狀況及風險承受能力。</p></div>"},
+      "zh-Hans": {title:"风险披露声明", body:"<h2>风险披露声明</h2><p>证券交易的风险：证券价格有时可能会非常波动。证券价格可升可跌，甚至变成毫无价值。买卖证券未必一定能够赚取利润，反而可能会招致损失。</p><p>期货及期权交易的风险：买卖期货合约或期权的亏蚀风险可以极大。在若干情况下，你所蒙受的亏蚀可能会超过最初存入的保证金数额。</p><div class='info-card'><p>投资涉及风险，过往业绩并不代表将来表现。在作出任何投资决定前，投资者应考虑本身情况，包括但不限于财务状况及风险承受能力。</p></div>"},
+      "en": {title:"Risk Disclosure", body:"<h2>Risk Disclosure Statement</h2><p>Risk of Securities Trading: The prices of securities fluctuate, sometimes dramatically. The price of a security may move up or down, and may become valueless.</p><p>Risk of Futures and Options Trading: The risk of loss in trading futures contracts or options can be substantial. In certain circumstances, you may sustain losses in excess of your initial margin funds.</p><div class='info-card'><p>Investment involves risk. Past performance is not indicative of future results. Before making any investment decisions, investors should consider their own circumstances including financial position and risk tolerance.</p></div>"}
+    },
+    "trade-statement": {
+      "zh-Hant": {title:"網上交易聲明", body:"<h2>網上交易聲明</h2><p>客戶使用群益證券(香港)網上交易服務，即表示已閱讀、理解及同意受以下條款及條件約束。</p><p>網上交易服務可能因系統維護、網絡故障或其他不可預見情況而暫時中斷。本公司不會對因系統故障而引致的任何損失承擔責任。</p><p>客戶有責任確保其帳戶密碼安全，不應向任何第三方披露。</p>"},
+      "zh-Hans": {title:"网上交易声明", body:"<h2>网上交易声明</h2><p>客户使用群益证券(香港)网上交易服务，即表示已阅读、理解及同意受以下条款及条件约束。</p><p>网上交易服务可能因系统维护、网络故障或其他不可预见情况而暂时中断。本公司不会对因系统故障而引致的任何损失承担责任。</p><p>客户有责任确保其帐户密码安全，不应向任何第三方披露。</p>"},
+      "en": {title:"Trading Declaration", body:"<h2>Online Trading Declaration</h2><p>By using Capital Securities (HK)'s online trading service, the client acknowledges having read, understood and agreed to be bound by the following terms and conditions.</p><p>Online trading services may be temporarily interrupted due to system maintenance, network failure or other unforeseen circumstances. The Company shall not be liable for any losses arising from system failures.</p><p>Clients are responsible for keeping their account passwords secure and shall not disclose them to any third party.</p>"}
+    },
+    "privacy": {
+      "zh-Hant": {title:"個人私隱政策", body:"<h2>個人私隱政策</h2><p>群益證券(香港)有限公司（「本公司」）致力保障客戶的個人資料私隱。本政策旨在讓您了解本公司如何收集、使用及保護您的個人資料。</p><h3>收集資料類別</h3><ul><li>個人身份資料（姓名、身份證號碼等）</li><li>聯絡資料（地址、電話、電郵）</li><li>財務資料（銀行帳戶、投資經驗）</li></ul><h3>使用目的</h3><ul><li>處理帳戶開設及維護</li><li>執行交易指令</li><li>遵守法律及監管要求</li><li>提供客戶服務及產品推廣</li></ul>"},
+      "zh-Hans": {title:"个人私隐政策", body:"<h2>个人私隐政策</h2><p>群益证券(香港)有限公司（「本公司」）致力保障客户的个人资料私隐。本政策旨在让您了解本公司如何收集、使用及保护您的个人资料。</p><h3>收集资料类别</h3><ul><li>个人身份资料（姓名、身份证号码等）</li><li>联络资料（地址、电话、电邮）</li><li>财务资料（银行帐户、投资经验）</li></ul><h3>使用目的</h3><ul><li>处理帐户开设及维护</li><li>执行交易指令</li><li>遵守法律及监管要求</li><li>提供客户服务及产品推广</li></ul>"},
+      "en": {title:"Personal Data Privacy", body:"<h2>Personal Data Privacy Policy</h2><p>Capital Securities (HK) Limited is committed to protecting clients' personal data privacy. This policy explains how we collect, use and protect your personal data.</p><h3>Types of Data Collected</h3><ul><li>Personal identification (name, ID number, etc.)</li><li>Contact information (address, phone, email)</li><li>Financial information (bank accounts, investment experience)</li></ul><h3>Purpose of Use</h3><ul><li>Account opening and maintenance</li><li>Executing trading instructions</li><li>Legal and regulatory compliance</li><li>Customer service and product promotion</li></ul>"}
+    },
+    "fund-deposit": {
+      "zh-Hant": {title:"款項提存方法", body:"<h2>款項提存方法</h2><h3>存入款項</h3><ul><li><strong>銀行轉帳：</strong>將款項轉入本公司指定銀行帳戶</li><li><strong>支票存入：</strong>將劃線支票交至本公司辦事處</li><li><strong>銀行存款：</strong>直接於銀行存款至本公司帳戶</li></ul><h3>提取款項</h3><ul><li>填寫提款申請表</li><li>款項將於確認後1-2個工作天內轉出</li><li>只可轉至客戶名下之銀行帳戶</li></ul><div class='info-card'><p>如有查詢，請致電 (852) 2530-9966</p></div>"},
+      "zh-Hans": {title:"款项提存方法", body:"<h2>款项提存方法</h2><h3>存入款项</h3><ul><li><strong>银行转帐：</strong>将款项转入本公司指定银行帐户</li><li><strong>支票存入：</strong>将划线支票交至本公司办事处</li><li><strong>银行存款：</strong>直接于银行存款至本公司帐户</li></ul><h3>提取款项</h3><ul><li>填写提款申请表</li><li>款项将于确认后1-2个工作天内转出</li><li>只可转至客户名下之银行帐户</li></ul><div class='info-card'><p>如有查询，请致电 (852) 2530-9966</p></div>"},
+      "en": {title:"Funds Deposit/Withdrawal", body:"<h2>Funds Deposit/Withdrawal</h2><h3>Deposit</h3><ul><li><strong>Bank Transfer:</strong> Transfer to our designated bank account</li><li><strong>Cheque:</strong> Deliver crossed cheque to our office</li><li><strong>Bank Deposit:</strong> Deposit directly at bank to our account</li></ul><h3>Withdrawal</h3><ul><li>Complete withdrawal application form</li><li>Funds transferred within 1-2 business days after confirmation</li><li>Only to bank accounts in the client's name</li></ul><div class='info-card'><p>For enquiries: TEL (852) 2530-9966</p></div>"}
+    },
+    "pro-investor": {
+      "zh-Hant": {title:"專業投資者", body:"<h2>專業投資者</h2><p>根據《證券及期貨條例》，專業投資者可享有較靈活的服務及產品選擇。如您符合專業投資者資格，請聯絡我們了解詳情。</p>"},
+      "zh-Hans": {title:"专业投资者", body:"<h2>专业投资者</h2><p>根据《证券及期货条例》，专业投资者可享有较灵活的服务及产品选择。如您符合专业投资者资格，请联络我们了解详情。</p>"},
+      "en": {title:"Professional Investor", body:"<h2>Professional Investor</h2><p>Under the Securities and Futures Ordinance, professional investors may enjoy more flexible services and product choices. Please contact us if you qualify.</p>"}
+    },
+    "forms-download": {
+      "zh-Hant": {title:"下載其他表格", body:"<h2>下載其他表格</h2><div class='info-card'><p>&#x1F4C4; 帳戶資料更改申請表<br/>&#x1F4C4; 款項提取申請表<br/>&#x1F4C4; 股票轉出/轉入申請表<br/>&#x1F4C4; 授權委託書<br/>&#x1F4C4; W-8BEN 表格</p></div><p>如需其他表格，請致電 (852) 2530-9966。</p>"},
+      "zh-Hans": {title:"下载其他表格", body:"<h2>下载其他表格</h2><div class='info-card'><p>&#x1F4C4; 帐户资料更改申请表<br/>&#x1F4C4; 款项提取申请表<br/>&#x1F4C4; 股票转出/转入申请表<br/>&#x1F4C4; 授权委托书<br/>&#x1F4C4; W-8BEN 表格</p></div><p>如需其他表格，请致电 (852) 2530-9966。</p>"},
+      "en": {title:"Forms Download", body:"<h2>Forms Download</h2><div class='info-card'><p>&#x1F4C4; Account Information Change Form<br/>&#x1F4C4; Withdrawal Application Form<br/>&#x1F4C4; Stock Transfer In/Out Form<br/>&#x1F4C4; Power of Attorney<br/>&#x1F4C4; W-8BEN Form</p></div><p>For other forms, please call (852) 2530-9966.</p>"}
+    },
+    "stock-demo": {
+      "zh-Hant": {title:"證券下單示範", body:"<h2>證券下單示範</h2><p>iTrader 網上交易平台提供簡單易用的介面，讓客戶輕鬆進行股票買賣。</p><h3>下單步驟</h3><ul><li>登入 iTrader 系統</li><li>輸入股票代號</li><li>選擇買入/賣出</li><li>設定價格及數量</li><li>確認下單</li></ul>"},
+      "zh-Hans": {title:"证券下单示范", body:"<h2>证券下单示范</h2><p>iTrader 网上交易平台提供简单易用的介面，让客户轻松进行股票买卖。</p><h3>下单步骤</h3><ul><li>登入 iTrader 系统</li><li>输入股票代号</li><li>选择买入/卖出</li><li>设定价格及数量</li><li>确认下单</li></ul>"},
+      "en": {title:"Trading Demo", body:"<h2>Trading Demo</h2><p>The iTrader online trading platform provides an easy-to-use interface for stock trading.</p><h3>Order Steps</h3><ul><li>Login to iTrader</li><li>Enter stock code</li><li>Select Buy/Sell</li><li>Set price and quantity</li><li>Confirm order</li></ul>"}
+    },
+    "stock-sysreq": {
+      "zh-Hant": {title:"系統需求", body:"<h2>系統需求</h2><h3>iTrader 系統需求</h3><table><tr><th>項目</th><th>最低要求</th></tr><tr><td>操作系統</td><td>Windows 7 或以上 / macOS 10.12 或以上</td></tr><tr><td>瀏覽器</td><td>Chrome 60+ / Firefox 55+ / Edge</td></tr><tr><td>網路</td><td>寬頻連線</td></tr><tr><td>解像度</td><td>1024 x 768 或以上</td></tr></table>"},
+      "zh-Hans": {title:"系统需求", body:"<h2>系统需求</h2><h3>iTrader 系统需求</h3><table><tr><th>项目</th><th>最低要求</th></tr><tr><td>操作系统</td><td>Windows 7 或以上 / macOS 10.12 或以上</td></tr><tr><td>浏览器</td><td>Chrome 60+ / Firefox 55+ / Edge</td></tr><tr><td>网路</td><td>宽带连线</td></tr><tr><td>分辨率</td><td>1024 x 768 或以上</td></tr></table>"},
+      "en": {title:"System Requirement", body:"<h2>System Requirements</h2><h3>iTrader Requirements</h3><table><tr><th>Item</th><th>Minimum</th></tr><tr><td>OS</td><td>Windows 7+ / macOS 10.12+</td></tr><tr><td>Browser</td><td>Chrome 60+ / Firefox 55+ / Edge</td></tr><tr><td>Network</td><td>Broadband connection</td></tr><tr><td>Resolution</td><td>1024 x 768 or above</td></tr></table>"}
+    },
+    "stock-faq": {
+      "zh-Hant": {title:"常見問題", body:"<h2>股票交易常見問題</h2><h3>Q: 如何開立帳戶？</h3><p>A: 請下載開戶文件，填妥後連同所需證明文件交回本公司。詳情請參閱<a href='#/page/stock-account-opening' data-spa>開戶程序</a>。</p><h3>Q: 佣金如何計算？</h3><p>A: 股票交易佣金為成交金額之 0.25%，最低收費 HK$100。詳情請參閱<a href='#/page/stock-fee' data-spa>佣金及收費</a>。</p><h3>Q: 交易時間是？</h3><p>A: 港股交易時間為上午 9:30-12:00，下午 1:00-4:00。詳情請參閱<a href='#/page/trade-hours' data-spa>交易時間表</a>。</p><h3>Q: 如何存入資金？</h3><p>A: 可透過銀行轉帳、支票或直接存款。詳情請參閱<a href='#/page/fund-deposit' data-spa>款項提存方法</a>。</p>"},
+      "zh-Hans": {title:"常见问题", body:"<h2>股票交易常见问题</h2><h3>Q: 如何开立帐户？</h3><p>A: 请下载开户文件，填妥后连同所需证明文件交回本公司。详情请参阅<a href='#/page/stock-account-opening' data-spa>开户程序</a>。</p><h3>Q: 佣金如何计算？</h3><p>A: 股票交易佣金为成交金额之 0.25%，最低收费 HK$100。详情请参阅<a href='#/page/stock-fee' data-spa>佣金及收费</a>。</p><h3>Q: 交易时间是？</h3><p>A: 港股交易时间为上午 9:30-12:00，下午 1:00-4:00。详情请参阅<a href='#/page/trade-hours' data-spa>交易时间表</a>。</p><h3>Q: 如何存入资金？</h3><p>A: 可透过银行转帐、支票或直接存款。详情请参阅<a href='#/page/fund-deposit' data-spa>款项提存方法</a>。</p>"},
+      "en": {title:"FAQ", body:"<h2>Securities Trading FAQ</h2><h3>Q: How to open an account?</h3><p>A: Download account opening documents, complete and return with supporting documents. See <a href='#/page/stock-account-opening' data-spa>Account Opening</a>.</p><h3>Q: How is commission calculated?</h3><p>A: Commission is 0.25% of transaction value, minimum HK$100. See <a href='#/page/stock-fee' data-spa>Fee Schedule</a>.</p><h3>Q: What are the trading hours?</h3><p>A: HK market: 9:30am-12pm, 1pm-4pm. See <a href='#/page/trade-hours' data-spa>Trade Hours</a>.</p><h3>Q: How to deposit funds?</h3><p>A: Via bank transfer, cheque or direct deposit. See <a href='#/page/fund-deposit' data-spa>Funds Deposit</a>.</p>"}
+    },
+    "futures-faq": {
+      "zh-Hant": {title:"期貨常見問題", body:"<h2>期貨交易常見問題</h2><h3>Q: 期貨帳戶需要多少按金？</h3><p>A: 按金金額視乎所交易之期貨合約而定。例如恒指期貨的基本按金約為 HK$100,000 以上。</p><h3>Q: 甚麼是 Sharp Point？</h3><p>A: Sharp Point 是專業的期貨交易平台，提供即時行情、圖表分析及快速下單功能。</p>"},
+      "zh-Hans": {title:"期货常见问题", body:"<h2>期货交易常见问题</h2><h3>Q: 期货帐户需要多少按金？</h3><p>A: 按金金额视乎所交易之期货合约而定。例如恒指期货的基本按金约为 HK$100,000 以上。</p><h3>Q: 什么是 Sharp Point？</h3><p>A: Sharp Point 是专业的期货交易平台，提供即时行情、图表分析及快速下单功能。</p>"},
+      "en": {title:"Futures FAQ", body:"<h2>Futures Trading FAQ</h2><h3>Q: How much margin is required?</h3><p>A: Margin amount depends on the futures contract. For example, HSI futures basic margin is approximately HK$100,000+.</p><h3>Q: What is Sharp Point?</h3><p>A: Sharp Point is a professional futures trading platform providing real-time quotes, charting and fast order execution.</p>"}
+    },
+    "contingency": {
+      "zh-Hant": {title:"應急安排", body:"<h2>應急安排</h2><p>如遇系統故障或其他緊急情況，客戶可透過以下方式提交交易指令：</p><ul><li><strong>電話下單：</strong>(852) 2530-9966</li><li><strong>傳真下單：</strong>(852) 2104-6006</li><li><strong>親臨辦公室：</strong>香港德輔道中308號富衞金融中心3樓</li></ul><div class='info-card'><p>電話下單可能會收取額外費用。建議客戶保留多個交易渠道以備不時之需。</p></div>"},
+      "zh-Hans": {title:"应急安排", body:"<h2>应急安排</h2><p>如遇系统故障或其他紧急情况，客户可透过以下方式提交交易指令：</p><ul><li><strong>电话下单：</strong>(852) 2530-9966</li><li><strong>传真下单：</strong>(852) 2104-6006</li><li><strong>亲临办公室：</strong>香港德辅道中308号富卫金融中心3楼</li></ul><div class='info-card'><p>电话下单可能会收取额外费用。建议客户保留多个交易渠道以备不时之需。</p></div>"},
+      "en": {title:"Emergency Arrangement", body:"<h2>Emergency Arrangement</h2><p>In case of system failure or emergency, clients may submit trading instructions via:</p><ul><li><strong>Phone:</strong> (852) 2530-9966</li><li><strong>Fax:</strong> (852) 2104-6006</li><li><strong>In Person:</strong> 3/F, FWD Financial Centre, 308 Des Voeux Road Central, HK</li></ul><div class='info-card'><p>Phone orders may incur additional charges. Clients are advised to maintain alternative trading channels.</p></div>"}
+    }
+  }
+};
+
+// ————————————————————— STATE —————————————————————
+var currentLang = localStorage.getItem("ecap_lang") || "zh-Hant";
+var CMS_KEY = "ecap_cms_pages";
+
+function getCmsPages(){
+  try { var d = JSON.parse(localStorage.getItem(CMS_KEY)); return d || {}; } catch(e){ return {}; }
+}
+function saveCmsPages(d){ localStorage.setItem(CMS_KEY, JSON.stringify(d)); }
+
+function getPage(slug, lang){
+  var cms = getCmsPages();
+  if(cms[slug] && cms[slug][lang]) return cms[slug][lang];
+  if(SITE.pages[slug] && SITE.pages[slug][lang]) return SITE.pages[slug][lang];
+  return null;
+}
+
+function T(key){ return (SITE.ui[currentLang] && SITE.ui[currentLang][key]) || key; }
+
+// ————————————————————— NAV BUILD —————————————————————
+function buildNavItem(ch){
+  if(ch.ext){
+    return '<a href="'+esc(ch.ext)+'" target="_blank" rel="noopener">'+esc(ch.label)+'</a>';
+  } else if(ch.children){
+    var h = '<div class="has-sub"><a href="#">'+esc(ch.label)+' &#x25B8;</a><div class="sub-dropdown"><div class="dropdown-inner">';
+    ch.children.forEach(function(sub){ h += buildNavItem(sub); });
+    h += '</div></div></div>';
+    return h;
+  } else if(ch.page){
+    return '<a href="#/page/'+esc(ch.page)+'" data-spa>'+esc(ch.label)+'</a>';
+  }
+  return '';
+}
+
+function buildNav(){
+  var items = SITE.nav[currentLang] || SITE.nav["zh-Hant"];
+  var html = "";
+  items.forEach(function(item){
+    if(item.ext){
+      html += '<li><a href="'+esc(item.ext)+'" target="_blank" rel="noopener">'+esc(item.label)+'</a></li>';
+    } else if(item.children){
+      html += '<li><a href="#">'+esc(item.label)+'</a><div class="dropdown"><div class="dropdown-inner">';
+      item.children.forEach(function(ch){ html += buildNavItem(ch); });
+      html += '</div></div></li>';
+    } else if(item.page){
+      html += '<li><a href="#/page/'+esc(item.page)+'" data-spa>'+esc(item.label)+'</a></li>';
+    }
+  });
+  document.getElementById("navLinks").innerHTML = html;
+  // Mobile menu
+  var mhtml = '<a href="#/" data-spa>'+esc(T("home"))+'</a>';
+  function buildMobile(list, depth){
+    list.forEach(function(item){
+      if(item.ext){
+        mhtml += '<a href="'+esc(item.ext)+'" target="_blank" rel="noopener" style="padding-left:'+(12+depth*16)+'px">'+esc(item.label)+'</a>';
+      } else if(item.children){
+        mhtml += '<a href="#" style="padding-left:'+(12+depth*16)+'px;font-weight:'+(depth===0?'500':'400')+'">'+esc(item.label)+'</a>';
+        mhtml += '<div class="mm-sub">';
+        buildMobile(item.children, depth+1);
+        mhtml += '</div>';
+      } else if(item.page){
+        mhtml += '<a href="#/page/'+esc(item.page)+'" data-spa style="padding-left:'+(12+depth*16)+'px">'+esc(item.label)+'</a>';
+      }
+    });
+  }
+  buildMobile(items, 0);
+  document.getElementById("mobileMenu").innerHTML = mhtml;
+  // Update top buttons
+  var loginBtn = document.querySelector('.nav-cta .btn-o');
+  var openBtn = document.querySelector('.nav-cta .btn-p');
+  if(loginBtn) loginBtn.textContent = T("nav_login");
+  if(openBtn) openBtn.textContent = T("nav_open");
+}
+
+// ————————————————————— VIEWS —————————————————————
+function homeView(){
+  var u = SITE.ui[currentLang] || SITE.ui["zh-Hant"];
+  return '<section class="hero"><div class="mw hero-inner">'
+    +'<div class="hero-content">'
+    +'<div class="hero-badge"><span class="hero-badge-icon">&#x2713;</span> '+esc(u.hero_badge)+'</div>'
+    +'<h1>'+esc(u.hero_h1_1)+'<span class="gt">'+esc(u.hero_h1_gt)+'</span><br/>'+esc(u.hero_h1_2)+'</h1>'
+    +'<p class="hero-sub">'+esc(u.hero_sub)+'</p>'
+    +'<div class="hero-acts">'
+    +'<a href="#/page/stock-account-opening" data-spa class="btn-hero primary">'+esc(u.hero_cta1)+' &#8594;</a>'
+    +'<a href="https://itrade.e-capital.com.hk:8888/" target="_blank" rel="noopener" class="btn-hero secondary">'+esc(u.hero_cta2)+'</a>'
+    +'</div></div>'
+    +'<div class="hero-vis"><div class="hero-card">'
+    +'<img src="https://www.e-capital.com.hk/en/images/logo_09.png" alt="e-Capital" width="180"/>'
+    +'<div style="color:var(--brand);font-weight:600;font-size:14px">'+esc(u.hero_card_t)+'</div>'
+    +'<div style="color:var(--text-muted);font-size:12px;margin-top:4px">'+esc(u.hero_card_s)+'</div>'
+    +'</div>'
+    +'<div class="hero-float"><div class="ic">&#x1F4C8;</div><div style="font-size:13px;font-weight:500">'+esc(u.hero_float)+'<span style="display:block;font-size:11px;color:var(--text-muted);font-weight:400">'+esc(u.hero_float_s)+'</span></div></div>'
+    +'</div></div></section>'
+    // Marquee
+    +'<section class="marquee-sec"><div class="marquee-label">'+esc(u.marquee_label)+'</div>'
+    +'<div class="marquee-track" aria-hidden="true">'
+    + (u.marquee_items||[]).concat(u.marquee_items||[]).map(function(m){return '<span class="marquee-item">'+esc(m)+'</span>';}).join('')
+    +'</div></section>'
+    // Services
+    + servicesView(u)
+    // Stats
+    +'<section class="stats-sec"><div class="mw"><div class="stats-grid">'
+    +'<div><div class="stat-num">'+esc(u.stat1)+'</div><div class="stat-lbl">'+esc(u.stat1l)+'</div></div>'
+    +'<div><div class="stat-num">'+esc(u.stat2)+'</div><div class="stat-lbl">'+esc(u.stat2l)+'</div></div>'
+    +'<div><div class="stat-num">'+esc(u.stat3)+'</div><div class="stat-lbl">'+esc(u.stat3l)+'</div></div>'
+    +'<div><div class="stat-num">'+esc(u.stat4)+'</div><div class="stat-lbl">'+esc(u.stat4l)+'</div></div>'
+    +'</div></div></section>'
+    // News
+    + newsView(u)
+    // CTA
+    + ctaView(u);
+}
+
+function servicesView(u){
+  function svcBlock(lbl,title,desc,feats,visIcon,visT,visS){
+    return '<div class="mw"><div class="svc-block"><div class="svc-text">'
+      +'<div class="sec-label">'+esc(lbl)+'</div>'
+      +'<h3 class="sec-title">'+title+'</h3>'
+      +'<p class="sec-desc">'+esc(desc)+'</p>'
+      +'<div class="svc-feats">'
+      + feats.map(function(f){return '<div class="svc-feat"><div class="svc-feat-ic">'+f[0]+'</div><div class="svc-feat-tx">'+esc(f[1])+'<span>'+esc(f[2])+'</span></div></div>';}).join('')
+      +'</div></div>'
+      +'<div class="svc-vis"><div class="svc-vis-in"><div style="text-align:center"><div style="font-size:64px;margin-bottom:16px">'+visIcon+'</div>'
+      +'<div style="font-size:20px;font-weight:600;color:var(--brand)">'+esc(visT)+'</div>'
+      +'<div style="font-size:13px;color:var(--text-muted);margin-top:8px">'+esc(visS)+'</div></div></div></div>'
+      +'</div></div>';
+  }
+  return '<section class="section" id="services"><div class="mw">'
+    +'<div class="sec-label">'+esc(u.svc_label)+'</div>'
+    +'<h2 class="sec-title">'+esc(u.svc_title)+'</h2>'
+    +'<p class="sec-desc">'+esc(u.svc_desc)+'</p></div>'
+    + svcBlock(u.svc1_label, u.svc1_title, u.svc1_desc, [["&#x26A1;",u.svc1_f1,u.svc1_f1s],["&#x1F4B0;",u.svc1_f2,u.svc1_f2s],["&#x1F4CA;",u.svc1_f3,u.svc1_f3s],["&#x1F310;",u.svc1_f4,u.svc1_f4s]], "&#x1F4C8;", u.svc1_vis, u.svc1_vis_s)
+    + svcBlock(u.svc2_label, u.svc2_title, u.svc2_desc, [["&#x1F1E8;&#x1F1F3;",u.svc2_f1,u.svc2_f1s],["&#x1F4D1;",u.svc2_f2,u.svc2_f2s],["&#x1F4F0;",u.svc2_f3,u.svc2_f3s],["&#x1F50D;",u.svc2_f4,u.svc2_f4s]], "&#x1F1E8;&#x1F1F3;", u.svc2_vis, u.svc2_vis_s)
+    + svcBlock(u.svc3_label, u.svc3_title, u.svc3_desc, [["&#x1F4BB;",u.svc3_f1,u.svc3_f1s],["&#x1F6E1;",u.svc3_f2,u.svc3_f2s],["&#x23F0;",u.svc3_f3,u.svc3_f3s],["&#x1F30D;",u.svc3_f4,u.svc3_f4s]], "&#x1F4B9;", u.svc3_vis, u.svc3_vis_s)
+    +'</section>';
+}
+
+function newsView(u){
+  return '<section class="section" id="news"><div class="mw">'
+    +'<div class="news-hdr"><div><div class="sec-label">'+esc(u.news_label)+'</div><h2 class="sec-title">'+esc(u.news_title)+'</h2></div>'
+    +'<a href="#/page/news" data-spa class="link-arr">'+esc(u.news_all)+'</a></div>'
+    +'<div class="news-grid">'
+    +'<article class="news-card"><div class="news-card-img">&#x1F4C4;</div><div class="news-card-body"><div class="news-card-date">2020-12-31</div><h3 class="news-card-title"><a href="#/page/report-daily" data-spa>'+esc(currentLang==="en"?"China/HK Daily Investment Report":"中國/香港投資日報")+'</a></h3><p class="news-card-ex">'+esc(currentLang==="en"?"Daily market commentary and investment advice.":"每日市場評論及投資建議。")+'</p></div></article>'
+    +'<article class="news-card"><div class="news-card-img">&#x1F4CA;</div><div class="news-card-body"><div class="news-card-date">2020-10-30</div><h3 class="news-card-title"><a href="#/page/report-stock" data-spa>'+esc(currentLang==="en"?"CITIC Securities":"中信證券")+' (600030/6030.HK)</a></h3><p class="news-card-ex">'+esc(currentLang==="en"?"Individual stock analysis report.":"個股推薦深度分析。")+'</p></div></article>'
+    +'<article class="news-card"><div class="news-card-img">&#x1F680;</div><div class="news-card-body"><div class="news-card-date">2020-03-12</div><h3 class="news-card-title"><a href="#/page/report-ipo" data-spa>'+esc(currentLang==="en"?"Innovent Biologics":"諾誠健華")+' (9969.HK)</a></h3><p class="news-card-ex">'+esc(currentLang==="en"?"IPO analysis report.":"新股上市分析報告。")+'</p></div></article>'
+    +'</div></div></section>';
+}
+
+function ctaView(u){
+  return '<section class="cta-sec"><div class="mw"><div class="cta-card">'
+    +'<div class="cta-cont"><h2>'+u.cta_h+'</h2><p>'+esc(u.cta_p)+'</p>'
+    +'<div class="cta-acts"><a href="#/page/stock-account-opening" data-spa class="btn-w">'+esc(u.cta_btn1)+' &#8594;</a>'
+    +'<a href="#/page/futures-account" data-spa class="btn-gw">'+esc(u.cta_btn2)+'</a></div></div>'
+    +'<div class="cta-vis"><div class="cta-steps">'
+    +'<div class="cta-step"><div class="cta-step-n">1</div><div>'+esc(u.cta_s1)+'</div></div>'
+    +'<div class="cta-step"><div class="cta-step-n">2</div><div>'+esc(u.cta_s2)+'</div></div>'
+    +'<div class="cta-step"><div class="cta-step-n">3</div><div>'+esc(u.cta_s3)+'</div></div>'
+    +'<div class="cta-step"><div class="cta-step-n">4</div><div>'+esc(u.cta_s4)+'</div></div>'
+    +'</div></div></div></div></section>';
+}
+
+function pageView(slug){
+  var pg = getPage(slug, currentLang);
+  if(!pg) return '<section class="subpage"><div class="mw"><div class="subpage-header"><div class="breadcrumb"><a href="#/" data-spa>'+esc(T("home"))+'</a> / '+esc(slug)+'</div><h1>Page Not Found</h1></div><div class="subpage-body"><p>This page is not yet available.</p></div></div></section>';
+  return '<section class="subpage"><div class="mw">'
+    +'<div class="subpage-header"><div class="breadcrumb"><a href="#/" data-spa>'+esc(T("home"))+'</a> / '+esc(pg.title)+'</div>'
+    +'<h1>'+esc(pg.title)+'</h1></div>'
+    +'<div class="subpage-body">'+pg.body+'</div>'
+    +'</div></section>';
+}
+
+function adminView(){
+  // --- Admin Login Gate ---
+  if(!isAdminLoggedIn()){
+    return '<section class="admin-login"><div class="admin-login-box">'
+      +'<div class="login-icon">&#x1F512;</div>'
+      +'<h2>CMS Admin</h2>'
+      +'<p class="login-sub">Please login to manage website content</p>'
+      +'<form onsubmit="return window._adminLogin(event)">'
+      +'<div class="login-field"><label>Username</label><input type="text" id="adminUser" value="admin" autocomplete="username"/></div>'
+      +'<div class="login-field"><label>Password</label><input type="password" id="adminPass" placeholder="Enter password" autocomplete="current-password"/></div>'
+      +'<button type="submit" class="login-btn" id="loginBtn">Login</button>'
+      +'<div class="login-err" id="loginErr"></div>'
+      +'</form>'
+      +'<div class="login-hint">Default: admin / admin &mdash; Change password in source code for production</div>'
+      +'</div></section>';
+  }
+
+  // --- Authenticated CMS View ---
+  var allPages = Object.keys(SITE.pages);
+  var cms = getCmsPages();
+  return '<div class="cms-layout">'
+    // Sidebar
+    +'<aside class="cms-sidebar">'
+    +'<div class="cms-sidebar-hdr"><h2>&#x1F4DD; Pages</h2><p>'+allPages.length+' pages total</p></div>'
+    +'<div class="cms-search"><input type="text" id="cmsSearch" placeholder="Search pages..." oninput="window._cmsFilter(this.value)"/></div>'
+    +'<div class="cms-page-list" id="cmsPageList">'
+    + allPages.map(function(slug){
+        var edited = cms[slug] ? ' edited' : '';
+        return '<div class="cms-page-item'+edited+'" data-slug="'+esc(slug)+'" onclick="window._cmsEditPage(\''+slug+'\')">'
+          +'<span class="page-dot"></span><span class="page-name">'+esc(slug)+'</span></div>';
+      }).join('')
+    +'</div></aside>'
+    // Main
+    +'<div class="cms-main">'
+    +'<div class="cms-main-header"><h3>&#x2699; CMS Content Manager</h3>'
+    +'<div class="cms-header-acts">'
+    +'<button class="cms-preview-toggle" id="previewToggle" onclick="window._cmsTogglePreview()">&#x1F441; Preview</button>'
+    +'<button class="admin-btn primary" onclick="window._cmsExport()">&#x1F4E4; Export</button>'
+    +'<button class="admin-btn secondary" onclick="document.getElementById(\'cmsImportFile\').click()">&#x1F4E5; Import</button>'
+    +'<input type="file" id="cmsImportFile" accept=".json" style="display:none" onchange="window._cmsImport(event)"/>'
+    +'<button class="admin-btn danger" onclick="window._cmsReset()">&#x21BA; Reset</button>'
+    +'<button class="admin-btn secondary" onclick="window._adminLogout()" style="margin-left:8px">&#x1F6AA; Logout</button>'
+    +'</div></div>'
+    +'<div class="cms-editor-area" id="cmsEditor">'
+    +'<div class="cms-empty"><div class="empty-icon">&#x1F449;</div><p>Select a page from the sidebar to start editing</p></div>'
+    +'</div></div></div>';
+}
+
+// ————————————————————— ADMIN AUTH —————————————————————
+// Default password: "admin" — SHA-256 hash below
+var ADMIN_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
+var ADMIN_SESSION_KEY = "ecap_admin_auth";
+
+function isAdminLoggedIn(){ return sessionStorage.getItem(ADMIN_SESSION_KEY) === "1"; }
+
+window._adminLogout = function(){
+  sessionStorage.removeItem(ADMIN_SESSION_KEY);
+  location.hash = "#/";
+};
+
+window._adminLogin = function(e){
+  e.preventDefault();
+  var pass = document.getElementById("adminPass").value;
+  var btn = document.getElementById("loginBtn");
+  var errEl = document.getElementById("loginErr");
+  btn.disabled = true;
+  btn.textContent = "Verifying...";
+  // SHA-256 via Web Crypto API
+  crypto.subtle.digest("SHA-256", new TextEncoder().encode(pass)).then(function(buf){
+    var hash = Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,"0");}).join("");
+    if(hash === ADMIN_HASH){
+      sessionStorage.setItem(ADMIN_SESSION_KEY, "1");
+      route();
+    } else {
+      errEl.textContent = "Incorrect password. Please try again.";
+      btn.disabled = false;
+      btn.textContent = "Login";
+    }
+  });
+  return false;
+};
+
+// ————————————————————— CMS FUNCTIONS —————————————————————
+var _cmsCurrentSlug = null;
+var _cmsPreviewOn = false;
+
+window._cmsFilter = function(q){
+  q = q.toLowerCase();
+  document.querySelectorAll('.cms-page-item').forEach(function(el){
+    var slug = el.getAttribute('data-slug') || '';
+    el.style.display = slug.toLowerCase().indexOf(q) >= 0 ? '' : 'none';
+  });
+};
+
+window._cmsTogglePreview = function(){
+  _cmsPreviewOn = !_cmsPreviewOn;
+  var btn = document.getElementById('previewToggle');
+  if(btn) btn.classList.toggle('active', _cmsPreviewOn);
+  if(_cmsCurrentSlug) window._cmsEditPage(_cmsCurrentSlug);
+};
+
+window._cmsEditPage = function(slug){
+  _cmsCurrentSlug = slug;
+  var langs = ["zh-Hant","zh-Hans","en"];
+  var langNames = {"zh-Hant":"繁體中文","zh-Hans":"简体中文","en":"English"};
+  var html = '<h3 style="font-size:20px;font-weight:700;margin-bottom:16px">'+esc(slug)+'</h3>';
+
+  langs.forEach(function(lang){
+    var pg = getPage(slug, lang);
+    var title = pg ? pg.title : '';
+    var body = pg ? pg.body : '';
+    html += '<div class="cms-field-group"><h4>'+esc(langNames[lang])+' ('+lang+')</h4>'
+      +'<div class="admin-field"><label>Title</label><input type="text" id="cms_t_'+slug+'_'+lang+'" value="'+escAttr(title)+'" oninput="window._cmsLivePreview(\''+slug+'\')"/></div>'
+      +'<div class="admin-field"><label>Body (HTML)</label><textarea id="cms_b_'+slug+'_'+lang+'" style="min-height:160px;font-family:monospace;font-size:13px" oninput="window._cmsLivePreview(\''+slug+'\')">'+escHtml(body)+'</textarea></div></div>';
+  });
+
+  html += '<div style="display:flex;gap:8px;margin-top:8px">'
+    +'<button class="admin-btn primary" onclick="window._cmsSavePage(\''+slug+'\')">&#x1F4BE; Save Changes</button>'
+    +'<a href="#/page/'+esc(slug)+'" target="_blank" class="admin-btn secondary" style="text-decoration:none;display:inline-flex;align-items:center">&#x1F517; View Page</a></div>';
+
+  if(_cmsPreviewOn){
+    var previewPg = getPage(slug, currentLang);
+    var previewBody = previewPg ? previewPg.body : '<p style="color:var(--text-muted)">No content</p>';
+    html += '<div style="margin-top:24px"><div class="cms-preview-label">&#x1F441; Live Preview ('+currentLang+')</div>'
+      +'<div class="cms-preview-panel"><div class="subpage-body" id="cmsPreviewBody">'+previewBody+'</div></div></div>';
+  }
+
+  document.getElementById("cmsEditor").innerHTML = html;
+
+  // Highlight active page in sidebar
+  document.querySelectorAll('.cms-page-item').forEach(function(el){
+    el.classList.toggle('active', el.getAttribute('data-slug') === slug);
+  });
+};
+
+window._cmsLivePreview = function(slug){
+  if(!_cmsPreviewOn) return;
+  var tEl = document.getElementById("cms_t_"+slug+"_"+currentLang);
+  var bEl = document.getElementById("cms_b_"+slug+"_"+currentLang);
+  var preview = document.getElementById("cmsPreviewBody");
+  if(bEl && preview) preview.innerHTML = bEl.value;
+};
+
+window._cmsSavePage = function(slug){
+  var cms = getCmsPages();
+  if(!cms[slug]) cms[slug] = {};
+  ["zh-Hant","zh-Hans","en"].forEach(function(lang){
+    var tEl = document.getElementById("cms_t_"+slug+"_"+lang);
+    var bEl = document.getElementById("cms_b_"+slug+"_"+lang);
+    if(tEl && bEl){
+      cms[slug][lang] = { title: tEl.value, body: bEl.value };
+    }
+  });
+  saveCmsPages(cms);
+  showToast("Saved: " + slug);
+  // Mark sidebar item as edited
+  document.querySelectorAll('.cms-page-item').forEach(function(el){
+    if(el.getAttribute('data-slug') === slug) el.classList.add('edited');
+  });
+};
+
+window._cmsExport = function(){
+  var cms = getCmsPages();
+  // Merge with defaults for full export
+  var full = JSON.parse(JSON.stringify(SITE.pages));
+  Object.keys(cms).forEach(function(slug){
+    if(!full[slug]) full[slug] = {};
+    Object.keys(cms[slug]).forEach(function(lang){
+      full[slug][lang] = cms[slug][lang];
+    });
+  });
+  var blob = new Blob([JSON.stringify(full, null, 2)], {type:"application/json"});
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "ecapital-cms-"+new Date().toISOString().slice(0,10)+".json";
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast("Exported JSON");
+};
+
+window._cmsImport = function(e){
+  var file = e.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    try {
+      var data = JSON.parse(ev.target.result);
+      saveCmsPages(data);
+      showToast("Imported successfully");
+      route();
+    } catch(err){ showToast("Invalid JSON file"); }
+  };
+  reader.readAsText(file);
+  e.target.value = "";
+};
+
+window._cmsReset = function(){
+  if(confirm("Reset all CMS edits to default?")) {
+    localStorage.removeItem(CMS_KEY);
+    showToast("Reset to defaults");
+    route();
+  }
+};
+
+// ————————————————————— FOOTER —————————————————————
+function footerView(){
+  var u = SITE.ui[currentLang] || SITE.ui["zh-Hant"];
+  return '<footer class="footer"><div class="mw">'
+    +'<div class="footer-grid">'
+    +'<div class="footer-brand"><img src="https://www.e-capital.com.hk/en/images/logo_09.png" alt="e-Capital" width="180"/><p>'+u.ft_addr+'</p></div>'
+    +'<div class="footer-col"><h4>'+esc(u.ft_svc)+'</h4>'
+    +'<a href="#/page/stock-ipo" data-spa>'+esc(currentLang==="en"?"Securities":"股票交易")+'</a>'
+    +'<a href="#/page/shh-hk" data-spa>'+esc(currentLang==="en"?"SH-HK Connect":"滬港通")+'</a>'
+    +'<a href="http://futures.e-capital.com.hk/" target="_blank" rel="noopener">'+esc(currentLang==="en"?"Futures & Options":"期貨及期權")+'</a>'
+    +'<a href="#/page/stock-ipo" data-spa>'+esc(currentLang==="en"?"IPO":"IPO 新股")+'</a></div>'
+    +'<div class="footer-col"><h4>'+esc(u.ft_news)+'</h4>'
+    +'<a href="#/page/news" data-spa>'+esc(currentLang==="en"?"News":"香港新聞")+'</a>'
+    +'<a href="#/page/report-daily" data-spa>'+esc(currentLang==="en"?"Daily Update":"每日評論")+'</a>'
+    +'<a href="#/page/report-stock" data-spa>'+esc(currentLang==="en"?"Stock Reports":"個股推薦")+'</a>'
+    +'<a href="#/page/report-view" data-spa>'+esc(currentLang==="en"?"CSC\'s View":"群益觀點")+'</a>'
+    +'<a href="#/page/shh-hk-mag" data-spa>'+esc(currentLang==="en"?"Monthly":"滬港通月刊")+'</a></div>'
+    +'<div class="footer-col"><h4>'+esc(u.ft_acct)+'</h4>'
+    +'<a href="#/page/stock-account-opening" data-spa>'+esc(currentLang==="en"?"Securities Account":"股票開戶")+'</a>'
+    +'<a href="#/page/futures-account" data-spa>'+esc(currentLang==="en"?"Futures Account":"期貨開戶")+'</a>'
+    +'<a href="#/page/stock-fee" data-spa>'+esc(currentLang==="en"?"Fee Schedule":"佣金及收費")+'</a>'
+    +'<a href="#/page/fund-deposit" data-spa>'+esc(currentLang==="en"?"Funds":"款項提存")+'</a>'
+    +'<a href="#/page/stock-faq" data-spa>'+esc(currentLang==="en"?"FAQ":"常見問題")+'</a></div>'
+    +'<div class="footer-col"><h4>'+esc(u.ft_legal)+'</h4>'
+    +'<a href="#/page/trade-statement" data-spa>'+esc(currentLang==="en"?"Trading Declaration":"網上交易聲明")+'</a>'
+    +'<a href="#/page/risk-disclosure" data-spa>'+esc(currentLang==="en"?"Risk Disclosure":"風險披露聲明")+'</a>'
+    +'<a href="#/page/privacy" data-spa>'+esc(currentLang==="en"?"Privacy":"個人私隱政策")+'</a></div>'
+    +'</div>'
+    +'<div class="footer-btm"><div class="footer-btm-text">'+esc(u.ft_copy)+'</div>'
+    +'<div style="display:flex;gap:8px"><a href="#/admin" data-spa style="font-size:11px;color:rgba(255,255,255,.3)">CMS</a></div>'
+    +'</div></div></footer>';
+}
+
+// ————————————————————— ROUTER —————————————————————
+function route(){
+  var hash = location.hash || "#/";
+  var app = document.getElementById("app");
+  buildNav();
+  closeMobile();
+
+  if(hash === "#/" || hash === "#" || hash === ""){
+    app.innerHTML = homeView() + footerView();
+    window.scrollTo(0,0);
+  } else if(hash.indexOf("#/page/") === 0){
+    var slug = hash.replace("#/page/","").split("?")[0];
+    app.innerHTML = pageView(slug) + footerView();
+    window.scrollTo(0,0);
+  } else if(hash === "#/admin"){
+    app.innerHTML = adminView();
+    window.scrollTo(0,0);
+  } else {
+    app.innerHTML = '<section class="subpage"><div class="mw"><h1>404</h1><p><a href="#/" data-spa>'+esc(T("home"))+'</a></p></div></section>' + footerView();
+  }
+
+  // Update lang highlight
+  document.querySelectorAll('[data-lang]').forEach(function(el){
+    el.classList.toggle('active', el.getAttribute('data-lang') === currentLang);
+  });
+  // Update html lang
+  document.documentElement.lang = currentLang === "zh-Hans" ? "zh-Hans" : currentLang === "en" ? "en" : "zh-Hant";
+}
+
+// ————————————————————— EVENTS —————————————————————
+window.addEventListener("hashchange", route);
+
+// Language switch
+document.addEventListener("click", function(e){
+  var langEl = e.target.closest("[data-lang]");
+  if(langEl){
+    e.preventDefault();
+    currentLang = langEl.getAttribute("data-lang");
+    localStorage.setItem("ecap_lang", currentLang);
+    route();
+    return;
+  }
+  // SPA link
+  var spaLink = e.target.closest("[data-spa]");
+  if(spaLink){
+    closeMobile();
+  }
+});
+
+// Nav scroll
+var nav = document.getElementById("mainNav");
+var navScrolled = false;
+window.addEventListener("scroll", function(){
+  var y = window.scrollY || window.pageYOffset;
+  if(y > 40 && !navScrolled){ nav.classList.add("scrolled"); navScrolled = true; }
+  else if(y <= 40 && navScrolled){ nav.classList.remove("scrolled"); navScrolled = false; }
+}, {passive:true});
+
+// Hamburger
+document.getElementById("navHam").addEventListener("click", function(){
+  document.getElementById("mobileMenu").classList.toggle("open");
+});
+function closeMobile(){ document.getElementById("mobileMenu").classList.remove("open"); }
+
+// ————————————————————— UTIL —————————————————————
+function esc(s){ if(!s) return ""; var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+function escAttr(s){ return esc(s).replace(/"/g,"&quot;"); }
+function escHtml(s){ return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function showToast(msg){
+  var t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  setTimeout(function(){ t.classList.remove("show"); }, 2500);
+}
+
+// ————————————————————— INIT —————————————————————
+route();
+nav.classList.add("scrolled"); // init check
+
+})();
+</script>
+</body>
+</html>

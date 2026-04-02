@@ -92,7 +92,8 @@
 }
 
 /* ===== rd.group Newsroom-style table rows → card items ===== */
-.subpage-body table {
+.subpage-body > table,
+.subpage-body > form > table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0 8px;
@@ -103,17 +104,22 @@
   border-radius: 0;
   border: none;
 }
-.subpage-body table + table {
+.subpage-body > table + table,
+.subpage-body > form > table + table {
   margin-top: 0;
 }
 
 /* Hide legacy table headers — we don't need "名稱/日期/出版者" row */
-.subpage-body table:first-of-type tr:first-child {
+.subpage-body > table:first-of-type tr:first-child {
   display: none;
 }
 
-/* Each row becomes a card */
-.subpage-body tr {
+/* Each top-level row becomes a card */
+.subpage-body > table > tr,
+.subpage-body > table > tbody > tr,
+.subpage-body > table > form > tr,
+.subpage-body > form > table > tr,
+.subpage-body > form > table > tbody > tr {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -125,7 +131,11 @@
   position: relative;
   cursor: pointer;
 }
-.subpage-body tr::before {
+.subpage-body > table > tr::before,
+.subpage-body > table > tbody > tr::before,
+.subpage-body > table > form > tr::before,
+.subpage-body > form > table > tr::before,
+.subpage-body > form > table > tbody > tr::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -135,17 +145,51 @@
   transition: opacity .35s var(--ease);
   z-index: 0;
 }
-.subpage-body tr:hover {
+.subpage-body > table > tr:hover,
+.subpage-body > table > tbody > tr:hover,
+.subpage-body > table > form > tr:hover,
+.subpage-body > form > table > tr:hover,
+.subpage-body > form > table > tbody > tr:hover {
   transform: translateY(-3px);
   box-shadow: 0 8px 24px rgba(204,51,0,.12);
 }
-.subpage-body tr:hover::before {
+.subpage-body > table > tr:hover::before,
+.subpage-body > table > tbody > tr:hover::before,
+.subpage-body > table > form > tr:hover::before,
+.subpage-body > form > table > tr:hover::before,
+.subpage-body > form > table > tbody > tr:hover::before {
   opacity: 1;
 }
-.subpage-body tr:hover td {
+.subpage-body > table > tr:hover > td,
+.subpage-body > table > tbody > tr:hover > td,
+.subpage-body > table > form > tr:hover > td,
+.subpage-body > form > table > tr:hover > td,
+.subpage-body > form > table > tbody > tr:hover > td {
   color: var(--white);
   position: relative;
   z-index: 1;
+}
+
+/* Nested tables (e.g. thumbnail images in report-view) — reset card styles */
+.subpage-body table table {
+  border-spacing: 0;
+  margin: 0;
+}
+.subpage-body table table tr {
+  display: table-row;
+  background: none;
+  border-radius: 0;
+  padding: 0;
+  cursor: default;
+}
+.subpage-body table table tr::before { display: none; }
+.subpage-body table table tr:hover {
+  transform: none;
+  box-shadow: none;
+}
+.subpage-body table table td {
+  display: table-cell;
+  padding: 4px;
 }
 
 /* Table cells in card mode */
@@ -388,20 +432,24 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Staggered card animation — each table wraps one report row */
-.subpage-body tr {
+/* Staggered card animation — each top-level table wraps one report row */
+.subpage-body > table > tr,
+.subpage-body > table > tbody > tr,
+.subpage-body > table > form > tr {
   animation: fadeInUp .5s var(--ease) both;
 }
-.subpage-body table:nth-of-type(2) tr { animation-delay: .05s; }
-.subpage-body table:nth-of-type(3) tr { animation-delay: .1s; }
-.subpage-body table:nth-of-type(4) tr { animation-delay: .15s; }
-.subpage-body table:nth-of-type(5) tr { animation-delay: .2s; }
-.subpage-body table:nth-of-type(6) tr { animation-delay: .25s; }
-.subpage-body table:nth-of-type(7) tr { animation-delay: .3s; }
-.subpage-body table:nth-of-type(8) tr { animation-delay: .35s; }
-.subpage-body table:nth-of-type(9) tr { animation-delay: .4s; }
-.subpage-body table:nth-of-type(10) tr { animation-delay: .45s; }
-.subpage-body table:nth-of-type(11) tr { animation-delay: .5s; }
+/* Disable animation on nested table rows */
+.subpage-body table table tr { animation: none; }
+.subpage-body > table:nth-of-type(2) tr { animation-delay: .05s; }
+.subpage-body > table:nth-of-type(3) tr { animation-delay: .1s; }
+.subpage-body > table:nth-of-type(4) tr { animation-delay: .15s; }
+.subpage-body > table:nth-of-type(5) tr { animation-delay: .2s; }
+.subpage-body > table:nth-of-type(6) tr { animation-delay: .25s; }
+.subpage-body > table:nth-of-type(7) tr { animation-delay: .3s; }
+.subpage-body > table:nth-of-type(8) tr { animation-delay: .35s; }
+.subpage-body > table:nth-of-type(9) tr { animation-delay: .4s; }
+.subpage-body > table:nth-of-type(10) tr { animation-delay: .45s; }
+.subpage-body > table:nth-of-type(11) tr { animation-delay: .5s; }
 
 /* ===== News Hub Grid (rd.group card style) ===== */
 .news-hub-grid {

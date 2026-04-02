@@ -6,12 +6,12 @@
 
 // Scroll-triggered animations via IntersectionObserver
 function initScrollAnimations(){
-  if(!('IntersectionObserver' in window)) {
-    // Fallback: just show everything
-    document.querySelectorAll('.anim-fade-up,.anim-fade-left,.anim-fade-right,.anim-scale')
-      .forEach(function(el){ el.classList.add('visible'); });
+  var els = document.querySelectorAll('.anim-fade-up,.anim-fade-left,.anim-fade-right,.anim-scale');
+  if(!('IntersectionObserver' in window)){
+    els.forEach(function(el){ el.classList.add('visible'); });
     return;
   }
+
   var observer = new IntersectionObserver(function(entries){
     entries.forEach(function(entry){
       if(entry.isIntersecting){
@@ -19,10 +19,17 @@ function initScrollAnimations(){
         observer.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  }, { threshold: 0.08, rootMargin: '50px 0px -20px 0px' });
 
-  document.querySelectorAll('.anim-fade-up,.anim-fade-left,.anim-fade-right,.anim-scale')
-    .forEach(function(el){ observer.observe(el); });
+  els.forEach(function(el){
+    // Elements already in viewport: show immediately
+    var rect = el.getBoundingClientRect();
+    if(rect.top < window.innerHeight && rect.bottom > 0){
+      el.classList.add('visible');
+    } else {
+      observer.observe(el);
+    }
+  });
 }
 
 // Initialize Swiper carousels for home page

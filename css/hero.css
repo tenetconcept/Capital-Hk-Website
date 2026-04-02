@@ -56,32 +56,5 @@
 }
 .hero-ctas .btn { padding: 14px 32px; font-size: 16px; }
 
-/* Hero decorative circles — rd.group style large overlapping shapes */
-.hero-deco {
-  position: absolute;
-  z-index: 1;
-  pointer-events: none;
-  border-radius: 50%;
-}
-.hero-deco-circle {
-  width: 550px;
-  height: 550px;
-  background: radial-gradient(circle, rgba(204,51,0,.22) 0%, rgba(204,51,0,.06) 50%, transparent 70%);
-  right: -120px;
-  top: -120px;
-}
-.hero-deco-circle-2 {
-  width: 450px;
-  height: 450px;
-  background: radial-gradient(circle, rgba(232,100,30,.14) 0%, rgba(232,100,30,.04) 50%, transparent 70%);
-  left: -100px;
-  bottom: -100px;
-}
-.hero-deco-circle-3 {
-  width: 350px;
-  height: 350px;
-  background: radial-gradient(circle, rgba(204,51,0,.12) 0%, transparent 60%);
-  right: 15%;
-  top: 50%;
-  transform: translateY(-50%);
-}
+/* Hero decorative elements - hidden for clean look */
+.hero-deco { display: none; }

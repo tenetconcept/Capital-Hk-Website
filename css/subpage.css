@@ -1,0 +1,87 @@
+/* ============================
+   SUBPAGE CONTENT STYLES
+   ============================ */
+.subpage {
+  padding: 120px 0 80px;
+  min-height: 80vh;
+}
+.subpage-header {
+  margin-bottom: 48px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid var(--border-light);
+}
+.subpage-header h1 {
+  font-size: clamp(28px, 3.5vw, 38px);
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.subpage-header .breadcrumb {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.subpage-header .breadcrumb a { color: var(--brand); }
+.subpage-body {
+  font-size: 15px;
+  line-height: 1.9;
+  color: var(--text-sec);
+}
+.subpage-body h2 { font-size: 22px; font-weight: 600; color: var(--text); margin: 32px 0 16px; }
+.subpage-body h3 { font-size: 18px; font-weight: 600; color: var(--text); margin: 24px 0 12px; }
+.subpage-body p { margin-bottom: 16px; }
+.subpage-body ul { margin: 12px 0 16px 24px; list-style: disc; }
+.subpage-body ul li { margin-bottom: 6px; }
+
+/* Legacy table layout fix (multi-table-per-row pages) */
+.subpage-body table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; table-layout: fixed; }
+.subpage-body table+table { margin: 0; }
+.subpage-body th { background: var(--brand); color: var(--white); padding: 10px 14px; text-align: left; font-weight: 600; }
+.subpage-body td { padding: 10px 14px; border-bottom: 1px solid var(--border-light); word-wrap: break-word; overflow-wrap: break-word; }
+.subpage-body tr:nth-child(even) { background: var(--bg-light); }
+.subpage-body input[type="submit"] {
+  padding: 5px 14px;
+  border: 1.5px solid var(--brand);
+  background: var(--white);
+  color: var(--brand);
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+.subpage-body input[type="submit"]:hover { background: var(--brand); color: var(--white); }
+.subpage-body form { margin: 0; padding: 0; }
+
+/* Info card */
+.subpage-body .info-card {
+  background: var(--bg-light);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 24px;
+  margin: 20px 0;
+}
+.subpage-body .dl-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  margin: 4px;
+  font-size: 13px;
+  color: var(--brand);
+  font-weight: 500;
+  transition: background 0.2s;
+}
+.subpage-body .dl-link:hover { background: var(--bg-accent); }
+
+/* Legacy ASPX link styling */
+.subpage-body .navN, .subpage-body .navL, .subpage-body .navF {
+  color: var(--brand);
+  font-size: 13px;
+  text-decoration: none;
+  padding: 4px 8px;
+}
+.subpage-body .navN:hover, .subpage-body .navL:hover, .subpage-body .navF:hover {
+  text-decoration: underline;
+}

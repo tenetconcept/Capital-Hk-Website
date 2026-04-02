@@ -1,0 +1,54 @@
+/* ============================
+   DESIGN TOKENS
+   ============================ */
+:root {
+  /* Brand */
+  --brand: #CC3300;
+  --brand-dark: #A02800;
+  --brand-darker: #7A1A1A;
+  --brand-light: #E8450A;
+  --brand-gradient: linear-gradient(135deg, #CC3300, #E8450A);
+
+  /* Surfaces */
+  --bg-body: #FAFAFA;
+  --bg-pink: #F6EEEE;
+  --bg-box: #FFE6E7;
+  --bg-accent: #FFDEDE;
+  --bg-light: #FFF5F5;
+  --bg-input: #FFF1F1;
+  --bg-dark: #1A1A1A;
+  --bg-dark-sec: #2A2A2A;
+  --white: #FFFFFF;
+
+  /* Text */
+  --text: #1A1A1A;
+  --text-sec: #555555;
+  --text-muted: #888888;
+
+  /* Borders, Shadows */
+  --border: #E8C4C4;
+  --border-light: rgba(0,0,0,.06);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.06);
+  --shadow-md: 0 4px 20px rgba(0,0,0,.08);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,.12);
+  --shadow-xl: 0 20px 60px rgba(0,0,0,.16);
+
+  /* Layout */
+  --radius: 16px;
+  --radius-sm: 8px;
+  --radius-lg: 25px;
+  --radius-full: 9999px;
+  --nav-h: 72px;
+  --utility-h: 40px;
+  --mod-max: 1200px;
+  --mod-max-xl: 1440px;
+
+  /* Transitions */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur-fast: 150ms;
+  --dur: 300ms;
+  --dur-slow: 500ms;
+
+  /* Font */
+  --font: "Noto Sans TC", "Noto Sans SC", "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}

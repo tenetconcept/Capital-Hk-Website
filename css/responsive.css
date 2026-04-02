@@ -1,0 +1,80 @@
+/* ============================
+   RESPONSIVE BREAKPOINTS
+   ============================ */
+
+/* Tablet and below */
+@media (max-width: 1024px) {
+  .nav-links { display: none; }
+  .nav-ham { display: flex; }
+  .nav-cta .btn-outline { display: none; }
+
+  .utility-bar { display: none; }
+
+  .feature-inner {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .feature-block:nth-child(even) .feature-inner {
+    direction: ltr;
+  }
+  .feature-img { order: -1; max-width: 400px; margin: 0 auto; }
+
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 32px; }
+
+  .news-grid { display: none; }
+  .news-swiper { display: block; padding-bottom: 48px; }
+
+  .cta-card { padding: 40px 24px; }
+  .cta-steps { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .cta-step:not(:last-child)::after { display: none; }
+
+  .footer-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+  .footer-brand { grid-column: span 2; }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  :root {
+    --nav-h: 60px;
+  }
+
+  .section { padding: 48px 0; }
+  .mw { padding: 0 16px; }
+
+  .hero-content { padding: 120px 16px 60px; }
+  .hero-ctas { flex-direction: column; align-items: center; }
+  .hero-ctas .btn { width: 100%; max-width: 280px; }
+
+  .banner-sec { padding: 32px 0; }
+  .banner-slide img { aspect-ratio: 2 / 1; }
+
+  .marquee-item { min-width: 140px; height: 48px; padding: 8px 16px; }
+  .marquee-item span { font-size: 12px; }
+
+  .feature-block { padding: 48px 0; }
+  .feature-list { gap: 16px; }
+  .feature-list-icon { width: 36px; height: 36px; border-radius: 8px; }
+  .feature-list-icon svg { width: 18px; height: 18px; }
+
+  .stats-sec { padding: 40px 0; }
+  .stat-num { font-size: 28px; }
+  .stat-label { font-size: 12px; }
+
+  .cta-steps { grid-template-columns: 1fr 1fr; }
+
+  .footer-grid { grid-template-columns: 1fr; gap: 24px; }
+  .footer-brand { grid-column: span 1; }
+  .footer-btm { flex-direction: column; gap: 12px; text-align: center; }
+}
+
+/* Small mobile */
+@media (max-width: 480px) {
+  .hero-title { font-size: 28px; }
+  .hero-subtitle { font-size: 14px; }
+  .banner-slide img { aspect-ratio: 16 / 9; }
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
+  .news-sec { padding: 48px 0; }
+}

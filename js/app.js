@@ -101,27 +101,34 @@ function buildNav(){
       html += '<li class="nav-item">';
       html += '<span class="nav-label">' + esc(item.label) + ' ' + ICONS.chevron + '</span>';
       html += '<div class="nav-dropdown"><div class="nav-dropdown-inner">';
-      // Check if this item has sub-groups
-      var hasGroups = item.children.some(function(ch){ return ch.children; });
-      if(hasGroups){
-        html += '<div class="nav-dropdown-multi">';
-        item.children.forEach(function(ch){
-          if(ch.children){
-            html += '<div class="nav-dd-group">';
-            html += '<div class="nav-dd-group-title">' + esc(ch.label) + '</div>';
-            ch.children.forEach(function(sub){
-              html += buildDdItem(sub);
-            });
-            html += '</div>';
-          } else {
-            html += '<div class="nav-dd-group">' + buildDdItem(ch) + '</div>';
-          }
+      // Separate flat items from groups
+      var flatItems = [];
+      var groups = [];
+      item.children.forEach(function(ch){
+        if(ch.children) groups.push(ch);
+        else flatItems.push(ch);
+      });
+
+      if(groups.length > 0){
+        // Layout: columns for each group + one column for flat items
+        html += '<div class="nav-dropdown-cols">';
+        // Flat items column
+        if(flatItems.length > 0){
+          html += '<div class="nav-dd-col">';
+          flatItems.forEach(function(fi){ html += buildDdItem(fi); });
+          html += '</div>';
+        }
+        // Group columns
+        groups.forEach(function(g){
+          html += '<div class="nav-dd-col">';
+          html += '<div class="nav-dd-group-title">' + esc(g.label) + '</div>';
+          g.children.forEach(function(sub){ html += buildDdItem(sub); });
+          html += '</div>';
         });
         html += '</div>';
       } else {
-        item.children.forEach(function(ch){
-          html += buildDdItem(ch);
-        });
+        // Simple flat list
+        flatItems.forEach(function(fi){ html += buildDdItem(fi); });
       }
       html += '</div></div></li>';
     } else {

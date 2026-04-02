@@ -516,56 +516,77 @@ window._cmsUsersView = function(){
   var users = getCmsUsers();
   var cfg2fa = get2FAConfig();
   var currentUser = sessionStorage.getItem("ecap_admin_user") || "admin";
+  var currentRole = "admin";
+  users.forEach(function(u){ if(u.username===currentUser) currentRole=u.role||"admin"; });
+  var isAdmin = currentRole==="admin";
+
   var userRows = users.length ? users.map(function(u,i){
     var isMe = u.username===currentUser;
     var uRole = u.role||"admin";
     return '<div class="cms-user-row"><div class="u-avatar">'+esc(u.username[0].toUpperCase())+'</div>'
       +'<div class="u-name">'+esc(u.username)+'</div>'
       +'<span class="role-badge role-'+uRole+'">'+uRole+'</span>'
-      +'<span style="font-size:10px;padding:2px 6px;border-radius:100px;'+(cfg2fa[u.username]?'background:#d1fae5;color:#059669':'background:#fee2e2;color:#dc2626')+'">'+(cfg2fa[u.username]?'2FA ON':'2FA OFF')+'</span>'
+      +'<span style="font-size:12px;padding:3px 8px;border-radius:100px;font-weight:600;'+(cfg2fa[u.username]?'background:#d1fae5;color:#059669':'background:#fee2e2;color:#dc2626')+'">'+(cfg2fa[u.username]?'2FA ON':'2FA OFF')+'</span>'
       +(isMe?'<span class="u-tag" style="margin-left:4px">You</span>':'')
-      +'<div style="margin-left:auto;display:flex;gap:4px">'
-      +(!isMe?'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="window._cms2FASetup(\''+u.username+'\')">'+( cfg2fa[u.username]?'Disable 2FA':'Enable 2FA')+'</button>':'')
+      +'<div style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap">'
+      +(isAdmin&&!isMe&&cfg2fa[u.username]?'<button class="admin-btn secondary" style="font-size:12px;padding:5px 12px" onclick="window._cmsReset2FA(\''+u.username+'\')">Reset 2FA</button>':'')
+      +(!isMe?'<button class="admin-btn secondary" style="font-size:12px;padding:5px 12px" onclick="window._cms2FASetup(\''+u.username+'\')">'+( cfg2fa[u.username]?'Disable 2FA':'Enable 2FA')+'</button>':'')
       +(!isMe?'<button class="admin-btn danger" style="font-size:12px;padding:5px 14px" onclick="window._cmsUserDelete('+i+')">Remove</button>':'')
       +'</div></div>';
-  }).join("") : '<div style="color:var(--text-muted);font-size:13px;padding:8px 0">Using default admin account. Add users below to replace it.</div>';
+  }).join("") : '<div style="color:var(--text-muted);font-size:14px;padding:8px 0">Using default admin account. Add users below to replace it.</div>';
 
   document.getElementById("cmsEditor").innerHTML =
     '<div class="cms-panel">'
-    +'<h3 style="font-size:20px;font-weight:700;margin-bottom:20px">User Management</h3>'
-    // Change Password
-    +'<div class="cms-chpwd-box">'
-    +'<h4>Change Password</h4>'
-    +'<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid rgba(0,0,0,.06)">'
-    +'<button class="admin-btn '+(cfg2fa[currentUser]?'danger':'primary')+'" style="font-size:12px" onclick="window._cms2FASetup(sessionStorage.getItem(\'ecap_admin_user\')||\'admin\')">'+(cfg2fa[currentUser]?'Disable 2FA':'Setup 2FA')+'</button>'
-    +'<span style="font-size:12px;color:var(--text-muted);margin-left:8px">'+(cfg2fa[currentUser]?'2FA is enabled for your account':'Enable two-factor authentication for extra security')+'</span>'
-    +'</div>'
+    // ---- Section 1: My Account (password + 2FA) ----
+    +'<div class="cms-section-box">'
+    +'<h3 style="font-size:22px;font-weight:700;margin-bottom:20px">My Account</h3>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start">'
+    // Left: Change Password
+    +'<div class="cms-card-box">'
+    +'<h4 style="font-size:16px;font-weight:700;margin-bottom:16px">Change Password</h4>'
     +'<div class="admin-field"><label>Current Password</label><input type="password" id="pwdCurrent" placeholder="Current password"/></div>'
     +'<div class="admin-field"><label>New Password</label><input type="password" id="pwdNew" placeholder="New password (min 6 chars)"/></div>'
     +'<div class="admin-field"><label>Confirm New Password</label><input type="password" id="pwdConfirm" placeholder="Confirm new password"/></div>'
     +'<button class="admin-btn primary" onclick="window._cmsChangePassword()">Update Password</button>'
     +'<div id="pwdMsg" style="font-size:13px;margin-top:8px;min-height:20px"></div>'
     +'</div>'
-    // Users list
-    +'<h4 style="font-size:15px;font-weight:700;margin-bottom:12px">Admin Users ('+( users.length || 1 )+')</h4>'
-    +'<div class="cms-users-list">'+userRows+'</div>'
+    // Right: My 2FA
+    +'<div class="cms-card-box">'
+    +'<h4 style="font-size:16px;font-weight:700;margin-bottom:16px">Two-Factor Authentication</h4>'
+    +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">'
+    +'<span style="font-size:14px;padding:4px 10px;border-radius:100px;font-weight:700;'+(cfg2fa[currentUser]?'background:#d1fae5;color:#059669':'background:#fee2e2;color:#dc2626')+'">'+(cfg2fa[currentUser]?'2FA Enabled':'2FA Disabled')+'</span>'
+    +'</div>'
+    +'<p style="font-size:14px;color:var(--text-sec);line-height:1.6;margin-bottom:16px">'+(cfg2fa[currentUser]?'Two-factor authentication is active. You will need your authenticator app to login.':'Enable 2FA for extra security. You will need an authenticator app like Google Authenticator.')+'</p>'
+    +'<button class="admin-btn '+(cfg2fa[currentUser]?'danger':'primary')+'" onclick="window._cms2FASetup(sessionStorage.getItem(\'ecap_admin_user\')||\'admin\')">'+(cfg2fa[currentUser]?'Disable 2FA':'Setup 2FA')+'</button>'
+    +'</div>'
+    +'</div>'
+    +'</div>'
+    // ---- Section 2: User Management ----
+    +(isAdmin ?
+    '<div class="cms-section-box" style="margin-top:32px">'
+    +'<h3 style="font-size:22px;font-weight:700;margin-bottom:20px">User Management <span style="font-size:14px;font-weight:500;color:var(--text-muted)">('+( users.length || 1 )+' users)</span></h3>'
+    +'<div class="cms-users-list" style="margin-bottom:24px">'+userRows+'</div>'
     // Add new user
-    +'<div class="cms-add-user-box">'
-    +'<h4>Add New User</h4>'
+    +'<div class="cms-card-box">'
+    +'<h4 style="font-size:16px;font-weight:700;margin-bottom:16px">Add New User</h4>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
     +'<div class="admin-field"><label>Username</label><input type="text" id="newUsername" placeholder="e.g. editor1"/></div>'
     +'<div class="admin-field"><label>Password</label><input type="password" id="newUserPass" placeholder="Min 6 characters"/></div>'
+    +'</div>'
     +'<div class="admin-field"><label>Role</label><select id="newUserRole" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--white)">'
     +'<option value="admin">Admin — Full access (pages, files, users, export)</option>'
     +'<option value="editor" selected>Editor — Edit pages &amp; uploads, no user management</option>'
     +'<option value="viewer">Viewer — Read-only, cannot save or upload</option>'
     +'</select></div>'
-    +'<div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:6px;padding:10px 12px;font-size:12px;color:#0369a1;margin-bottom:12px">'
+    +'<div style="background:var(--bg-light);border:1px solid var(--border-light);border-radius:8px;padding:12px 14px;font-size:13px;color:var(--text-sec);margin-bottom:14px">'
     +'<strong>Admin</strong>: Full access including user management &amp; export/import.<br/>'
     +'<strong>Editor</strong>: Edit all pages &amp; manage downloads, no admin settings.<br/>'
     +'<strong>Viewer</strong>: Read-only access — review content without editing.</div>'
     +'<button class="admin-btn primary" onclick="window._cmsUserAdd()">Add User</button>'
     +'<div id="addUserMsg" style="font-size:13px;margin-top:8px;min-height:20px"></div>'
     +'</div>'
+    +'</div>'
+    : '')
     +'</div>';
 };
 
@@ -618,6 +639,14 @@ window._cmsUserAdd = function(){
   });
 };
 // ————————— 2FA Management —————————
+window._cmsReset2FA = function(username){
+  if(!confirm('Reset 2FA for '+username+'? They will need to set it up again on next login.')) return;
+  var cfg = get2FAConfig();
+  delete cfg[username];
+  save2FAConfig(cfg);
+  showToast('2FA reset for '+username+'. They can re-enable it.');
+  window._cmsUsersView();
+};
 window._cms2FASetup = function(username){
   var cfg = get2FAConfig();
   if(cfg[username]){

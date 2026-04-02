@@ -342,6 +342,12 @@ function bannerSection(u){
 
 // ---------- MARQUEE ----------
 function marqueeSection(u){
+  var logos = [
+    {name: 'Capital Securities Corp.', img: 'https://www.e-capital.com.hk/images/fortisinvestments.png'},
+    {name: 'Fidelity', img: 'https://www.e-capital.com.hk/images/fidelity.png'},
+    {name: 'First State', img: 'https://www.e-capital.com.hk/images/Firststate.png'},
+    {name: 'Man Investments', img: 'https://www.e-capital.com.hk/images/ManInvestments.png'}
+  ];
   var groups = [
     {name: L('Capital Securities Corp.', '群益金鼎证券', '群益金鼎證券')},
     {name: L('Capital Securities (HK)', '群益证券(香港)', '群益證券(香港)')},
@@ -352,15 +358,16 @@ function marqueeSection(u){
     {name: L('Capital Asset Management', '群益投顾', '群益投顧')}
   ];
   var row1 = '', row2 = '';
-  // Double items for seamless loop
-  for(var r = 0; r < 2; r++){
-    groups.forEach(function(g){
-      var item = '<div class="marquee-item"><span>' + esc(g.name) + '</span></div>';
-      row1 += item;
+  // Row 1: logo images
+  for(var r = 0; r < 4; r++){
+    logos.forEach(function(l){
+      row1 += '<div class="marquee-item marquee-logo"><img src="' + escAttr(l.img) + '" alt="' + escAttr(l.name) + '"></div>';
     });
-    groups.slice().reverse().forEach(function(g){
-      var item = '<div class="marquee-item"><span>' + esc(g.name) + '</span></div>';
-      row2 += item;
+  }
+  // Row 2: text names
+  for(var r2 = 0; r2 < 2; r2++){
+    groups.forEach(function(g){
+      row2 += '<div class="marquee-item"><span>' + esc(g.name) + '</span></div>';
     });
   }
   var h = '<section class="marquee-sec">';
@@ -508,6 +515,36 @@ function newsHubContent(){
   return h;
 }
 
+// ---------- BLOG PAGE (rd.group-style image cards) ----------
+function blogContent(){
+  var articles = [
+    { title: L('Market Analysis: Hong Kong Stocks Q1 2026','市场分析：2026年第一季度港股回顾','市場分析：2026年第一季度港股回顧'), date:'2026-03-28', img:'images/ecap-news-1.svg', tag: L('Market','市场','市場') },
+    { title: L('Stock Connect Monthly Update — March 2026','沪港通月度动态 — 2026年3月','滬港通月度動態 — 2026年3月'), date:'2026-03-15', img:'images/ecap-news-2.svg', tag: L('Stock Connect','沪港通','滬港通') },
+    { title: L('New IPO Subscription Guide: Spring 2026','新股认购指南：2026年春季','新股認購指南：2026年春季'), date:'2026-03-01', img:'images/ecap-banner-1.svg', tag: L('IPO','新股','新股') },
+    { title: L('Global Markets Weekly Wrap — February','环球市场每周回顾 — 2月','環球市場每周回顧 — 2月'), date:'2026-02-28', img:'images/ecap-banner-2.svg', tag: L('Global','环球','環球') },
+    { title: L('A-Share Market Outlook 2026','A股市场2026年展望','A股市場2026年展望'), date:'2026-02-15', img:'images/ecap-news-1.svg', tag: L('Research','研究','研究') },
+    { title: L('Capital Securities Annual Awards Ceremony','群益证券年度颁奖典礼','群益證券年度頒獎典禮'), date:'2026-01-20', img:'images/ecap-news-2.svg', tag: L('Company','公司','公司') }
+  ];
+
+  // Check CMS for blog posts
+  var cmsBanners = [];
+  try { cmsBanners = JSON.parse(localStorage.getItem('ecap_cms_banners')) || []; } catch(e){}
+
+  var h = '<div class="blog-grid">';
+  articles.forEach(function(a, i){
+    h += '<a class="blog-card" style="animation-delay:' + (i*0.08).toFixed(2) + 's">';
+    h += '<div class="blog-card-img"><img src="' + escAttr(a.img) + '" alt="' + escAttr(a.title) + '"></div>';
+    h += '<div class="blog-card-body">';
+    h += '<span class="blog-card-tag">' + esc(a.tag) + '</span>';
+    h += '<h3 class="blog-card-title">' + esc(a.title) + '</h3>';
+    h += '<time class="blog-card-date">' + esc(a.date) + '</time>';
+    h += '</div></a>';
+  });
+  h += '</div>';
+  h += '<div style="text-align:center;margin-top:40px;color:var(--text-muted);font-size:1rem;font-weight:500">' + esc(L('More articles coming soon.','更多文章即将发布。','更多文章即將發佈。')) + '</div>';
+  return h;
+}
+
 // ---------- PAGE VIEW (rd.group-style) ----------
 function findSiblingPages(slug){
   var items = SITE.nav[currentLang] || SITE.nav["zh-Hant"];
@@ -568,6 +605,8 @@ function pageView(slug){
   h += '<div class="subpage-card">';
   if(slug === 'news'){
     h += '<div class="subpage-body">' + newsHubContent() + '</div>';
+  } else if(slug === 'hk-news'){
+    h += '<div class="subpage-body">' + blogContent() + '</div>';
   } else {
     h += '<div class="subpage-body">' + pg.body + '</div>';
   }

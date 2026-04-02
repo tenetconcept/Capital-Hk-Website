@@ -8,7 +8,7 @@ html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 body {
   font-family: var(--font);
   color: var(--text);
-  background: linear-gradient(180deg, #B41540 0%, #C83A60 5%, #DCA0AD 12%, #EDD4DA 20%, #F0E8E9 30%, #F0EAEB 50%, #F0E8E9 80%, #DCA0AD 92%, #B41540 100%);
+  background: linear-gradient(180deg, #B41540 0%, #F0EAEB 18%, #F0EAEB 82%, #B41540 100%);
   background-attachment: fixed;
   min-height: 100vh;
   font-size: 18px;

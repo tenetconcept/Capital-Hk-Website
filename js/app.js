@@ -35,6 +35,10 @@ function T(key){
   var u = SITE.ui[currentLang] || SITE.ui["zh-Hant"];
   return u[key] || key;
 }
+// Tri-lingual helper: L(en, hans, hant)
+function L(en, hans, hant){
+  return currentLang==='en' ? en : (currentLang==='zh-Hans' ? hans : hant);
+}
 window.T = T;
 
 function setLang(lang){
@@ -227,40 +231,40 @@ function homeView(){
   html += featureSection({
     id: 'svc-securities',
     label: u.svc_securities_label || 'Securities Trading',
-    title: u.svc_securities_title || (currentLang==='en' ? 'Hong Kong & Global<br>Equities Trading' : '港股及環球<br>股票交易服務'),
-    desc: u.svc_securities_desc || (currentLang==='en' ? 'Trade stocks listed on Hong Kong, Shanghai, and other major global exchanges through our professional iTrader platform.' : '透過專業 iTrader 交易平台，輕鬆買賣港股、A股及環球主要市場的股票。'),
+    title: u.svc_securities_title || L('Hong Kong & Global<br>Equities Trading', '港股及环球<br>股票交易服务', '港股及環球<br>股票交易服務'),
+    desc: u.svc_securities_desc || L('Trade stocks listed on Hong Kong, Shanghai, and other major global exchanges through our professional iTrader platform.', '透过专业 iTrader 交易平台，轻松买卖港股、A股及环球主要市场的股票。', '透過專業 iTrader 交易平台，輕鬆買賣港股、A股及環球主要市場的股票。'),
     img: 'images/ecap-svc-securities.png',
     features: [
-      { icon: ICONS.monitor, title: u.svc_s_f1_t || (currentLang==='en' ? 'iTrader Platform' : 'iTrader 交易平台'), desc: u.svc_s_f1_d || (currentLang==='en' ? 'Award-winning online trading platform with real-time quotes.' : '屢獲殊榮的網上交易平台，提供即時報價。') },
-      { icon: ICONS.dollar, title: u.svc_s_f2_t || (currentLang==='en' ? 'Competitive Commission' : '具競爭力佣金'), desc: u.svc_s_f2_d || (currentLang==='en' ? 'Industry-leading commission rates for all markets.' : '全市場領先的佣金費率。') },
-      { icon: ICONS.trending, title: u.svc_s_f3_t || (currentLang==='en' ? 'IPO Subscription' : 'IPO 新股認購'), desc: u.svc_s_f3_d || (currentLang==='en' ? 'Easy online IPO application via iTrader.' : '透過 iTrader 輕鬆申請認購新股。') },
-      { icon: ICONS.globe, title: u.svc_s_f4_t || (currentLang==='en' ? 'Multi-Market Access' : '多市場覆蓋'), desc: u.svc_s_f4_d || (currentLang==='en' ? 'Access Hong Kong, Shanghai, Shenzhen and more.' : '涵蓋港股、滬股、深股等主要市場。') }
+      { icon: ICONS.monitor, title: u.svc_s_f1_t || L('iTrader Platform', 'iTrader 交易平台', 'iTrader 交易平台'), desc: u.svc_s_f1_d || L('Award-winning online trading platform with real-time quotes.', '屡获殊荣的网上交易平台，提供即时报价。', '屢獲殊榮的網上交易平台，提供即時報價。') },
+      { icon: ICONS.dollar, title: u.svc_s_f2_t || L('Competitive Commission', '具竞争力佣金', '具競爭力佣金'), desc: u.svc_s_f2_d || L('Industry-leading commission rates for all markets.', '全市场领先的佣金费率。', '全市場領先的佣金費率。') },
+      { icon: ICONS.trending, title: u.svc_s_f3_t || L('IPO Subscription', 'IPO 新股认购', 'IPO 新股認購'), desc: u.svc_s_f3_d || L('Easy online IPO application via iTrader.', '透过 iTrader 轻松申请认购新股。', '透過 iTrader 輕鬆申請認購新股。') },
+      { icon: ICONS.globe, title: u.svc_s_f4_t || L('Multi-Market Access', '多市场覆盖', '多市場覆蓋'), desc: u.svc_s_f4_d || L('Access Hong Kong, Shanghai, Shenzhen and more.', '涵盖港股、沪股、深股等主要市场。', '涵蓋港股、滬股、深股等主要市場。') }
     ]
   });
   // Feature: SH-HK Connect
   html += featureSection({
     id: 'svc-connect',
     label: u.svc_connect_label || 'SH-HK Stock Connect',
-    title: u.svc_connect_title || (currentLang==='en' ? 'Shanghai-Hong Kong<br>Stock Connect' : '滬港通<br>交易服務'),
-    desc: u.svc_connect_desc || (currentLang==='en' ? 'Access A-share market through our comprehensive Stock Connect service with professional research support.' : '透過全面的滬港通服務進入A股市場，配合專業研究報告支援。'),
+    title: u.svc_connect_title || L('Shanghai-Hong Kong<br>Stock Connect', '沪港通<br>交易服务', '滬港通<br>交易服務'),
+    desc: u.svc_connect_desc || L('Access A-share market through our comprehensive Stock Connect service with professional research support.', '透过全面的沪港通服务进入A股市场，配合专业研究报告支援。', '透過全面的滬港通服務進入A股市場，配合專業研究報告支援。'),
     img: 'images/ecap-svc-connect.png',
     features: [
-      { icon: ICONS.zap, title: u.svc_c_f1_t || (currentLang==='en' ? 'Direct A-Share Access' : '直接買賣A股'), desc: u.svc_c_f1_d || (currentLang==='en' ? 'Trade Shanghai and Shenzhen listed A-shares directly.' : '直接交易滬深兩市上市A股。') },
-      { icon: ICONS.chart, title: u.svc_c_f2_t || (currentLang==='en' ? 'Research Reports' : '研究報告'), desc: u.svc_c_f2_d || (currentLang==='en' ? 'Regular A-share research and market insights.' : '定期A股研究報告及市場分析。') },
-      { icon: ICONS.award, title: u.svc_c_f3_t || (currentLang==='en' ? 'Monthly Publication' : '滬港通月刊'), desc: u.svc_c_f3_d || (currentLang==='en' ? 'Monthly updates on Stock Connect developments.' : '每月滬港通最新動態。') }
+      { icon: ICONS.zap, title: u.svc_c_f1_t || L('Direct A-Share Access', '直接买卖A股', '直接買賣A股'), desc: u.svc_c_f1_d || L('Trade Shanghai and Shenzhen listed A-shares directly.', '直接交易沪深两市上市A股。', '直接交易滬深兩市上市A股。') },
+      { icon: ICONS.chart, title: u.svc_c_f2_t || L('Research Reports', '研究报告', '研究報告'), desc: u.svc_c_f2_d || L('Regular A-share research and market insights.', '定期A股研究报告及市场分析。', '定期A股研究報告及市場分析。') },
+      { icon: ICONS.award, title: u.svc_c_f3_t || L('Monthly Publication', '沪港通月刊', '滬港通月刊'), desc: u.svc_c_f3_d || L('Monthly updates on Stock Connect developments.', '每月沪港通最新动态。', '每月滬港通最新動態。') }
     ]
   });
   // Feature: Futures
   html += featureSection({
     id: 'svc-futures',
     label: u.svc_futures_label || 'Futures & Options',
-    title: u.svc_futures_title || (currentLang==='en' ? 'Futures &<br>Options Trading' : '期貨及<br>期權交易服務'),
-    desc: u.svc_futures_desc || (currentLang==='en' ? 'Trade futures and options on major exchanges with our professional Sharp Point platform.' : '透過專業 Sharp Point 交易平台，交易主要交易所的期貨及期權。'),
+    title: u.svc_futures_title || L('Futures &<br>Options Trading', '期货及<br>期权交易服务', '期貨及<br>期權交易服務'),
+    desc: u.svc_futures_desc || L('Trade futures and options on major exchanges with our professional Sharp Point platform.', '透过专业 Sharp Point 交易平台，交易主要交易所的期货及期权。', '透過專業 Sharp Point 交易平台，交易主要交易所的期貨及期權。'),
     img: 'images/ecap-svc-futures.png',
     features: [
-      { icon: ICONS.monitor, title: u.svc_f_f1_t || (currentLang==='en' ? 'Sharp Point Platform' : 'Sharp Point 平台'), desc: u.svc_f_f1_d || (currentLang==='en' ? 'Professional futures trading platform with advanced tools.' : '專業期貨交易平台，配備先進工具。') },
-      { icon: ICONS.clock, title: u.svc_f_f2_t || (currentLang==='en' ? 'Extended Hours' : '延長交易時段'), desc: u.svc_f_f2_d || (currentLang==='en' ? 'Trade during day and after-hours sessions.' : '日間及夜間交易時段均可進行交易。') },
-      { icon: ICONS.shield, title: u.svc_f_f3_t || (currentLang==='en' ? 'Risk Management' : '風險管理'), desc: u.svc_f_f3_d || (currentLang==='en' ? 'Comprehensive risk management tools and alerts.' : '完善的風險管理工具及提示系統。') }
+      { icon: ICONS.monitor, title: u.svc_f_f1_t || L('Sharp Point Platform', 'Sharp Point 平台', 'Sharp Point 平台'), desc: u.svc_f_f1_d || L('Professional futures trading platform with advanced tools.', '专业期货交易平台，配备先进工具。', '專業期貨交易平台，配備先進工具。') },
+      { icon: ICONS.clock, title: u.svc_f_f2_t || L('Extended Hours', '延长交易时段', '延長交易時段'), desc: u.svc_f_f2_d || L('Trade during day and after-hours sessions.', '日间及夜间交易时段均可进行交易。', '日間及夜間交易時段均可進行交易。') },
+      { icon: ICONS.shield, title: u.svc_f_f3_t || L('Risk Management', '风险管理', '風險管理'), desc: u.svc_f_f3_d || L('Comprehensive risk management tools and alerts.', '完善的风险管理工具及提示系统。', '完善的風險管理工具及提示系統。') }
     ]
   });
   // Stats
@@ -298,9 +302,9 @@ function bannerSection(u){
   var cmsBanners = null;
   try { cmsBanners = JSON.parse(localStorage.getItem('ecap_cms_banners')); } catch(e){}
   var banners = (cmsBanners && cmsBanners.length > 0) ? cmsBanners : [
-    { img: 'images/ecap-banner-1.png', alt: currentLang==='en' ? 'iTrader Platform' : 'iTrader 交易平台', link: '#/page/stock-ipo' },
-    { img: 'images/ecap-banner-2.png', alt: currentLang==='en' ? 'Stock Connect' : '滬港通服務', link: '#/page/shh-hk' },
-    { img: 'images/ecap-banner-3.png', alt: currentLang==='en' ? 'Open Account' : '開立帳戶', link: '#/page/stock-account-opening' }
+    { img: 'images/ecap-banner-1.png', alt: L('iTrader Platform', 'iTrader 交易平台', 'iTrader 交易平台'), link: '#/page/stock-ipo' },
+    { img: 'images/ecap-banner-2.png', alt: L('Stock Connect', '沪港通服务', '滬港通服務'), link: '#/page/shh-hk' },
+    { img: 'images/ecap-banner-3.png', alt: L('Open Account', '开立帐户', '開立帳戶'), link: '#/page/stock-account-opening' }
   ];
   var h = '<section class="banner-sec anim-fade-up">';
   h += '<div class="mw-xl">';
@@ -325,13 +329,13 @@ function bannerSection(u){
 // ---------- MARQUEE ----------
 function marqueeSection(u){
   var groups = [
-    {name: currentLang==='en' ? 'Capital Securities Corp.' : '群益金鼎證券'},
-    {name: currentLang==='en' ? 'Capital Securities (HK)' : '群益證券(香港)'},
-    {name: currentLang==='en' ? 'Capital Futures (HK)' : '群益期貨(香港)'},
-    {name: currentLang==='en' ? 'Capital Investment Trust' : '群益投信'},
-    {name: currentLang==='en' ? 'Capital Futures Corp.' : '群益期貨'},
-    {name: currentLang==='en' ? 'Capital Securities Group' : '群益金融集團'},
-    {name: currentLang==='en' ? 'Capital Asset Management' : '群益投顧'}
+    {name: L('Capital Securities Corp.', '群益金鼎证券', '群益金鼎證券')},
+    {name: L('Capital Securities (HK)', '群益证券(香港)', '群益證券(香港)')},
+    {name: L('Capital Futures (HK)', '群益期货(香港)', '群益期貨(香港)')},
+    {name: L('Capital Investment Trust', '群益投信', '群益投信')},
+    {name: L('Capital Futures Corp.', '群益期货', '群益期貨')},
+    {name: L('Capital Securities Group', '群益金融集团', '群益金融集團')},
+    {name: L('Capital Asset Management', '群益投顾', '群益投顧')}
   ];
   var row1 = '', row2 = '';
   // Double items for seamless loop
@@ -346,7 +350,7 @@ function marqueeSection(u){
     });
   }
   var h = '<section class="marquee-sec">';
-  h += '<div class="marquee-title">' + esc(currentLang==='en' ? 'Capital Group' : '群益金融集團') + '</div>';
+  h += '<div class="marquee-title">' + esc(L('Capital Group', '群益金融集团', '群益金融集團')) + '</div>';
   h += '<div class="marquee-row marquee-row-1"><div class="marquee-track">' + row1 + '</div></div>';
   h += '<div class="marquee-row marquee-row-2"><div class="marquee-track">' + row2 + '</div></div>';
   h += '</section>';
@@ -383,10 +387,10 @@ function featureSection(opts){
 // ---------- STATS ----------
 function statsSection(u){
   var stats = [
-    { num: '30+', label: currentLang==='en' ? 'Years of Experience' : '年金融服務經驗' },
-    { num: 'SFC', label: currentLang==='en' ? 'Hong Kong SFC Regulated' : '香港證監會持牌' },
-    { num: '24/7', label: currentLang==='en' ? 'Customer Support' : '全天候客戶服務' },
-    { num: currentLang==='en' ? 'Multi' : '多元', label: currentLang==='en' ? 'Market Access' : '市場覆蓋' }
+    { num: '30+', label: L('Years of Experience', '年金融服务经验', '年金融服務經驗') },
+    { num: 'SFC', label: L('Hong Kong SFC Regulated', '香港证监会持牌', '香港證監會持牌') },
+    { num: '24/7', label: L('Customer Support', '全天候客户服务', '全天候客戶服務') },
+    { num: L('Multi', '多元', '多元'), label: L('Market Access', '市场覆盖', '市場覆蓋') }
   ];
   var h = '<section class="stats-sec">';
   h += '<div class="mw"><div class="stats-grid">';
@@ -403,14 +407,14 @@ function statsSection(u){
 // ---------- NEWS ----------
 function newsSection(u){
   var news = [
-    { img: 'images/ecap-news-1.png', date: '2026-04-01', title: currentLang==='en' ? 'Daily Market Commentary' : '每日市場評論', excerpt: currentLang==='en' ? 'Latest analysis on Hong Kong and A-share markets with investment insights.' : '最新港股及A股市場分析與投資洞見。', page: 'report-daily' },
-    { img: 'images/ecap-news-2.png', date: '2026-03-28', title: currentLang==='en' ? 'Stock Pick Recommendations' : '個股推薦報告', excerpt: currentLang==='en' ? 'Our research team\'s latest individual stock recommendations.' : '研究團隊最新個股推薦分析。', page: 'report-stock' },
-    { img: 'images/ecap-news-3.png', date: '2026-03-25', title: currentLang==='en' ? 'IPO Market Update' : '新股市場動態', excerpt: currentLang==='en' ? 'Recent IPO listings and upcoming subscription opportunities.' : '近期新股上市資訊及最新招股資訊。', page: 'report-ipo' }
+    { img: 'images/ecap-news-1.png', date: '2026-04-01', title: L('Daily Market Commentary', '每日市场评论', '每日市場評論'), excerpt: L('Latest analysis on Hong Kong and A-share markets with investment insights.', '最新港股及A股市场分析与投资洞见。', '最新港股及A股市場分析與投資洞見。'), page: 'report-daily' },
+    { img: 'images/ecap-news-2.png', date: '2026-03-28', title: L('Stock Pick Recommendations', '个股推荐报告', '個股推薦報告'), excerpt: L('Our research team\'s latest individual stock recommendations.', '研究团队最新个股推荐分析。', '研究團隊最新個股推薦分析。'), page: 'report-stock' },
+    { img: 'images/ecap-news-3.png', date: '2026-03-25', title: L('IPO Market Update', '新股市场动态', '新股市場動態'), excerpt: L('Recent IPO listings and upcoming subscription opportunities.', '近期新股上市资讯及最新招股资讯。', '近期新股上市資訊及最新招股資訊。'), page: 'report-ipo' }
   ];
   var h = '<section class="news-sec section">';
   h += '<div class="mw">';
-  h += '<div class="news-header anim-fade-up"><div class="sec-label gradient-text">' + esc(currentLang==='en' ? 'Latest Updates' : '最新動態') + '</div>';
-  h += '<h2 class="sec-title">' + esc(currentLang==='en' ? "What's New" : '新聞與研究') + '</h2></div>';
+  h += '<div class="news-header anim-fade-up"><div class="sec-label gradient-text">' + esc(L('Latest Updates', '最新动态', '最新動態')) + '</div>';
+  h += '<h2 class="sec-title">' + esc(L("What's New", '新闻与研究', '新聞與研究')) + '</h2></div>';
   // Desktop grid
   h += '<div class="news-grid">';
   news.forEach(function(n, i){
@@ -444,11 +448,13 @@ function newsSection(u){
 function ctaSection(u){
   var steps = currentLang==='en'
     ? ['Download\nAgreement','Submit\nDocuments','Account\nApproved','Start\nTrading']
-    : ['下載\n開戶合約','提交\n所需文件','帳戶\n審批通過','開始\n交易'];
+    : (currentLang==='zh-Hans'
+      ? ['下载\n开户合约','提交\n所需文件','帐户\n审批通过','开始\n交易']
+      : ['下載\n開戶合約','提交\n所需文件','帳戶\n審批通過','開始\n交易']);
   var h = '<section class="cta-sec">';
   h += '<div class="mw"><div class="cta-card anim-fade-up">';
-  h += '<h2 class="cta-title">' + esc(currentLang==='en' ? 'Open Your Account Today' : '立即開戶 把握投資先機') + '</h2>';
-  h += '<p class="cta-desc">' + esc(currentLang==='en' ? 'Start trading in Hong Kong, Shanghai and global markets with Capital Securities. Simple account opening process.' : '群益證券為您提供港股、A股及環球市場交易服務。簡單開戶流程，快速開始投資。') + '</p>';
+  h += '<h2 class="cta-title">' + esc(L('Open Your Account Today', '立即开户 把握投资先机', '立即開戶 把握投資先機')) + '</h2>';
+  h += '<p class="cta-desc">' + esc(L('Start trading in Hong Kong, Shanghai and global markets with Capital Securities. Simple account opening process.', '群益证券为您提供港股、A股及环球市场交易服务。简单开户流程，快速开始投资。', '群益證券為您提供港股、A股及環球市場交易服務。簡單開戶流程，快速開始投資。')) + '</p>';
   h += '<div class="cta-steps">';
   steps.forEach(function(s, i){
     h += '<div class="cta-step"><div class="cta-step-num">' + (i+1) + '</div>';
@@ -456,8 +462,8 @@ function ctaSection(u){
   });
   h += '</div>';
   h += '<div class="cta-btns">';
-  h += '<a class="btn btn-white" href="#/page/stock-account-opening" data-spa>' + esc(currentLang==='en' ? 'Open Account' : '開立帳戶') + '</a>';
-  h += '<a class="btn btn-outline" style="color:white;border-color:rgba(255,255,255,.4)" href="#/page/stock-fee" data-spa>' + esc(currentLang==='en' ? 'View Fees' : '查看收費') + '</a>';
+  h += '<a class="btn btn-white" href="#/page/stock-account-opening" data-spa>' + esc(L('Open Account', '开立帐户', '開立帳戶')) + '</a>';
+  h += '<a class="btn btn-outline" style="color:white;border-color:rgba(255,255,255,.4)" href="#/page/stock-fee" data-spa>' + esc(L('View Fees', '查看收费', '查看收費')) + '</a>';
   h += '</div>';
   h += '</div></div></section>';
   return h;

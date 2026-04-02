@@ -2,7 +2,7 @@
    CMS ADMIN PANEL STYLES
    ============================ */
 
-.cms-layout{display:flex;gap:0;min-height:calc(100vh - var(--nav-h) - var(--nav-bar-h));padding-top:calc(var(--nav-h) + var(--nav-bar-h))}
+.cms-layout{display:flex;gap:0;min-height:calc(100vh - var(--nav-h) - var(--nav-bar-h))}
 .cms-sidebar{width:280px;background:var(--white);border-right:1px solid rgba(0,0,0,.06);padding:24px 0;overflow-y:auto;flex-shrink:0;position:sticky;top:calc(var(--nav-h) + var(--nav-bar-h));height:calc(100vh - var(--nav-h) - var(--nav-bar-h))}
 .cms-sidebar-hdr{padding:0 20px 16px;border-bottom:1px solid rgba(0,0,0,.06)}
 .cms-sidebar-hdr h2{font-size:16px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px}
@@ -84,8 +84,26 @@
 .cms-empty .empty-icon{font-size:48px;margin-bottom:16px;opacity:.5}
 .cms-empty p{font-size:14px;max-width:300px;line-height:1.7}
 
+/* Admin Form Fields */
+.admin-field{margin-bottom:14px}
+.admin-field label{display:block;font-size:12px;font-weight:600;color:var(--text-sec);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.admin-field input,.admin-field select{width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--bg-input);transition:border-color .2s;box-sizing:border-box}
+.admin-field input:focus,.admin-field select:focus{outline:none;border-color:var(--brand)}
+.admin-field textarea{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:13px;font-family:monospace;background:var(--bg-input);transition:border-color .2s;box-sizing:border-box;resize:vertical;line-height:1.5}
+.admin-field textarea:focus{outline:none;border-color:var(--brand)}
+
+/* Admin Buttons */
+.admin-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .2s;border:1.5px solid var(--border);background:var(--white);color:var(--text)}
+.admin-btn:hover{border-color:var(--brand);color:var(--brand)}
+.admin-btn.primary{background:var(--brand-gradient);color:var(--white);border-color:transparent}
+.admin-btn.primary:hover{opacity:.9;border-color:transparent;color:var(--white)}
+.admin-btn.secondary{background:var(--white);color:var(--text-sec);border-color:var(--border)}
+.admin-btn.secondary:hover{border-color:var(--brand);color:var(--brand)}
+.admin-btn.danger{background:#fee2e2;color:#dc2626;border-color:#fecaca}
+.admin-btn.danger:hover{background:#dc2626;color:var(--white);border-color:#dc2626}
+
 /* CMS Login Page */
-.admin-login{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - var(--nav-h) - var(--nav-bar-h));padding:40px 20px;background:var(--bg-body)}
+.admin-login{display:flex;align-items:center;justify-content:center;min-height:calc(100vh - var(--nav-h) - var(--nav-bar-h));padding:20px;background:var(--bg-body)}
 .admin-login-box{width:100%;max-width:400px;background:var(--white);border-radius:var(--radius);padding:40px 36px;box-shadow:0 4px 24px rgba(0,0,0,.08);border:1px solid rgba(0,0,0,.06);text-align:center}
 .admin-login-box h2{font-size:22px;font-weight:700;margin-bottom:4px;color:var(--text)}
 .login-icon{margin-bottom:16px}

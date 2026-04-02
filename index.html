@@ -278,8 +278,9 @@ button{font-family:inherit;cursor:pointer}
 .cms-files-table .file-name{font-weight:600;color:var(--text)}
 .cms-files-table .file-type{font-size:11px;color:var(--text-muted);font-family:monospace;background:var(--bg-box);padding:2px 6px;border-radius:4px}
 .cms-files-table .file-size{font-size:12px;color:var(--text-muted)}
-.cms-upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:32px;text-align:center;margin-bottom:20px;background:var(--bg-light);transition:border-color .2s}
+.cms-upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:32px;text-align:center;margin-bottom:20px;background:var(--bg-light);transition:border-color .2s,background .2s}
 .cms-upload-zone:hover{border-color:var(--brand)}
+.cms-upload-zone.dragover{border-color:var(--brand);background:var(--bg-accent);transform:scale(1.01)}
 .cms-upload-zone p{color:var(--text-muted);font-size:14px;margin:8px 0}
 .cms-add-url-row{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
 .cms-add-url-row input{flex:1;min-width:200px;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--bg-input)}
@@ -886,6 +887,51 @@ function saveCmsFiles(d){ localStorage.setItem(CMS_FILES_KEY,JSON.stringify(d));
 function getCmsUsers(){ try{var d=JSON.parse(localStorage.getItem(CMS_USERS_KEY));return d||[];}catch(e){return[];} }
 function saveCmsUsers(d){ localStorage.setItem(CMS_USERS_KEY,JSON.stringify(d)); }
 function sha256hex(s){ return crypto.subtle.digest("SHA-256",new TextEncoder().encode(s)).then(function(b){return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,"0");}).join("");}); }
+var CMS_2FA_KEY = "ecap_cms_2fa";
+function get2FAConfig(){ try{ return JSON.parse(localStorage.getItem(CMS_2FA_KEY))||{}; }catch(e){ return {}; } }
+function save2FAConfig(d){ localStorage.setItem(CMS_2FA_KEY, JSON.stringify(d)); }
+// Base32 decode for TOTP
+function b32decode(s){
+  var alpha="ABCDEFGHIJKLMNOPQRSTUVWXYZ234567",bits="",bytes=[];
+  s=s.replace(/[\s=-]/g,"").toUpperCase();
+  for(var i=0;i<s.length;i++){var v=alpha.indexOf(s[i]);if(v<0)continue;bits+=("00000"+v.toString(2)).slice(-5);}
+  for(var i=0;i+8<=bits.length;i+=8) bytes.push(parseInt(bits.substr(i,8),2));
+  return new Uint8Array(bytes);
+}
+// HMAC-SHA1 via Web Crypto
+function hmacSha1(keyBytes,msg){
+  return crypto.subtle.importKey("raw",keyBytes,{name:"HMAC",hash:"SHA-1"},false,["sign"]).then(function(k){
+    return crypto.subtle.sign("HMAC",k,msg);
+  }).then(function(sig){ return new Uint8Array(sig); });
+}
+// Generate TOTP code from base32 secret
+function generateTOTP(secret,t){
+  t=t||Math.floor(Date.now()/1000);
+  var step=Math.floor(t/30);
+  var msg=new Uint8Array(8);
+  for(var i=7;i>=0;i--){msg[i]=step&0xff;step=Math.floor(step/256);}
+  var key=b32decode(secret);
+  return hmacSha1(key,msg).then(function(h){
+    var off=h[h.length-1]&0x0f;
+    var code=((h[off]&0x7f)<<24|(h[off+1]&0xff)<<16|(h[off+2]&0xff)<<8|(h[off+3]&0xff))%1000000;
+    return ("000000"+code).slice(-6);
+  });
+}
+// Verify TOTP with +/- 1 window tolerance
+function verifyTOTP(secret,token){
+  var now=Math.floor(Date.now()/1000);
+  return Promise.all([generateTOTP(secret,now-30),generateTOTP(secret,now),generateTOTP(secret,now+30)]).then(function(codes){
+    return codes.indexOf(token)>=0;
+  });
+}
+// Generate random base32 secret (20 bytes = 32 chars)
+function generateSecret(){
+  var alpha="ABCDEFGHIJKLMNOPQRSTUVWXYZ234567",arr=new Uint8Array(20);
+  crypto.getRandomValues(arr);
+  var s="";
+  for(var i=0;i<arr.length;i++) s+=alpha[arr[i]%32];
+  return s;
+}
 function checkAdminLogin(username, pass){
   return sha256hex(pass).then(function(hash){
     var users = getCmsUsers();
@@ -899,9 +945,9 @@ function checkAdminLogin(username, pass){
 }
 // ————— ROLE SYSTEM —————
 var CMS_ROLE_PERMS = {
-  admin:  {save:true,  upload:true,  deleteFile:true,  users:true,  export:true,  reset:true},
-  editor: {save:true,  upload:true,  deleteFile:true,  users:false, export:false, reset:false},
-  viewer: {save:false, upload:false, deleteFile:false, users:false, export:false, reset:false}
+  admin:  {save:true,  upload:true,  deleteFile:true,  users:true,  export:true,  reset:true,  editPage:true},
+  editor: {save:true,  upload:true,  deleteFile:true,  users:false, export:false, reset:false, editPage:true},
+  viewer: {save:false, upload:false, deleteFile:false, users:false, export:false, reset:false, editPage:false}
 };
 function _cmsHasPermission(action){
   var role = sessionStorage.getItem("ecap_admin_role")||"admin";
@@ -1082,8 +1128,9 @@ function adminView(){
       +'<h2>CMS Admin</h2>'
       +'<p class="login-sub">Please login to manage website content</p>'
       +'<form onsubmit="return window._adminLogin(event)">'
-      +'<div class="login-field"><label>Username</label><input type="text" id="adminUser" value="admin" autocomplete="username"/></div>'
+      +'<div class="login-field"><label>Username</label><input type="text" id="adminUser" value="admin" autocomplete="username" oninput="var t=document.getElementById(\x27totpField\x27);if(t)t.style.display=get2FAConfig()[this.value.trim()]?\x27\x27:\x27none\x27"/></div>'
       +'<div class="login-field"><label>Password</label><input type="password" id="adminPass" placeholder="Enter password" autocomplete="current-password"/></div>'
+      +'<div class="login-field" id="totpField" style="display:none"><label>2FA Code</label><input type="text" id="adminTOTP" placeholder="6-digit code" maxlength="6" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*" style="letter-spacing:4px;font-size:18px;text-align:center"/></div>'
       +'<button type="submit" class="login-btn" id="loginBtn">Login</button>'
       +'<div class="login-err" id="loginErr"></div>'
       +'</form>'
@@ -1148,6 +1195,42 @@ window._adminLogin = function(e){
   btn.textContent = "Verifying...";
   checkAdminLogin(user, pass).then(function(matched){
     if(matched){
+      // Check if 2FA is enabled for this user
+      var cfg2fa = get2FAConfig();
+      var userSecret = cfg2fa[matched.username||user];
+      if(userSecret){
+        var totpField = document.getElementById('totpField');
+        var totpInput = document.getElementById('adminTOTP');
+        if(totpField.style.display==='none'){
+          totpField.style.display='';
+          totpInput.focus();
+          errEl.textContent='Enter your 2FA code from authenticator app.';
+          errEl.style.color='var(--brand)';
+          btn.disabled=false;
+          btn.textContent='Verify 2FA';
+          return;
+        }
+        var code = totpInput.value.replace(/\s/g,'');
+        if(code.length!==6){errEl.textContent='Enter 6-digit code.';errEl.style.color='';btn.disabled=false;btn.textContent='Verify 2FA';return;}
+        verifyTOTP(userSecret, code).then(function(valid){
+          if(valid){
+            sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
+            sessionStorage.setItem('ecap_admin_user', matched.username||matched);
+            sessionStorage.setItem('ecap_admin_role', matched.role||'admin');
+            _adminCurrentUser = matched.username||matched;
+            route();
+          } else {
+            errEl.textContent='Invalid 2FA code. Try again.';
+            errEl.style.color='';
+            btn.disabled=false;
+            btn.textContent='Verify 2FA';
+            totpInput.value='';
+            totpInput.focus();
+          }
+        });
+        return;
+      }
+      // No 2FA - login directly
       sessionStorage.setItem(ADMIN_SESSION_KEY, "1");
       sessionStorage.setItem("ecap_admin_user", matched.username||matched);
       sessionStorage.setItem("ecap_admin_role", matched.role||"admin");
@@ -1155,6 +1238,7 @@ window._adminLogin = function(e){
       route();
     } else {
       errEl.textContent = "Incorrect username or password.";
+      errEl.style.color='';
       btn.disabled = false;
       btn.textContent = "Login";
     }
@@ -1196,7 +1280,7 @@ window._cmsEditPage = function(slug){
   var langNames = {"zh-Hant":"繁體中文","zh-Hans":"简体中文","en":"English"};
   var html = '<h3 style="font-size:20px;font-weight:700;margin-bottom:16px">'+esc(slug)+'</h3>';
 
-    var _canEditPages = _cmsHasPermission('save');
+    var _canEditPages = _cmsHasPermission('editPage');
   langs.forEach(function(lang){
     var pg = getPage(slug, lang);
     var title = pg ? pg.title : '';
@@ -1208,7 +1292,7 @@ window._cmsEditPage = function(slug){
       +'<div class="admin-field">'
       +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
       +'<label style="margin:0">Body (HTML)</label>'
-      +(_canEditPages ? '<button class="cms-insert-file-btn" data-slug="'+slug+'" data-lang="'+lang+'" onclick="window._cmsShowFilePicker(this)">Insert Download Link</button>' : '<span class="role-badge role-viewer">Read-only</span>')
+      +(_canEditPages ? '<button type="button" class="cms-insert-file-btn" data-slug="'+slug+'" data-lang="'+lang+'" onclick="event.preventDefault();event.stopPropagation();window._cmsShowFilePicker(this)">Insert Download Link</button>' : '<span class="role-badge role-viewer">Read-only</span>')
       +'</div>'
       +tbHtml
       +'<textarea id="'+taId+'" style="min-height:200px;font-family:monospace;font-size:13px"'+(!_canEditPages?' readonly':'')+'>'+escHtml(body)+'</textarea>'
@@ -1362,11 +1446,12 @@ window._cmsFilesView = function(){
     '<div class="cms-panel">'
     +'<h3 style="font-size:20px;font-weight:700;margin-bottom:6px">Downloads Manager</h3>'
     +'<p style="color:var(--text-muted);font-size:13px;margin-bottom:20px">Upload files (stored in browser) or add external links. Copy the HTML snippet to paste into any page body.</p>'
-    +(_canUpload ? '<div class="cms-upload-zone">' : '<div style="display:none">')
+    +(_canUpload ? '<div class="cms-upload-zone" id="cmsDropZone">' : '<div style="display:none">')
     +'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom:8px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>'
-    +'<p>Upload PDF, DOC, or DOCX files (max 2MB each)</p>'
+    +'<p><strong>Drag &amp; drop</strong> PDF, DOC, or DOCX files here</p>'
+    +'<p style="font-size:12px;color:var(--text-muted)">or click to browse (max 2MB each)</p>'
     +'<input type="file" id="cmsFileInput" accept=".pdf,.doc,.docx" style="display:none" onchange="window._cmsFileUpload(event)"/>'
-    +'<button class="admin-btn primary" onclick="window._cmsChooseFile()">Choose File</button>'
+    +'<button class="admin-btn primary" onclick="window._cmsChooseFile()" style="margin-top:8px">Choose File</button>'
     +'</div>'
     +(_canUpload ? '<div class="cms-add-url-row">' : '<div style="display:none">')
     +'<input type="text" id="cmsUrlName" placeholder="Link title (e.g. Account Opening Form)"/>'
@@ -1377,9 +1462,38 @@ window._cmsFilesView = function(){
     +(   _canUpload ? '' : '<div style="background:#fef9c3;border:1px solid #fde68a;border-radius:6px;padding:10px 14px;font-size:13px;margin-bottom:12px">View only — editor or admin access needed to upload or delete files.</div>')
     +'<table class="cms-files-table"><thead><tr><th>Name / Description</th><th>Type</th><th>Size</th><th>Uploaded</th><th>Actions</th></tr></thead><tbody>'+rows+'</tbody></table>'
     +'</div>';
+  setTimeout(function(){ window._cmsInitDragDrop(); },50);
 };
 
 window._cmsChooseFile = function(){ document.getElementById('cmsFileInput').click(); };
+window._cmsInitDragDrop = function(){
+  var zone = document.getElementById('cmsDropZone');
+  if(!zone) return;
+  zone.addEventListener('click', function(e){ if(e.target===zone||e.target.tagName==='P'||e.target.tagName==='svg'||e.target.tagName==='path'||e.target.tagName==='polyline'||e.target.tagName==='line') window._cmsChooseFile(); });
+  zone.addEventListener('dragover', function(e){ e.preventDefault(); e.stopPropagation(); zone.classList.add('dragover'); });
+  zone.addEventListener('dragleave', function(e){ e.preventDefault(); e.stopPropagation(); zone.classList.remove('dragover'); });
+  zone.addEventListener('drop', function(e){
+    e.preventDefault(); e.stopPropagation(); zone.classList.remove('dragover');
+    var files = e.dataTransfer.files;
+    if(!files||!files.length) return;
+    for(var i=0;i<files.length;i++) window._cmsProcessDroppedFile(files[i]);
+  });
+};
+window._cmsProcessDroppedFile = function(file){
+  var allowed = ['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+  var allowedExt = /\.(pdf|doc|docx)$/i;
+  if(!allowed.includes(file.type) && !allowedExt.test(file.name)){ showToast('Only PDF, DOC, DOCX: '+file.name); return; }
+  if(file.size > 2*1024*1024){ showToast('Too large (max 2MB): '+file.name); return; }
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    var files = getCmsFiles();
+    files.push({id:'f'+Date.now()+Math.random().toString(36).substr(2,4), name:file.name, desc:'', type:file.type||'application/octet-stream', size:file.size, url:ev.target.result, isLocal:true, uploadedAt:new Date().toISOString(), uploadedBy:sessionStorage.getItem('ecap_admin_user')||'admin'});
+    saveCmsFiles(files);
+    showToast('Uploaded: '+file.name);
+    window._cmsFilesView();
+  };
+  reader.readAsDataURL(file);
+};
 window._cmsFileUpload = function(e){
   var file = e.target.files[0];
   if(!file) return;
@@ -1432,6 +1546,7 @@ window._cmsFileDelete = function(idx){
 // ————————————————————— CMS USERS MANAGER —————————————————————
 window._cmsUsersView = function(){
   var users = getCmsUsers();
+  var cfg2fa = get2FAConfig();
   var currentUser = sessionStorage.getItem("ecap_admin_user") || "admin";
   var userRows = users.length ? users.map(function(u,i){
     var isMe = u.username===currentUser;
@@ -1439,9 +1554,12 @@ window._cmsUsersView = function(){
     return '<div class="cms-user-row"><div class="u-avatar">'+esc(u.username[0].toUpperCase())+'</div>'
       +'<div class="u-name">'+esc(u.username)+'</div>'
       +'<span class="role-badge role-'+uRole+'">'+uRole+'</span>'
+      +'<span style="font-size:10px;padding:2px 6px;border-radius:100px;'+(cfg2fa[u.username]?'background:#d1fae5;color:#059669':'background:#fee2e2;color:#dc2626')+'">'+(cfg2fa[u.username]?'2FA ON':'2FA OFF')+'</span>'
       +(isMe?'<span class="u-tag" style="margin-left:4px">You</span>':'')
-      +(!isMe?'<button class="admin-btn danger" style="font-size:12px;padding:5px 14px;margin-left:auto" onclick="window._cmsUserDelete('+i+')">Remove</button>':'')
-      +'</div>';
+      +'<div style="margin-left:auto;display:flex;gap:4px">'
+      +(!isMe?'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="window._cms2FASetup(\''+u.username+'\')">'+( cfg2fa[u.username]?'Disable 2FA':'Enable 2FA')+'</button>':'')
+      +(!isMe?'<button class="admin-btn danger" style="font-size:12px;padding:5px 14px" onclick="window._cmsUserDelete('+i+')">Remove</button>':'')
+      +'</div></div>';
   }).join("") : '<div style="color:var(--text-muted);font-size:13px;padding:8px 0">Using default admin account. Add users below to replace it.</div>';
 
   document.getElementById("cmsEditor").innerHTML =
@@ -1450,6 +1568,10 @@ window._cmsUsersView = function(){
     // Change Password
     +'<div class="cms-chpwd-box">'
     +'<h4>Change Password</h4>'
+    +'<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid rgba(0,0,0,.06)">'
+    +'<button class="admin-btn '+(cfg2fa[currentUser]?'danger':'primary')+'" style="font-size:12px" onclick="window._cms2FASetup(sessionStorage.getItem(\'ecap_admin_user\')||\'admin\')">'+(cfg2fa[currentUser]?'Disable 2FA':'Setup 2FA')+'</button>'
+    +'<span style="font-size:12px;color:var(--text-muted);margin-left:8px">'+(cfg2fa[currentUser]?'2FA is enabled for your account':'Enable two-factor authentication for extra security')+'</span>'
+    +'</div>'
     +'<div class="admin-field"><label>Current Password</label><input type="password" id="pwdCurrent" placeholder="Current password"/></div>'
     +'<div class="admin-field"><label>New Password</label><input type="password" id="pwdNew" placeholder="New password (min 6 chars)"/></div>'
     +'<div class="admin-field"><label>Confirm New Password</label><input type="password" id="pwdConfirm" placeholder="Confirm new password"/></div>'
@@ -1527,6 +1649,58 @@ window._cmsUserAdd = function(){
     window._cmsUsersView();
   });
 };
+// ————————— 2FA Management —————————
+window._cms2FASetup = function(username){
+  var cfg = get2FAConfig();
+  if(cfg[username]){
+    if(!confirm('2FA is already enabled for '+username+'. Disable it?')) return;
+    delete cfg[username];
+    save2FAConfig(cfg);
+    showToast('2FA disabled for '+username);
+    window._cmsUsersView();
+    return;
+  }
+  var secret = generateSecret();
+  var issuer = 'e-Capital CMS';
+  var otpUrl = 'otpauth://totp/'+encodeURIComponent(issuer+':'+username)+'?secret='+secret+'&issuer='+encodeURIComponent(issuer);
+  var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(otpUrl);
+  var div = document.createElement('div');
+  div.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center';
+  div.innerHTML = '<div style="background:var(--white);border-radius:12px;padding:32px;max-width:400px;width:90%;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.2)">'
+    +'<h3 style="margin:0 0 8px;font-size:18px">Setup 2FA for '+esc(username)+'</h3>'
+    +'<p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">Scan this QR code with Google Authenticator, Authy, or any TOTP app.</p>'
+    +'<img src="'+qrUrl+'" alt="QR" style="width:200px;height:200px;border:1px solid var(--border);border-radius:8px;margin-bottom:12px"/>'
+    +'<div style="font-family:monospace;font-size:14px;letter-spacing:2px;background:var(--bg-box);padding:8px 12px;border-radius:6px;margin-bottom:16px;word-break:break-all">'+secret+'</div>'
+    +'<p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Enter a code from the app to verify setup:</p>'
+    +'<input type="text" id="verify2FA" maxlength="6" placeholder="000000" style="width:120px;text-align:center;font-size:20px;letter-spacing:6px;padding:8px;border:1.5px solid var(--border);border-radius:8px;margin-bottom:12px" inputmode="numeric"/>'
+    +'<div style="display:flex;gap:8px;justify-content:center">'
+    +'<button class="admin-btn primary" id="verify2FABtn" style="min-width:100px">Verify &amp; Enable</button>'
+    +'<button class="admin-btn secondary" id="cancel2FABtn">Cancel</button>'
+    +'</div>'
+    +'<div id="verify2FAErr" style="font-size:12px;color:#dc2626;margin-top:8px"></div>'
+    +'</div>';
+  document.body.appendChild(div);
+  document.getElementById('verify2FA').focus();
+  document.getElementById('cancel2FABtn').addEventListener('click', function(){ div.remove(); });
+  div.addEventListener('click', function(e){ if(e.target===div) div.remove(); });
+  document.getElementById('verify2FABtn').addEventListener('click', function(){
+    var code = document.getElementById('verify2FA').value.replace(/\s/g,'');
+    if(code.length!==6){document.getElementById('verify2FAErr').textContent='Enter 6-digit code';return;}
+    verifyTOTP(secret, code).then(function(ok){
+      if(ok){
+        var c=get2FAConfig();
+        c[username]=secret;
+        save2FAConfig(c);
+        showToast('2FA enabled for '+username);
+        div.remove();
+        window._cmsUsersView();
+      } else {
+        document.getElementById('verify2FAErr').textContent='Invalid code. Check your app and try again.';
+      }
+    });
+  });
+};
+
 
 window._cmsUserDelete = function(idx){
   var users = getCmsUsers();

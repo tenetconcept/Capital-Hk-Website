@@ -46,8 +46,11 @@
   transform: scale(1);
 }
 
-/* Hero content always visible immediately (above the fold) */
-.hero .anim-fade-up {
+/* Hero + Banner content always visible immediately (above the fold) */
+.hero .anim-fade-up,
+.hero .anim-fade-left,
+.hero .anim-fade-right,
+.banner-sec.anim-fade-up {
   opacity: 1;
   transform: none;
 }

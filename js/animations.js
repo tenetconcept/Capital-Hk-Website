@@ -19,12 +19,12 @@ function initScrollAnimations(){
         observer.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.08, rootMargin: '50px 0px -20px 0px' });
+  }, { threshold: 0.05, rootMargin: '80px 0px -10px 0px' });
 
   els.forEach(function(el){
     // Elements already in viewport: show immediately
     var rect = el.getBoundingClientRect();
-    if(rect.top < window.innerHeight && rect.bottom > 0){
+    if(rect.top < window.innerHeight + 50 && rect.bottom > 0){
       el.classList.add('visible');
     } else {
       observer.observe(el);
@@ -55,12 +55,14 @@ window.initHomeAnimations = function(){
       }
     });
   }
+  // Run scroll animations immediately, then again after images settle
   initScrollAnimations();
+  setTimeout(initScrollAnimations, 300);
 };
 
 // Re-init on route change
 window.addEventListener('hashchange', function(){
-  setTimeout(initScrollAnimations, 100);
+  setTimeout(initScrollAnimations, 80);
 });
 
 })();

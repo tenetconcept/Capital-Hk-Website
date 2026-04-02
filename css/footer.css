@@ -27,25 +27,25 @@
 .footer-brand {}
 .footer-brand img { height: 36px; margin-bottom: 16px; }
 .footer-brand-name {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 700;
   margin-bottom: 12px;
 }
 .footer-brand-addr {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: var(--text-sec);
-  line-height: 1.7;
+  line-height: 1.65;
 }
 .footer-col {}
 .footer-col-title {
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 700;
   margin-bottom: 16px;
   color: var(--text);
 }
 .footer-col a {
   display: block;
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 500;
   color: var(--text-sec);
   padding: 4px 0;

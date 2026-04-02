@@ -50,7 +50,7 @@ function setLang(lang){
   document.documentElement.lang = htmlLangs[lang] || "zh-Hant";
   // Swap font priority: SC first for simplified, TC first for traditional
   document.documentElement.style.fontFamily = lang === 'zh-Hans'
-    ? '"Noto Sans SC","Noto Sans TC","Open Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif'
+    ? '"Be Vietnam Pro","Noto Sans SC","Noto Sans TC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif'
     : '';
   route();
 }

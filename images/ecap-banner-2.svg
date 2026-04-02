@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1800" height="840" viewBox="0 0 1800 840">
-<defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#2d1a10"/><stop offset="100%" style="stop-color:#E8450A"/></linearGradient></defs>
+<defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#2d1522"/><stop offset="100%" style="stop-color:#FF6B9D"/></linearGradient></defs>
 <rect width="1800" height="840" fill="url(#g)"/>
 <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-size="24" font-weight="bold" fill="rgba(255,255,255,0.6)">Shanghai-HK Stock Connect</text>
 </svg>

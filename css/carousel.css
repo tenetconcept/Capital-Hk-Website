@@ -97,17 +97,18 @@
   padding: 20px 24px 24px;
 }
 .news-card-date {
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--brand);
   margin-bottom: 8px;
 }
 .news-card-title {
-  font-size: 17px;
+  font-size: 1.0625rem;
   font-weight: 700;
-  line-height: 1.4;
+  line-height: 1.375;
   margin-bottom: 8px;
   color: var(--text);
+  letter-spacing: -0.01em;
   transition: color var(--dur) var(--ease);
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -116,9 +117,9 @@
 }
 .news-card:hover .news-card-title { color: var(--brand); }
 .news-card-excerpt {
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--text-muted);
-  line-height: 1.6;
+  line-height: 1.5;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;

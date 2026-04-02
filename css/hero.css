@@ -21,28 +21,28 @@
   align-items: center;
   gap: 6px;
   padding: 6px 16px;
-  background: rgba(204,51,0,.08);
-  border: 1px solid rgba(204,51,0,.15);
+  background: rgba(212,54,110,.08);
+  border: 1px solid rgba(212,54,110,.15);
   border-radius: var(--radius-full);
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--brand);
   margin-bottom: 24px;
 }
 .hero-badge svg { width: 14px; height: 14px; }
 .hero-title {
-  font-size: clamp(32px, 5vw, 52px);
-  font-weight: 800;
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  font-weight: 700;
   line-height: 1.15;
   margin-bottom: 16px;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.02em;
   color: var(--text);
 }
 .hero-subtitle {
-  font-size: clamp(15px, 2vw, 18px);
+  font-size: clamp(0.9375rem, 2vw, 1.125rem);
   font-weight: 400;
   color: var(--text-sec);
-  line-height: 1.7;
+  line-height: 1.75;
   margin-bottom: 32px;
   max-width: 600px;
   margin-left: auto;
@@ -54,7 +54,7 @@
   justify-content: center;
   flex-wrap: wrap;
 }
-.hero-ctas .btn { padding: 14px 32px; font-size: 16px; }
+.hero-ctas .btn { padding: 14px 32px; font-size: 1rem; }
 .hero-ctas .btn-white {
   background: var(--white);
   color: var(--brand);

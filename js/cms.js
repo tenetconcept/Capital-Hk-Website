@@ -871,7 +871,7 @@ window._cmsBannerInitDrop = function(){
   var zone = document.getElementById('cmsBannerDropZone');
   if(!zone) return;
   zone.addEventListener('click', function(e){ if(e.target===zone||e.target.tagName==='P'||e.target.tagName==='svg'||e.target.tagName==='path'||e.target.tagName==='polyline'||e.target.tagName==='line') document.getElementById('cmsBannerInput').click(); });
-  zone.addEventListener('dragover', function(e){ e.preventDefault(); e.stopPropagation(); zone.style.borderColor='var(--brand)'; zone.style.background='rgba(212,54,110,.04)'; });
+  zone.addEventListener('dragover', function(e){ e.preventDefault(); e.stopPropagation(); zone.style.borderColor='var(--brand)'; zone.style.background='rgba(180,21,64,.04)'; });
   zone.addEventListener('dragleave', function(e){ e.preventDefault(); e.stopPropagation(); zone.style.borderColor=''; zone.style.background=''; });
   zone.addEventListener('drop', function(e){
     e.preventDefault(); e.stopPropagation(); zone.style.borderColor=''; zone.style.background='';

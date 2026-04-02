@@ -2,7 +2,9 @@
    FOOTER
    ============================ */
 .footer {
-  background: var(--white);
+  background: rgba(255,255,255,.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   position: relative;
   color: var(--text);
 }

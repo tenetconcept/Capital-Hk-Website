@@ -4,8 +4,8 @@
 
 /* Utility Bar */
 .utility-bar {
-  background: var(--white);
-  border-bottom: 1px solid var(--border-light);
+  background: transparent;
+  border-bottom: 1px solid rgba(0,0,0,.04);
   height: var(--utility-h);
   transition: all var(--dur-slow) var(--ease);
   z-index: 1001;
@@ -47,13 +47,14 @@
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: rgba(255,255,255,.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  transition: box-shadow var(--dur-slow) var(--ease), border-color var(--dur-slow) var(--ease);
+  background: rgba(255,255,255,.6);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  transition: box-shadow var(--dur-slow) var(--ease), background var(--dur-slow) var(--ease), border-color var(--dur-slow) var(--ease);
   border-bottom: 1px solid transparent;
 }
 .nav.scrolled {
+  background: rgba(255,255,255,.85);
   box-shadow: 0 2px 20px rgba(0,0,0,.06);
   border-bottom-color: var(--border-light);
 }
@@ -85,8 +86,8 @@
 
 /* Row 2: Nav Links Bar */
 .nav-bar {
-  border-top: 1px solid var(--border-light);
-  background: var(--white);
+  border-top: 1px solid rgba(0,0,0,.04);
+  background: transparent;
   height: var(--nav-bar-h);
 }
 .nav-bar .mw {
@@ -111,8 +112,8 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 14px 24px;
-  font-size: 0.9375rem;
+  padding: 14px 20px;
+  font-size: 0.875rem;
   font-weight: 500;
   color: var(--text);
   transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
@@ -208,12 +209,14 @@
 .nav-dd-item .dd-arrow {
   width: 16px;
   height: 16px;
-  opacity: 0;
+  opacity: 1;
   flex-shrink: 0;
-  transition: opacity var(--dur) var(--ease);
+  color: var(--brand);
+  transition: opacity var(--dur) var(--ease), color var(--dur) var(--ease);
 }
 .nav-dd-item:hover .dd-arrow {
   opacity: 1;
+  color: var(--white);
 }
 
 /* Nav CTA */

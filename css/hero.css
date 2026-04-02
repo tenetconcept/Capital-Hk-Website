@@ -21,8 +21,8 @@
   align-items: center;
   gap: 6px;
   padding: 6px 16px;
-  background: rgba(212,54,110,.08);
-  border: 1px solid rgba(212,54,110,.15);
+  background: rgba(180,21,64,.08);
+  border: 1px solid rgba(180,21,64,.15);
   border-radius: var(--radius-full);
   font-size: 0.8125rem;
   font-weight: 600;

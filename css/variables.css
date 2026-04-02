@@ -2,20 +2,20 @@
    DESIGN TOKENS
    ============================ */
 :root {
-  /* Brand — Modern Pink */
-  --brand: #D4366E;
-  --brand-dark: #B52D5C;
-  --brand-darker: #8C1D45;
-  --brand-light: #E8548A;
-  --brand-gradient: linear-gradient(135deg, #D4366E, #FF6B9D);
+  /* Brand — Deep Crimson/Wine Red */
+  --brand: #B41540;
+  --brand-dark: #8E1033;
+  --brand-darker: #6B0C26;
+  --brand-light: #D4366E;
+  --brand-gradient: linear-gradient(135deg, #B41540, #D4366E);
 
   /* Surfaces */
-  --bg-body: #FAFAFA;
-  --bg-pink: #FDF0F4;
-  --bg-box: #FCE4EC;
-  --bg-accent: #FDE8EF;
-  --bg-light: #FFF0F5;
-  --bg-input: #FFF5F8;
+  --bg-body: #F0EAEB;
+  --bg-pink: #F0E0E4;
+  --bg-box: #EDD4DA;
+  --bg-accent: #F0DDE2;
+  --bg-light: #F5ECED;
+  --bg-input: #F8F0F2;
   --bg-dark: #1A1A1A;
   --bg-dark-sec: #2A2A2A;
   --white: #FFFFFF;
@@ -26,7 +26,7 @@
   --text-muted: #7A7A7A;
 
   /* Borders, Shadows */
-  --border: #E8D0D8;
+  --border: #DCC8CE;
   --border-light: rgba(0,0,0,.06);
   --shadow-sm: 0 1px 3px rgba(0,0,0,.06);
   --shadow-md: 0 4px 20px rgba(0,0,0,.08);

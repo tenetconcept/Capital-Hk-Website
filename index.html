@@ -260,6 +260,33 @@ button{font-family:inherit;cursor:pointer}
 .cms-preview-toggle.active{background:var(--brand);color:var(--white);border-color:var(--brand)}
 .cms-preview-panel{background:var(--white);border:2px dashed var(--border);border-radius:var(--radius);padding:32px;margin-top:20px;min-height:200px}
 .cms-preview-panel .subpage-body{all:unset}
+.cms-section-bar{display:flex;gap:6px;padding:14px 24px;border-bottom:1px solid rgba(0,0,0,.06);background:var(--bg-light)}
+.cms-section-btn{padding:7px 18px;border-radius:100px;font-size:12px;font-weight:600;border:1.5px solid var(--border);background:var(--white);color:var(--text-sec);cursor:pointer;transition:all .2s}
+.cms-section-btn:hover{border-color:var(--brand);color:var(--brand)}
+.cms-section-btn.active{background:var(--brand);color:var(--white);border-color:var(--brand)}
+.cms-panel{padding:24px 32px}
+.cms-files-table{width:100%;border-collapse:collapse;margin-top:14px}
+.cms-files-table th{text-align:left;font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:.5px;padding:8px 12px;border-bottom:2px solid var(--border)}
+.cms-files-table td{padding:10px 12px;border-bottom:1px solid rgba(0,0,0,.05);font-size:13px;vertical-align:middle}
+.cms-files-table tr:hover td{background:var(--bg-light)}
+.cms-files-table .file-name{font-weight:600;color:var(--text)}
+.cms-files-table .file-type{font-size:11px;color:var(--text-muted);font-family:monospace;background:var(--bg-box);padding:2px 6px;border-radius:4px}
+.cms-files-table .file-size{font-size:12px;color:var(--text-muted)}
+.cms-upload-zone{border:2px dashed var(--border);border-radius:var(--radius);padding:32px;text-align:center;margin-bottom:20px;background:var(--bg-light);transition:border-color .2s}
+.cms-upload-zone:hover{border-color:var(--brand)}
+.cms-upload-zone p{color:var(--text-muted);font-size:14px;margin:8px 0}
+.cms-add-url-row{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.cms-add-url-row input{flex:1;min-width:200px;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--bg-input)}
+.cms-add-url-row input:focus{outline:none;border-color:var(--brand)}
+.cms-users-list{margin:16px 0}
+.cms-user-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--white);border-radius:var(--radius-sm);margin-bottom:8px;border:1px solid rgba(0,0,0,.06);box-shadow:var(--shadow-sm)}
+.cms-user-row .u-avatar{width:36px;height:36px;border-radius:50%;background:var(--brand-gradient);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--white);flex-shrink:0}
+.cms-user-row .u-name{font-weight:600;font-size:14px;flex:1}
+.cms-user-row .u-tag{font-size:11px;color:var(--brand);background:var(--bg-box);padding:2px 8px;border-radius:100px}
+.cms-chpwd-box{background:var(--white);border-radius:var(--radius);padding:24px;border:1px solid rgba(0,0,0,.06);box-shadow:var(--shadow-sm);max-width:480px;margin-bottom:24px}
+.cms-chpwd-box h4{font-size:15px;font-weight:700;margin-bottom:16px}
+.cms-add-user-box{background:var(--white);border-radius:var(--radius);padding:24px;border:1px solid rgba(0,0,0,.06);box-shadow:var(--shadow-sm);max-width:480px}
+.cms-add-user-box h4{font-size:15px;font-weight:700;margin-bottom:16px}
 .cms-preview-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:12px;display:flex;align-items:center;gap:6px}
 .cms-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;color:var(--text-muted);text-align:center;padding:40px}
 .cms-empty .empty-icon{font-size:48px;margin-bottom:16px;opacity:.5}
@@ -827,6 +854,24 @@ function getCmsPages(){
   try { var d = JSON.parse(localStorage.getItem(CMS_KEY)); return d || {}; } catch(e){ return {}; }
 }
 function saveCmsPages(d){ localStorage.setItem(CMS_KEY, JSON.stringify(d)); }
+var CMS_FILES_KEY = "ecap_cms_files";
+var CMS_USERS_KEY = "ecap_cms_users";
+var _adminCurrentUser = null;
+function getCmsFiles(){ try{var d=JSON.parse(localStorage.getItem(CMS_FILES_KEY));return d||[];}catch(e){return[];} }
+function saveCmsFiles(d){ localStorage.setItem(CMS_FILES_KEY,JSON.stringify(d)); }
+function getCmsUsers(){ try{var d=JSON.parse(localStorage.getItem(CMS_USERS_KEY));return d||[];}catch(e){return[];} }
+function saveCmsUsers(d){ localStorage.setItem(CMS_USERS_KEY,JSON.stringify(d)); }
+function sha256hex(s){ return crypto.subtle.digest("SHA-256",new TextEncoder().encode(s)).then(function(b){return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,"0");}).join("");}); }
+function checkAdminLogin(username, pass){
+  return sha256hex(pass).then(function(hash){
+    var users = getCmsUsers();
+    if(users.length > 0){
+      return users.some(function(u){ return u.username===username && u.hash===hash; }) ? username : null;
+    }
+    if(username==="admin" && hash===ADMIN_HASH) return "admin";
+    return null;
+  });
+}
 
 function getPage(slug, lang){
   var cms = getCmsPages();
@@ -1035,6 +1080,7 @@ function adminView(){
     +'<button class="admin-btn danger" onclick="window._cmsReset()">&#x21BA; Reset</button>'
     +'<button class="admin-btn secondary" onclick="window._adminLogout()" style="margin-left:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Logout</button>'
     +'</div></div>'
+    +'<div class="cms-section-bar"><button class="cms-section-btn active" id="stab_pages" onclick="window._cmsSectionSwitch(0)">Pages</button><button class="cms-section-btn" id="stab_files" onclick="window._cmsSectionSwitch(1)">Downloads</button><button class="cms-section-btn" id="stab_users" onclick="window._cmsSectionSwitch(2)">Users</button></div>'
     +'<div class="cms-editor-area" id="cmsEditor">'
     +'<div class="cms-empty"><div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><p>Select a page from the sidebar to start editing</p></div>'
     +'</div></div></div>';
@@ -1054,19 +1100,20 @@ window._adminLogout = function(){
 
 window._adminLogin = function(e){
   e.preventDefault();
+  var user = document.getElementById("adminUser").value.trim();
   var pass = document.getElementById("adminPass").value;
   var btn = document.getElementById("loginBtn");
   var errEl = document.getElementById("loginErr");
   btn.disabled = true;
   btn.textContent = "Verifying...";
-  // SHA-256 via Web Crypto API
-  crypto.subtle.digest("SHA-256", new TextEncoder().encode(pass)).then(function(buf){
-    var hash = Array.from(new Uint8Array(buf)).map(function(b){return b.toString(16).padStart(2,"0");}).join("");
-    if(hash === ADMIN_HASH){
+  checkAdminLogin(user, pass).then(function(matched){
+    if(matched){
       sessionStorage.setItem(ADMIN_SESSION_KEY, "1");
+      sessionStorage.setItem("ecap_admin_user", matched);
+      _adminCurrentUser = matched;
       route();
     } else {
-      errEl.textContent = "Incorrect password. Please try again.";
+      errEl.textContent = "Incorrect username or password.";
       btn.disabled = false;
       btn.textContent = "Login";
     }
@@ -1196,6 +1243,203 @@ window._cmsReset = function(){
   }
 };
 
+// ————————————————————— CMS SECTION SWITCHER —————————————————————
+var _cmsSection = "pages";
+window._cmsSectionSwitch = function(sec){
+  var secs = ["pages","files","users"];
+  if(typeof sec === "number") sec = secs[sec] || "pages";
+  _cmsSection = sec;
+  ["pages","files","users"].forEach(function(s){
+    var b = document.getElementById("stab_"+s);
+    if(b) b.classList.toggle("active", s===sec);
+  });
+  var sidebar = document.querySelector(".cms-sidebar");
+  if(sidebar) sidebar.style.display = sec==="pages" ? "" : "none";
+  if(sec==="pages") {
+    document.getElementById("cmsEditor").innerHTML = '<div class="cms-empty"><div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><p>Select a page from the sidebar to start editing</p></div>';
+  } else if(sec==="files") {
+    window._cmsFilesView();
+  } else if(sec==="users") {
+    window._cmsUsersView();
+  }
+};
+
+// ————————————————————— CMS FILES MANAGER —————————————————————
+window._cmsFilesView = function(){
+  var files = getCmsFiles();
+  var rows = files.length ? files.map(function(f,i){
+    var sizeStr = f.size ? (f.size < 1024 ? f.size+"B" : f.size < 1048576 ? Math.round(f.size/1024)+"KB" : Math.round(f.size/1048576)+"MB") : "—";
+    return '<tr><td><span class="file-name">'+esc(f.name)+'</span>'+(f.desc?'<br/><span style="font-size:11px;color:var(--text-muted)">'+esc(f.desc)+'</span>':'')+'</td>'
+      +'<td><span class="file-type">'+esc(f.type||"link")+'</span></td>'
+      +'<td class="file-size">'+sizeStr+'</td>'
+      +'<td style="white-space:nowrap">'
+      +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px;margin-right:4px" onclick="window._cmsFileCopy('+i+')">Copy Link</button>'
+      +'<button class="admin-btn danger" style="font-size:11px;padding:4px 10px" onclick="window._cmsFileDelete('+i+')">Delete</button>'
+      +'</td></tr>';
+  }).join("") : '<tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:24px">No files yet. Upload a file or add a URL below.</td></tr>';
+
+  document.getElementById("cmsEditor").innerHTML =
+    '<div class="cms-panel">'
+    +'<h3 style="font-size:20px;font-weight:700;margin-bottom:6px">Downloads Manager</h3>'
+    +'<p style="color:var(--text-muted);font-size:13px;margin-bottom:20px">Upload files (stored in browser) or add external links. Copy the HTML snippet to paste into any page body.</p>'
+    +'<div class="cms-upload-zone">'
+    +'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom:8px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>'
+    +'<p>Drag & drop or click to upload PDF, DOC, DOCX, or any file (max 2MB)</p>'
+    +'<input type="file" id="cmsFileInput" style="display:none" onchange="window._cmsFileUpload(event)"/>'
+    +'<button class="admin-btn primary" onclick="window._cmsChooseFile()">Choose File</button>'
+    +'</div>'
+    +'<div class="cms-add-url-row">'
+    +'<input type="text" id="cmsUrlName" placeholder="Link title (e.g. Account Opening Form)"/>'
+    +'<input type="url" id="cmsUrlHref" placeholder="External URL (https://...)"/>'
+    +'<button class="admin-btn secondary" onclick="window._cmsAddUrl()">Add URL</button>'
+    +'</div>'
+    +'<table class="cms-files-table"><thead><tr><th>Name / Description</th><th>Type</th><th>Size</th><th>Actions</th></tr></thead><tbody>'+rows+'</tbody></table>'
+    +'</div>';
+};
+
+window._cmsChooseFile = function(){ document.getElementById('cmsFileInput').click(); };
+window._cmsFileUpload = function(e){
+  var file = e.target.files[0];
+  if(!file) return;
+  if(file.size > 2*1024*1024){ showToast("File too large (max 2MB)"); return; }
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    var files = getCmsFiles();
+    files.push({id:"f"+Date.now(), name:file.name, desc:"", type:file.type||"application/octet-stream", size:file.size, url:ev.target.result, isLocal:true});
+    saveCmsFiles(files);
+    showToast("Uploaded: "+file.name);
+    window._cmsFilesView();
+  };
+  reader.readAsDataURL(file);
+  e.target.value="";
+};
+
+window._cmsAddUrl = function(){
+  var name = document.getElementById("cmsUrlName").value.trim();
+  var url = document.getElementById("cmsUrlHref").value.trim();
+  if(!name || !url){ showToast("Enter both name and URL"); return; }
+  var files = getCmsFiles();
+  files.push({id:"u"+Date.now(), name:name, desc:"", type:"external", size:0, url:url, isLocal:false});
+  saveCmsFiles(files);
+  showToast("Added: "+name);
+  window._cmsFilesView();
+};
+
+window._cmsFileCopy = function(idx){
+  var f = getCmsFiles()[idx];
+  if(!f) return;
+  var snippet = f.isLocal
+    ? '<a href="'+f.url+'" download="'+f.name.replace(/"/g,"")+'">'+f.name+'</a>'
+    : '<a href="'+f.url.replace(/"/g,"")+'" target="_blank" rel="noopener">'+f.name+'</a>';
+  navigator.clipboard ? navigator.clipboard.writeText(snippet).then(function(){ showToast("Copied to clipboard!"); }) : showToast(snippet);
+};
+
+window._cmsFileDelete = function(idx){
+  if(!confirm("Delete this file/link?")) return;
+  var files = getCmsFiles();
+  files.splice(idx,1);
+  saveCmsFiles(files);
+  window._cmsFilesView();
+};
+
+// ————————————————————— CMS USERS MANAGER —————————————————————
+window._cmsUsersView = function(){
+  var users = getCmsUsers();
+  var currentUser = sessionStorage.getItem("ecap_admin_user") || "admin";
+  var userRows = users.length ? users.map(function(u,i){
+    var isMe = u.username===currentUser;
+    return '<div class="cms-user-row"><div class="u-avatar">'+esc(u.username[0].toUpperCase())+'</div>'
+      +'<div class="u-name">'+esc(u.username)+'</div>'
+      +(isMe?'<span class="u-tag">You</span>':'')
+      +(!isMe?'<button class="admin-btn danger" style="font-size:12px;padding:5px 14px" onclick="window._cmsUserDelete('+i+')">Remove</button>':'')
+      +'</div>';
+  }).join("") : '<div style="color:var(--text-muted);font-size:13px;padding:8px 0">Using default admin account. Add users below to replace it.</div>';
+
+  document.getElementById("cmsEditor").innerHTML =
+    '<div class="cms-panel">'
+    +'<h3 style="font-size:20px;font-weight:700;margin-bottom:20px">User Management</h3>'
+    // Change Password
+    +'<div class="cms-chpwd-box">'
+    +'<h4>Change Password</h4>'
+    +'<div class="admin-field"><label>Current Password</label><input type="password" id="pwdCurrent" placeholder="Current password"/></div>'
+    +'<div class="admin-field"><label>New Password</label><input type="password" id="pwdNew" placeholder="New password (min 6 chars)"/></div>'
+    +'<div class="admin-field"><label>Confirm New Password</label><input type="password" id="pwdConfirm" placeholder="Confirm new password"/></div>'
+    +'<button class="admin-btn primary" onclick="window._cmsChangePassword()">Update Password</button>'
+    +'<div id="pwdMsg" style="font-size:13px;margin-top:8px;min-height:20px"></div>'
+    +'</div>'
+    // Users list
+    +'<h4 style="font-size:15px;font-weight:700;margin-bottom:12px">Admin Users ('+( users.length || 1 )+')</h4>'
+    +'<div class="cms-users-list">'+userRows+'</div>'
+    // Add new user
+    +'<div class="cms-add-user-box">'
+    +'<h4>Add New User</h4>'
+    +'<div class="admin-field"><label>Username</label><input type="text" id="newUsername" placeholder="e.g. editor1"/></div>'
+    +'<div class="admin-field"><label>Password</label><input type="password" id="newUserPass" placeholder="Min 6 characters"/></div>'
+    +'<button class="admin-btn primary" onclick="window._cmsUserAdd()">Add User</button>'
+    +'<div id="addUserMsg" style="font-size:13px;margin-top:8px;min-height:20px"></div>'
+    +'</div>'
+    +'</div>';
+};
+
+window._cmsChangePassword = function(){
+  var cur = document.getElementById("pwdCurrent").value;
+  var nw = document.getElementById("pwdNew").value;
+  var cf = document.getElementById("pwdConfirm").value;
+  var msg = document.getElementById("pwdMsg");
+  if(nw.length < 6){ msg.style.color="#dc3545"; msg.textContent="New password must be at least 6 characters."; return; }
+  if(nw !== cf){ msg.style.color="#dc3545"; msg.textContent="New passwords do not match."; return; }
+  var currentUser = sessionStorage.getItem("ecap_admin_user") || "admin";
+  checkAdminLogin(currentUser, cur).then(function(ok){
+    if(!ok){ msg.style.color="#dc3545"; msg.textContent="Current password is incorrect."; return; }
+    sha256hex(nw).then(function(hash){
+      var users = getCmsUsers();
+      if(users.length === 0){
+        // Move from default to custom user list
+        users = [{username:"admin", hash:hash}];
+      } else {
+        var found = false;
+        users = users.map(function(u){ if(u.username===currentUser){found=true;return{username:u.username,hash:hash};}return u; });
+        if(!found) users.push({username:currentUser,hash:hash});
+      }
+      saveCmsUsers(users);
+      msg.style.color="#28a745"; msg.textContent="Password updated successfully.";
+      document.getElementById("pwdCurrent").value="";
+      document.getElementById("pwdNew").value="";
+      document.getElementById("pwdConfirm").value="";
+    });
+  });
+};
+
+window._cmsUserAdd = function(){
+  var uname = document.getElementById("newUsername").value.trim();
+  var pass = document.getElementById("newUserPass").value;
+  var msg = document.getElementById("addUserMsg");
+  if(!uname){ msg.style.color="#dc3545"; msg.textContent="Enter a username."; return; }
+  if(pass.length < 6){ msg.style.color="#dc3545"; msg.textContent="Password must be at least 6 characters."; return; }
+  var users = getCmsUsers();
+  if(users.some(function(u){return u.username===uname;})){ msg.style.color="#dc3545"; msg.textContent="Username already exists."; return; }
+  sha256hex(pass).then(function(hash){
+    users.push({username:uname, hash:hash});
+    saveCmsUsers(users);
+    msg.style.color="#28a745"; msg.textContent="User '"+uname+"' added.";
+    document.getElementById("newUsername").value="";
+    document.getElementById("newUserPass").value="";
+    window._cmsUsersView();
+  });
+};
+
+window._cmsUserDelete = function(idx){
+  var users = getCmsUsers();
+  var username = (users[idx]||{}).username;
+  if(!username) return;
+  if(!confirm("Remove user '"+username+"'?")) return;
+  users.splice(idx,1);
+  saveCmsUsers(users);
+  showToast("Removed: "+username);
+  window._cmsUsersView();
+};
+
+
 // ————————————————————— FOOTER —————————————————————
 function footerView(){
   var u = SITE.ui[currentLang] || SITE.ui["zh-Hant"];
@@ -1307,6 +1551,7 @@ function showToast(msg){
 }
 
 // ————————————————————— INIT —————————————————————
+_adminCurrentUser = sessionStorage.getItem("ecap_admin_user");
 route();
 nav.classList.add("scrolled"); // init check
 

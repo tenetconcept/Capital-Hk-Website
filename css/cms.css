@@ -2,6 +2,14 @@
    CMS ADMIN PANEL STYLES
    ============================ */
 
+/* CMS Active — hide main site nav, only show logo bar */
+body.cms-active .utility-bar,
+body.cms-active .nav-bar,
+body.cms-active .mobile-menu{display:none}
+body.cms-active .nav{border-bottom:1px solid rgba(0,0,0,.06)}
+body.cms-active .cms-layout{min-height:calc(100vh - var(--nav-h))}
+body.cms-active .cms-sidebar{top:var(--nav-h);height:calc(100vh - var(--nav-h))}
+
 .cms-layout{display:flex;gap:0;min-height:calc(100vh - var(--nav-h) - var(--nav-bar-h))}
 .cms-sidebar{width:280px;background:var(--white);border-right:1px solid rgba(0,0,0,.06);padding:24px 0;overflow-y:auto;flex-shrink:0;position:sticky;top:calc(var(--nav-h) + var(--nav-bar-h));height:calc(100vh - var(--nav-h) - var(--nav-bar-h))}
 .cms-sidebar-hdr{padding:0 20px 16px;border-bottom:1px solid rgba(0,0,0,.06)}
@@ -36,7 +44,11 @@
 .cms-preview-toggle.active{background:var(--brand);color:var(--white);border-color:var(--brand)}
 .cms-preview-panel{background:var(--white);border:2px dashed var(--border);border-radius:var(--radius);padding:32px;margin-top:20px;min-height:200px}
 .cms-preview-panel .subpage-body{all:unset}
-.cms-section-bar{display:flex;gap:4px;padding:10px 20px;border-bottom:1px solid rgba(0,0,0,.06);background:var(--white);flex-wrap:wrap}
+.cms-section-bar{display:flex;gap:4px;padding:10px 20px;border-bottom:1px solid rgba(0,0,0,.06);background:var(--white);flex-wrap:wrap;align-items:center;justify-content:space-between}
+.cms-section-tabs{display:flex;gap:4px;flex-wrap:wrap;flex:1}
+.cms-section-tools{display:flex;gap:4px;flex-shrink:0;margin-left:8px}
+.cms-tool-btn{width:32px;height:32px;border-radius:8px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .18s ease}
+.cms-tool-btn:hover{background:rgba(0,0,0,.06);color:var(--text)}
 .cms-section-btn{padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;border:none;background:transparent;color:var(--text-muted);cursor:pointer;transition:all .18s ease;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
 .cms-section-btn:hover{background:rgba(180,21,64,.06);color:var(--brand)}
 .cms-section-btn.active{background:rgba(180,21,64,.1);color:var(--brand);font-weight:700}

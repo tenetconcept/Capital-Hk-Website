@@ -239,17 +239,15 @@ function adminView(){
     +'</div></aside>'
     // Main
     +'<div class="cms-main">'
+    // Compact header: logo text + user info only
     +'<div class="cms-main-header"><h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>內容管理系統</h3>'
     +'<div class="cms-header-acts">'
-    +'<button class="cms-preview-toggle" id="previewToggle" onclick="window._cmsPreviewPage()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> 預覽</button>'
-    +(_isAdmin ? '<button class="admin-btn primary" onclick="window._cmsExport()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 匯出</button>'
-    +'<button class="admin-btn secondary" onclick="document.getElementById(\'cmsImportFile\').click()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> 匯入</button>'
-    +'<input type="file" id="cmsImportFile" accept=".json" style="display:none" onchange="window._cmsImport(event)"/>'
-    +'<button class="admin-btn danger" onclick="window._cmsReset()">&#x21BA; 重設</button>' : '')
     +'<span class="role-badge role-'+_curRole+'" style="margin-left:4px">'+_curRole+'</span>'
-    +'<button class="admin-btn secondary" onclick="window._adminLogout()" style="margin-left:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> 登出</button>'
+    +'<button class="admin-btn secondary" onclick="window._adminLogout()" style="margin-left:4px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> 登出</button>'
     +'</div></div>'
+    // Section bar with tabs + tools on the right
     +'<div class="cms-section-bar">'
+    +'<div class="cms-section-tabs">'
     +'<button class="cms-section-btn active" id="stab_pages" onclick="window._cmsSectionSwitch(\'pages\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> 頁面內容</button>'
     +'<button class="cms-section-btn" id="stab_banners" onclick="window._cmsSectionSwitch(\'banners\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> 首頁橫幅</button>'
     +'<button class="cms-section-btn" id="stab_blog" onclick="window._cmsSectionSwitch(\'blog\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> 新聞文章</button>'
@@ -257,6 +255,14 @@ function adminView(){
     +'<button class="cms-section-btn" id="stab_account" onclick="window._cmsSectionSwitch(\'account\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> 我的帳戶</button>'
     +(_isAdmin?'<button class="cms-section-btn" id="stab_users" onclick="window._cmsSectionSwitch(\'users\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg> 用戶管理</button>':'')
     +(_isAdmin?'<button class="cms-section-btn" id="stab_security" onclick="window._cmsSectionSwitch(\'security\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> 安全設定</button>':'')
+    +'</div>'
+    // Tools on right side of section bar
+    +(_isAdmin ? '<div class="cms-section-tools">'
+    +'<button class="cms-tool-btn" onclick="window._cmsExport()" title="匯出"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>'
+    +'<button class="cms-tool-btn" onclick="document.getElementById(\'cmsImportFile\').click()" title="匯入"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></button>'
+    +'<input type="file" id="cmsImportFile" accept=".json" style="display:none" onchange="window._cmsImport(event)"/>'
+    +'<button class="cms-tool-btn" onclick="window._cmsReset()" title="重設">&#x21BA;</button>'
+    +'</div>' : '')
     +'</div>'
     +'<div class="cms-editor-area" id="cmsEditor">'
     +'<div class="cms-empty"><div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><p>從左側選擇頁面開始編輯</p></div>'
@@ -1324,6 +1330,7 @@ window._cmsBlogView = function(){
       +'<div class="cms-item-meta">slug: '+esc(a.slug||'')+'</div>'
       +'</div>'
       +'<div class="cms-item-actions">'
+      +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="window._cmsBlogPreview('+i+')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>'
       +(_canEdit?'<button class="admin-btn primary" style="font-size:11px;padding:4px 10px" onclick="window._cmsBlogEdit('+i+')">Edit</button>':'')
       +(i>0?'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px" onclick="window._cmsBlogMove('+i+',-1)">&uarr;</button>':'')
       +(i<articles.length-1?'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px" onclick="window._cmsBlogMove('+i+',1)">&darr;</button>':'')
@@ -1516,6 +1523,7 @@ window._cmsBannersView = function(){
     '<div class="cms-panel">'
     +'<div class="cms-panel-header"><h3>Banner Management</h3>'
     +'<p>Upload JPG/PNG images for the homepage carousel. Recommended size: <strong>1200&times;500px</strong>. Max 5MB each.</p></div>'
+    +(banners.length ? '<button class="admin-btn secondary" style="margin-bottom:12px" onclick="window._cmsBannerPreview()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> 預覽輪播</button>' : '')
     +'<div class="cms-banners-list" id="cmsBannersList">' + rows + '</div>'
     +(_canUpload ?
       '<div class="cms-drop-zone" id="cmsBannerDropZone">'
@@ -1602,6 +1610,66 @@ window._cmsBannerMove = function(idx, dir){
   banners[newIdx] = tmp;
   saveCmsBanners(banners);
   window._cmsBannersView();
+};
+
+// Banner carousel preview in popup
+window._cmsBannerPreview = function(){
+  var banners = getCmsBanners();
+  if(!banners.length){ showToast('No banners to preview'); return; }
+  var slides = banners.map(function(b){
+    return '<div class="swiper-slide" style="border-radius:12px;overflow:hidden"><img src="'+escAttr(b.img)+'" style="width:100%;height:auto;display:block" alt="'+escAttr(b.alt||'')+'"/></div>';
+  }).join('');
+  var pw = window.open('','_blank','width=900,height=560,scrollbars=yes,resizable=yes');
+  if(!pw){ showToast('Pop-up blocked'); return; }
+  pw.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Banner Preview</title>'
+    +'<link rel="stylesheet" href="lib/swiper-bundle.min.css">'
+    +'<style>body{margin:0;background:#1a1a2e;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif}'
+    +'.bar{background:#f59e0b;color:#fff;font-size:12px;font-weight:600;padding:6px 20px;text-align:center;position:fixed;top:0;left:0;right:0;z-index:10}'
+    +'.wrap{width:90%;max-width:820px;margin-top:40px}'
+    +'.swiper-slide img{border-radius:12px}</style></head><body>'
+    +'<div class="bar">BANNER PREVIEW — '+banners.length+' slides</div>'
+    +'<div class="wrap"><div class="swiper" id="pvSwiper"><div class="swiper-wrapper">'+slides+'</div><div class="swiper-pagination"></div></div></div>'
+    +'<script src="lib/swiper-bundle.min.js"><\/script>'
+    +'<script>new Swiper("#pvSwiper",{loop:true,autoplay:{delay:3000},pagination:{el:".swiper-pagination",clickable:true}});<\/script>'
+    +'</body></html>');
+  pw.document.close();
+};
+
+// Blog article preview in popup
+window._cmsBlogPreview = function(idx){
+  var articles = _getBlogArticles();
+  var a = articles[idx];
+  if(!a){ showToast('Article not found'); return; }
+  var lang = window.currentLang || 'zh-Hant';
+  var title = lang==='en' ? (a.title_en||a.title_hant) : (lang==='zh-Hans' ? (a.title_hans||a.title_hant) : a.title_hant);
+  var body = lang==='en' ? (a.body_en||a.body_hant) : (lang==='zh-Hans' ? (a.body_hans||a.body_hant) : a.body_hant);
+  var tag = lang==='en' ? (a.tag_en||a.tag_hant) : (lang==='zh-Hans' ? (a.tag_hans||a.tag_hant) : a.tag_hant);
+  var pw = window.open('','_blank','width=960,height=720,scrollbars=yes,resizable=yes');
+  if(!pw){ showToast('Pop-up blocked'); return; }
+  pw.document.write('<!DOCTYPE html><html lang="'+lang+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+'</title>'
+    +'<style>*{margin:0;padding:0;box-sizing:border-box}'
+    +'body{font-family:"Be Vietnam Pro","Noto Sans TC",sans-serif;background:#f8f9fa;color:#1a1a2e}'
+    +'.bar{background:#f59e0b;color:#fff;font-size:12px;font-weight:600;padding:6px 20px;text-align:center}'
+    +'.hero{width:100%;max-width:900px;margin:24px auto 0;padding:0 24px}'
+    +'.hero img{width:100%;border-radius:16px;aspect-ratio:16/7;object-fit:cover}'
+    +'.content{max-width:740px;margin:0 auto;padding:32px 24px}'
+    +'.tag{display:inline-block;background:#B41540;color:#fff;font-size:12px;font-weight:600;padding:4px 12px;border-radius:99px;margin-bottom:12px}'
+    +'h1{font-size:28px;font-weight:800;margin-bottom:8px;line-height:1.3}'
+    +'.date{font-size:13px;color:#6b7280;margin-bottom:24px}'
+    +'.body{font-size:15px;line-height:1.8;color:#374151}'
+    +'.body h3{font-size:18px;font-weight:700;margin:24px 0 12px}'
+    +'.body ul,.body ol{padding-left:24px;margin:12px 0}'
+    +'.body li{margin-bottom:6px}'
+    +'</style></head><body>'
+    +'<div class="bar">ARTICLE PREVIEW — '+esc(lang)+'</div>'
+    +'<div class="hero"><img src="'+escAttr(a.img)+'" alt=""></div>'
+    +'<div class="content">'
+    +'<span class="tag">'+esc(tag)+'</span>'
+    +'<h1>'+esc(title)+'</h1>'
+    +'<div class="date">'+esc(a.date)+'</div>'
+    +'<div class="body">'+body+'</div>'
+    +'</div></body></html>');
+  pw.document.close();
 };
 
 // CMS initialization

@@ -256,41 +256,41 @@ function homeView(){
   // Feature: Securities
   html += featureSection({
     id: 'svc-securities',
-    label: u.svc_securities_label || 'Securities Trading',
-    title: u.svc_securities_title || L('Hong Kong & Global<br>Equities Trading', '港股及环球<br>股票交易服务', '港股及環球<br>股票交易服務'),
-    desc: u.svc_securities_desc || L('Trade stocks listed on Hong Kong, Shanghai, and other major global exchanges through our professional iTrader platform.', '透过专业 iTrader 交易平台，轻松买卖港股、A股及环球主要市场的股票。', '透過專業 iTrader 交易平台，輕鬆買賣港股、A股及環球主要市場的股票。'),
+    label: u.svc1_label || L('Securities Trading', '股票交易', '股票交易'),
+    title: u.svc1_title || L('Hong Kong & Global<br>Equities Trading', '港股及环球<br>股票交易服务', '港股及環球<br>股票交易服務'),
+    desc: u.svc1_desc || L('Trade stocks listed on Hong Kong, Shanghai, and other major global exchanges through our professional iTrader platform.', '透过专业 iTrader 交易平台，轻松买卖港股、A股及环球主要市场的股票。', '透過專業 iTrader 交易平台，輕鬆買賣港股、A股及環球主要市場的股票。'),
     img: 'images/ecap-svc-securities.png',
     features: [
-      { icon: ICONS.monitor, title: u.svc_s_f1_t || L('iTrader Platform', 'iTrader 交易平台', 'iTrader 交易平台'), desc: u.svc_s_f1_d || L('Award-winning online trading platform with real-time quotes.', '屡获殊荣的网上交易平台，提供即时报价。', '屢獲殊榮的網上交易平台，提供即時報價。') },
-      { icon: ICONS.dollar, title: u.svc_s_f2_t || L('Competitive Commission', '具竞争力佣金', '具競爭力佣金'), desc: u.svc_s_f2_d || L('Industry-leading commission rates for all markets.', '全市场领先的佣金费率。', '全市場領先的佣金費率。') },
-      { icon: ICONS.trending, title: u.svc_s_f3_t || L('IPO Subscription', 'IPO 新股认购', 'IPO 新股認購'), desc: u.svc_s_f3_d || L('Easy online IPO application via iTrader.', '透过 iTrader 轻松申请认购新股。', '透過 iTrader 輕鬆申請認購新股。') },
-      { icon: ICONS.globe, title: u.svc_s_f4_t || L('Multi-Market Access', '多市场覆盖', '多市場覆蓋'), desc: u.svc_s_f4_d || L('Access Hong Kong, Shanghai, Shenzhen and more.', '涵盖港股、沪股、深股等主要市场。', '涵蓋港股、滬股、深股等主要市場。') }
+      { icon: ICONS.monitor, title: u.svc1_f1 || L('iTrader Platform', 'iTrader 交易平台', 'iTrader 交易平台'), desc: u.svc1_f1s || L('Award-winning online trading platform with real-time quotes.', '屡获殊荣的网上交易平台，提供即时报价。', '屢獲殊榮的網上交易平台，提供即時報價。') },
+      { icon: ICONS.dollar, title: u.svc1_f2 || L('Competitive Commission', '具竞争力佣金', '具競爭力佣金'), desc: u.svc1_f2s || L('Industry-leading commission rates for all markets.', '全市场领先的佣金费率。', '全市場領先的佣金費率。') },
+      { icon: ICONS.trending, title: u.svc1_f3 || L('IPO Subscription', 'IPO 新股认购', 'IPO 新股認購'), desc: u.svc1_f3s || L('Easy online IPO application via iTrader.', '透过 iTrader 轻松申请认购新股。', '透過 iTrader 輕鬆申請認購新股。') },
+      { icon: ICONS.globe, title: u.svc1_f4 || L('Multi-Market Access', '多市场覆盖', '多市場覆蓋'), desc: u.svc1_f4s || L('Access Hong Kong, Shanghai, Shenzhen and more.', '涵盖港股、沪股、深股等主要市场。', '涵蓋港股、滬股、深股等主要市場。') }
     ]
   });
   // Feature: SH-HK Connect
   html += featureSection({
     id: 'svc-connect',
-    label: u.svc_connect_label || 'SH-HK Stock Connect',
-    title: u.svc_connect_title || L('Shanghai-Hong Kong<br>Stock Connect', '沪港通<br>交易服务', '滬港通<br>交易服務'),
-    desc: u.svc_connect_desc || L('Access A-share market through our comprehensive Stock Connect service with professional research support.', '透过全面的沪港通服务进入A股市场，配合专业研究报告支援。', '透過全面的滬港通服務進入A股市場，配合專業研究報告支援。'),
+    label: u.svc2_label || L('SH-HK Stock Connect', '沪港通', '滬港通'),
+    title: u.svc2_title || L('Shanghai-Hong Kong<br>Stock Connect', '沪港通<br>交易服务', '滬港通<br>交易服務'),
+    desc: u.svc2_desc || L('Access A-share market through our comprehensive Stock Connect service with professional research support.', '透过全面的沪港通服务进入A股市场，配合专业研究报告支援。', '透過全面的滬港通服務進入A股市場，配合專業研究報告支援。'),
     img: 'images/ecap-svc-connect.png',
     features: [
-      { icon: ICONS.zap, title: u.svc_c_f1_t || L('Direct A-Share Access', '直接买卖A股', '直接買賣A股'), desc: u.svc_c_f1_d || L('Trade Shanghai and Shenzhen listed A-shares directly.', '直接交易沪深两市上市A股。', '直接交易滬深兩市上市A股。') },
-      { icon: ICONS.chart, title: u.svc_c_f2_t || L('Research Reports', '研究报告', '研究報告'), desc: u.svc_c_f2_d || L('Regular A-share research and market insights.', '定期A股研究报告及市场分析。', '定期A股研究報告及市場分析。') },
-      { icon: ICONS.award, title: u.svc_c_f3_t || L('Monthly Publication', '沪港通月刊', '滬港通月刊'), desc: u.svc_c_f3_d || L('Monthly updates on Stock Connect developments.', '每月沪港通最新动态。', '每月滬港通最新動態。') }
+      { icon: ICONS.zap, title: u.svc2_f1 || L('Direct A-Share Access', '直接买卖A股', '直接買賣A股'), desc: u.svc2_f1s || L('Trade Shanghai and Shenzhen listed A-shares directly.', '直接交易沪深两市上市A股。', '直接交易滬深兩市上市A股。') },
+      { icon: ICONS.chart, title: u.svc2_f2 || L('Research Reports', '研究报告', '研究報告'), desc: u.svc2_f2s || L('Regular A-share research and market insights.', '定期A股研究报告及市场分析。', '定期A股研究報告及市場分析。') },
+      { icon: ICONS.award, title: u.svc2_f3 || L('Monthly Publication', '沪港通月刊', '滬港通月刊'), desc: u.svc2_f3s || L('Monthly updates on Stock Connect developments.', '每月沪港通最新动态。', '每月滬港通最新動態。') }
     ]
   });
   // Feature: Futures
   html += featureSection({
     id: 'svc-futures',
-    label: u.svc_futures_label || 'Futures & Options',
-    title: u.svc_futures_title || L('Futures &<br>Options Trading', '期货及<br>期权交易服务', '期貨及<br>期權交易服務'),
-    desc: u.svc_futures_desc || L('Trade futures and options on major exchanges with our professional Sharp Point platform.', '透过专业 Sharp Point 交易平台，交易主要交易所的期货及期权。', '透過專業 Sharp Point 交易平台，交易主要交易所的期貨及期權。'),
+    label: u.svc3_label || L('Futures & Options', '期货及期权', '期貨及期權'),
+    title: u.svc3_title || L('Futures &<br>Options Trading', '期货及<br>期权交易服务', '期貨及<br>期權交易服務'),
+    desc: u.svc3_desc || L('Trade futures and options on major exchanges with our professional Sharp Point platform.', '透过专业 Sharp Point 交易平台，交易主要交易所的期货及期权。', '透過專業 Sharp Point 交易平台，交易主要交易所的期貨及期權。'),
     img: 'images/ecap-svc-futures.png',
     features: [
-      { icon: ICONS.monitor, title: u.svc_f_f1_t || L('Sharp Point Platform', 'Sharp Point 平台', 'Sharp Point 平台'), desc: u.svc_f_f1_d || L('Professional futures trading platform with advanced tools.', '专业期货交易平台，配备先进工具。', '專業期貨交易平台，配備先進工具。') },
-      { icon: ICONS.clock, title: u.svc_f_f2_t || L('Extended Hours', '延长交易时段', '延長交易時段'), desc: u.svc_f_f2_d || L('Trade during day and after-hours sessions.', '日间及夜间交易时段均可进行交易。', '日間及夜間交易時段均可進行交易。') },
-      { icon: ICONS.shield, title: u.svc_f_f3_t || L('Risk Management', '风险管理', '風險管理'), desc: u.svc_f_f3_d || L('Comprehensive risk management tools and alerts.', '完善的风险管理工具及提示系统。', '完善的風險管理工具及提示系統。') }
+      { icon: ICONS.monitor, title: u.svc3_f1 || L('Sharp Point Platform', 'Sharp Point 平台', 'Sharp Point 平台'), desc: u.svc3_f1s || L('Professional futures trading platform with advanced tools.', '专业期货交易平台，配备先进工具。', '專業期貨交易平台，配備先進工具。') },
+      { icon: ICONS.clock, title: u.svc3_f2 || L('Extended Hours', '延长交易时段', '延長交易時段'), desc: u.svc3_f2s || L('Trade during day and after-hours sessions.', '日间及夜间交易时段均可进行交易。', '日間及夜間交易時段均可進行交易。') },
+      { icon: ICONS.shield, title: u.svc3_f3 || L('Risk Management', '风险管理', '風險管理'), desc: u.svc3_f3s || L('Comprehensive risk management tools and alerts.', '完善的风险管理工具及提示系统。', '完善的風險管理工具及提示系統。') }
     ]
   });
   // Stats
@@ -644,8 +644,8 @@ function pageView(slug){
   var pg = getPage(slug, currentLang);
   if(!pg){
     return '<section class="subpage"><div class="mw">'
-      +'<div class="subpage-header"><h1>Page Not Found</h1></div>'
-      +'<div class="subpage-body"><p>The requested page does not exist.</p>'
+      +'<div class="subpage-header"><h1>' + esc(L('Page Not Found', '找不到页面', '找不到頁面')) + '</h1></div>'
+      +'<div class="subpage-body"><p>' + esc(L('The requested page does not exist.', '您所請求的頁面不存在。', '您所請求的頁面不存在。')) + '</p>'
       +'<p><a href="#/" data-spa style="color:var(--brand)">' + esc(T("home")) + '</a></p></div>'
       +'</div></section>';
   }
@@ -763,6 +763,9 @@ function route(){
   var app = document.getElementById("app");
   if(!app) return;
 
+  // Remove CMS body class for non-admin routes
+  if(hash !== "#/admin") document.body.classList.remove('cms-active');
+
   buildNav();
 
   if(hash === "#/" || hash === "#" || hash === ""){
@@ -778,6 +781,7 @@ function route(){
     app.querySelectorAll('a[href*=".aspx"]').forEach(function(a){ a.setAttribute('href','#'); a.style.pointerEvents='none'; a.style.opacity='.4'; });
     window.scrollTo(0,0);
   } else if(hash === "#/admin"){
+    document.body.classList.add('cms-active');
     if(typeof window.adminView === 'function'){
       app.innerHTML = window.adminView();
     } else {

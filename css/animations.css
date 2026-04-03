@@ -46,30 +46,18 @@
   transform: scale(1);
 }
 
-/* Hero + Banner content always visible immediately (above the fold) */
+/* Hero content always visible immediately (above the fold) */
 .hero .anim-fade-up,
 .hero .anim-fade-left,
-.hero .anim-fade-right,
+.hero .anim-fade-right {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+/* Banner section always visible */
 .banner-sec.anim-fade-up {
-  opacity: 1;
-  transform: none;
-}
-
-/* Safety: auto-show after 1.5s even if JS hasn't fired */
-@keyframes forceVisible {
-  to { opacity: 1; transform: none; }
-}
-.anim-fade-up,
-.anim-fade-left,
-.anim-fade-right,
-.anim-scale {
-  animation: forceVisible 0s 1.5s forwards;
-}
-.anim-fade-up.visible,
-.anim-fade-left.visible,
-.anim-fade-right.visible,
-.anim-scale.visible {
-  animation: none;
+  opacity: 1 !important;
+  transform: none !important;
 }
 
 /* Stagger delays */
@@ -98,11 +86,3 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 .subpage { animation: pageEnter 0.5s var(--ease) both; }
-
-/* ============================
-   CARD HOVER MICRO-ANIMATIONS
-   ============================ */
-@keyframes cardPulse {
-  0%, 100% { box-shadow: 0 4px 12px rgba(180,21,64,.08); }
-  50% { box-shadow: 0 8px 24px rgba(180,21,64,.16); }
-}

@@ -17,7 +17,7 @@ function initScrollAnimations(){
   }
 
   // Clean up old observer
-  if(_scrollObserver) _scrollObserver.disconnect();
+  if(_scrollObserver){ try{ _scrollObserver.disconnect(); }catch(e){} }
 
   _scrollObserver = new IntersectionObserver(function(entries){
     entries.forEach(function(entry){
@@ -26,12 +26,12 @@ function initScrollAnimations(){
         _scrollObserver.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.01, rootMargin: '200px 0px 80px 0px' });
+  }, { threshold: 0.01, rootMargin: '50px 0px 50px 0px' });
 
   els.forEach(function(el){
-    // Elements already in viewport — show immediately
+    // Elements already in or near viewport — show immediately
     var rect = el.getBoundingClientRect();
-    if(rect.top < window.innerHeight + 50 && rect.bottom > -50){
+    if(rect.top < window.innerHeight + 80 && rect.bottom > -80){
       el.classList.add('visible');
     } else {
       _scrollObserver.observe(el);
@@ -39,14 +39,21 @@ function initScrollAnimations(){
   });
 }
 
+// Force-show all animation elements currently visible in viewport
 function forceShowAll(){
-  document.querySelectorAll('.anim-fade-up,.anim-fade-left,.anim-fade-right,.anim-scale').forEach(function(el){
-    if(!el.classList.contains('visible')){
-      var rect = el.getBoundingClientRect();
-      if(rect.top < window.innerHeight + 300 && rect.bottom > -200){
-        el.classList.add('visible');
-      }
+  var els = document.querySelectorAll('.anim-fade-up:not(.visible),.anim-fade-left:not(.visible),.anim-fade-right:not(.visible),.anim-scale:not(.visible)');
+  els.forEach(function(el){
+    var rect = el.getBoundingClientRect();
+    if(rect.top < window.innerHeight + 300 && rect.bottom > -200){
+      el.classList.add('visible');
     }
+  });
+}
+
+// Nuclear option: show absolutely everything after timeout
+function forceShowEverything(){
+  document.querySelectorAll('.anim-fade-up:not(.visible),.anim-fade-left:not(.visible),.anim-fade-right:not(.visible),.anim-scale:not(.visible)').forEach(function(el){
+    el.classList.add('visible');
   });
 }
 
@@ -103,7 +110,7 @@ window.initHomeAnimations = function(){
     initBannerSwiper();
     initNewsSwiper();
 
-    // Retry if banner swiper didn't initialize (images not loaded yet)
+    // Retry if banner swiper didn't initialize
     setTimeout(function(){
       if(document.querySelector('.banner-swiper') && !document.querySelector('.banner-swiper.swiper-initialized')){
         initBannerSwiper();
@@ -111,37 +118,52 @@ window.initHomeAnimations = function(){
     }, 300);
   });
 
-  // Scroll animations — init immediately, then reinforce
-  initScrollAnimations();
-  setTimeout(forceShowAll, 100);
-  setTimeout(forceShowAll, 400);
-  setTimeout(forceShowAll, 1000);
-  // Also run on first scroll event to catch anything missed
-  var _scrollOnce = function(){
-    forceShowAll();
-    window.removeEventListener('scroll', _scrollOnce);
+  // Scroll animations — multiple attempts for reliability
+  requestAnimationFrame(function(){
+    initScrollAnimations();
+    setTimeout(forceShowAll, 50);
+  });
+  setTimeout(forceShowAll, 300);
+  setTimeout(forceShowAll, 800);
+  // Absolute failsafe — show everything after 2.5s
+  setTimeout(forceShowEverything, 2500);
+
+  // Also catch on first scroll
+  var _scrolled = false;
+  var _onScroll = function(){
+    if(!_scrolled){
+      _scrolled = true;
+      forceShowAll();
+    }
   };
-  window.addEventListener('scroll', _scrollOnce);
+  window.addEventListener('scroll', _onScroll, {passive:true});
+  // Cleanup after 10s
+  setTimeout(function(){ window.removeEventListener('scroll', _onScroll); }, 10000);
 };
 
 // Re-init on route change
 window.addEventListener('hashchange', function(){
   destroySwipers();
-  setTimeout(initScrollAnimations, 50);
-  setTimeout(forceShowAll, 200);
-  setTimeout(forceShowAll, 600);
+  requestAnimationFrame(function(){
+    initScrollAnimations();
+    setTimeout(forceShowAll, 100);
+  });
+  setTimeout(forceShowAll, 400);
+  setTimeout(forceShowEverything, 2500);
 });
 
 // Initial page load
 document.addEventListener('DOMContentLoaded', function(){
-  setTimeout(initScrollAnimations, 100);
-  setTimeout(forceShowAll, 300);
+  requestAnimationFrame(function(){
+    initScrollAnimations();
+    setTimeout(forceShowAll, 100);
+  });
 });
 
 // Fallback after full load
 window.addEventListener('load', function(){
-  setTimeout(forceShowAll, 200);
-  // If banner still not initialized, retry
+  forceShowAll();
+  setTimeout(forceShowAll, 300);
   if(document.querySelector('.banner-swiper') && !document.querySelector('.banner-swiper.swiper-initialized')){
     initBannerSwiper();
   }

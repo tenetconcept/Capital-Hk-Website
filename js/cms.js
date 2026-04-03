@@ -211,41 +211,55 @@ function adminView(){
   var _curRole = _cmsCurrentRole();
   var _isAdmin = _curRole === "admin";
   var _canEdit = _curRole === "admin" || _curRole === "editor";
+
+  // Get display title for a page slug
+  function _pageTitle(slug){
+    var pg = SITE.pages[slug];
+    if(!pg) return slug;
+    var lang = window.currentLang || 'zh-Hant';
+    if(pg[lang] && pg[lang].title) return pg[lang].title;
+    if(pg['zh-Hant'] && pg['zh-Hant'].title) return pg['zh-Hant'].title;
+    return slug;
+  }
+
   return '<div class="cms-layout">'
     // Sidebar
     +'<aside class="cms-sidebar">'
-    +'<div class="cms-sidebar-hdr"><h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Pages</h2><p>'+allPages.length+' pages total</p></div>'
-    +'<div class="cms-search"><input type="text" id="cmsSearch" placeholder="Search pages..." oninput="window._cmsFilter(this.value)"/></div>'
+    +'<div class="cms-sidebar-hdr"><h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>網站頁面</h2><p>共 '+allPages.length+' 個頁面</p></div>'
+    +'<div class="cms-search"><input type="text" id="cmsSearch" placeholder="搜尋頁面..." oninput="window._cmsFilter(this.value)"/></div>'
     +'<div class="cms-page-list" id="cmsPageList">'
     + allPages.map(function(slug){
         var edited = cms[slug] ? ' edited' : '';
+        var title = _pageTitle(slug);
         return '<div class="cms-page-item'+edited+'" data-slug="'+esc(slug)+'" onclick="window._cmsEditPage(\''+slug+'\')">'
-          +'<span class="page-dot"></span><span class="page-name">'+esc(slug)+'</span></div>';
+          +'<span class="page-dot"></span>'
+          +'<div class="page-info"><span class="page-name">'+esc(title)+'</span>'
+          +'<span class="page-slug">'+esc(slug)+'</span></div></div>';
       }).join('')
     +'</div></aside>'
     // Main
     +'<div class="cms-main">'
-    +'<div class="cms-main-header"><h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>CMS Content Manager</h3>'
+    +'<div class="cms-main-header"><h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>內容管理系統</h3>'
     +'<div class="cms-header-acts">'
-    +'<button class="cms-preview-toggle" id="previewToggle" onclick="window._cmsPreviewPage()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> Preview</button>'
-    +(_isAdmin ? '<button class="admin-btn primary" onclick="window._cmsExport()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export</button>'
-    +'<button class="admin-btn secondary" onclick="document.getElementById(\'cmsImportFile\').click()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Import</button>'
+    +'<button class="cms-preview-toggle" id="previewToggle" onclick="window._cmsPreviewPage()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> 預覽</button>'
+    +(_isAdmin ? '<button class="admin-btn primary" onclick="window._cmsExport()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 匯出</button>'
+    +'<button class="admin-btn secondary" onclick="document.getElementById(\'cmsImportFile\').click()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> 匯入</button>'
     +'<input type="file" id="cmsImportFile" accept=".json" style="display:none" onchange="window._cmsImport(event)"/>'
-    +'<button class="admin-btn danger" onclick="window._cmsReset()">&#x21BA; Reset</button>' : '')
+    +'<button class="admin-btn danger" onclick="window._cmsReset()">&#x21BA; 重設</button>' : '')
     +'<span class="role-badge role-'+_curRole+'" style="margin-left:4px">'+_curRole+'</span>'
-    +'<button class="admin-btn secondary" onclick="window._adminLogout()" style="margin-left:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> Logout</button>'
+    +'<button class="admin-btn secondary" onclick="window._adminLogout()" style="margin-left:8px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> 登出</button>'
     +'</div></div>'
     +'<div class="cms-section-bar">'
-    +'<button class="cms-section-btn active" id="stab_pages" onclick="window._cmsSectionSwitch(\'pages\')">Pages</button>'
-    +'<button class="cms-section-btn" id="stab_banners" onclick="window._cmsSectionSwitch(\'banners\')">Banners</button>'
-    +'<button class="cms-section-btn" id="stab_blog" onclick="window._cmsSectionSwitch(\'blog\')">Blog</button>'
-    +'<button class="cms-section-btn" id="stab_files" onclick="window._cmsSectionSwitch(\'files\')">Downloads</button>'
-    +'<button class="cms-section-btn" id="stab_account" onclick="window._cmsSectionSwitch(\'account\')">My Account</button>'
-    +(_isAdmin?'<button class="cms-section-btn" id="stab_users" onclick="window._cmsSectionSwitch(\'users\')">Users</button>':'')
-    +(_isAdmin?'<button class="cms-section-btn" id="stab_security" onclick="window._cmsSectionSwitch(\'security\')">Security</button>':'')
+    +'<button class="cms-section-btn active" id="stab_pages" onclick="window._cmsSectionSwitch(\'pages\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> 頁面內容</button>'
+    +'<button class="cms-section-btn" id="stab_banners" onclick="window._cmsSectionSwitch(\'banners\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> 首頁橫幅</button>'
+    +'<button class="cms-section-btn" id="stab_blog" onclick="window._cmsSectionSwitch(\'blog\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> 新聞文章</button>'
+    +'<button class="cms-section-btn" id="stab_files" onclick="window._cmsSectionSwitch(\'files\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 檔案下載</button>'
+    +'<button class="cms-section-btn" id="stab_account" onclick="window._cmsSectionSwitch(\'account\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> 我的帳戶</button>'
+    +(_isAdmin?'<button class="cms-section-btn" id="stab_users" onclick="window._cmsSectionSwitch(\'users\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg> 用戶管理</button>':'')
+    +(_isAdmin?'<button class="cms-section-btn" id="stab_security" onclick="window._cmsSectionSwitch(\'security\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> 安全設定</button>':'')
     +'</div>'
     +'<div class="cms-editor-area" id="cmsEditor">'
-    +'<div class="cms-empty"><div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><p>Select a page from the sidebar to start editing</p></div>'
+    +'<div class="cms-empty"><div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><p>從左側選擇頁面開始編輯</p></div>'
     +'</div></div></div>';
 }
 // Expose for router

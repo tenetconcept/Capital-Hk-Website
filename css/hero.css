@@ -5,7 +5,10 @@
   position: relative;
   overflow: hidden;
   background: transparent;
-  min-height: 420px;
+  min-height: calc(100vh - var(--utility-h) - var(--nav-h) - var(--nav-bar-h));
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .hero-content {
   position: relative;

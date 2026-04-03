@@ -249,10 +249,10 @@ function homeView(){
 
   // Hero
   html += heroSection(u);
+  // Banner Carousel
+  html += bannerSection(u);
   // Group Marquee
   html += marqueeSection(u);
-  // Banner Carousel (below fold — scroll to see)
-  html += bannerSection(u);
   // Feature: Securities
   html += featureSection({
     id: 'svc-securities',

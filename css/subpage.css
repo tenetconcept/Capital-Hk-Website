@@ -38,7 +38,7 @@
 .subpage-tabs {
   display: flex;
   gap: 0;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
@@ -50,6 +50,7 @@
   position: relative;
   padding: 18px 28px;
   font-size: clamp(1.25rem, 2vw, 1.625rem);
+  white-space: nowrap;
   font-weight: 700;
   color: var(--text-muted);
   transition: all var(--dur) var(--ease);

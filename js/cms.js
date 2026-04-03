@@ -161,7 +161,154 @@ var CMS_I18N = {
   save:            {en:'Save', hans:'保存', hant:'儲存'},
   no_log:          {en:'No log entries yet.', hans:'暂无日志。', hant:'暫無日誌。'},
   popup_blocked:   {en:'Pop-up blocked', hans:'弹窗被阻止', hant:'彈出視窗被阻擋'},
-  select_first:    {en:'Select a page first', hans:'请先选择页面', hant:'請先選擇頁面'}
+  select_first:    {en:'Select a page first', hans:'请先选择页面', hant:'請先選擇頁面'},
+  // Groups & Permissions
+  tab_groups:      {en:'Groups', hans:'群组', hant:'群組'},
+  group_mgmt:      {en:'Group Management', hans:'群组管理', hant:'群組管理'},
+  groups_total:    {en:' groups total', hans:' 个群组', hant:' 個群組'},
+  add_new_group:   {en:'Add New Group', hans:'新增群组', hant:'新增群組'},
+  group_name:      {en:'Group Name', hans:'群组名称', hant:'群組名稱'},
+  add_group:       {en:'Add Group', hans:'新增群组', hant:'新增群組'},
+  edit_group:      {en:'Edit Group', hans:'编辑群组', hant:'編輯群組'},
+  delete_group:    {en:'Delete Group', hans:'删除群组', hant:'刪除群組'},
+  del_group_q:     {en:'Delete this group? Users in this group will lose permissions.', hans:'删除此群组？该群组中的用户将失去权限。', hant:'刪除此群組？該群組中的用戶將失去權限。'},
+  perm_section:    {en:'Section', hans:'区域', hant:'區域'},
+  perm_read:       {en:'Read', hans:'读取', hant:'讀取'},
+  perm_write:      {en:'Write', hans:'写入', hant:'寫入'},
+  perm_pages:      {en:'Pages', hans:'页面内容', hant:'頁面內容'},
+  perm_banners:    {en:'Banners', hans:'首页横幅', hant:'首頁橫幅'},
+  perm_blog:       {en:'News Articles', hans:'新闻文章', hant:'新聞文章'},
+  perm_files:      {en:'Downloads', hans:'档案下载', hant:'檔案下載'},
+  perm_users:      {en:'User Management', hans:'用户管理', hant:'用戶管理'},
+  perm_security:   {en:'Security Settings', hans:'安全设定', hant:'安全設定'},
+  custom_perms:    {en:'Custom Permissions', hans:'自定义权限', hant:'自訂權限'},
+  group_label:     {en:'Group', hans:'群组', hant:'群組'},
+  no_group:        {en:'No Group (Custom)', hans:'无群组（自定义）', hant:'無群組（自訂）'},
+  // Force 2FA
+  force_2fa:       {en:'Force 2FA on next login', hans:'下次登录强制设置2FA', hant:'下次登入強制設定2FA'},
+  force_2fa_title: {en:'Two-Factor Authentication Required', hans:'需要设置双重身份验证', hant:'需要設定雙重身份驗證'},
+  force_2fa_desc:  {en:'Your administrator requires you to set up 2FA before accessing the CMS.', hans:'管理员要求您在访问CMS之前设置双重身份验证。', hant:'管理員要求您在存取CMS之前設定雙重身份驗證。'},
+  force_2fa_btn:   {en:'Setup 2FA Now', hans:'立即设置2FA', hant:'立即設定2FA'},
+  // Rate Limiting Config
+  rate_limit:      {en:'Rate Limiting', hans:'登录限制', hant:'登入限制'},
+  max_attempts:    {en:'Max login attempts', hans:'最大尝试次数', hant:'最大嘗試次數'},
+  lockout_min:     {en:'Lockout duration (minutes)', hans:'锁定时间（分钟）', hant:'鎖定時間（分鐘）'},
+  rate_limit_desc: {en:'Lock out users after too many failed login attempts.', hans:'登录失败次数过多后锁定用户。', hant:'登入失敗次數過多後鎖定用戶。'},
+  // Timezone
+  timezone:        {en:'Timezone', hans:'时区', hant:'時區'},
+  timezone_desc:   {en:'Used for 2FA time synchronization.', hans:'用于2FA时间同步。', hant:'用於2FA時間同步。'},
+  // Session Timeout (per-user/group)
+  session_timeout_desc: {en:'Override global timeout. 0 = use global setting.', hans:'覆盖全局超时。0 = 使用全局设置。', hant:'覆寫全域逾時。0 = 使用全域設定。'},
+  // Confirm Password
+  confirm_new_pwd: {en:'Confirm New Password', hans:'确认新密码', hant:'確認新密碼'},
+  pwd_mismatch:    {en:'Passwords do not match.', hans:'两次密码不一致。', hant:'兩次密碼不一致。'},
+  // User status / misc
+  user_enabled:    {en:'Enabled', hans:'已启用', hant:'已啟用'},
+  user_disabled_s: {en:'Disabled', hans:'已停用', hant:'已停用'},
+  last_login:      {en:'Last login', hans:'上次登录', hant:'上次登入'},
+  never:           {en:'Never', hans:'从未', hant:'從未'},
+  pwd_weak:        {en:'Weak', hans:'弱', hant:'弱'},
+  pwd_medium:      {en:'Medium', hans:'中等', hant:'中等'},
+  pwd_strong:      {en:'Strong', hans:'强', hant:'強'},
+  active_ips:      {en:' active IPs', hans:' 个活跃IP', hant:' 個活躍IP'},
+  off_all_ips:     {en:'Off (all IPs allowed)', hans:'关闭（允许所有IP）', hant:'關閉（允許所有IP）'},
+  users_enabled:   {en:' users enabled', hans:' 个用户已启用', hant:' 個用戶已啟用'},
+  no_users_2fa:    {en:'No users enabled', hans:'没有用户启用', hant:'沒有用戶啟用'},
+  session_fp:      {en:'Session Fingerprint', hans:'会话指纹', hant:'工作階段指紋'},
+  active:          {en:'Active', hans:'活跃', hant:'活躍'},
+  entries:         {en:' entries', hans:' 条记录', hant:' 條記錄'},
+  ip_desc:         {en:'Only listed IPs can login to CMS. Leave empty to allow all IPs.', hans:'只有列出的IP才能登录CMS。留空允许所有IP。', hant:'只有列出的IP才能登入CMS。留空允許所有IP。'},
+  your_ip:         {en:'Your current IP: ', hans:'您当前的IP：', hant:'您目前的IP：'},
+  no_ip_restrict:  {en:'No IP restrictions. All IPs can access CMS.', hans:'无IP限制。所有IP均可访问CMS。', hant:'無IP限制。所有IP均可存取CMS。'},
+  timeout_auto:    {en:'Auto-logout after inactivity. Current: ', hans:'不活动后自动登出。当前：', hant:'不活動後自動登出。目前：'},
+  minutes_unit:    {en:' minutes.', hans:' 分钟。', hant:' 分鐘。'},
+  remove_ip_q:     {en:'Remove IP ', hans:'移除IP ', hant:'移除IP '},
+  ip_added:        {en:'IP added: ', hans:'已添加IP：', hant:'已新增IP：'},
+  ip_exists:       {en:'IP already in list', hans:'IP已在列表中', hant:'IP已在列表中'},
+  enter_ip:        {en:'Enter an IP address', hans:'请输入IP地址', hant:'請輸入IP地址'},
+  ip_detected:     {en:'Your IP: ', hans:'您的IP：', hant:'您的IP：'},
+  ip_detect_fail:  {en:'Could not detect IP', hans:'无法检测IP', hant:'無法偵測IP'},
+  ip_removed:      {en:'IP removed', hans:'IP已移除', hant:'IP已移除'},
+  timeout_set:     {en:'Session timeout set to ', hans:'会话超时已设置为 ', hant:'工作階段逾時已設定為 '},
+  user_toggled:    {en:' toggled', hans:' 已切换', hant:' 已切換'},
+  user_updated:    {en:'User updated: ', hans:'用户已更新：', hant:'用戶已更新：'},
+  user_not_found:  {en:'User not found', hans:'用户未找到', hant:'找不到用戶'},
+  pwd_min6:        {en:'Password must be at least 6 characters.', hans:'密码至少需要6个字符。', hant:'密碼至少需要6個字元。'},
+  new_pwd_blank:   {en:'New Password (leave blank to keep)', hans:'新密码（留空保持不变）', hant:'新密碼（留空保持不變）'},
+  enter_username:  {en:'Enter a username.', hans:'请输入用户名。', hant:'請輸入用戶名。'},
+  pwd_min8:        {en:'Password must be at least 8 characters.', hans:'密码至少需要8个字符。', hant:'密碼至少需要8個字元。'},
+  pwd_too_weak:    {en:'Password too weak. Use uppercase, lowercase, numbers.', hans:'密码太弱。请使用大小写字母和数字。', hant:'密碼太弱。請使用大小寫字母和數字。'},
+  username_exists: {en:'Username already exists.', hans:'用户名已存在。', hant:'用戶名已存在。'},
+  user_added:      {en:'User added: ', hans:'用户已添加：', hant:'用戶已新增：'},
+  user_as:         {en:' as ', hans:' 角色 ', hant:' 角色 '},
+  default_admin_hint:{en:'Using default admin account. Add users below to replace it.', hans:'使用默认管理员帐户。在下方添加用户以替换。', hant:'使用預設管理員帳戶。在下方新增用戶以替換。'},
+  reset_2fa_q:     {en:'Reset 2FA for {0}? They will need to set it up again.', hans:'重置 {0} 的2FA？他们需要重新设置。', hant:'重設 {0} 的2FA？他們需要重新設定。'},
+  twofa_reset:     {en:'2FA reset for {0}.', hans:'{0} 的2FA已重置。', hant:'{0} 的2FA已重設。'},
+  twofa_disabled:  {en:'2FA disabled for {0}.', hans:'{0} 的2FA已停用。', hant:'{0} 的2FA已停用。'},
+  twofa_enabled:   {en:'2FA enabled for {0}.', hans:'{0} 的2FA已启用。', hant:'{0} 的2FA已啟用。'},
+  twofa_already:   {en:'2FA is already enabled for {0}. Disable it?', hans:'{0} 已启用2FA。是否停用？', hant:'{0} 已啟用2FA。是否停用？'},
+  setup_2fa_for:   {en:'Setup 2FA for {0}', hans:'为 {0} 设置2FA', hant:'為 {0} 設定2FA'},
+  scan_qr:         {en:'Scan this QR code with Google Authenticator, Authy, or any TOTP app.', hans:'使用Google Authenticator、Authy或任何TOTP应用扫描此二维码。', hant:'使用Google Authenticator、Authy或任何TOTP應用程式掃描此QR碼。'},
+  enter_code_verify:{en:'Enter a code from the app to verify setup:', hans:'输入应用中的验证码以验证设置：', hant:'輸入應用程式中的驗證碼以驗證設定：'},
+  verify_enable:   {en:'Verify & Enable', hans:'验证并启用', hant:'驗證並啟用'},
+  enter_6digit:    {en:'Enter 6-digit code', hans:'请输入6位数字', hant:'請輸入6位數字'},
+  invalid_code_retry:{en:'Invalid code. Check your app and try again.', hans:'验证码无效。请检查应用后重试。', hant:'驗證碼無效。請檢查應用程式後重試。'},
+  remove_user_q:   {en:'Remove user \'{0}\'?', hans:'移除用户 \'{0}\'？', hant:'移除用戶 \'{0}\'？'},
+  removed_user:    {en:'Removed: {0}', hans:'已移除：{0}', hant:'已移除：{0}'},
+  pwd_updated:     {en:'Password updated successfully.', hans:'密码更新成功。', hant:'密碼更新成功。'},
+  pwd_incorrect:   {en:'Current password is incorrect.', hans:'当前密码不正确。', hant:'目前密碼不正確。'},
+  pwd_char_req:    {en:'Password too weak. Use uppercase, lowercase, numbers and symbols.', hans:'密码太弱。请使用大小写字母、数字和符号。', hant:'密碼太弱。請使用大小寫字母、數字和符號。'},
+  file_only_types: {en:'Only PDF, DOC, DOCX, JPG, PNG files allowed', hans:'仅允许PDF、DOC、DOCX、JPG、PNG文件', hant:'僅允許PDF、DOC、DOCX、JPG、PNG檔案'},
+  file_too_large:  {en:'File too large (max 2MB)', hans:'文件太大（最大2MB）', hant:'檔案太大（最大2MB）'},
+  uploaded_file:   {en:'Uploaded: ', hans:'已上传：', hant:'已上傳：'},
+  added_file:      {en:'Added: ', hans:'已添加：', hant:'已新增：'},
+  img_only_types:  {en:'Only JPG, PNG, WebP', hans:'仅限JPG、PNG、WebP', hant:'僅限JPG、PNG、WebP'},
+  img_too_large:   {en:'Too large (max 5MB)', hans:'太大（最大5MB）', hant:'太大（最大5MB）'},
+  added_banner:    {en:'Added banner: ', hans:'已添加横幅：', hant:'已新增橫幅：'},
+  enter_img_url:   {en:'Enter an image URL', hans:'请输入图片网址', hant:'請輸入圖片網址'},
+  added_banner_s:  {en:'Added banner', hans:'已添加横幅', hant:'已新增橫幅'},
+  no_banners_preview:{en:'No banners to preview', hans:'没有横幅可预览', hant:'沒有橫幅可預覽'},
+  article_not_found:{en:'Article not found', hans:'找不到文章', hant:'找不到文章'},
+  slug_prefix:     {en:'Slug must start with "hk-news-"', hans:'Slug必须以"hk-news-"开头', hant:'Slug必須以"hk-news-"開頭'},
+  enter_title_hant:{en:'Please enter a title (繁體)', hans:'请输入标题（繁体）', hant:'請輸入標題（繁體）'},
+  slug_exists:     {en:'Slug already exists', hans:'Slug已存在', hant:'Slug已存在'},
+  img_resized:     {en:'Image resized to 1200×525px', hans:'图片已调整为1200×525px', hant:'圖片已調整為1200×525px'},
+  view_only_msg:   {en:'View only — editor or admin access needed.', hans:'仅查看 — 需要编辑或管理员权限。', hant:'僅檢視 — 需要編輯或管理員權限。'},
+  insert_dl_title: {en:'Insert Download Link', hans:'插入下载链接', hant:'插入下載連結'},
+  no_files_dl:     {en:'No files yet. Go to the Downloads tab to upload files first.', hans:'暂无文件。请先到档案下载标签上传文件。', hant:'暫無檔案。請先到檔案下載標籤上傳檔案。'},
+  select_file:     {en:'Select file to insert', hans:'选择要插入的文件', hant:'選擇要插入的檔案'},
+  inserted_file:   {en:'Inserted: ', hans:'已插入：', hant:'已插入：'},
+  textarea_err:    {en:'Textarea not found', hans:'找不到文本框', hant:'找不到文字框'},
+  my_ip:           {en:'My IP', hans:'我的IP', hant:'我的IP'},
+  banner_preview:  {en:'BANNER PREVIEW', hans:'横幅预览', hant:'橫幅預覽'},
+  slides_unit:     {en:' slides', hans:' 张幻灯片', hant:' 張幻燈片'},
+  article_preview: {en:'ARTICLE PREVIEW', hans:'文章预览', hant:'文章預覽'},
+  preview_mode:    {en:'PREVIEW MODE', hans:'预览模式', hant:'預覽模式'},
+  unsaved_inc:     {en:'unsaved changes included', hans:'包含未保存的更改', hant:'包含未儲存的變更'},
+  auto_gen_pwd:    {en:'Auto-generated password', hans:'自动生成密码', hant:'自動生成密碼'},
+  copy_pwd:        {en:'Copy', hans:'复制', hant:'複製'},
+  pwd_copied:      {en:'Password copied to clipboard', hans:'密码已复制到剪贴板', hant:'密碼已複製到剪貼簿'},
+  must_change_pwd: {en:'Must change password on first login', hans:'首次登录必须更改密码', hant:'首次登入必須更改密碼'},
+  force_change_title:{en:'Change Your Password', hans:'更改您的密码', hant:'更改您的密碼'},
+  force_change_desc:{en:'You must change your password before continuing.', hans:'您必须更改密码才能继续。', hant:'您必須更改密碼才能繼續。'},
+  new_pwd_label:   {en:'New Password', hans:'新密码', hant:'新密碼'},
+  confirm_pwd_label:{en:'Confirm Password', hans:'确认密码', hant:'確認密碼'},
+  change_continue: {en:'Change & Continue', hans:'更改并继续', hant:'更改並繼續'},
+  tz_hongkong:     {en:'Hong Kong', hans:'香港', hant:'香港'},
+  tz_shanghai:     {en:'Shanghai', hans:'上海', hant:'上海'},
+  tz_taipei:       {en:'Taipei', hans:'台北', hant:'台北'},
+  tz_tokyo:        {en:'Tokyo', hans:'东京', hant:'東京'},
+  tz_singapore:    {en:'Singapore', hans:'新加坡', hant:'新加坡'},
+  tz_seoul:        {en:'Seoul', hans:'首尔', hant:'首爾'},
+  tz_bangkok:      {en:'Bangkok', hans:'曼谷', hant:'曼谷'},
+  tz_london:       {en:'London', hans:'伦敦', hant:'倫敦'},
+  tz_newyork:      {en:'New York', hans:'纽约', hant:'紐約'},
+  tz_losangeles:   {en:'Los Angeles', hans:'洛杉矶', hant:'洛杉磯'},
+  tz_utc:          {en:'UTC', hans:'UTC', hant:'UTC'},
+  tz_custom:       {en:'Custom', hans:'自定义', hant:'自訂'},
+  utc_offset:      {en:'UTC Offset', hans:'UTC偏移', hant:'UTC偏移'},
+  cms_mobile_block:{en:'CMS is only available on desktop devices. Please use a computer to access the management system.', hans:'CMS仅在桌面设备上可用。请使用电脑访问管理系统。', hant:'CMS僅在桌面裝置上可用。請使用電腦存取管理系統。'},
+  go_home:         {en:'Go to Homepage', hans:'返回首页', hant:'返回首頁'}
 };
 function CL(key){ var lang=window.currentLang||'zh-Hant'; var e=CMS_I18N[key]; if(!e) return key; if(lang==='en') return e.en; if(lang==='zh-Hans') return e.hans; return e.hant; }
 
@@ -189,7 +336,7 @@ function saveIpWhitelist(d){ localStorage.setItem(CMS_IP_KEY,JSON.stringify(d));
 function getAuditLog(){ try{var d=JSON.parse(localStorage.getItem(CMS_AUDIT_KEY));return d||[];}catch(e){return[];} }
 function addAuditLog(action, detail){
   var log = getAuditLog();
-  log.unshift({time:new Date().toISOString(), user:sessionStorage.getItem('ecap_admin_user')||'unknown', action:action, detail:detail||''});
+  log.unshift({time:new Date().toISOString(), user:sessionStorage.getItem('ecap_admin_user')||'unknown', action:action, detail:detail||'', ip:sessionStorage.getItem('ecap_client_ip')||''});
   if(log.length > 100) log = log.slice(0,100);
   localStorage.setItem(CMS_AUDIT_KEY, JSON.stringify(log));
 }
@@ -226,10 +373,10 @@ function generateTOTP(secret,t){
     return ("000000"+code).slice(-6);
   });
 }
-// Verify TOTP with +/- 1 window tolerance
+// Verify TOTP with +/- 2 window tolerance (±60s for clock drift)
 function verifyTOTP(secret,token){
   var now=Math.floor(Date.now()/1000);
-  return Promise.all([generateTOTP(secret,now-30),generateTOTP(secret,now),generateTOTP(secret,now+30)]).then(function(codes){
+  return Promise.all([generateTOTP(secret,now-60),generateTOTP(secret,now-30),generateTOTP(secret,now),generateTOTP(secret,now+30),generateTOTP(secret,now+60)]).then(function(codes){
     return codes.indexOf(token)>=0;
   });
 }
@@ -278,8 +425,9 @@ function clearLoginAttempts(username){
 function isLockedOut(username){
   var data = getLoginAttempts();
   if(!data[username]) return false;
-  var lockoutMinutes = 15;
-  var maxAttempts = 5;
+  var cfg = getRateLimitConfig();
+  var lockoutMinutes = cfg.lockoutMinutes||15;
+  var maxAttempts = cfg.maxAttempts||5;
   if(data[username].count >= maxAttempts){
     var elapsed = Date.now() - data[username].lastAttempt;
     if(elapsed < lockoutMinutes * 60 * 1000){
@@ -293,6 +441,16 @@ function isLockedOut(username){
     clearLoginAttempts(username);
   }
   return false;
+}
+
+function generatePassword(len){
+  len = len || 16;
+  var upper='ABCDEFGHJKLMNPQRSTUVWXYZ',lower='abcdefghjkmnpqrstuvwxyz',digits='23456789',symbols='!@#$%&*';
+  var all=upper+lower+digits+symbols;
+  var pwd=[upper[Math.floor(Math.random()*upper.length)],lower[Math.floor(Math.random()*lower.length)],digits[Math.floor(Math.random()*digits.length)],symbols[Math.floor(Math.random()*symbols.length)]];
+  for(var i=4;i<len;i++) pwd.push(all[Math.floor(Math.random()*all.length)]);
+  for(var j=pwd.length-1;j>0;j--){var k=Math.floor(Math.random()*(j+1));var t=pwd[j];pwd[j]=pwd[k];pwd[k]=t;}
+  return pwd.join('');
 }
 
 // ————— Session Fingerprint —————
@@ -314,9 +472,9 @@ function checkPasswordStrength(pass){
   if(/[A-Z]/.test(pass)) score++;
   if(/[0-9]/.test(pass)) score++;
   if(/[^a-zA-Z0-9]/.test(pass)) score++;
-  if(score <= 2) return {level:'weak', color:'#dc2626', label:'Weak'};
-  if(score <= 4) return {level:'medium', color:'#f59e0b', label:'Medium'};
-  return {level:'strong', color:'#059669', label:'Strong'};
+  if(score <= 2) return {level:'weak', color:'#dc2626', label:CL('pwd_weak')};
+  if(score <= 4) return {level:'medium', color:'#f59e0b', label:CL('pwd_medium')};
+  return {level:'strong', color:'#059669', label:CL('pwd_strong')};
 }
 
 // ————— Last Login Tracking —————
@@ -328,8 +486,9 @@ function recordLastLogin(username){
   if(users.length) saveCmsUsers(users);
 }
 // IP whitelist check — fetches client IP and validates
-function checkIpWhitelist(){
-  var whitelist = getIpWhitelist();
+// Accepts optional username to check user/group-level whitelist
+function checkIpWhitelist(username){
+  var whitelist = username ? getEffectiveIpWhitelist(username) : getIpWhitelist();
   if(!whitelist.length) return Promise.resolve(true); // No whitelist = allow all
   return fetch('https://api.ipify.org?format=json').then(function(r){return r.json();}).then(function(d){
     var ip = d.ip;
@@ -340,20 +499,189 @@ function checkIpWhitelist(){
     return true;
   });
 }
-// ————— ROLE SYSTEM —————
-var CMS_ROLE_PERMS = {
-  admin:  {save:true,  upload:true,  deleteFile:true,  users:true,  export:true,  reset:true,  editPage:true},
-  editor: {save:true,  upload:true,  deleteFile:true,  users:false, export:false, reset:false, editPage:true},
-  viewer: {save:false, upload:false, deleteFile:false, users:false, export:false, reset:false, editPage:false}
-};
-function _cmsHasPermission(action){
-  var role = sessionStorage.getItem("ecap_admin_role")||"admin";
-  return (CMS_ROLE_PERMS[role]||CMS_ROLE_PERMS.admin)[action]===true;
+// ————— GRANULAR PERMISSION SYSTEM —————
+var CMS_SECTIONS = ['pages','banners','blog','files','users','security'];
+var CMS_PERM_ACTIONS = ['read','write'];
+var CMS_GROUPS_KEY = 'ecap_cms_groups';
+var CMS_RATELIMIT_KEY = 'ecap_cms_ratelimit';
+
+function getCmsGroups(){ try{ return JSON.parse(localStorage.getItem(CMS_GROUPS_KEY))||[]; }catch(e){ return []; } }
+function saveCmsGroups(d){ localStorage.setItem(CMS_GROUPS_KEY, JSON.stringify(d)); }
+function getRateLimitConfig(){ try{ var d=JSON.parse(localStorage.getItem(CMS_RATELIMIT_KEY)); return d||{maxAttempts:5,lockoutMinutes:15}; }catch(e){ return {maxAttempts:5,lockoutMinutes:15}; } }
+function saveRateLimitConfig(d){ localStorage.setItem(CMS_RATELIMIT_KEY, JSON.stringify(d)); }
+
+// Build a full-access permission object
+function _cmsFullPerms(){
+  var p={};
+  CMS_SECTIONS.forEach(function(s){ CMS_PERM_ACTIONS.forEach(function(a){ p[s+'.'+a]=true; }); });
+  return p;
 }
-function _cmsCurrentRole(){ return sessionStorage.getItem("ecap_admin_role")||"admin"; }
+// Build an empty (no-access) permission object
+function _cmsEmptyPerms(){
+  var p={};
+  CMS_SECTIONS.forEach(function(s){ CMS_PERM_ACTIONS.forEach(function(a){ p[s+'.'+a]=false; }); });
+  return p;
+}
+
+// Resolve effective permissions for a username
+// Priority: default admin → user.perms → group.perms → empty perms
+// Rule: write implies read
+function _cmsResolvePerms(username){
+  // Default admin always gets full perms
+  if(username==='admin'){
+    var users=getCmsUsers();
+    var adminUser=users.find(function(u){return u.username==='admin';});
+    // If admin user exists in custom list, check their groupId/perms; otherwise full access
+    if(!adminUser) return _cmsFullPerms();
+    // If admin has no groupId and no perms, still full access (legacy admin)
+    if(!adminUser.groupId && !adminUser.perms) return _cmsFullPerms();
+  }
+  var users=getCmsUsers();
+  var user=users.find(function(u){return u.username===username;});
+  var perms;
+  if(!user){
+    // Not in custom list (e.g. default admin via ADMIN_HASH)
+    return _cmsFullPerms();
+  }
+  if(user.perms){
+    // User has direct custom permissions
+    perms=Object.assign(_cmsEmptyPerms(), user.perms);
+  } else if(user.groupId){
+    // Resolve from group
+    var groups=getCmsGroups();
+    var grp=groups.find(function(g){return g.id===user.groupId;});
+    perms=grp?Object.assign(_cmsEmptyPerms(), grp.perms):_cmsEmptyPerms();
+  } else {
+    // No group, no custom perms → empty (should not happen after migration)
+    return _cmsEmptyPerms();
+  }
+  // Enforce: write implies read
+  CMS_SECTIONS.forEach(function(s){
+    if(perms[s+'.write']) perms[s+'.read']=true;
+  });
+  return perms;
+}
+
+// Legacy action map: maps old action names to new granular perms
+var _LEGACY_PERM_MAP = {
+  editPage:'pages.write', save:'pages.write', upload:'files.write',
+  deleteFile:'files.write', users:'users.write', export:'pages.write',
+  reset:'security.write'
+};
+
+// Backward-compatible permission check — accepts both old and new action names
+function _cmsHasPermission(action){
+  var username=sessionStorage.getItem('ecap_admin_user')||'admin';
+  var perms=_cmsResolvePerms(username);
+  // Map legacy action if needed
+  var key=_LEGACY_PERM_MAP[action]||action;
+  return perms[key]===true;
+}
+
+function _cmsCurrentRole(){
+  // Derive a display role from permissions for badge/UI
+  var username=sessionStorage.getItem('ecap_admin_user')||'admin';
+  var users=getCmsUsers();
+  var user=users.find(function(u){return u.username===username;});
+  if(!user) return 'admin'; // default admin
+  if(user.groupId){
+    var groups=getCmsGroups();
+    var grp=groups.find(function(g){return g.id===user.groupId;});
+    return grp?grp.name:(user.role||'admin');
+  }
+  return user.role||'admin';
+}
+
+// ————— DATA MIGRATION —————
+var CMS_MIGRATED_KEY = 'ecap_cms_migrated_v2';
+function _cmsMigrateData(){
+  if(localStorage.getItem(CMS_MIGRATED_KEY)==='1') return;
+  // 1) Create default groups if none exist
+  var groups=getCmsGroups();
+  if(groups.length===0){
+    groups=[
+      {id:'g_admin', name:'管理員', perms:_cmsFullPerms(), sessionTimeout:0, ipWhitelist:[]},
+      {id:'g_editor',name:'編輯員', perms:(function(){
+        var p=_cmsEmptyPerms();
+        ['pages','banners','blog','files'].forEach(function(s){ p[s+'.read']=true; p[s+'.write']=true; });
+        p['users.read']=true; p['security.read']=true;
+        return p;
+      })(), sessionTimeout:0, ipWhitelist:[]},
+      {id:'g_viewer',name:'檢視員', perms:(function(){
+        var p=_cmsEmptyPerms();
+        CMS_SECTIONS.forEach(function(s){ p[s+'.read']=true; });
+        return p;
+      })(), sessionTimeout:0, ipWhitelist:[]}
+    ];
+    saveCmsGroups(groups);
+  }
+  // 2) Migrate existing users: role → groupId, add new fields
+  var users=getCmsUsers();
+  var roleGroupMap={admin:'g_admin',editor:'g_editor',viewer:'g_viewer'};
+  var changed=false;
+  users.forEach(function(u){
+    if(!u.groupId && u.role){
+      u.groupId=roleGroupMap[u.role]||'g_viewer';
+      changed=true;
+    }
+    if(typeof u.force2FA==='undefined'){
+      // Only force 2FA for non-admin users who don't already have 2FA
+      var cfg2fa=get2FAConfig();
+      u.force2FA=u.username!=='admin' && !cfg2fa[u.username];
+      changed=true;
+    }
+    if(typeof u.sessionTimeout==='undefined'){ u.sessionTimeout=0; changed=true; }
+    if(typeof u.ipWhitelist==='undefined'){ u.ipWhitelist=[]; changed=true; }
+    if(typeof u.timezone==='undefined'){ u.timezone='Asia/Hong_Kong'; changed=true; }
+    if(typeof u.enabled==='undefined'){ u.enabled=true; changed=true; }
+  });
+  if(changed && users.length) saveCmsUsers(users);
+  // 3) Migrate rate limit config
+  if(!localStorage.getItem(CMS_RATELIMIT_KEY)){
+    saveRateLimitConfig({maxAttempts:5, lockoutMinutes:15});
+  }
+  localStorage.setItem(CMS_MIGRATED_KEY,'1');
+}
+// Run migration on load
+_cmsMigrateData();
+
+// ————— Effective Session Timeout & IP Whitelist —————
+// Resolution chain: user → group → global
+function getEffectiveSessionTimeout(username){
+  var users=getCmsUsers();
+  var user=users.find(function(u){return u.username===username;});
+  if(user && user.sessionTimeout && user.sessionTimeout>0) return user.sessionTimeout;
+  if(user && user.groupId){
+    var groups=getCmsGroups();
+    var grp=groups.find(function(g){return g.id===user.groupId;});
+    if(grp && grp.sessionTimeout && grp.sessionTimeout>0) return grp.sessionTimeout;
+  }
+  return getSessionTimeout(); // global fallback
+}
+
+function getEffectiveIpWhitelist(username){
+  var users=getCmsUsers();
+  var user=users.find(function(u){return u.username===username;});
+  if(user && user.ipWhitelist && user.ipWhitelist.length>0) return user.ipWhitelist;
+  if(user && user.groupId){
+    var groups=getCmsGroups();
+    var grp=groups.find(function(g){return g.id===user.groupId;});
+    if(grp && grp.ipWhitelist && grp.ipWhitelist.length>0) return grp.ipWhitelist;
+  }
+  return getIpWhitelist(); // global fallback
+}
 
 // ————————————————————— ADMIN VIEW —————————————————————
 function adminView(){
+  // --- Mobile Block ---
+  if(window.innerWidth <= 768){
+    return '<section class="admin-login"><div class="admin-login-box" style="text-align:center">'
+      +'<div style="margin-bottom:16px"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>'
+      +'<h2 style="font-size:18px;margin-bottom:8px">CMS</h2>'
+      +'<p style="font-size:14px;color:var(--text-muted);line-height:1.6;margin-bottom:20px">'+CL('cms_mobile_block')+'</p>'
+      +'<a href="#/" class="admin-btn primary" style="text-decoration:none;display:inline-flex">'+CL('go_home')+'</a>'
+      +'</div></section>';
+  }
   // --- Admin Login Gate ---
   if(!isAdminLoggedIn()){
     return '<section class="admin-login"><div class="admin-login-box">'
@@ -374,8 +702,9 @@ function adminView(){
   var allPages = Object.keys(SITE.pages);
   var cms = getCmsPages();
   var _curRole = _cmsCurrentRole();
-  var _isAdmin = _curRole === "admin";
-  var _canEdit = _curRole === "admin" || _curRole === "editor";
+  var _canViewUsers = _cmsHasPermission('users.read');
+  var _canViewSecurity = _cmsHasPermission('security.read');
+  var _canExport = _cmsHasPermission('pages.write');
 
   // Get display title for a page slug
   function _pageTitle(slug){
@@ -412,8 +741,23 @@ function adminView(){
     +'<button class="cms-lang-btn'+(window.currentLang==='zh-Hans'?' active':'')+'" onclick="window.setLang(\'zh-Hans\')">简</button>'
     +'<button class="cms-lang-btn'+(window.currentLang==='en'?' active':'')+'" onclick="window.setLang(\'en\')">EN</button>'
     +'</div>'
-    +'<span class="role-badge role-'+_curRole+'" style="margin-left:4px">'+_curRole+'</span>'
-    +'<button class="admin-btn secondary" onclick="window._adminLogout()" style="margin-left:4px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> '+CL('logout')+'</button>'
+    +'<div class="cms-avatar-wrap" style="margin-left:4px;position:relative">'
+    +'<button class="cms-avatar-btn" onclick="window._cmsToggleAvatarMenu()" style="display:flex;align-items:center;gap:6px;padding:4px 10px;border:1.5px solid var(--border);border-radius:100px;background:var(--white);cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;color:var(--text)">'
+    +'<span style="width:28px;height:28px;border-radius:50%;background:var(--brand-gradient);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">'+(sessionStorage.getItem("ecap_admin_user")||"A")[0].toUpperCase()+'</span>'
+    +'<span>'+esc(sessionStorage.getItem("ecap_admin_user")||"admin")+'</span>'
+    +'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>'
+    +'</button>'
+    +'<div class="cms-avatar-dropdown" id="cmsAvatarMenu" style="display:none;position:absolute;right:0;top:100%;margin-top:6px;background:var(--white);border:1px solid rgba(0,0,0,.1);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.12);min-width:200px;z-index:100;overflow:hidden">'
+    +'<div style="padding:12px 16px;border-bottom:1px solid rgba(0,0,0,.06)">'
+    +'<div style="font-weight:700;font-size:14px">'+esc(sessionStorage.getItem("ecap_admin_user")||"admin")+'</div>'
+    +'<div style="font-size:11px;color:var(--text-muted);margin-top:2px">'+esc(_curRole)+'</div>'
+    +'</div>'
+    +'<div style="padding:4px">'
+    +'<button onclick="window._cmsSectionSwitch(\'account\');window._cmsCloseAvatarMenu()" style="display:flex;align-items:center;gap:8px;width:100%;padding:10px 12px;border:none;background:transparent;font-size:13px;font-family:inherit;cursor:pointer;border-radius:6px;color:var(--text);text-align:left" onmouseover="this.style.background=\'var(--bg-light)\'" onmouseout="this.style.background=\'transparent\'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> '+CL('my_account')+'</button>'
+    +'</div>'
+    +'<div style="border-top:1px solid rgba(0,0,0,.06);padding:4px">'
+    +'<button onclick="window._adminLogout()" style="display:flex;align-items:center;gap:8px;width:100%;padding:10px 12px;border:none;background:transparent;font-size:13px;font-family:inherit;cursor:pointer;border-radius:6px;color:#dc2626;text-align:left" onmouseover="this.style.background=\'#fef2f2\'" onmouseout="this.style.background=\'transparent\'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> '+CL('logout')+'</button>'
+    +'</div></div></div>'
     +'</div></div>'
     // Section bar with tabs + tools on the right
     +'<div class="cms-section-bar">'
@@ -422,12 +766,11 @@ function adminView(){
     +'<button class="cms-section-btn" id="stab_banners" onclick="window._cmsSectionSwitch(\'banners\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> '+CL('tab_banners')+'</button>'
     +'<button class="cms-section-btn" id="stab_blog" onclick="window._cmsSectionSwitch(\'blog\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> '+CL('tab_blog')+'</button>'
     +'<button class="cms-section-btn" id="stab_files" onclick="window._cmsSectionSwitch(\'files\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> '+CL('tab_files')+'</button>'
-    +'<button class="cms-section-btn" id="stab_account" onclick="window._cmsSectionSwitch(\'account\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> '+CL('tab_account')+'</button>'
-    +(_isAdmin?'<button class="cms-section-btn" id="stab_users" onclick="window._cmsSectionSwitch(\'users\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg> '+CL('tab_users')+'</button>':'')
-    +(_isAdmin?'<button class="cms-section-btn" id="stab_security" onclick="window._cmsSectionSwitch(\'security\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> '+CL('tab_security')+'</button>':'')
+    +(_canViewUsers?'<button class="cms-section-btn" id="stab_users" onclick="window._cmsSectionSwitch(\'users\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg> '+CL('tab_users')+'</button>':'')
+    +(_canViewSecurity?'<button class="cms-section-btn" id="stab_security" onclick="window._cmsSectionSwitch(\'security\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> '+CL('tab_security')+'</button>':'')
     +'</div>'
     // Tools on right side of section bar
-    +(_isAdmin ? '<div class="cms-section-tools">'
+    +(_canExport ? '<div class="cms-section-tools">'
     +'<button class="cms-tool-btn" onclick="window._cmsExport()" title="匯出"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>'
     +'<button class="cms-tool-btn" onclick="document.getElementById(\'cmsImportFile\').click()" title="匯入"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></button>'
     +'<input type="file" id="cmsImportFile" accept=".json" style="display:none" onchange="window._cmsImport(event)"/>'
@@ -460,6 +803,160 @@ window.isAdminLoggedIn = isAdminLoggedIn;
 window._adminLogout = function(){
   sessionStorage.removeItem(ADMIN_SESSION_KEY);
   location.hash = "#/";
+};
+
+// Avatar dropdown toggle
+window._cmsToggleAvatarMenu = function(){
+  var m = document.getElementById('cmsAvatarMenu');
+  if(!m) return;
+  var vis = m.style.display !== 'none';
+  m.style.display = vis ? 'none' : 'block';
+  if(!vis){
+    setTimeout(function(){
+      function _closeMenu(e){ if(!e.target.closest('.cms-avatar-wrap')){ m.style.display='none'; document.removeEventListener('click',_closeMenu); } }
+      document.addEventListener('click', _closeMenu);
+    }, 10);
+  }
+};
+window._cmsCloseAvatarMenu = function(){
+  var m = document.getElementById('cmsAvatarMenu');
+  if(m) m.style.display='none';
+};
+
+// ————— Force-Change-Password Full-Screen —————
+window._cmsForceChangePwdScreen = function(username){
+  var app = document.getElementById('app');
+  if(!app) return;
+  app.innerHTML = '<section class="admin-login"><div class="admin-login-box" style="max-width:440px;text-align:left">'
+    +'<h2 style="font-size:20px;text-align:center;margin-bottom:4px">'+CL('force_change_title')+'</h2>'
+    +'<p style="font-size:13px;color:var(--text-muted);text-align:center;margin-bottom:20px">'+CL('force_change_desc')+'</p>'
+    +'<div class="admin-field"><label>'+CL('new_pwd_label')+'</label><input type="password" id="forcePwdNew" placeholder="'+CL('pwd_min8')+'"/></div>'
+    +'<div class="admin-field"><label>'+CL('confirm_pwd_label')+'</label><input type="password" id="forcePwdConfirm" placeholder="'+CL('confirm_pwd_label')+'"/></div>'
+    +'<div id="forcePwdStrength" style="font-size:12px;margin-bottom:12px"></div>'
+    +'<div style="display:flex;gap:8px;justify-content:center">'
+    +'<button class="admin-btn primary" id="forcePwdSaveBtn">'+CL('change_continue')+'</button>'
+    +'<button class="admin-btn secondary" id="forcePwdLogoutBtn">'+CL('logout')+'</button>'
+    +'</div>'
+    +'<div id="forcePwdErr" style="font-size:12px;color:#dc2626;margin-top:8px;text-align:center"></div>'
+    +'</div></section>';
+
+  document.getElementById('forcePwdNew').focus();
+  document.getElementById('forcePwdNew').addEventListener('input', function(){
+    var s=checkPasswordStrength(this.value);
+    document.getElementById('forcePwdStrength').innerHTML=this.value?'<span style="color:'+s.color+'">'+s.label+'</span>':'';
+  });
+  document.getElementById('forcePwdLogoutBtn').addEventListener('click', function(){
+    sessionStorage.removeItem('ecap_force2fa_user');
+    sessionStorage.removeItem('ecap_force2fa_role');
+    sessionStorage.removeItem('ecap_forcepwd_user');
+    location.hash='#/admin';
+    window.route();
+  });
+  document.getElementById('forcePwdSaveBtn').addEventListener('click', function(){
+    var newPwd = document.getElementById('forcePwdNew').value;
+    var confirm = document.getElementById('forcePwdConfirm').value;
+    var errEl = document.getElementById('forcePwdErr');
+    if(newPwd.length<8){errEl.textContent=CL('pwd_min8');return;}
+    if(newPwd!==confirm){errEl.textContent=CL('pwd_mismatch');return;}
+    var str=checkPasswordStrength(newPwd);
+    if(str.level==='weak'){errEl.textContent=CL('pwd_too_weak');return;}
+    sha256hex(newPwd).then(function(hash){
+      var users=getCmsUsers();
+      users.forEach(function(u){if(u.username===username){u.hash=hash;u.mustChangePassword=false;}});
+      saveCmsUsers(users);
+      addAuditLog('password_changed_first_login','User: '+username);
+      // Check if force-2FA is still needed
+      var userObj=users.find(function(u){return u.username===username;});
+      var cfg2fa=get2FAConfig();
+      if(userObj && userObj.force2FA && !cfg2fa[username]){
+        sessionStorage.setItem('ecap_force2fa_user', username);
+        sessionStorage.setItem('ecap_force2fa_role', sessionStorage.getItem('ecap_forcepwd_role')||'admin');
+        sessionStorage.removeItem('ecap_forcepwd_user');
+        sessionStorage.removeItem('ecap_forcepwd_role');
+        window._cmsForce2FAScreen(username);
+      } else {
+        // Complete login
+        var role=sessionStorage.getItem('ecap_forcepwd_role')||'admin';
+        sessionStorage.removeItem('ecap_forcepwd_user');
+        sessionStorage.removeItem('ecap_forcepwd_role');
+        sessionStorage.setItem(ADMIN_SESSION_KEY,'1');
+        sessionStorage.setItem('ecap_admin_user',username);
+        sessionStorage.setItem('ecap_admin_role',role);
+        sessionStorage.setItem('ecap_admin_login_time',Date.now().toString());
+        sessionStorage.setItem('ecap_session_fp',getSessionFingerprint());
+        _adminCurrentUser=username;
+        _startSessionTimer();
+        window.route();
+      }
+    });
+  });
+};
+
+// ————— Force-2FA Full-Screen Setup —————
+window._cmsForce2FAScreen = function(username){
+  var secret = generateSecret();
+  var issuer = 'e-Capital CMS';
+  var otpUrl = 'otpauth://totp/'+encodeURIComponent(issuer+':'+username)+'?secret='+secret+'&issuer='+encodeURIComponent(issuer);
+  var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(otpUrl);
+
+  var app = document.getElementById('app');
+  if(!app) return;
+  app.innerHTML = '<section class="admin-login"><div class="admin-login-box" style="max-width:440px">'
+    +'<div style="background:#fef9c3;border:1px solid #fde68a;border-radius:8px;padding:12px 16px;margin-bottom:20px;font-size:13px;color:#92400e;text-align:left">'+CL('force_2fa_desc')+'</div>'
+    +'<h2 style="font-size:20px">'+CL('force_2fa_title')+'</h2>'
+    +'<p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">'+CL('scan_qr')+'</p>'
+    +'<img src="'+qrUrl+'" alt="QR" style="width:200px;height:200px;border:1px solid var(--border);border-radius:8px;margin-bottom:12px"/>'
+    +'<div style="font-family:monospace;font-size:14px;letter-spacing:2px;background:var(--bg-box);padding:8px 12px;border-radius:6px;margin-bottom:16px;word-break:break-all">'+secret+'</div>'
+    +'<p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">'+CL('enter_code_verify')+'</p>'
+    +'<input type="text" id="force2FACode" maxlength="6" placeholder="000000" style="width:120px;text-align:center;font-size:20px;letter-spacing:6px;padding:8px;border:1.5px solid var(--border);border-radius:8px;margin-bottom:12px" inputmode="numeric"/>'
+    +'<div style="display:flex;gap:8px;justify-content:center">'
+    +'<button class="admin-btn primary" id="force2FAVerifyBtn">'+CL('verify_enable')+'</button>'
+    +'<button class="admin-btn secondary" id="force2FALogoutBtn">'+CL('logout')+'</button>'
+    +'</div>'
+    +'<div id="force2FAErr" style="font-size:12px;color:#dc2626;margin-top:8px"></div>'
+    +'</div></section>';
+
+  document.getElementById('force2FACode').focus();
+  document.getElementById('force2FALogoutBtn').addEventListener('click', function(){
+    sessionStorage.removeItem('ecap_force2fa_user');
+    sessionStorage.removeItem('ecap_force2fa_role');
+    location.hash='#/admin';
+    window.route();
+  });
+  document.getElementById('force2FAVerifyBtn').addEventListener('click', function(){
+    var code = document.getElementById('force2FACode').value.replace(/\s/g,'');
+    if(code.length!==6){ document.getElementById('force2FAErr').textContent=CL('enter_6digit'); return; }
+    verifyTOTP(secret, code).then(function(ok){
+      if(ok){
+        // Save 2FA config
+        var c=get2FAConfig();
+        c[username]=secret;
+        save2FAConfig(c);
+        // Clear force2FA flag
+        var users=getCmsUsers();
+        users.forEach(function(u){ if(u.username===username) u.force2FA=false; });
+        saveCmsUsers(users);
+        // Complete login
+        var role=sessionStorage.getItem('ecap_force2fa_role')||'admin';
+        sessionStorage.removeItem('ecap_force2fa_user');
+        sessionStorage.removeItem('ecap_force2fa_role');
+        sessionStorage.setItem(ADMIN_SESSION_KEY,'1');
+        sessionStorage.setItem('ecap_admin_user',username);
+        sessionStorage.setItem('ecap_admin_role',role);
+        sessionStorage.setItem('ecap_admin_login_time',Date.now().toString());
+        sessionStorage.setItem('ecap_session_fp',getSessionFingerprint());
+        _adminCurrentUser=username;
+        addAuditLog('force_2fa_complete','User: '+username);
+        _startSessionTimer();
+        showToast(CL('twofa_enabled').replace('{0}',username));
+        window.route();
+      } else {
+        document.getElementById('force2FAErr').textContent=CL('invalid_code_retry');
+        document.getElementById('force2FACode').value='';
+        document.getElementById('force2FACode').focus();
+      }
+    });
+  });
 };
 
 window._adminLogin = function(e){
@@ -519,7 +1016,7 @@ window._adminLogin = function(e){
           return;
         }
         var code = totpInput.value.replace(/\s/g,'');
-        if(code.length!==6){errEl.textContent='Enter 6-digit code.';errEl.style.color='';btn.disabled=false;btn.textContent=CL('verify_2fa');return;}
+        if(code.length!==6){errEl.textContent=CL('enter_6digit');errEl.style.color='';btn.disabled=false;btn.textContent=CL('verify_2fa');return;}
         verifyTOTP(userSecret, code).then(function(valid){
           if(valid){
             sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
@@ -545,23 +1042,50 @@ window._adminLogin = function(e){
         });
         return;
       }
-      // No 2FA - login directly
+      // No 2FA - check if must change password or force-2FA is required
+      // Default admin (ADMIN_HASH) is exempt from force-2FA/force-pwd
+      var _loginUser = matched.username||user;
+      var _isDefaultAdmin = (_loginUser==='admin' && !getCmsUsers().find(function(u){return u.username==='admin';}));
+      var _userObj = getCmsUsers().find(function(u){return u.username===_loginUser;});
+      var _needChangePwd = !_isDefaultAdmin && _userObj && _userObj.mustChangePassword;
+      var _needForce2FA = !_isDefaultAdmin && _userObj && _userObj.force2FA;
+      if(_needChangePwd){
+        // Must change password first (will chain to force-2FA if needed)
+        sessionStorage.setItem('ecap_forcepwd_user', _loginUser);
+        sessionStorage.setItem('ecap_forcepwd_role', matched.role||'admin');
+        clearLoginAttempts(_loginUser);
+        recordLastLogin(_loginUser);
+        addAuditLog('login_force_changepwd', 'User: '+_loginUser+' — must change password');
+        window._cmsForceChangePwdScreen(_loginUser);
+        return;
+      }
+      if(_needForce2FA){
+        // Store pending login state, show force-2FA setup
+        sessionStorage.setItem('ecap_force2fa_user', _loginUser);
+        sessionStorage.setItem('ecap_force2fa_role', matched.role||'admin');
+        clearLoginAttempts(_loginUser);
+        recordLastLogin(_loginUser);
+        addAuditLog('login_force2fa', 'User: '+_loginUser+' — must setup 2FA');
+        window._cmsForce2FAScreen(_loginUser);
+        return;
+      }
       sessionStorage.setItem(ADMIN_SESSION_KEY, "1");
-      sessionStorage.setItem("ecap_admin_user", matched.username||matched);
+      sessionStorage.setItem("ecap_admin_user", _loginUser);
       sessionStorage.setItem("ecap_admin_role", matched.role||"admin");
       sessionStorage.setItem('ecap_admin_login_time', Date.now().toString());
-      _adminCurrentUser = matched.username||matched;
-      clearLoginAttempts(matched.username||user);
-      recordLastLogin(matched.username||user);
+      _adminCurrentUser = _loginUser;
+      clearLoginAttempts(_loginUser);
+      recordLastLogin(_loginUser);
       sessionStorage.setItem('ecap_session_fp', getSessionFingerprint());
-      addAuditLog('login_success', 'User: '+(matched.username||user)+', 2FA: no');
+      addAuditLog('login_success', 'User: '+_loginUser+', 2FA: no');
       _startSessionTimer();
       window.route();
     } else {
       recordFailedLogin(user);
       addAuditLog('login_fail', 'User: '+user);
       var attempts = getLoginAttempts();
-      var remaining = 5 - ((attempts[user]||{}).count||0);
+      var rlCfg = getRateLimitConfig();
+      var remaining = (rlCfg.maxAttempts||5) - ((attempts[user]||{}).count||0);
       errEl.textContent = CL('wrong_pwd') + (remaining <= 2 && remaining > 0 ? " "+remaining+CL('attempts_left') : "");
       errEl.style.color='';
       btn.disabled = false;
@@ -579,7 +1103,8 @@ function _startSessionTimer(){
   _sessionTimerHandle = setInterval(function(){
     if(!isAdminLoggedIn()) { clearInterval(_sessionTimerHandle); return; }
     var loginTime = parseInt(sessionStorage.getItem('ecap_admin_login_time'))||Date.now();
-    var timeoutMin = getSessionTimeout();
+    var adminUser = sessionStorage.getItem('ecap_admin_user')||'admin';
+    var timeoutMin = getEffectiveSessionTimeout(adminUser);
     if(Date.now() - loginTime > timeoutMin*60*1000){
       addAuditLog('session_timeout', 'Auto-logout after '+timeoutMin+' minutes');
       sessionStorage.removeItem(ADMIN_SESSION_KEY);
@@ -617,7 +1142,7 @@ window._cmsPreviewPage = function(){
   try{ css = document.querySelector('style').textContent; }catch(e){}
   var pw = window.open('', '_blank', 'width=960,height=720,scrollbars=yes,resizable=yes');
   if(!pw){ showToast(CL('popup_blocked')); return; }
-  pw.document.write('<!DOCTYPE html><html lang="'+currentLang+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Preview — '+title+'</title><style>'+css+'</style></head><body style="padding-top:0"><div style="background:#f59e0b;color:#fff;font-size:12px;font-weight:600;padding:6px 20px;text-align:center;letter-spacing:.5px">PREVIEW MODE — unsaved changes included</div><section class="subpage"><div class="mw"><div class="subpage-header"><div class="breadcrumb">Preview</div><h1>'+title+'</h1></div><div class="subpage-body">'+body+'</div></div></section></body></html>');
+  pw.document.write('<!DOCTYPE html><html lang="'+currentLang+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+CL('preview')+' — '+title+'</title><style>'+css+'</style></head><body style="padding-top:0"><div style="background:#f59e0b;color:#fff;font-size:12px;font-weight:600;padding:6px 20px;text-align:center;letter-spacing:.5px">'+CL('preview_mode')+' — '+CL('unsaved_inc')+'</div><section class="subpage"><div class="mw"><div class="subpage-header"><div class="breadcrumb">'+CL('preview')+'</div><h1>'+title+'</h1></div><div class="subpage-body">'+body+'</div></div></section></body></html>');
   pw.document.close();
 };
 
@@ -853,14 +1378,14 @@ window._cmsInitDragDrop = function(){
 window._cmsProcessDroppedFile = function(file){
   var allowed = ['application/pdf','application/msword','application/vnd.openxmlformats-officedocument.wordprocessingml.document','image/jpeg','image/png','image/webp'];
   var allowedExt = /\.(pdf|doc|docx|jpg|jpeg|png|webp)$/i;
-  if(!allowed.includes(file.type) && !allowedExt.test(file.name)){ showToast('Only PDF, DOC, DOCX, JPG, PNG: '+file.name); return; }
-  if(file.size > 2*1024*1024){ showToast('Too large (max 2MB): '+file.name); return; }
+  if(!allowed.includes(file.type) && !allowedExt.test(file.name)){ showToast(CL('file_only_types')+': '+file.name); return; }
+  if(file.size > 2*1024*1024){ showToast(CL('file_too_large')+': '+file.name); return; }
   var reader = new FileReader();
   reader.onload = function(ev){
     var files = getCmsFiles();
     files.push({id:'f'+Date.now()+Math.random().toString(36).substr(2,4), name:file.name, desc:'', type:file.type||'application/octet-stream', size:file.size, url:ev.target.result, isLocal:true, uploadedAt:new Date().toISOString(), uploadedBy:sessionStorage.getItem('ecap_admin_user')||'admin'});
     saveCmsFiles(files);
-    showToast('Uploaded: '+file.name);
+    showToast(CL('uploaded_file')+file.name);
     window._cmsFilesView();
   };
   reader.readAsDataURL(file);
@@ -871,15 +1396,15 @@ window._cmsFileUpload = function(e){
   var allowed = ["application/pdf","application/msword","application/vnd.openxmlformats-officedocument.wordprocessingml.document","image/jpeg","image/png","image/webp"];
   var allowedExt = /\.(pdf|doc|docx|jpg|jpeg|png|webp)$/i;
   if(!allowed.includes(file.type) && !allowedExt.test(file.name)){
-    showToast("Only PDF, DOC, DOCX, JPG, PNG files are allowed"); e.target.value=""; return;
+    showToast(CL('file_only_types')); e.target.value=""; return;
   }
-  if(file.size > 2*1024*1024){ showToast("File too large (max 2MB)"); return; }
+  if(file.size > 2*1024*1024){ showToast(CL('file_too_large')); return; }
   var reader = new FileReader();
   reader.onload = function(ev){
     var files = getCmsFiles();
     files.push({id:"f"+Date.now(), name:file.name, desc:"", type:file.type||"application/octet-stream", size:file.size, url:ev.target.result, isLocal:true, uploadedAt:new Date().toISOString(), uploadedBy:sessionStorage.getItem("ecap_admin_user")||"admin"});
     saveCmsFiles(files);
-    showToast("Uploaded: "+file.name);
+    showToast(CL('uploaded_file')+file.name);
     window._cmsFilesView();
   };
   reader.readAsDataURL(file);
@@ -893,7 +1418,7 @@ window._cmsAddUrl = function(){
   var files = getCmsFiles();
   files.push({id:"u"+Date.now(), name:name, desc:"", type:"external", size:0, url:url, isLocal:false, uploadedAt:new Date().toISOString(), uploadedBy:sessionStorage.getItem("ecap_admin_user")||"admin"});
   saveCmsFiles(files);
-  showToast("Added: "+name);
+  showToast(CL('added_file')+name);
   window._cmsFilesView();
 };
 
@@ -922,12 +1447,24 @@ window._cmsAccountView = function(){
   document.getElementById("cmsEditor").innerHTML = '<div class="cms-panel">' + _cmsAccountTab(currentUser, cfg2fa) + '</div>';
 };
 
-// User Management view (standalone tab, admin only)
-window._cmsUserMgmtView = function(){
+// User Management view (standalone tab) — with sub-tabs for Users and Groups
+var _cmsUserSubTab = 'users';
+window._cmsUserMgmtView = function(subTab){
+  if(subTab) _cmsUserSubTab = subTab;
   var currentUser = sessionStorage.getItem("ecap_admin_user") || "admin";
   var users = getCmsUsers();
   var cfg2fa = get2FAConfig();
-  document.getElementById("cmsEditor").innerHTML = '<div class="cms-panel">' + _cmsUserMgmtTab(users, currentUser, cfg2fa) + '</div>';
+  var tabHtml = '<div class="cms-user-tabs">'
+    +'<button class="cms-utab'+(_cmsUserSubTab==='users'?' active':'')+'" onclick="window._cmsUserMgmtView(\'users\')">'+CL('tab_users')+'</button>'
+    +'<button class="cms-utab'+(_cmsUserSubTab==='groups'?' active':'')+'" onclick="window._cmsUserMgmtView(\'groups\')">'+CL('tab_groups')+'</button>'
+    +'</div>';
+  var content = _cmsUserSubTab==='groups' ? _cmsGroupsSubView() : _cmsUserMgmtTab(users, currentUser, cfg2fa);
+  document.getElementById("cmsEditor").innerHTML = '<div class="cms-panel">'+tabHtml+content+'</div>';
+  // Auto-generate password for new user form
+  if(_cmsUserSubTab==='users'){
+    var pwdEl=document.getElementById('newUserGenPwd');
+    if(pwdEl && !pwdEl.value) pwdEl.value=generatePassword(16);
+  }
 };
 
 // Security view (standalone tab, admin only)
@@ -944,6 +1481,26 @@ window._cmsUsersView = function(tab){
 };
 
 function _cmsAccountTab(currentUser, cfg2fa){
+  var users = getCmsUsers();
+  var userObj = users.find(function(u){return u.username===currentUser;});
+  var userTz = userObj ? (userObj.timezone||'Asia/Hong_Kong') : 'Asia/Hong_Kong';
+  var CMS_TIMEZONES = [
+    {value:'Asia/Hong_Kong',label:'tz_hongkong',utc:'+8'},
+    {value:'Asia/Shanghai',label:'tz_shanghai',utc:'+8'},
+    {value:'Asia/Taipei',label:'tz_taipei',utc:'+8'},
+    {value:'Asia/Tokyo',label:'tz_tokyo',utc:'+9'},
+    {value:'Asia/Singapore',label:'tz_singapore',utc:'+8'},
+    {value:'Asia/Seoul',label:'tz_seoul',utc:'+9'},
+    {value:'Asia/Bangkok',label:'tz_bangkok',utc:'+7'},
+    {value:'Europe/London',label:'tz_london',utc:'+0'},
+    {value:'America/New_York',label:'tz_newyork',utc:'-5'},
+    {value:'America/Los_Angeles',label:'tz_losangeles',utc:'-8'},
+    {value:'UTC',label:'tz_utc',utc:'+0'}
+  ];
+  var tzOpts = CMS_TIMEZONES.map(function(tz){
+    return '<option value="'+tz.value+'"'+(userTz===tz.value?' selected':'')+'>'+CL(tz.label)+' (UTC'+tz.utc+')</option>';
+  }).join('');
+
   return '<div class="cms-section-box">'
     +'<h3 style="font-size:20px;font-weight:700;margin-bottom:20px">'+CL('my_account')+'</h3>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start">'
@@ -956,8 +1513,9 @@ function _cmsAccountTab(currentUser, cfg2fa){
     +'<button class="admin-btn primary" onclick="window._cmsChangePassword()">'+CL('update_pwd')+'</button>'
     +'<div id="pwdMsg" style="font-size:13px;margin-top:8px;min-height:20px"></div>'
     +'</div>'
-    // Right: My 2FA
-    +'<div class="cms-card-box">'
+    // Right: My 2FA + Timezone
+    +'<div>'
+    +'<div class="cms-card-box" style="margin-bottom:16px">'
     +'<h4 style="font-size:16px;font-weight:700;margin-bottom:16px">'+CL('twofa_title')+'</h4>'
     +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">'
     +'<span style="font-size:14px;padding:4px 10px;border-radius:100px;font-weight:700;'+(cfg2fa[currentUser]?'background:#d1fae5;color:#059669':'background:#fee2e2;color:#dc2626')+'">'+(cfg2fa[currentUser]?CL('twofa_on'):CL('twofa_off'))+'</span>'
@@ -965,23 +1523,39 @@ function _cmsAccountTab(currentUser, cfg2fa){
     +'<p style="font-size:14px;color:var(--text-sec);line-height:1.6;margin-bottom:16px">'+(cfg2fa[currentUser]?CL('twofa_on_desc'):CL('twofa_off_desc'))+'</p>'
     +'<button class="admin-btn '+(cfg2fa[currentUser]?'danger':'primary')+'" onclick="window._cms2FASetup(sessionStorage.getItem(\'ecap_admin_user\')||\'admin\')">'+(cfg2fa[currentUser]?CL('disable_2fa'):CL('setup_2fa'))+'</button>'
     +'</div>'
+    // Timezone
+    +'<div class="cms-card-box">'
+    +'<h4 style="font-size:16px;font-weight:700;margin-bottom:8px">'+CL('timezone')+'</h4>'
+    +'<p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">'+CL('timezone_desc')+'</p>'
+    +'<div style="display:flex;gap:8px;align-items:end">'
+    +'<div class="admin-field" style="margin:0;flex:1"><select id="acctTimezone" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--white)">'+tzOpts+'</select></div>'
+    +'<button class="admin-btn primary" onclick="window._cmsSaveMyTimezone()" style="height:44px">'+CL('save')+'</button>'
+    +'</div>'
+    +'</div>'
+    +'</div>'
     +'</div>'
     +'</div>';
 }
 
 function _cmsUserMgmtTab(users, currentUser, cfg2fa){
+  var groups = getCmsGroups();
+  function _grpName(gid){
+    var g=groups.find(function(x){return x.id===gid;});
+    return g?g.name:(gid||'—');
+  }
   var userRows = users.length ? users.map(function(u,i){
     var isMe = u.username===currentUser;
-    var uRole = u.role||"admin";
     var disabled = u.enabled===false;
+    var grpLabel = u.groupId ? _grpName(u.groupId) : CL('custom_perms');
     return '<div class="cms-user-row'+(disabled?' user-disabled':'')+'">'
       +'<div class="u-avatar'+(disabled?' disabled':'')+'">'+esc(u.username[0].toUpperCase())+'</div>'
       +'<div style="flex:1;min-width:0">'
       +'<div class="u-name">'+esc(u.username)+(isMe?' <span class="u-tag">'+CL('you')+'</span>':'')+(disabled?' <span style="color:#dc2626;font-size:12px;font-weight:600">'+CL('disabled_label')+'</span>':'')+'</div>'
       +'<div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap">'
-      +'<span class="role-badge role-'+uRole+'">'+uRole+'</span>'
+      +'<span class="role-badge role-admin" style="font-size:10px">'+esc(grpLabel)+'</span>'
       +'<span style="font-size:11px;padding:2px 8px;border-radius:100px;font-weight:600;'+(cfg2fa[u.username]?'background:#d1fae5;color:#059669':'background:#fee2e2;color:#dc2626')+'">'+(cfg2fa[u.username]?'2FA ON':'2FA OFF')+'</span>'
-      +(u.lastLogin?'<span style="font-size:11px;color:var(--text-muted)">Last login: '+new Date(u.lastLogin).toLocaleDateString('zh-HK')+'</span>':'')
+      +(u.force2FA?'<span style="font-size:11px;padding:2px 8px;border-radius:100px;font-weight:600;background:#fef9c3;color:#92400e">'+CL('force_2fa')+'</span>':'')
+      +(u.lastLogin?'<span style="font-size:11px;color:var(--text-muted)">'+CL('last_login')+': '+new Date(u.lastLogin).toLocaleDateString('zh-HK')+'</span>':'')
       +'</div>'
       +'</div>'
       +'<div style="display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0">'
@@ -990,7 +1564,12 @@ function _cmsUserMgmtTab(users, currentUser, cfg2fa){
       +(!isMe?'<button class="admin-btn '+(disabled?'primary':'secondary')+'" style="font-size:12px;padding:5px 12px" onclick="window._cmsToggleUser('+i+')">'+(disabled?CL('enable'):CL('disable'))+'</button>':'')
       +(!isMe?'<button class="admin-btn danger" style="font-size:12px;padding:5px 14px" onclick="window._cmsUserDelete('+i+')">'+CL('remove')+'</button>':'')
       +'</div></div>';
-  }).join("") : '<div style="color:var(--text-muted);font-size:14px;padding:8px 0">Using default admin account. Add users below to replace it.</div>';
+  }).join("") : '<div style="color:var(--text-muted);font-size:14px;padding:8px 0">'+CL('default_admin_hint')+'</div>';
+
+  // Build group options for add-user form
+  var grpOpts = groups.map(function(g){
+    return '<option value="'+g.id+'">'+esc(g.name)+'</option>';
+  }).join('');
 
   return '<div class="cms-section-box">'
     +'<h3 style="font-size:20px;font-weight:700;margin-bottom:4px">'+CL('user_mgmt')+'</h3>'
@@ -1001,43 +1580,210 @@ function _cmsUserMgmtTab(users, currentUser, cfg2fa){
     +'<h4 style="font-size:16px;font-weight:700;margin-bottom:16px">'+CL('add_new_user')+'</h4>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
     +'<div class="admin-field"><label>'+CL('username')+'</label><input type="text" id="newUsername" placeholder="e.g. editor1"/></div>'
-    +'<div class="admin-field"><label>'+CL('password')+'</label><input type="password" id="newUserPass" placeholder="Min 8 chars, mix upper/lower/numbers"/></div>'
-    +'</div>'
-    +'<div class="admin-field"><label>'+CL('role')+'</label><select id="newUserRole" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--white)">'
-    +'<option value="admin">Admin \u2014 Full access (pages, files, users, export)</option>'
-    +'<option value="editor" selected>Editor \u2014 Edit pages & uploads, no user management</option>'
-    +'<option value="viewer">Viewer \u2014 Read-only, cannot save or upload</option>'
+    +'<div class="admin-field"><label>'+CL('group_label')+'</label><select id="newUserGroup" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--white)">'
+    +grpOpts
     +'</select></div>'
+    +'</div>'
+    +'<div class="admin-field"><label>'+CL('auto_gen_pwd')+'</label>'
+    +'<div style="display:flex;gap:8px;align-items:center">'
+    +'<input type="text" id="newUserGenPwd" readonly style="font-family:monospace;font-size:13px;flex:1;background:#f9fafb"/>'
+    +'<button class="admin-btn secondary" style="padding:8px 12px;white-space:nowrap" onclick="document.getElementById(\'newUserGenPwd\').value=generatePassword(16)">&#10227;</button>'
+    +'<button class="admin-btn secondary" style="padding:8px 12px;white-space:nowrap" onclick="navigator.clipboard.writeText(document.getElementById(\'newUserGenPwd\').value);showToast(CL(\'pwd_copied\'))">'+CL('copy_pwd')+'</button>'
+    +'</div></div>'
+    +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
+    +'<input type="checkbox" id="newUserForce2FA" checked/>'
+    +'<label for="newUserForce2FA" style="font-size:13px;font-weight:500;cursor:pointer">'+CL('force_2fa')+'</label>'
+    +'</div>'
+    +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">'
+    +'<input type="checkbox" id="newUserMustChangePwd" checked/>'
+    +'<label for="newUserMustChangePwd" style="font-size:13px;font-weight:500;cursor:pointer">'+CL('must_change_pwd')+'</label>'
+    +'</div>'
     +'<button class="admin-btn primary" onclick="window._cmsUserAdd()">'+CL('add_user')+'</button>'
     +'<div id="addUserMsg" style="font-size:13px;margin-top:8px;min-height:20px"></div>'
     +'</div>'
     +'</div>';
 }
 
+// ————— Groups Sub-View —————
+var CMS_PERM_LABELS = {pages:'perm_pages',banners:'perm_banners',blog:'perm_blog',files:'perm_files',users:'perm_users',security:'perm_security'};
+
+function _cmsGroupsSubView(){
+  var groups = getCmsGroups();
+  var users = getCmsUsers();
+  var _canWrite = _cmsHasPermission('users.write');
+
+  var rows = groups.map(function(g,i){
+    // Count users in this group
+    var memberCount = users.filter(function(u){return u.groupId===g.id;}).length;
+    // Summarize permissions
+    var writeCount = CMS_SECTIONS.filter(function(s){return g.perms[s+'.write'];}).length;
+    var readCount = CMS_SECTIONS.filter(function(s){return g.perms[s+'.read'];}).length;
+    return '<div class="cms-user-row">'
+      +'<div class="u-avatar" style="background:var(--brand-gradient);font-size:12px">G</div>'
+      +'<div style="flex:1;min-width:0">'
+      +'<div class="u-name">'+esc(g.name)+'</div>'
+      +'<div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap">'
+      +'<span style="font-size:11px;color:var(--text-muted)">'+memberCount+' '+CL('tab_users')+'</span>'
+      +'<span style="font-size:11px;color:var(--text-muted)">'+CL('perm_read')+': '+readCount+'/'+CMS_SECTIONS.length+'</span>'
+      +'<span style="font-size:11px;color:var(--text-muted)">'+CL('perm_write')+': '+writeCount+'/'+CMS_SECTIONS.length+'</span>'
+      +'</div></div>'
+      +'<div style="display:flex;gap:6px;flex-shrink:0">'
+      +(_canWrite?'<button class="admin-btn secondary" style="font-size:12px;padding:5px 12px" onclick="window._cmsGroupEdit(\''+g.id+'\')">'+CL('edit')+'</button>':'')
+      +(_canWrite?'<button class="admin-btn danger" style="font-size:12px;padding:5px 12px" onclick="window._cmsGroupDelete(\''+g.id+'\')">'+CL('delete_group')+'</button>':'')
+      +'</div></div>';
+  }).join('');
+
+  return '<div class="cms-section-box">'
+    +'<h3 style="font-size:20px;font-weight:700;margin-bottom:4px">'+CL('group_mgmt')+'</h3>'
+    +'<p style="color:var(--text-muted);font-size:13px;margin-bottom:20px">'+groups.length+CL('groups_total')+'</p>'
+    +'<div class="cms-users-list" style="margin-bottom:24px">'+rows+'</div>'
+    +(_canWrite?
+      '<div class="cms-card-box">'
+      +'<h4 style="font-size:16px;font-weight:700;margin-bottom:16px">'+CL('add_new_group')+'</h4>'
+      +'<div class="admin-field"><label>'+CL('group_name')+'</label><input type="text" id="newGroupName" placeholder="e.g. 市場部"/></div>'
+      +'<h4 style="font-size:14px;font-weight:600;margin:12px 0 8px">'+CL('custom_perms')+'</h4>'
+      +_cmsPermGrid(_cmsEmptyPerms(), 'ngp')
+      +'<button class="admin-btn primary" style="margin-top:12px" onclick="window._cmsGroupAdd()">'+CL('add_group')+'</button>'
+      +'<div id="addGroupMsg" style="font-size:13px;margin-top:8px;min-height:20px"></div>'
+      +'</div>'
+    : '')
+    +'</div>';
+}
+
+// Build permission grid HTML for a perms object
+function _cmsPermGrid(permsObj, idPrefix){
+  var h = '<table class="cms-files-table" style="margin-top:0">'
+    +'<thead><tr><th>'+CL('perm_section')+'</th><th style="text-align:center;width:80px">'+CL('perm_read')+'</th><th style="text-align:center;width:80px">'+CL('perm_write')+'</th></tr></thead><tbody>';
+  CMS_SECTIONS.forEach(function(s){
+    var rChecked = permsObj[s+'.read'] ? ' checked' : '';
+    var wChecked = permsObj[s+'.write'] ? ' checked' : '';
+    var rDisabled = permsObj[s+'.write'] ? ' disabled' : '';
+    h += '<tr><td>'+CL(CMS_PERM_LABELS[s])+'</td>'
+      +'<td style="text-align:center"><input type="checkbox" id="'+idPrefix+'_'+s+'_read"'+rChecked+rDisabled+' onchange="window._cmsPermGridSync(\''+idPrefix+'\',\''+s+'\')"/></td>'
+      +'<td style="text-align:center"><input type="checkbox" id="'+idPrefix+'_'+s+'_write"'+wChecked+' onchange="window._cmsPermGridSync(\''+idPrefix+'\',\''+s+'\')"/></td>'
+      +'</tr>';
+  });
+  h += '</tbody></table>';
+  return h;
+}
+
+// Sync permission grid: write implies read
+window._cmsPermGridSync = function(prefix, section){
+  var wCb = document.getElementById(prefix+'_'+section+'_write');
+  var rCb = document.getElementById(prefix+'_'+section+'_read');
+  if(wCb && rCb){
+    if(wCb.checked){ rCb.checked=true; rCb.disabled=true; }
+    else { rCb.disabled=false; }
+  }
+};
+
+// Read perms from a grid
+function _cmsReadPermGrid(idPrefix){
+  var p = _cmsEmptyPerms();
+  CMS_SECTIONS.forEach(function(s){
+    var rCb = document.getElementById(idPrefix+'_'+s+'_read');
+    var wCb = document.getElementById(idPrefix+'_'+s+'_write');
+    if(wCb && wCb.checked) p[s+'.write']=true;
+    if(rCb && rCb.checked) p[s+'.read']=true;
+    // Enforce write implies read
+    if(p[s+'.write']) p[s+'.read']=true;
+  });
+  return p;
+}
+
+// Add new group
+window._cmsGroupAdd = function(){
+  var name = document.getElementById('newGroupName').value.trim();
+  var msg = document.getElementById('addGroupMsg');
+  if(!name){ msg.style.color='#dc3545'; msg.textContent=CL('enter_username'); return; }
+  var groups = getCmsGroups();
+  var id = 'g_'+name.toLowerCase().replace(/[^a-z0-9]/g,'_')+'_'+Date.now().toString(36);
+  var perms = _cmsReadPermGrid('ngp');
+  groups.push({id:id, name:name, perms:perms, sessionTimeout:0, ipWhitelist:[]});
+  saveCmsGroups(groups);
+  addAuditLog('group_added', name);
+  msg.style.color='#28a745'; msg.textContent=CL('add_group')+': '+name;
+  document.getElementById('newGroupName').value='';
+  window._cmsUserMgmtView('groups');
+};
+
+// Delete group
+window._cmsGroupDelete = function(gid){
+  if(!confirm(CL('del_group_q'))) return;
+  var groups = getCmsGroups();
+  var grp = groups.find(function(g){return g.id===gid;});
+  groups = groups.filter(function(g){return g.id!==gid;});
+  saveCmsGroups(groups);
+  // Clear groupId from users in this group
+  var users = getCmsUsers();
+  var changed = false;
+  users.forEach(function(u){ if(u.groupId===gid){ u.groupId=null; u.perms=_cmsEmptyPerms(); changed=true; } });
+  if(changed) saveCmsUsers(users);
+  addAuditLog('group_deleted', grp?grp.name:gid);
+  window._cmsUserMgmtView('groups');
+};
+
+// Edit group modal
+window._cmsGroupEdit = function(gid){
+  var groups = getCmsGroups();
+  var grp = groups.find(function(g){return g.id===gid;});
+  if(!grp) return;
+  var div = document.createElement('div');
+  div.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center';
+  div.innerHTML = '<div style="background:var(--white);border-radius:12px;padding:32px;max-width:520px;width:90%;box-shadow:0 12px 40px rgba(0,0,0,.2);max-height:80vh;overflow-y:auto">'
+    +'<h3 style="margin:0 0 20px;font-size:18px;font-weight:700">'+CL('edit_group')+': '+esc(grp.name)+'</h3>'
+    +'<div class="admin-field"><label>'+CL('group_name')+'</label><input type="text" id="editGrpName" value="'+escAttr(grp.name)+'"/></div>'
+    +'<h4 style="font-size:14px;font-weight:600;margin:16px 0 8px">'+CL('custom_perms')+'</h4>'
+    +_cmsPermGrid(grp.perms, 'egp')
+    +'<div class="admin-field" style="margin-top:16px"><label>'+CL('session_timeout')+' (0 = '+CL('session_timeout_desc').split('.')[0]+')</label><input type="number" id="editGrpTimeout" value="'+(grp.sessionTimeout||0)+'" min="0" max="480"/></div>'
+    +'<div style="display:flex;gap:8px;margin-top:16px">'
+    +'<button class="admin-btn primary" id="editGrpSaveBtn">'+CL('save_changes')+'</button>'
+    +'<button class="admin-btn secondary" id="editGrpCancelBtn">'+CL('cancel')+'</button>'
+    +'</div></div>';
+  document.body.appendChild(div);
+  document.getElementById('editGrpCancelBtn').addEventListener('click', function(){ div.remove(); });
+  div.addEventListener('click', function(e){ if(e.target===div) div.remove(); });
+  document.getElementById('editGrpSaveBtn').addEventListener('click', function(){
+    var name = document.getElementById('editGrpName').value.trim();
+    if(!name) return;
+    var perms = _cmsReadPermGrid('egp');
+    var timeout = parseInt(document.getElementById('editGrpTimeout').value)||0;
+    var gs = getCmsGroups();
+    var g = gs.find(function(x){return x.id===gid;});
+    if(g){ g.name=name; g.perms=perms; g.sessionTimeout=timeout; }
+    saveCmsGroups(gs);
+    addAuditLog('group_edited', name);
+    div.remove();
+    window._cmsUserMgmtView('groups');
+  });
+};
+
 function _cmsSecurityTab(){
   var whitelist = getIpWhitelist();
   var auditLog = getAuditLog();
   var timeout = getSessionTimeout();
   var clientIp = sessionStorage.getItem('ecap_client_ip')||'';
+  var rlCfg = getRateLimitConfig();
 
   var ipRows = whitelist.length ? whitelist.map(function(item,i){
     return '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--border-light);border-radius:8px;margin-bottom:6px;background:var(--white)">'
       +'<span style="font-family:monospace;font-size:14px;flex:1">'+esc(item.ip)+'</span>'
       +'<span style="font-size:12px;color:var(--text-muted)">'+esc(item.label||'')+'</span>'
-      +'<span style="font-size:11px;padding:2px 8px;border-radius:100px;font-weight:600;'+(item.enabled!==false?'background:#d1fae5;color:#059669':'background:#fee2e2;color:#dc2626')+'">'+(item.enabled!==false?'Active':'Disabled')+'</span>'
+      +'<span style="font-size:11px;padding:2px 8px;border-radius:100px;font-weight:600;'+(item.enabled!==false?'background:#d1fae5;color:#059669':'background:#fee2e2;color:#dc2626')+'">'+(item.enabled!==false?CL('active'):CL('user_disabled_s'))+'</span>'
       +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="window._cmsToggleIp('+i+')">'+(item.enabled!==false?CL('disable'):CL('enable'))+'</button>'
       +'<button class="admin-btn danger" style="font-size:11px;padding:4px 10px" onclick="window._cmsRemoveIp('+i+')">'+CL('remove')+'</button>'
       +'</div>';
-  }).join('') : '<div style="color:var(--text-muted);font-size:13px;padding:8px 0">No IP restrictions. All IPs can access CMS.</div>';
+  }).join('') : '<div style="color:var(--text-muted);font-size:13px;padding:8px 0">'+CL('no_ip_restrict')+'</div>';
 
   var auditRows = auditLog.slice(0,20).map(function(entry){
     var icon = entry.action.indexOf('login_success')>=0?'&#9989;':entry.action.indexOf('fail')>=0||entry.action.indexOf('blocked')>=0?'&#10060;':'&#128276;';
-    return '<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-light);font-size:13px">'
+    return '<div style="display:grid;grid-template-columns:24px 150px 80px 1fr auto auto;gap:8px;padding:8px 0;border-bottom:1px solid var(--border-light);font-size:13px;align-items:center">'
       +'<span>'+icon+'</span>'
-      +'<span style="color:var(--text-muted);min-width:140px;flex-shrink:0">'+new Date(entry.time).toLocaleString('zh-HK')+'</span>'
-      +'<span style="font-weight:600;min-width:80px">'+esc(entry.user)+'</span>'
+      +'<span style="color:var(--text-muted);font-size:12px;white-space:nowrap">'+new Date(entry.time).toLocaleString('zh-HK')+'</span>'
+      +'<span style="font-weight:600">'+esc(entry.user)+'</span>'
       +'<span style="color:var(--text-sec)">'+esc(entry.action.replace(/_/g,' '))+'</span>'
-      +(entry.detail?'<span style="color:var(--text-muted);margin-left:auto">'+esc(entry.detail)+'</span>':'')
+      +'<span style="color:var(--text-muted);font-size:12px;font-family:monospace">'+(entry.ip?esc(entry.ip):'')+'</span>'
+      +(entry.detail?'<span style="color:var(--text-muted);font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(entry.detail)+'</span>':'<span></span>')
       +'</div>';
   }).join('');
 
@@ -1048,18 +1794,18 @@ function _cmsSecurityTab(){
     +'<div class="cms-card-box" style="margin-bottom:24px;background:linear-gradient(135deg,rgba(180,21,64,.04),rgba(180,21,64,.08));border:1px solid rgba(180,21,64,.12)">'
     +'<h4 style="font-size:16px;font-weight:700;margin-bottom:12px">'+CL('security_overview')+'</h4>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px">'
-    +'<div>&#128274; <strong>'+CL('ip_whitelist')+':</strong> '+(whitelist.length?'<span style="color:#059669">'+whitelist.filter(function(x){return x.enabled!==false}).length+' active IPs</span>':'<span style="color:#f59e0b">Off (all IPs allowed)</span>')+'</div>'
-    +'<div>&#9201; <strong>'+CL('session_timeout')+':</strong> '+timeout+' minutes</div>'
-    +'<div>&#128272; <strong>2FA:</strong> '+(Object.keys(get2FAConfig()).length?'<span style="color:#059669">'+Object.keys(get2FAConfig()).length+' users enabled</span>':'<span style="color:#f59e0b">No users enabled</span>')+'</div>'
-    +'<div>&#128737; <strong>Rate Limiting:</strong> <span style="color:#059669">5 attempts / 15 min lockout</span></div>'
-    +'<div>&#128270; <strong>Session Fingerprint:</strong> <span style="color:#059669">Active</span></div>'
-    +'<div>&#128196; <strong>Audit Log:</strong> '+auditLog.length+' entries</div>'
+    +'<div>&#128274; <strong>'+CL('ip_whitelist')+':</strong> '+(whitelist.length?'<span style="color:#059669">'+whitelist.filter(function(x){return x.enabled!==false}).length+CL('active_ips')+'</span>':'<span style="color:#f59e0b">'+CL('off_all_ips')+'</span>')+'</div>'
+    +'<div>&#9201; <strong>'+CL('session_timeout')+':</strong> '+timeout+CL('minutes_unit')+'</div>'
+    +'<div>&#128272; <strong>2FA:</strong> '+(Object.keys(get2FAConfig()).length?'<span style="color:#059669">'+Object.keys(get2FAConfig()).length+CL('users_enabled')+'</span>':'<span style="color:#f59e0b">'+CL('no_users_2fa')+'</span>')+'</div>'
+    +'<div>&#128737; <strong>'+CL('rate_limit')+':</strong> <span style="color:#059669">'+getRateLimitConfig().maxAttempts+' / '+getRateLimitConfig().lockoutMinutes+' min</span></div>'
+    +'<div>&#128270; <strong>'+CL('session_fp')+':</strong> <span style="color:#059669">'+CL('active')+'</span></div>'
+    +'<div>&#128196; <strong>'+CL('audit_log')+':</strong> '+auditLog.length+CL('entries')+'</div>'
     +'</div>'
     +'</div>'
     // IP Whitelist
     +'<div class="cms-card-box" style="margin-bottom:24px">'
     +'<h4 style="font-size:16px;font-weight:700;margin-bottom:4px">'+CL('ip_whitelist')+'</h4>'
-    +'<p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">Only listed IPs can login to CMS. Leave empty to allow all IPs.'+(clientIp?' Your current IP: <strong>'+esc(clientIp)+'</strong>':'')+'</p>'
+    +'<p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">'+CL('ip_desc')+(clientIp?' '+CL('your_ip')+'<strong>'+esc(clientIp)+'</strong>':'')+'</p>'
     +ipRows
     +'<div style="display:flex;gap:8px;margin-top:12px;align-items:end">'
     +'<div class="admin-field" style="flex:1;margin:0"><label>'+CL('ip_addr')+'</label><input type="text" id="newIpAddr" placeholder="e.g. 192.168.1.100"/></div>'
@@ -1075,7 +1821,17 @@ function _cmsSecurityTab(){
     +'<div class="admin-field" style="margin:0;flex:0 0 200px"><label>'+CL('timeout_min')+'</label><input type="number" id="sessionTimeout" value="'+timeout+'" min="5" max="480" style="width:100%"/></div>'
     +'<button class="admin-btn primary" onclick="window._cmsSaveTimeout()" style="align-self:end;height:44px">'+CL('save')+'</button>'
     +'</div>'
-    +'<p style="font-size:12px;color:var(--text-muted);margin-top:8px">Auto-logout after inactivity. Current: '+timeout+' minutes.</p>'
+    +'<p style="font-size:12px;color:var(--text-muted);margin-top:8px">'+CL('timeout_auto')+timeout+CL('minutes_unit')+'</p>'
+    +'</div>'
+    // Rate Limiting Config
+    +'<div class="cms-card-box" style="margin-bottom:24px">'
+    +'<h4 style="font-size:16px;font-weight:700;margin-bottom:4px">'+CL('rate_limit')+'</h4>'
+    +'<p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">'+CL('rate_limit_desc')+'</p>'
+    +'<div style="display:flex;gap:12px;align-items:end;flex-wrap:wrap">'
+    +'<div class="admin-field" style="margin:0;flex:0 0 180px"><label>'+CL('max_attempts')+'</label><input type="number" id="rlMaxAttempts" value="'+rlCfg.maxAttempts+'" min="1" max="50" style="width:100%"/></div>'
+    +'<div class="admin-field" style="margin:0;flex:0 0 180px"><label>'+CL('lockout_min')+'</label><input type="number" id="rlLockoutMin" value="'+rlCfg.lockoutMinutes+'" min="1" max="1440" style="width:100%"/></div>'
+    +'<button class="admin-btn primary" onclick="window._cmsSaveRateLimit()" style="height:44px">'+CL('save')+'</button>'
+    +'</div>'
     +'</div>'
     // Audit Log
     +'<div class="cms-card-box">'
@@ -1091,14 +1847,14 @@ function _cmsSecurityTab(){
 // IP Whitelist management
 window._cmsAddIp = function(){
   var ip = document.getElementById('newIpAddr').value.trim();
-  if(!ip){ showToast('Enter an IP address'); return; }
+  if(!ip){ showToast(CL('enter_ip')); return; }
   var label = document.getElementById('newIpLabel').value.trim();
   var list = getIpWhitelist();
-  if(list.some(function(x){return x.ip===ip;})){ showToast('IP already in list'); return; }
+  if(list.some(function(x){return x.ip===ip;})){ showToast(CL('ip_exists')); return; }
   list.push({ip:ip, label:label, enabled:true, addedAt:new Date().toISOString()});
   saveIpWhitelist(list);
   addAuditLog('ip_added', ip+(label?' ('+label+')':''));
-  showToast('IP added: '+ip);
+  showToast(CL('ip_added')+ip);
   window._cmsUsersView('security');
 };
 window._cmsAddMyIp = function(){
@@ -1107,13 +1863,13 @@ window._cmsAddMyIp = function(){
     fetch('https://api.ipify.org?format=json').then(function(r){return r.json();}).then(function(d){
       sessionStorage.setItem('ecap_client_ip', d.ip);
       document.getElementById('newIpAddr').value = d.ip;
-      document.getElementById('newIpLabel').value = 'My IP';
-      showToast('Your IP: '+d.ip+' — click Add IP to save');
-    }).catch(function(){ showToast('Could not detect IP'); });
+      document.getElementById('newIpLabel').value = CL('my_ip');
+      showToast(CL('ip_detected')+d.ip);
+    }).catch(function(){ showToast(CL('ip_detect_fail')); });
     return;
   }
   document.getElementById('newIpAddr').value = ip;
-  document.getElementById('newIpLabel').value = 'My IP';
+  document.getElementById('newIpLabel').value = CL('my_ip');
 };
 window._cmsToggleIp = function(idx){
   var list = getIpWhitelist();
@@ -1126,12 +1882,12 @@ window._cmsToggleIp = function(idx){
 window._cmsRemoveIp = function(idx){
   var list = getIpWhitelist();
   if(!list[idx]) return;
-  if(!confirm('Remove IP '+list[idx].ip+'?')) return;
+  if(!confirm(CL('remove_ip_q')+list[idx].ip+'?')) return;
   var ip = list[idx].ip;
   list.splice(idx,1);
   saveIpWhitelist(list);
   addAuditLog('ip_removed', ip);
-  showToast('IP removed');
+  showToast(CL('ip_removed'));
   window._cmsUsersView('security');
 };
 window._cmsSaveTimeout = function(){
@@ -1139,7 +1895,16 @@ window._cmsSaveTimeout = function(){
   if(val<5) val=5; if(val>480) val=480;
   saveSessionTimeout(val);
   addAuditLog('timeout_changed', val+' minutes');
-  showToast('Session timeout set to '+val+' minutes');
+  showToast(CL('timeout_set')+val+CL('minutes_unit'));
+};
+window._cmsSaveRateLimit = function(){
+  var maxA = parseInt(document.getElementById('rlMaxAttempts').value)||5;
+  var lockM = parseInt(document.getElementById('rlLockoutMin').value)||15;
+  if(maxA<1) maxA=1; if(maxA>50) maxA=50;
+  if(lockM<1) lockM=1; if(lockM>1440) lockM=1440;
+  saveRateLimitConfig({maxAttempts:maxA, lockoutMinutes:lockM});
+  addAuditLog('ratelimit_changed', maxA+' attempts / '+lockM+' min lockout');
+  showToast(CL('rate_limit')+': '+maxA+' / '+lockM+' min');
 };
 
 // Toggle user enable/disable
@@ -1153,21 +1918,59 @@ window._cmsToggleUser = function(idx){
   window._cmsUserMgmtView();
 };
 
-// Edit user modal (change role, reset password)
+// Edit user modal — group, permissions, password, timezone, force2FA
 window._cmsEditUser = function(idx){
   var users = getCmsUsers();
   var u = users[idx];
   if(!u) return;
+  var groups = getCmsGroups();
+  var grpOpts = groups.map(function(g){
+    return '<option value="'+g.id+'"'+(u.groupId===g.id?' selected':'')+'>'+esc(g.name)+'</option>';
+  }).join('');
+  var CMS_TIMEZONES = [
+    {value:'Asia/Hong_Kong',label:'tz_hongkong',utc:'+8'},
+    {value:'Asia/Shanghai',label:'tz_shanghai',utc:'+8'},
+    {value:'Asia/Taipei',label:'tz_taipei',utc:'+8'},
+    {value:'Asia/Tokyo',label:'tz_tokyo',utc:'+9'},
+    {value:'Asia/Singapore',label:'tz_singapore',utc:'+8'},
+    {value:'Asia/Seoul',label:'tz_seoul',utc:'+9'},
+    {value:'Asia/Bangkok',label:'tz_bangkok',utc:'+7'},
+    {value:'Europe/London',label:'tz_london',utc:'+0'},
+    {value:'America/New_York',label:'tz_newyork',utc:'-5'},
+    {value:'America/Los_Angeles',label:'tz_losangeles',utc:'-8'},
+    {value:'UTC',label:'tz_utc',utc:'+0'}
+  ];
+  var tzOpts = CMS_TIMEZONES.map(function(tz){
+    return '<option value="'+tz.value+'"'+(u.timezone===tz.value?' selected':'')+'>'+CL(tz.label)+' (UTC'+tz.utc+')</option>';
+  }).join('');
+
   var div = document.createElement('div');
   div.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center';
-  div.innerHTML = '<div style="background:var(--white);border-radius:12px;padding:32px;max-width:440px;width:90%;box-shadow:0 12px 40px rgba(0,0,0,.2)">'
-    +'<h3 style="margin:0 0 20px;font-size:18px;font-weight:700">Edit User: '+esc(u.username)+'</h3>'
-    +'<div class="admin-field"><label>'+CL('role')+'</label><select id="editUserRole" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--white)">'
-    +'<option value="admin"'+(u.role==='admin'?' selected':'')+'>Admin</option>'
-    +'<option value="editor"'+(u.role==='editor'?' selected':'')+'>Editor</option>'
-    +'<option value="viewer"'+(u.role==='viewer'?' selected':'')+'>Viewer</option>'
+  div.innerHTML = '<div style="background:var(--white);border-radius:12px;padding:32px;max-width:560px;width:90%;box-shadow:0 12px 40px rgba(0,0,0,.2);max-height:85vh;overflow-y:auto">'
+    +'<h3 style="margin:0 0 20px;font-size:18px;font-weight:700">'+CL('edit')+': '+esc(u.username)+'</h3>'
+    // Group
+    +'<div class="admin-field"><label>'+CL('group_label')+'</label><select id="editUserGroup" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--white)" onchange="var cp=document.getElementById(\'editUserCustomPerms\');if(cp)cp.style.display=this.value===\'__custom__\'?\'block\':\'none\'">'
+    +grpOpts
+    +'<option value="__custom__"'+(!u.groupId?' selected':'')+'>'+CL('no_group')+' ('+CL('custom_perms')+')</option>'
     +'</select></div>'
-    +'<div class="admin-field"><label>New Password (leave blank to keep)</label><input type="password" id="editUserPass" placeholder="Min 6 characters"/></div>'
+    // Custom perms (hidden unless custom selected)
+    +'<div id="editUserCustomPerms" style="display:'+(!u.groupId?'block':'none')+'">'
+    +'<h4 style="font-size:14px;font-weight:600;margin:12px 0 8px">'+CL('custom_perms')+'</h4>'
+    +_cmsPermGrid(u.perms||_cmsEmptyPerms(), 'eup')
+    +'</div>'
+    // Password
+    +'<div class="admin-field"><label>'+CL('new_pwd_blank')+'</label><input type="password" id="editUserPass" placeholder="'+CL('pwd_min6')+'"/></div>'
+    +'<div class="admin-field"><label>'+CL('confirm_new_pwd')+'</label><input type="password" id="editUserPassConfirm" placeholder="'+CL('confirm_new_pwd')+'"/></div>'
+    // Timezone
+    +'<div class="admin-field"><label>'+CL('timezone')+'</label><select id="editUserTz" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--white)">'+tzOpts+'</select></div>'
+    // Force 2FA
+    +'<div style="display:flex;align-items:center;gap:8px;margin:12px 0">'
+    +'<input type="checkbox" id="editUserForce2FA"'+(u.force2FA?' checked':'')+'>'
+    +'<label for="editUserForce2FA" style="font-size:13px;font-weight:500;cursor:pointer">'+CL('force_2fa')+'</label>'
+    +'</div>'
+    // Session timeout override
+    +'<div class="admin-field"><label>'+CL('session_timeout')+' (0 = '+CL('session_timeout_desc').split('.')[0]+')</label><input type="number" id="editUserTimeout" value="'+(u.sessionTimeout||0)+'" min="0" max="480"/></div>'
+    // Buttons
     +'<div style="display:flex;gap:8px;margin-top:16px">'
     +'<button class="admin-btn primary" id="editUserSaveBtn">'+CL('save_changes')+'</button>'
     +'<button class="admin-btn secondary" id="editUserCancelBtn">'+CL('cancel')+'</button>'
@@ -1178,29 +1981,38 @@ window._cmsEditUser = function(idx){
   document.getElementById('editUserCancelBtn').addEventListener('click', function(){ div.remove(); });
   div.addEventListener('click', function(e){ if(e.target===div) div.remove(); });
   document.getElementById('editUserSaveBtn').addEventListener('click', function(){
-    var newRole = document.getElementById('editUserRole').value;
+    var grpVal = document.getElementById('editUserGroup').value;
     var newPass = document.getElementById('editUserPass').value;
+    var newPassConfirm = document.getElementById('editUserPassConfirm').value;
     var msg = document.getElementById('editUserMsg');
     var usr = getCmsUsers();
-    if(!usr[idx]){msg.textContent='User not found';return;}
-    usr[idx].role = newRole;
+    if(!usr[idx]){msg.textContent=CL('user_not_found');return;}
+    // Password validation
     if(newPass){
-      if(newPass.length<6){msg.style.color='#dc3545';msg.textContent='Password must be at least 6 characters.';return;}
-      sha256hex(newPass).then(function(hash){
-        usr[idx].hash = hash;
-        saveCmsUsers(usr);
-        addAuditLog('user_edited', u.username+': role='+newRole+', password reset');
-        showToast('User updated: '+u.username);
-        div.remove();
-        window._cmsUsersView('users');
-      });
-    } else {
-      saveCmsUsers(usr);
-      addAuditLog('user_edited', u.username+': role='+newRole);
-      showToast('User updated: '+u.username);
-      div.remove();
-      window._cmsUsersView('users');
+      if(newPass.length<6){msg.style.color='#dc3545';msg.textContent=CL('pwd_min6');return;}
+      if(newPass!==newPassConfirm){msg.style.color='#dc3545';msg.textContent=CL('pwd_mismatch');return;}
     }
+    // Group / custom perms
+    if(grpVal==='__custom__'){
+      usr[idx].groupId=null;
+      usr[idx].perms=_cmsReadPermGrid('eup');
+    } else {
+      usr[idx].groupId=grpVal;
+      usr[idx].perms=null;
+    }
+    usr[idx].timezone = document.getElementById('editUserTz').value;
+    usr[idx].force2FA = document.getElementById('editUserForce2FA').checked;
+    usr[idx].sessionTimeout = parseInt(document.getElementById('editUserTimeout').value)||0;
+    function _finish(){
+      saveCmsUsers(usr);
+      addAuditLog('user_edited', u.username+(newPass?', password reset':''));
+      showToast(CL('user_updated')+u.username);
+      div.remove();
+      window._cmsUserMgmtView('users');
+    }
+    if(newPass){
+      sha256hex(newPass).then(function(hash){ usr[idx].hash=hash; _finish(); });
+    } else { _finish(); }
   });
 };
 
@@ -1209,13 +2021,13 @@ window._cmsChangePassword = function(){
   var nw = document.getElementById("pwdNew").value;
   var cf = document.getElementById("pwdConfirm").value;
   var msg = document.getElementById("pwdMsg");
-  if(nw.length < 8){ msg.style.color="#dc3545"; msg.textContent="Password must be at least 8 characters."; return; }
+  if(nw.length < 8){ msg.style.color="#dc3545"; msg.textContent=CL('pwd_min8'); return; }
   var strength = checkPasswordStrength(nw);
-  if(strength.level==='weak'){ msg.style.color="#dc3545"; msg.textContent="Password too weak. Use uppercase, lowercase, numbers and symbols."; return; }
-  if(nw !== cf){ msg.style.color="#dc3545"; msg.textContent="New passwords do not match."; return; }
+  if(strength.level==='weak'){ msg.style.color="#dc3545"; msg.textContent=CL('pwd_char_req'); return; }
+  if(nw !== cf){ msg.style.color="#dc3545"; msg.textContent=CL('pwd_mismatch'); return; }
   var currentUser = sessionStorage.getItem("ecap_admin_user") || "admin";
   checkAdminLogin(currentUser, cur).then(function(ok){
-    if(!ok){ msg.style.color="#dc3545"; msg.textContent="Current password is incorrect."; return; }
+    if(!ok){ msg.style.color="#dc3545"; msg.textContent=CL('pwd_incorrect'); return; }
     sha256hex(nw).then(function(hash){
       var users = getCmsUsers();
       if(users.length === 0){
@@ -1227,7 +2039,7 @@ window._cmsChangePassword = function(){
         if(!found) users.push({username:currentUser,hash:hash});
       }
       saveCmsUsers(users);
-      msg.style.color="#28a745"; msg.textContent="Password updated successfully.";
+      msg.style.color="#28a745"; msg.textContent=CL('pwd_updated');
       document.getElementById("pwdCurrent").value="";
       document.getElementById("pwdNew").value="";
       document.getElementById("pwdConfirm").value="";
@@ -1235,43 +2047,56 @@ window._cmsChangePassword = function(){
   });
 };
 
+window._cmsSaveMyTimezone = function(){
+  var sel = document.getElementById('acctTimezone');
+  var tz = sel.value;
+  var tzLabel = sel.options[sel.selectedIndex].text;
+  var currentUser = sessionStorage.getItem('ecap_admin_user')||'admin';
+  var users = getCmsUsers();
+  var found = false;
+  users.forEach(function(u){ if(u.username===currentUser){ u.timezone=tz; found=true; } });
+  if(found){ saveCmsUsers(users); showToast(CL('timezone')+': '+tzLabel); }
+  else { showToast(CL('timezone')+': '+tzLabel); }
+};
+
 window._cmsUserAdd = function(){
   var uname = document.getElementById("newUsername").value.trim();
-  var pass = document.getElementById("newUserPass").value;
+  var pass = document.getElementById("newUserGenPwd").value;
   var msg = document.getElementById("addUserMsg");
-  if(!uname){ msg.style.color="#dc3545"; msg.textContent="Enter a username."; return; }
-  if(pass.length < 8){ msg.style.color="#dc3545"; msg.textContent="Password must be at least 8 characters."; return; }
-  var strength = checkPasswordStrength(pass);
-  if(strength.level==='weak'){ msg.style.color="#dc3545"; msg.textContent="Password too weak. Use uppercase, lowercase, numbers."; return; }
+  if(!uname){ msg.style.color="#dc3545"; msg.textContent=CL('enter_username'); return; }
+  if(!pass){ msg.style.color="#dc3545"; msg.textContent=CL('auto_gen_pwd'); return; }
   var users = getCmsUsers();
-  if(users.some(function(u){return u.username===uname;})){ msg.style.color="#dc3545"; msg.textContent="Username already exists."; return; }
-  var roleEl = document.getElementById("newUserRole");
-  var role = roleEl ? roleEl.value : "editor";
+  if(users.some(function(u){return u.username===uname;})){ msg.style.color="#dc3545"; msg.textContent=CL('username_exists'); return; }
+  var grpEl = document.getElementById("newUserGroup");
+  var groupId = grpEl ? grpEl.value : (getCmsGroups()[0]||{}).id||null;
+  var force2FA = document.getElementById("newUserForce2FA") ? document.getElementById("newUserForce2FA").checked : true;
+  var mustChangePwd = document.getElementById("newUserMustChangePwd") ? document.getElementById("newUserMustChangePwd").checked : true;
   sha256hex(pass).then(function(hash){
-    users.push({username:uname, hash:hash, role:role});
+    users.push({username:uname, hash:hash, groupId:groupId, perms:null, enabled:true, force2FA:force2FA, mustChangePassword:mustChangePwd, sessionTimeout:0, ipWhitelist:[], timezone:'Asia/Hong_Kong', lastLogin:null});
     saveCmsUsers(users);
-    msg.style.color="#28a745"; msg.textContent="User '"+uname+"' added as "+role+".";
+    var grpName = groupId ? (getCmsGroups().find(function(g){return g.id===groupId;})||{}).name||groupId : CL('custom_perms');
+    msg.style.color="#28a745"; msg.textContent=CL('user_added')+uname+CL('user_as')+grpName;
     document.getElementById("newUsername").value="";
-    document.getElementById("newUserPass").value="";
-    window._cmsUsersView();
+    document.getElementById("newUserGenPwd").value="";
+    window._cmsUserMgmtView('users');
   });
 };
 // ————————— 2FA Management —————————
 window._cmsReset2FA = function(username){
-  if(!confirm('Reset 2FA for '+username+'? They will need to set it up again on next login.')) return;
+  if(!confirm(CL('reset_2fa_q').replace('{0}',username))) return;
   var cfg = get2FAConfig();
   delete cfg[username];
   save2FAConfig(cfg);
-  showToast('2FA reset for '+username+'. They can re-enable it.');
+  showToast(CL('twofa_reset').replace('{0}',username));
   window._cmsUsersView();
 };
 window._cms2FASetup = function(username){
   var cfg = get2FAConfig();
   if(cfg[username]){
-    if(!confirm('2FA is already enabled for '+username+'. Disable it?')) return;
+    if(!confirm(CL('twofa_already').replace('{0}',username))) return;
     delete cfg[username];
     save2FAConfig(cfg);
-    showToast('2FA disabled for '+username);
+    showToast(CL('twofa_disabled').replace('{0}',username));
     window._cmsUsersView();
     return;
   }
@@ -1282,14 +2107,14 @@ window._cms2FASetup = function(username){
   var div = document.createElement('div');
   div.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center';
   div.innerHTML = '<div style="background:var(--white);border-radius:12px;padding:32px;max-width:400px;width:90%;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.2)">'
-    +'<h3 style="margin:0 0 8px;font-size:18px">Setup 2FA for '+esc(username)+'</h3>'
-    +'<p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">Scan this QR code with Google Authenticator, Authy, or any TOTP app.</p>'
+    +'<h3 style="margin:0 0 8px;font-size:18px">'+CL('setup_2fa_for').replace('{0}',esc(username))+'</h3>'
+    +'<p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">'+CL('scan_qr')+'</p>'
     +'<img src="'+qrUrl+'" alt="QR" style="width:200px;height:200px;border:1px solid var(--border);border-radius:8px;margin-bottom:12px"/>'
     +'<div style="font-family:monospace;font-size:14px;letter-spacing:2px;background:var(--bg-box);padding:8px 12px;border-radius:6px;margin-bottom:16px;word-break:break-all">'+secret+'</div>'
-    +'<p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">Enter a code from the app to verify setup:</p>'
+    +'<p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">'+CL('enter_code_verify')+'</p>'
     +'<input type="text" id="verify2FA" maxlength="6" placeholder="000000" style="width:120px;text-align:center;font-size:20px;letter-spacing:6px;padding:8px;border:1.5px solid var(--border);border-radius:8px;margin-bottom:12px" inputmode="numeric"/>'
     +'<div style="display:flex;gap:8px;justify-content:center">'
-    +'<button class="admin-btn primary" id="verify2FABtn" style="min-width:100px">Verify &amp; Enable</button>'
+    +'<button class="admin-btn primary" id="verify2FABtn" style="min-width:100px">'+CL('verify_enable')+'</button>'
     +'<button class="admin-btn secondary" id="cancel2FABtn">'+CL('cancel')+'</button>'
     +'</div>'
     +'<div id="verify2FAErr" style="font-size:12px;color:#dc2626;margin-top:8px"></div>'
@@ -1300,17 +2125,17 @@ window._cms2FASetup = function(username){
   div.addEventListener('click', function(e){ if(e.target===div) div.remove(); });
   document.getElementById('verify2FABtn').addEventListener('click', function(){
     var code = document.getElementById('verify2FA').value.replace(/\s/g,'');
-    if(code.length!==6){document.getElementById('verify2FAErr').textContent='Enter 6-digit code';return;}
+    if(code.length!==6){document.getElementById('verify2FAErr').textContent=CL('enter_6digit');return;}
     verifyTOTP(secret, code).then(function(ok){
       if(ok){
         var c=get2FAConfig();
         c[username]=secret;
         save2FAConfig(c);
-        showToast('2FA enabled for '+username);
+        showToast(CL('twofa_enabled').replace('{0}',username));
         div.remove();
         window._cmsUsersView();
       } else {
-        document.getElementById('verify2FAErr').textContent='Invalid code. Check your app and try again.';
+        document.getElementById('verify2FAErr').textContent=CL('invalid_code_retry');
       }
     });
   });
@@ -1321,10 +2146,10 @@ window._cmsUserDelete = function(idx){
   var users = getCmsUsers();
   var username = (users[idx]||{}).username;
   if(!username) return;
-  if(!confirm("Remove user '"+username+"'?")) return;
+  if(!confirm(CL('remove_user_q').replace('{0}',username))) return;
   users.splice(idx,1);
   saveCmsUsers(users);
-  showToast("Removed: "+username);
+  showToast(CL('removed_user').replace('{0}',username));
   window._cmsUsersView();
 };
 
@@ -1344,10 +2169,10 @@ window._cmsShowFilePicker = function(btn){
 
   var inner = '';
   if(files.length === 0){
-    inner += '<div class="cfp-title">Insert Download Link</div>'
-      +'<div class="cfp-empty">No files yet.<br/>Go to the <strong>Downloads</strong> tab to upload PDF/DOC files first.</div>';
+    inner += '<div class="cfp-title">'+CL('insert_dl_title')+'</div>'
+      +'<div class="cfp-empty">'+CL('no_files_dl')+'</div>';
   } else {
-    inner += '<div class="cfp-title">Select file to insert</div>';
+    inner += '<div class="cfp-title">'+CL('select_file')+'</div>';
     files.forEach(function(f, i){
       var icon = f.type==='external'
         ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>'
@@ -1393,12 +2218,12 @@ window._cmsInsertFile = function(textareaId, idx){
     ? '<a href="'+f.url+'" download="'+f.name.replace(/"/g,'&quot;')+'">'+f.name+'</a>'
     : '<a href="'+f.url+'" target="_blank" rel="noopener">'+f.name+'</a>';
   var ta = document.getElementById(textareaId);
-  if(!ta){ showToast('Textarea not found'); return; }
+  if(!ta){ showToast(CL('textarea_err')); return; }
   var s = ta.selectionStart, en = ta.selectionEnd;
   ta.value = ta.value.substring(0,s) + snippet + ta.value.substring(en);
   ta.selectionStart = ta.selectionEnd = s + snippet.length;
   ta.focus();
-  showToast('Inserted: '+f.name);
+  showToast(CL('inserted_file')+f.name);
 };
 
 
@@ -1499,11 +2324,11 @@ window._cmsBlogView = function(){
       +'<div class="cms-item-meta">'+esc(a.date||'')+' &middot; '+esc(a.tag_hant||a.tag_en||'')+'</div>'
       +'<div class="cms-item-meta">slug: '+esc(a.slug||'')+'</div>'
       +'</div>'
-      +'<div class="cms-item-actions">'
+      +'<div class="cms-item-actions" style="display:flex;gap:4px;align-items:center;min-width:220px;justify-content:flex-end">'
       +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="window._cmsBlogPreview('+i+')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>'
       +(_canEdit?'<button class="admin-btn primary" style="font-size:11px;padding:4px 10px" onclick="window._cmsBlogEdit('+i+')">'+CL('edit')+'</button>':'')
-      +(i>0?'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px" onclick="window._cmsBlogMove('+i+',-1)">&uarr;</button>':'')
-      +(i<articles.length-1?'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px" onclick="window._cmsBlogMove('+i+',1)">&darr;</button>':'')
+      +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px;'+(i<=0?'visibility:hidden':'') +'" onclick="window._cmsBlogMove('+i+',-1)">&uarr;</button>'
+      +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px;'+(i>=articles.length-1?'visibility:hidden':'')+'" onclick="window._cmsBlogMove('+i+',1)">&darr;</button>'
       +(_canEdit?'<button class="admin-btn danger" style="font-size:11px;padding:4px 8px" onclick="window._cmsBlogDelete('+i+')">'+CL('del_short')+'</button>':'')
       +'</div></div>';
   }).join("") : '<div class="cms-item-meta" style="padding:12px 0">'+CL('no_articles')+'</div>';
@@ -1585,7 +2410,7 @@ window._cmsBlogBodyTab = function(lang){
 window._cmsBlogImgUpload = function(e){
   var file = e.target.files[0];
   if(!file) return;
-  if(file.size > 5*1024*1024){ showToast('Image too large (max 5MB)'); return; }
+  if(file.size > 5*1024*1024){ showToast(CL('img_too_large')); return; }
   var reader = new FileReader();
   reader.onload = function(ev){
     var img = new Image();
@@ -1601,7 +2426,7 @@ window._cmsBlogImgUpload = function(e){
       ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 1200, 525);
       var dataUrl = canvas.toDataURL('image/jpeg', 0.85);
       document.getElementById('blogImg').value = dataUrl;
-      showToast('Image resized to 1200×525px');
+      showToast(CL('img_resized'));
     };
     img.src = ev.target.result;
   };
@@ -1611,9 +2436,9 @@ window._cmsBlogImgUpload = function(e){
 
 window._cmsBlogSave = function(){
   var slug = document.getElementById('blogSlug').value.trim();
-  if(!slug || slug.indexOf('hk-news-')!==0){ showToast('Slug must start with "hk-news-"'); return; }
+  if(!slug || slug.indexOf('hk-news-')!==0){ showToast(CL('slug_prefix')); return; }
   var titleHant = document.getElementById('blogTitleHant').value.trim();
-  if(!titleHant){ showToast('Please enter a title (繁體)'); return; }
+  if(!titleHant){ showToast(CL('enter_title_hant')); return; }
 
   var article = {
     slug: slug,
@@ -1636,7 +2461,7 @@ window._cmsBlogSave = function(){
   } else {
     // Check slug uniqueness
     for(var i=0;i<articles.length;i++){
-      if(articles[i].slug === slug){ showToast('Slug "'+slug+'" already exists'); return; }
+      if(articles[i].slug === slug){ showToast(CL('slug_exists')); return; }
     }
     articles.unshift(article);
   }
@@ -1709,7 +2534,7 @@ window._cmsBannersView = function(){
       +'<div class="admin-field"><label>'+CL('link_opt')+'</label><input type="text" id="cmsBannerLink" placeholder="#/page/slug or https://..."/></div>'
       +'<button class="admin-btn primary" onclick="window._cmsBannerAddUrl()" style="height:44px;white-space:nowrap;align-self:end">'+CL('add')+'</button>'
       +'</div>'
-    : '<div style="background:#fef9c3;border:1px solid #fde68a;border-radius:6px;padding:10px 14px;font-size:13px;margin-top:12px">View only — editor or admin access needed.</div>')
+    : '<div style="background:#fef9c3;border:1px solid #fde68a;border-radius:6px;padding:10px 14px;font-size:13px;margin-top:12px">'+CL('view_only_msg')+'</div>')
     +'</div>';
   setTimeout(function(){ window._cmsBannerInitDrop(); },50);
 };
@@ -1731,14 +2556,14 @@ window._cmsBannerInitDrop = function(){
 window._cmsBannerProcessFile = function(file){
   var allowedTypes = ['image/jpeg','image/png','image/webp'];
   var allowedExt = /\.(jpg|jpeg|png|webp)$/i;
-  if(!allowedTypes.includes(file.type) && !allowedExt.test(file.name)){ showToast('Only JPG, PNG, WebP: '+file.name); return; }
-  if(file.size > 5*1024*1024){ showToast('Too large (max 5MB): '+file.name); return; }
+  if(!allowedTypes.includes(file.type) && !allowedExt.test(file.name)){ showToast(CL('img_only_types')+': '+file.name); return; }
+  if(file.size > 5*1024*1024){ showToast(CL('img_too_large')+': '+file.name); return; }
   var reader = new FileReader();
   reader.onload = function(ev){
     var banners = getCmsBanners();
     banners.push({ img:ev.target.result, alt:file.name.replace(/\.[^.]+$/,''), link:'', isLocal:true });
     saveCmsBanners(banners);
-    showToast('Added banner: '+file.name);
+    showToast(CL('added_banner')+file.name);
     window._cmsBannersView();
   };
   reader.readAsDataURL(file);
@@ -1755,11 +2580,11 @@ window._cmsBannerAddUrl = function(){
   var url = document.getElementById('cmsBannerUrl').value.trim();
   var alt = document.getElementById('cmsBannerAlt').value.trim();
   var link = document.getElementById('cmsBannerLink').value.trim();
-  if(!url){ showToast('Enter an image URL'); return; }
+  if(!url){ showToast(CL('enter_img_url')); return; }
   var banners = getCmsBanners();
   banners.push({ img:url, alt:alt||'Banner', link:link, isLocal:false });
   saveCmsBanners(banners);
-  showToast('Added banner');
+  showToast(CL('added_banner_s'));
   window._cmsBannersView();
 };
 
@@ -1785,19 +2610,19 @@ window._cmsBannerMove = function(idx, dir){
 // Banner carousel preview in popup
 window._cmsBannerPreview = function(){
   var banners = getCmsBanners();
-  if(!banners.length){ showToast('No banners to preview'); return; }
+  if(!banners.length){ showToast(CL('no_banners_preview')); return; }
   var slides = banners.map(function(b){
     return '<div class="swiper-slide" style="border-radius:12px;overflow:hidden"><img src="'+escAttr(b.img)+'" style="width:100%;height:auto;display:block" alt="'+escAttr(b.alt||'')+'"/></div>';
   }).join('');
   var pw = window.open('','_blank','width=900,height=560,scrollbars=yes,resizable=yes');
-  if(!pw){ showToast('Pop-up blocked'); return; }
-  pw.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Banner Preview</title>'
+  if(!pw){ showToast(CL('popup_blocked')); return; }
+  pw.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+CL('banner_preview')+'</title>'
     +'<link rel="stylesheet" href="lib/swiper-bundle.min.css">'
     +'<style>body{margin:0;background:#1a1a2e;display:flex;align-items:center;justify-content:center;min-height:100vh;font-family:sans-serif}'
     +'.bar{background:#f59e0b;color:#fff;font-size:12px;font-weight:600;padding:6px 20px;text-align:center;position:fixed;top:0;left:0;right:0;z-index:10}'
     +'.wrap{width:90%;max-width:820px;margin-top:40px}'
     +'.swiper-slide img{border-radius:12px}</style></head><body>'
-    +'<div class="bar">BANNER PREVIEW — '+banners.length+' slides</div>'
+    +'<div class="bar">'+CL('banner_preview')+' — '+banners.length+CL('slides_unit')+'</div>'
     +'<div class="wrap"><div class="swiper" id="pvSwiper"><div class="swiper-wrapper">'+slides+'</div><div class="swiper-pagination"></div></div></div>'
     +'<script src="lib/swiper-bundle.min.js"><\/script>'
     +'<script>new Swiper("#pvSwiper",{loop:true,autoplay:{delay:3000},pagination:{el:".swiper-pagination",clickable:true}});<\/script>'
@@ -1809,13 +2634,13 @@ window._cmsBannerPreview = function(){
 window._cmsBlogPreview = function(idx){
   var articles = _getBlogArticles();
   var a = articles[idx];
-  if(!a){ showToast('Article not found'); return; }
+  if(!a){ showToast(CL('article_not_found')); return; }
   var lang = window.currentLang || 'zh-Hant';
   var title = lang==='en' ? (a.title_en||a.title_hant) : (lang==='zh-Hans' ? (a.title_hans||a.title_hant) : a.title_hant);
   var body = lang==='en' ? (a.body_en||a.body_hant) : (lang==='zh-Hans' ? (a.body_hans||a.body_hant) : a.body_hant);
   var tag = lang==='en' ? (a.tag_en||a.tag_hant) : (lang==='zh-Hans' ? (a.tag_hans||a.tag_hant) : a.tag_hant);
   var pw = window.open('','_blank','width=960,height=720,scrollbars=yes,resizable=yes');
-  if(!pw){ showToast('Pop-up blocked'); return; }
+  if(!pw){ showToast(CL('popup_blocked')); return; }
   pw.document.write('<!DOCTYPE html><html lang="'+lang+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+'</title>'
     +'<style>*{margin:0;padding:0;box-sizing:border-box}'
     +'body{font-family:"Be Vietnam Pro","Noto Sans TC",sans-serif;background:#f8f9fa;color:#1a1a2e}'
@@ -1831,7 +2656,7 @@ window._cmsBlogPreview = function(idx){
     +'.body ul,.body ol{padding-left:24px;margin:12px 0}'
     +'.body li{margin-bottom:6px}'
     +'</style></head><body>'
-    +'<div class="bar">ARTICLE PREVIEW — '+esc(lang)+'</div>'
+    +'<div class="bar">'+CL('article_preview')+' — '+esc(lang)+'</div>'
     +'<div class="hero"><img src="'+escAttr(a.img)+'" alt=""></div>'
     +'<div class="content">'
     +'<span class="tag">'+esc(tag)+'</span>'

@@ -52,7 +52,19 @@ function setLang(lang){
   document.documentElement.style.fontFamily = lang === 'zh-Hans'
     ? '"Be Vietnam Pro","Noto Sans SC","Noto Sans TC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif'
     : '';
-  route();
+  // Animate page transition on language switch
+  var app = document.getElementById('app');
+  if(app){
+    app.classList.add('lang-switching');
+    setTimeout(function(){
+      route();
+      requestAnimationFrame(function(){
+        app.classList.remove('lang-switching');
+      });
+    }, 250);
+  } else {
+    route();
+  }
 }
 window.setLang = setLang;
 
@@ -545,9 +557,19 @@ var BLOG_ARTICLES = [
 ];
 window.BLOG_ARTICLES = BLOG_ARTICLES;
 
+// Get blog articles: CMS overrides take priority over defaults
+function getActiveBlogArticles(){
+  if(typeof getCmsBlog === 'function'){
+    var cms = getCmsBlog();
+    if(cms && cms.length) return cms;
+  }
+  return BLOG_ARTICLES;
+}
+
 function blogContent(){
+  var articles = getActiveBlogArticles();
   var h = '<div class="blog-grid">';
-  BLOG_ARTICLES.forEach(function(a, i){
+  articles.forEach(function(a, i){
     var title = L(a.title_en, a.title_hans, a.title_hant);
     var tag = L(a.tag_en, a.tag_hans, a.tag_hant);
     h += '<a class="blog-card" href="#/page/' + escAttr(a.slug) + '" data-spa style="animation-delay:' + (i*0.08).toFixed(2) + 's">';
@@ -565,7 +587,8 @@ function blogContent(){
 // ---------- BLOG ARTICLE DETAIL VIEW ----------
 function blogArticleView(slug){
   var article = null;
-  BLOG_ARTICLES.forEach(function(a){ if(a.slug === slug) article = a; });
+  var articles = getActiveBlogArticles();
+  articles.forEach(function(a){ if(a.slug === slug) article = a; });
   if(!article) return null;
   var title = L(article.title_en, article.title_hans, article.title_hant);
   var tag = L(article.tag_en, article.tag_hans, article.tag_hant);

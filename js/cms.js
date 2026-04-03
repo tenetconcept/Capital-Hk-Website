@@ -6,6 +6,7 @@ var CMS_KEY = "ecap_cms_pages";
 var CMS_FILES_KEY = "ecap_cms_files";
 var CMS_USERS_KEY = "ecap_cms_users";
 var CMS_BANNERS_KEY = "ecap_cms_banners";
+var CMS_BLOG_KEY = "ecap_cms_blog";
 var CMS_IP_KEY = "ecap_cms_ip_whitelist";
 var CMS_AUDIT_KEY = "ecap_cms_audit_log";
 var CMS_SESSION_TIMEOUT_KEY = "ecap_cms_session_timeout";
@@ -16,6 +17,10 @@ function getCmsUsers(){ try{var d=JSON.parse(localStorage.getItem(CMS_USERS_KEY)
 function saveCmsUsers(d){ localStorage.setItem(CMS_USERS_KEY,JSON.stringify(d)); }
 function getCmsBanners(){ try{var d=JSON.parse(localStorage.getItem(CMS_BANNERS_KEY));return d||[];}catch(e){return[];} }
 function saveCmsBanners(d){ localStorage.setItem(CMS_BANNERS_KEY,JSON.stringify(d)); }
+function getCmsBlog(){ try{var d=JSON.parse(localStorage.getItem(CMS_BLOG_KEY));return d||null;}catch(e){return null;} }
+function saveCmsBlog(d){ localStorage.setItem(CMS_BLOG_KEY,JSON.stringify(d)); }
+window.getCmsBlog = getCmsBlog;
+window.saveCmsBlog = saveCmsBlog;
 function getIpWhitelist(){ try{var d=JSON.parse(localStorage.getItem(CMS_IP_KEY));return d||[];}catch(e){return[];} }
 function saveIpWhitelist(d){ localStorage.setItem(CMS_IP_KEY,JSON.stringify(d)); }
 function getAuditLog(){ try{var d=JSON.parse(localStorage.getItem(CMS_AUDIT_KEY));return d||[];}catch(e){return[];} }
@@ -233,6 +238,7 @@ function adminView(){
     +'<div class="cms-section-bar">'
     +'<button class="cms-section-btn active" id="stab_pages" onclick="window._cmsSectionSwitch(\'pages\')">Pages</button>'
     +'<button class="cms-section-btn" id="stab_banners" onclick="window._cmsSectionSwitch(\'banners\')">Banners</button>'
+    +'<button class="cms-section-btn" id="stab_blog" onclick="window._cmsSectionSwitch(\'blog\')">Blog</button>'
     +'<button class="cms-section-btn" id="stab_files" onclick="window._cmsSectionSwitch(\'files\')">Downloads</button>'
     +'<button class="cms-section-btn" id="stab_account" onclick="window._cmsSectionSwitch(\'account\')">My Account</button>'
     +(_isAdmin?'<button class="cms-section-btn" id="stab_users" onclick="window._cmsSectionSwitch(\'users\')">Users</button>':'')
@@ -519,13 +525,19 @@ window._cmsExport = function(){
       full[slug][lang] = cms[slug][lang];
     });
   });
-  var blob = new Blob([JSON.stringify(full, null, 2)], {type:"application/json"});
+  var exportData = {
+    pages: full,
+    banners: getCmsBanners(),
+    blog: getCmsBlog() || [],
+    files: getCmsFiles()
+  };
+  var blob = new Blob([JSON.stringify(exportData, null, 2)], {type:"application/json"});
   var a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = "ecapital-cms-"+new Date().toISOString().slice(0,10)+".json";
   a.click();
   URL.revokeObjectURL(a.href);
-  showToast("Exported JSON");
+  showToast("Exported JSON (pages+banners+blog+files)");
 };
 
 window._cmsImport = function(e){
@@ -535,7 +547,16 @@ window._cmsImport = function(e){
   reader.onload = function(ev){
     try {
       var data = JSON.parse(ev.target.result);
-      saveCmsPages(data);
+      // Support new format (with pages/banners/blog keys) and legacy (flat pages object)
+      if(data.pages && typeof data.pages === 'object' && !data.pages.title){
+        saveCmsPages(data.pages);
+        if(data.banners) saveCmsBanners(data.banners);
+        if(data.blog) saveCmsBlog(data.blog);
+        if(data.files) saveCmsFiles(data.files);
+      } else {
+        // Legacy: entire object is pages
+        saveCmsPages(data);
+      }
       showToast("Imported successfully");
       window.route();
     } catch(err){ showToast("Invalid JSON file"); }
@@ -560,7 +581,7 @@ window._cmsSectionSwitch = function(sec){
     sec = secs[sec] || "pages";
   }
   _cmsSection = sec;
-  ["pages","banners","files","account","users","security"].forEach(function(s){
+  ["pages","banners","blog","files","account","users","security"].forEach(function(s){
     var b = document.getElementById("stab_"+s);
     if(b) b.classList.toggle("active", s===sec);
   });
@@ -578,6 +599,8 @@ window._cmsSectionSwitch = function(sec){
     window._cmsSecurityView();
   } else if(sec==="banners") {
     window._cmsBannersView();
+  } else if(sec==="blog") {
+    window._cmsBlogView();
   }
 };
 
@@ -1257,6 +1280,204 @@ window._cmsToolbarAction = function(taId, action){
     case 'br':  insert('<br/>\n'); break;
     case 'hr':  insert('\n<hr/>\n'); break;
   }
+};
+
+// ————————————————————— CMS BLOG MANAGER —————————————————————
+// Blog articles are stored in localStorage CMS_BLOG_KEY as array.
+// Each article: { slug, title_en, title_hans, title_hant, tag_en, tag_hans, tag_hant, date, img, body_en, body_hans, body_hant }
+// When CMS blog data exists, it overrides the default BLOG_ARTICLES from app.js.
+
+var _cmsBlogEditIdx = -1; // -1 = new article
+
+function _getBlogArticles(){
+  var cms = getCmsBlog();
+  if(cms && cms.length) return cms;
+  if(typeof BLOG_ARTICLES !== 'undefined') return BLOG_ARTICLES.slice();
+  return [];
+}
+
+window._cmsBlogView = function(){
+  var articles = _getBlogArticles();
+  var _canEdit = _cmsHasPermission("editPage");
+
+  var rows = articles.length ? articles.map(function(a,i){
+    var title = a.title_hant || a.title_en || 'Untitled';
+    return '<div style="display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--border-light);border-radius:8px;margin-bottom:8px;background:var(--white)">'
+      +'<img src="'+escAttr(a.img||'')+'" style="width:120px;height:68px;object-fit:cover;border-radius:6px;flex-shrink:0;background:#f3f4f6" onerror="this.style.background=\'#eee\'"/>'
+      +'<div style="flex:1;min-width:0">'
+      +'<div style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(title)+'</div>'
+      +'<div style="font-size:11px;color:var(--text-muted);margin-top:2px">'+esc(a.date||'')+' · '+esc(a.tag_hant||a.tag_en||'')+'</div>'
+      +'<div style="font-size:11px;color:var(--text-muted)">slug: '+esc(a.slug||'')+'</div>'
+      +'</div>'
+      +'<div style="display:flex;gap:4px;flex-shrink:0">'
+      +(_canEdit?'<button class="admin-btn primary" style="font-size:11px;padding:4px 10px" onclick="window._cmsBlogEdit('+i+')">Edit</button>':'')
+      +(i>0?'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px" onclick="window._cmsBlogMove('+i+',-1)">&uarr;</button>':'')
+      +(i<articles.length-1?'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px" onclick="window._cmsBlogMove('+i+',1)">&darr;</button>':'')
+      +(_canEdit?'<button class="admin-btn danger" style="font-size:11px;padding:4px 8px" onclick="window._cmsBlogDelete('+i+')">Del</button>':'')
+      +'</div></div>';
+  }).join("") : '<div style="color:var(--text-muted);font-size:13px;padding:12px 0">No blog articles yet.</div>';
+
+  document.getElementById("cmsEditor").innerHTML =
+    '<div class="cms-panel">'
+    +'<h3 style="font-size:20px;font-weight:700;margin-bottom:6px">Blog / News Articles</h3>'
+    +'<p style="color:var(--text-muted);font-size:13px;margin-bottom:16px">Manage articles shown on the <strong>Hong Kong News</strong> page. Card images: <strong>800×600px</strong> (4:3). Hero images: <strong>1200×525px</strong> (16:7). Images are auto-resized on upload.</p>'
+    +'<div id="cmsBlogList">' + rows + '</div>'
+    +(_canEdit?'<button class="admin-btn primary" style="margin-top:12px" onclick="window._cmsBlogEdit(-1)">+ New Article</button>':'')
+    +'</div>';
+};
+
+window._cmsBlogEdit = function(idx){
+  var articles = _getBlogArticles();
+  _cmsBlogEditIdx = idx;
+  var a = idx >= 0 ? articles[idx] : {slug:'hk-news-',title_en:'',title_hans:'',title_hant:'',tag_en:'',tag_hans:'',tag_hant:'',date:new Date().toISOString().slice(0,10),img:'',body_en:'',body_hans:'',body_hant:''};
+
+  var h = '<div class="cms-panel">'
+    +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">'
+    +'<button class="admin-btn secondary" onclick="window._cmsBlogView()">&larr; Back</button>'
+    +'<h3 style="font-size:18px;font-weight:700;margin:0">'+(idx>=0?'Edit Article':'New Article')+'</h3>'
+    +'</div>'
+    // Row 1: slug + date
+    +'<div style="display:flex;gap:12px;margin-bottom:12px">'
+    +'<div class="admin-field" style="flex:1;margin:0"><label>Slug (URL)</label><input type="text" id="blogSlug" value="'+escAttr(a.slug)+'" placeholder="hk-news-my-article"'+(idx>=0?' readonly style="opacity:.6"':'')+'/></div>'
+    +'<div class="admin-field" style="width:160px;margin:0"><label>Date</label><input type="date" id="blogDate" value="'+escAttr(a.date)+'"/></div>'
+    +'</div>'
+    // Row 2: tags
+    +'<div style="display:flex;gap:12px;margin-bottom:12px">'
+    +'<div class="admin-field" style="flex:1;margin:0"><label>Tag (繁)</label><input type="text" id="blogTagHant" value="'+escAttr(a.tag_hant)+'" placeholder="市場"/></div>'
+    +'<div class="admin-field" style="flex:1;margin:0"><label>Tag (简)</label><input type="text" id="blogTagHans" value="'+escAttr(a.tag_hans)+'" placeholder="市场"/></div>'
+    +'<div class="admin-field" style="flex:1;margin:0"><label>Tag (EN)</label><input type="text" id="blogTagEn" value="'+escAttr(a.tag_en)+'" placeholder="Market"/></div>'
+    +'</div>'
+    // Row 3: titles
+    +'<div class="admin-field" style="margin-bottom:12px"><label>Title (繁體)</label><input type="text" id="blogTitleHant" value="'+escAttr(a.title_hant)+'"/></div>'
+    +'<div class="admin-field" style="margin-bottom:12px"><label>Title (简体)</label><input type="text" id="blogTitleHans" value="'+escAttr(a.title_hans)+'"/></div>'
+    +'<div class="admin-field" style="margin-bottom:12px"><label>Title (EN)</label><input type="text" id="blogTitleEn" value="'+escAttr(a.title_en)+'"/></div>'
+    // Image
+    +'<div class="admin-field" style="margin-bottom:12px"><label>Image</label>'
+    +'<div style="display:flex;gap:8px;align-items:end">'
+    +'<input type="text" id="blogImg" value="'+escAttr(a.img)+'" placeholder="images/ecap-blog-xxx.png or paste URL" style="flex:1"/>'
+    +'<button class="admin-btn secondary" onclick="document.getElementById(\'blogImgFile\').click()" style="height:44px;white-space:nowrap">Upload Image</button>'
+    +'<input type="file" id="blogImgFile" accept=".jpg,.jpeg,.png,.webp" style="display:none" onchange="window._cmsBlogImgUpload(event)"/>'
+    +'</div>'
+    +'<p style="font-size:11px;color:var(--text-muted);margin-top:4px">Auto-resized to <strong>1200×525px</strong> (hero) on upload. Also generates <strong>800×600px</strong> card thumbnail. Max 5MB.</p>'
+    +(a.img?'<img src="'+escAttr(a.img)+'" style="max-width:300px;height:auto;border-radius:8px;margin-top:8px" onerror="this.style.display=\'none\'"/>':'')
+    +'</div>'
+    // Body tabs
+    +'<div style="margin-bottom:12px">'
+    +'<div style="display:flex;gap:0;border-bottom:2px solid var(--border-light);margin-bottom:12px">'
+    +'<button class="cms-section-btn active" id="blogBodyTabHant" onclick="window._cmsBlogBodyTab(\'hant\')">繁體內容</button>'
+    +'<button class="cms-section-btn" id="blogBodyTabHans" onclick="window._cmsBlogBodyTab(\'hans\')">简体内容</button>'
+    +'<button class="cms-section-btn" id="blogBodyTabEn" onclick="window._cmsBlogBodyTab(\'en\')">EN Content</button>'
+    +'</div>'
+    +'<textarea id="blogBodyHant" style="width:100%;min-height:300px;font-family:monospace;font-size:13px;padding:12px;border:1px solid var(--border);border-radius:8px;resize:vertical">'+escHtml(a.body_hant||'')+'</textarea>'
+    +'<textarea id="blogBodyHans" style="width:100%;min-height:300px;font-family:monospace;font-size:13px;padding:12px;border:1px solid var(--border);border-radius:8px;resize:vertical;display:none">'+escHtml(a.body_hans||'')+'</textarea>'
+    +'<textarea id="blogBodyEn" style="width:100%;min-height:300px;font-family:monospace;font-size:13px;padding:12px;border:1px solid var(--border);border-radius:8px;resize:vertical;display:none">'+escHtml(a.body_en||'')+'</textarea>'
+    +'</div>'
+    // Save
+    +'<div style="display:flex;gap:8px">'
+    +'<button class="admin-btn primary" onclick="window._cmsBlogSave()">Save Article</button>'
+    +'<button class="admin-btn secondary" onclick="window._cmsBlogView()">Cancel</button>'
+    +'</div>'
+    +'</div>';
+
+  document.getElementById("cmsEditor").innerHTML = h;
+};
+
+window._cmsBlogBodyTab = function(lang){
+  ['hant','hans','en'].forEach(function(l){
+    var ta = document.getElementById('blogBody'+l.charAt(0).toUpperCase()+l.slice(1));
+    var btn = document.getElementById('blogBodyTab'+l.charAt(0).toUpperCase()+l.slice(1));
+    if(ta) ta.style.display = l===lang ? '' : 'none';
+    if(btn) btn.classList.toggle('active', l===lang);
+  });
+};
+
+window._cmsBlogImgUpload = function(e){
+  var file = e.target.files[0];
+  if(!file) return;
+  if(file.size > 5*1024*1024){ showToast('Image too large (max 5MB)'); return; }
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    var img = new Image();
+    img.onload = function(){
+      // Auto-resize to hero size 1200x525
+      var canvas = document.createElement('canvas');
+      canvas.width = 1200; canvas.height = 525;
+      var ctx = canvas.getContext('2d');
+      // Cover fit
+      var scale = Math.max(1200/img.width, 525/img.height);
+      var sw = 1200/scale, sh = 525/scale;
+      var sx = (img.width - sw)/2, sy = (img.height - sh)/2;
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 1200, 525);
+      var dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      document.getElementById('blogImg').value = dataUrl;
+      showToast('Image resized to 1200×525px');
+    };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+};
+
+window._cmsBlogSave = function(){
+  var slug = document.getElementById('blogSlug').value.trim();
+  if(!slug || slug.indexOf('hk-news-')!==0){ showToast('Slug must start with "hk-news-"'); return; }
+  var titleHant = document.getElementById('blogTitleHant').value.trim();
+  if(!titleHant){ showToast('Please enter a title (繁體)'); return; }
+
+  var article = {
+    slug: slug,
+    date: document.getElementById('blogDate').value,
+    tag_hant: document.getElementById('blogTagHant').value.trim(),
+    tag_hans: document.getElementById('blogTagHans').value.trim(),
+    tag_en: document.getElementById('blogTagEn').value.trim(),
+    title_hant: titleHant,
+    title_hans: document.getElementById('blogTitleHans').value.trim(),
+    title_en: document.getElementById('blogTitleEn').value.trim(),
+    img: document.getElementById('blogImg').value.trim(),
+    body_hant: document.getElementById('blogBodyHant').value,
+    body_hans: document.getElementById('blogBodyHans').value,
+    body_en: document.getElementById('blogBodyEn').value
+  };
+
+  var articles = _getBlogArticles();
+  if(_cmsBlogEditIdx >= 0){
+    articles[_cmsBlogEditIdx] = article;
+  } else {
+    // Check slug uniqueness
+    for(var i=0;i<articles.length;i++){
+      if(articles[i].slug === slug){ showToast('Slug "'+slug+'" already exists'); return; }
+    }
+    articles.unshift(article);
+  }
+  saveCmsBlog(articles);
+  // Update global BLOG_ARTICLES so front-end picks up instantly
+  if(typeof window.BLOG_ARTICLES !== 'undefined') window.BLOG_ARTICLES = articles;
+  addAuditLog('blog_save', slug);
+  showToast('Article saved');
+  window._cmsBlogView();
+};
+
+window._cmsBlogDelete = function(idx){
+  if(!confirm('Delete this article?')) return;
+  var articles = _getBlogArticles();
+  var slug = articles[idx] ? articles[idx].slug : '';
+  articles.splice(idx,1);
+  saveCmsBlog(articles);
+  if(typeof window.BLOG_ARTICLES !== 'undefined') window.BLOG_ARTICLES = articles;
+  addAuditLog('blog_delete', slug);
+  showToast('Article deleted');
+  window._cmsBlogView();
+};
+
+window._cmsBlogMove = function(idx, dir){
+  var articles = _getBlogArticles();
+  var newIdx = idx + dir;
+  if(newIdx < 0 || newIdx >= articles.length) return;
+  var tmp = articles[idx];
+  articles[idx] = articles[newIdx];
+  articles[newIdx] = tmp;
+  saveCmsBlog(articles);
+  window._cmsBlogView();
 };
 
 // ————————————————————— CMS BANNERS MANAGER —————————————————————

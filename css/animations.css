@@ -77,3 +77,33 @@
 .anim-delay-2 { transition-delay: 200ms; }
 .anim-delay-3 { transition-delay: 300ms; }
 .anim-delay-4 { transition-delay: 400ms; }
+
+/* ============================
+   LANGUAGE SWITCH TRANSITION
+   ============================ */
+#app {
+  transition: opacity 0.25s var(--ease), transform 0.25s var(--ease);
+}
+#app.lang-switching {
+  opacity: 0;
+  transform: translateY(12px) scale(0.995);
+  pointer-events: none;
+}
+
+/* ============================
+   PAGE ROUTE TRANSITION
+   ============================ */
+@keyframes pageEnter {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.subpage { animation: pageEnter 0.5s var(--ease) both; }
+.hero { animation: pageEnter 0.4s var(--ease) both; }
+
+/* ============================
+   CARD HOVER MICRO-ANIMATIONS
+   ============================ */
+@keyframes cardPulse {
+  0%, 100% { box-shadow: 0 4px 12px rgba(180,21,64,.08); }
+  50% { box-shadow: 0 8px 24px rgba(180,21,64,.16); }
+}

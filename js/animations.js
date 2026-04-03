@@ -5,6 +5,8 @@
 "use strict";
 
 // Scroll-triggered animations via IntersectionObserver
+var _scrollObserver = null;
+
 function initScrollAnimations(){
   var els = document.querySelectorAll('.anim-fade-up,.anim-fade-left,.anim-fade-right,.anim-scale');
   if(!els.length) return;
@@ -14,21 +16,25 @@ function initScrollAnimations(){
     return;
   }
 
-  var observer = new IntersectionObserver(function(entries){
+  // Clean up old observer
+  if(_scrollObserver) _scrollObserver.disconnect();
+
+  _scrollObserver = new IntersectionObserver(function(entries){
     entries.forEach(function(entry){
       if(entry.isIntersecting){
         entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
+        _scrollObserver.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.02, rootMargin: '120px 0px 0px 0px' });
+  }, { threshold: 0.01, rootMargin: '200px 0px 80px 0px' });
 
   els.forEach(function(el){
+    // Elements already in viewport — show immediately
     var rect = el.getBoundingClientRect();
-    if(rect.top < window.innerHeight + 100 && rect.bottom > -50){
+    if(rect.top < window.innerHeight + 50 && rect.bottom > -50){
       el.classList.add('visible');
     } else {
-      observer.observe(el);
+      _scrollObserver.observe(el);
     }
   });
 }
@@ -37,7 +43,7 @@ function forceShowAll(){
   document.querySelectorAll('.anim-fade-up,.anim-fade-left,.anim-fade-right,.anim-scale').forEach(function(el){
     if(!el.classList.contains('visible')){
       var rect = el.getBoundingClientRect();
-      if(rect.top < window.innerHeight + 200 && rect.bottom > -100){
+      if(rect.top < window.innerHeight + 300 && rect.bottom > -200){
         el.classList.add('visible');
       }
     }
@@ -105,23 +111,31 @@ window.initHomeAnimations = function(){
     }, 300);
   });
 
-  // Scroll animations
+  // Scroll animations — init immediately, then reinforce
   initScrollAnimations();
-  setTimeout(forceShowAll, 200);
-  setTimeout(forceShowAll, 800);
+  setTimeout(forceShowAll, 100);
+  setTimeout(forceShowAll, 400);
+  setTimeout(forceShowAll, 1000);
+  // Also run on first scroll event to catch anything missed
+  var _scrollOnce = function(){
+    forceShowAll();
+    window.removeEventListener('scroll', _scrollOnce);
+  };
+  window.addEventListener('scroll', _scrollOnce);
 };
 
 // Re-init on route change
 window.addEventListener('hashchange', function(){
   destroySwipers();
   setTimeout(initScrollAnimations, 50);
-  setTimeout(forceShowAll, 250);
+  setTimeout(forceShowAll, 200);
+  setTimeout(forceShowAll, 600);
 });
 
 // Initial page load
 document.addEventListener('DOMContentLoaded', function(){
   setTimeout(initScrollAnimations, 100);
-  setTimeout(forceShowAll, 500);
+  setTimeout(forceShowAll, 300);
 });
 
 // Fallback after full load

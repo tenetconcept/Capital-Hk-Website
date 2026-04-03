@@ -98,7 +98,6 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 .subpage { animation: pageEnter 0.5s var(--ease) both; }
-.hero { animation: pageEnter 0.4s var(--ease) both; }
 
 /* ============================
    CARD HOVER MICRO-ANIMATIONS

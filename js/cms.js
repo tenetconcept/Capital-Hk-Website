@@ -1302,25 +1302,25 @@ window._cmsBlogView = function(){
 
   var rows = articles.length ? articles.map(function(a,i){
     var title = a.title_hant || a.title_en || 'Untitled';
-    return '<div style="display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--border-light);border-radius:8px;margin-bottom:8px;background:var(--white)">'
-      +'<img src="'+escAttr(a.img||'')+'" style="width:120px;height:68px;object-fit:cover;border-radius:6px;flex-shrink:0;background:#f3f4f6" onerror="this.style.background=\'#eee\'"/>'
-      +'<div style="flex:1;min-width:0">'
-      +'<div style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(title)+'</div>'
-      +'<div style="font-size:11px;color:var(--text-muted);margin-top:2px">'+esc(a.date||'')+' · '+esc(a.tag_hant||a.tag_en||'')+'</div>'
-      +'<div style="font-size:11px;color:var(--text-muted)">slug: '+esc(a.slug||'')+'</div>'
+    return '<div class="cms-item-card">'
+      +'<img class="cms-item-thumb" src="'+escAttr(a.img||'')+'" onerror="this.style.background=\'#eee\'"/>'
+      +'<div class="cms-item-info">'
+      +'<div class="cms-item-title">'+esc(title)+'</div>'
+      +'<div class="cms-item-meta">'+esc(a.date||'')+' &middot; '+esc(a.tag_hant||a.tag_en||'')+'</div>'
+      +'<div class="cms-item-meta">slug: '+esc(a.slug||'')+'</div>'
       +'</div>'
-      +'<div style="display:flex;gap:4px;flex-shrink:0">'
+      +'<div class="cms-item-actions">'
       +(_canEdit?'<button class="admin-btn primary" style="font-size:11px;padding:4px 10px" onclick="window._cmsBlogEdit('+i+')">Edit</button>':'')
       +(i>0?'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px" onclick="window._cmsBlogMove('+i+',-1)">&uarr;</button>':'')
       +(i<articles.length-1?'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px" onclick="window._cmsBlogMove('+i+',1)">&darr;</button>':'')
       +(_canEdit?'<button class="admin-btn danger" style="font-size:11px;padding:4px 8px" onclick="window._cmsBlogDelete('+i+')">Del</button>':'')
       +'</div></div>';
-  }).join("") : '<div style="color:var(--text-muted);font-size:13px;padding:12px 0">No blog articles yet.</div>';
+  }).join("") : '<div class="cms-item-meta" style="padding:12px 0">No blog articles yet.</div>';
 
   document.getElementById("cmsEditor").innerHTML =
     '<div class="cms-panel">'
-    +'<h3 style="font-size:20px;font-weight:700;margin-bottom:6px">Blog / News Articles</h3>'
-    +'<p style="color:var(--text-muted);font-size:13px;margin-bottom:16px">Manage articles shown on the <strong>Hong Kong News</strong> page. Card images: <strong>800×600px</strong> (4:3). Hero images: <strong>1200×525px</strong> (16:7). Images are auto-resized on upload.</p>'
+    +'<div class="cms-panel-header"><h3>Blog / News Articles</h3>'
+    +'<p>Manage articles shown on the <strong>Hong Kong News</strong> page.<br>Card images: <strong>800&times;600px</strong> (4:3). Hero images: <strong>1200&times;525px</strong> (16:7). Images are auto-resized on upload.</p></div>'
     +'<div id="cmsBlogList">' + rows + '</div>'
     +(_canEdit?'<button class="admin-btn primary" style="margin-top:12px" onclick="window._cmsBlogEdit(-1)">+ New Article</button>':'')
     +'</div>';
@@ -1332,48 +1332,48 @@ window._cmsBlogEdit = function(idx){
   var a = idx >= 0 ? articles[idx] : {slug:'hk-news-',title_en:'',title_hans:'',title_hant:'',tag_en:'',tag_hans:'',tag_hant:'',date:new Date().toISOString().slice(0,10),img:'',body_en:'',body_hans:'',body_hant:''};
 
   var h = '<div class="cms-panel">'
-    +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">'
+    +'<div class="cms-form-row" style="align-items:center;margin-bottom:16px">'
     +'<button class="admin-btn secondary" onclick="window._cmsBlogView()">&larr; Back</button>'
     +'<h3 style="font-size:18px;font-weight:700;margin:0">'+(idx>=0?'Edit Article':'New Article')+'</h3>'
     +'</div>'
     // Row 1: slug + date
-    +'<div style="display:flex;gap:12px;margin-bottom:12px">'
-    +'<div class="admin-field" style="flex:1;margin:0"><label>Slug (URL)</label><input type="text" id="blogSlug" value="'+escAttr(a.slug)+'" placeholder="hk-news-my-article"'+(idx>=0?' readonly style="opacity:.6"':'')+'/></div>'
-    +'<div class="admin-field" style="width:160px;margin:0"><label>Date</label><input type="date" id="blogDate" value="'+escAttr(a.date)+'"/></div>'
+    +'<div class="cms-form-row">'
+    +'<div class="admin-field" style="flex:2"><label>Slug (URL)</label><input type="text" id="blogSlug" value="'+escAttr(a.slug)+'" placeholder="hk-news-my-article"'+(idx>=0?' readonly style="opacity:.6"':'')+'/></div>'
+    +'<div class="admin-field" style="flex:1"><label>Date</label><input type="date" id="blogDate" value="'+escAttr(a.date)+'"/></div>'
     +'</div>'
     // Row 2: tags
-    +'<div style="display:flex;gap:12px;margin-bottom:12px">'
-    +'<div class="admin-field" style="flex:1;margin:0"><label>Tag (繁)</label><input type="text" id="blogTagHant" value="'+escAttr(a.tag_hant)+'" placeholder="市場"/></div>'
-    +'<div class="admin-field" style="flex:1;margin:0"><label>Tag (简)</label><input type="text" id="blogTagHans" value="'+escAttr(a.tag_hans)+'" placeholder="市场"/></div>'
-    +'<div class="admin-field" style="flex:1;margin:0"><label>Tag (EN)</label><input type="text" id="blogTagEn" value="'+escAttr(a.tag_en)+'" placeholder="Market"/></div>'
+    +'<div class="cms-form-row">'
+    +'<div class="admin-field"><label>Tag (繁)</label><input type="text" id="blogTagHant" value="'+escAttr(a.tag_hant)+'" placeholder="市場"/></div>'
+    +'<div class="admin-field"><label>Tag (简)</label><input type="text" id="blogTagHans" value="'+escAttr(a.tag_hans)+'" placeholder="市场"/></div>'
+    +'<div class="admin-field"><label>Tag (EN)</label><input type="text" id="blogTagEn" value="'+escAttr(a.tag_en)+'" placeholder="Market"/></div>'
     +'</div>'
     // Row 3: titles
-    +'<div class="admin-field" style="margin-bottom:12px"><label>Title (繁體)</label><input type="text" id="blogTitleHant" value="'+escAttr(a.title_hant)+'"/></div>'
-    +'<div class="admin-field" style="margin-bottom:12px"><label>Title (简体)</label><input type="text" id="blogTitleHans" value="'+escAttr(a.title_hans)+'"/></div>'
-    +'<div class="admin-field" style="margin-bottom:12px"><label>Title (EN)</label><input type="text" id="blogTitleEn" value="'+escAttr(a.title_en)+'"/></div>'
+    +'<div class="admin-field"><label>Title (繁體)</label><input type="text" id="blogTitleHant" value="'+escAttr(a.title_hant)+'"/></div>'
+    +'<div class="admin-field"><label>Title (简体)</label><input type="text" id="blogTitleHans" value="'+escAttr(a.title_hans)+'"/></div>'
+    +'<div class="admin-field"><label>Title (EN)</label><input type="text" id="blogTitleEn" value="'+escAttr(a.title_en)+'"/></div>'
     // Image
-    +'<div class="admin-field" style="margin-bottom:12px"><label>Image</label>'
-    +'<div style="display:flex;gap:8px;align-items:end">'
+    +'<div class="admin-field"><label>Image</label>'
+    +'<div class="cms-form-row" style="align-items:end;margin-bottom:0">'
     +'<input type="text" id="blogImg" value="'+escAttr(a.img)+'" placeholder="images/ecap-blog-xxx.png or paste URL" style="flex:1"/>'
-    +'<button class="admin-btn secondary" onclick="document.getElementById(\'blogImgFile\').click()" style="height:44px;white-space:nowrap">Upload Image</button>'
+    +'<button class="admin-btn secondary" onclick="document.getElementById(\'blogImgFile\').click()" style="height:44px;white-space:nowrap">Upload</button>'
     +'<input type="file" id="blogImgFile" accept=".jpg,.jpeg,.png,.webp" style="display:none" onchange="window._cmsBlogImgUpload(event)"/>'
     +'</div>'
-    +'<p style="font-size:11px;color:var(--text-muted);margin-top:4px">Auto-resized to <strong>1200×525px</strong> (hero) on upload. Also generates <strong>800×600px</strong> card thumbnail. Max 5MB.</p>'
+    +'<p class="cms-item-meta" style="margin-top:4px">Auto-resized to <strong>1200&times;525px</strong> on upload. Max 5MB.</p>'
     +(a.img?'<img src="'+escAttr(a.img)+'" style="max-width:300px;height:auto;border-radius:8px;margin-top:8px" onerror="this.style.display=\'none\'"/>':'')
     +'</div>'
     // Body tabs
-    +'<div style="margin-bottom:12px">'
-    +'<div style="display:flex;gap:0;border-bottom:2px solid var(--border-light);margin-bottom:12px">'
+    +'<div class="admin-field">'
+    +'<div class="cms-body-tabs">'
     +'<button class="cms-section-btn active" id="blogBodyTabHant" onclick="window._cmsBlogBodyTab(\'hant\')">繁體內容</button>'
     +'<button class="cms-section-btn" id="blogBodyTabHans" onclick="window._cmsBlogBodyTab(\'hans\')">简体内容</button>'
     +'<button class="cms-section-btn" id="blogBodyTabEn" onclick="window._cmsBlogBodyTab(\'en\')">EN Content</button>'
     +'</div>'
-    +'<textarea id="blogBodyHant" style="width:100%;min-height:300px;font-family:monospace;font-size:13px;padding:12px;border:1px solid var(--border);border-radius:8px;resize:vertical">'+escHtml(a.body_hant||'')+'</textarea>'
-    +'<textarea id="blogBodyHans" style="width:100%;min-height:300px;font-family:monospace;font-size:13px;padding:12px;border:1px solid var(--border);border-radius:8px;resize:vertical;display:none">'+escHtml(a.body_hans||'')+'</textarea>'
-    +'<textarea id="blogBodyEn" style="width:100%;min-height:300px;font-family:monospace;font-size:13px;padding:12px;border:1px solid var(--border);border-radius:8px;resize:vertical;display:none">'+escHtml(a.body_en||'')+'</textarea>'
+    +'<textarea id="blogBodyHant" class="admin-field" style="min-height:300px;font-family:monospace;font-size:13px">'+escHtml(a.body_hant||'')+'</textarea>'
+    +'<textarea id="blogBodyHans" class="admin-field" style="min-height:300px;font-family:monospace;font-size:13px;display:none">'+escHtml(a.body_hans||'')+'</textarea>'
+    +'<textarea id="blogBodyEn" class="admin-field" style="min-height:300px;font-family:monospace;font-size:13px;display:none">'+escHtml(a.body_en||'')+'</textarea>'
     +'</div>'
     // Save
-    +'<div style="display:flex;gap:8px">'
+    +'<div class="cms-form-row">'
     +'<button class="admin-btn primary" onclick="window._cmsBlogSave()">Save Article</button>'
     +'<button class="admin-btn secondary" onclick="window._cmsBlogView()">Cancel</button>'
     +'</div>'
@@ -1485,39 +1485,39 @@ window._cmsBannersView = function(){
   var banners = getCmsBanners();
   var _canUpload = _cmsHasPermission("upload");
   var rows = banners.length ? banners.map(function(b,i){
-    return '<div class="cms-banner-item" style="display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--border-light);border-radius:8px;margin-bottom:8px;background:var(--white)">'
-      +'<img src="'+escAttr(b.img)+'" style="width:120px;height:60px;object-fit:cover;border-radius:6px;flex-shrink:0;background:#f3f4f6"/>'
-      +'<div style="flex:1;min-width:0">'
-      +'<div style="font-weight:600;font-size:14px">'+esc(b.alt||'Banner '+(i+1))+'</div>'
-      +'<div style="font-size:11px;color:var(--text-muted);margin-top:2px">'+esc(b.link||'No link')+'</div>'
+    return '<div class="cms-item-card">'
+      +'<img class="cms-item-thumb" src="'+escAttr(b.img)+'"/>'
+      +'<div class="cms-item-info">'
+      +'<div class="cms-item-title">'+esc(b.alt||'Banner '+(i+1))+'</div>'
+      +'<div class="cms-item-meta">'+esc(b.link||'No link')+'</div>'
       +'</div>'
-      +'<div style="display:flex;gap:4px;flex-shrink:0">'
+      +'<div class="cms-item-actions">'
       +(i>0?'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerMove('+i+',-1)">&uarr;</button>':'')
       +(i<banners.length-1?'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerMove('+i+',1)">&darr;</button>':'')
       +(_canUpload?'<button class="admin-btn danger" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerDelete('+i+')">Delete</button>':'')
       +'</div></div>';
-  }).join("") : '<div style="color:var(--text-muted);font-size:13px;padding:12px 0">No custom banners. Using default banner images. Add banners below to customize the homepage carousel.</div>';
+  }).join("") : '<div class="cms-item-meta" style="padding:12px 0">No custom banners. Using default banner images.</div>';
 
   document.getElementById("cmsEditor").innerHTML =
     '<div class="cms-panel">'
-    +'<h3 style="font-size:20px;font-weight:700;margin-bottom:6px">Banner Management</h3>'
-    +'<p style="color:var(--text-muted);font-size:13px;margin-bottom:20px">Upload JPG/PNG images for the homepage carousel. Recommended size: 1200×500px. Max 5MB each.</p>'
+    +'<div class="cms-panel-header"><h3>Banner Management</h3>'
+    +'<p>Upload JPG/PNG images for the homepage carousel. Recommended size: <strong>1200&times;500px</strong>. Max 5MB each.</p></div>'
     +'<div class="cms-banners-list" id="cmsBannersList">' + rows + '</div>'
     +(_canUpload ?
-      '<div style="border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;margin-top:16px;cursor:pointer;transition:all .2s" id="cmsBannerDropZone">'
+      '<div class="cms-drop-zone" id="cmsBannerDropZone">'
       +'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom:8px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>'
       +'<p><strong>Drag &amp; drop</strong> JPG or PNG images here</p>'
-      +'<p style="font-size:12px;color:var(--text-muted)">or click to browse (max 5MB each)</p>'
+      +'<p class="cms-item-meta">or click to browse (max 5MB each)</p>'
       +'<input type="file" id="cmsBannerInput" accept=".jpg,.jpeg,.png,.webp" style="display:none" onchange="window._cmsBannerUpload(event)" multiple/>'
       +'<button class="admin-btn primary" onclick="document.getElementById(\'cmsBannerInput\').click()" style="margin-top:8px">Choose Image</button>'
       +'</div>'
-      +'<div style="display:flex;gap:8px;align-items:end;margin-top:16px">'
-      +'<div class="admin-field" style="flex:1;margin:0"><label>Or paste image URL</label><input type="url" id="cmsBannerUrl" placeholder="https://..."/></div>'
-      +'<div class="admin-field" style="flex:1;margin:0"><label>Alt text / Title</label><input type="text" id="cmsBannerAlt" placeholder="Banner description"/></div>'
-      +'<div class="admin-field" style="flex:1;margin:0"><label>Link (optional)</label><input type="text" id="cmsBannerLink" placeholder="#/page/slug or https://..."/></div>'
-      +'<button class="admin-btn primary" onclick="window._cmsBannerAddUrl()" style="height:44px;white-space:nowrap">Add Banner</button>'
+      +'<div class="cms-url-row">'
+      +'<div class="admin-field"><label>Or paste image URL</label><input type="url" id="cmsBannerUrl" placeholder="https://..."/></div>'
+      +'<div class="admin-field"><label>Alt text / Title</label><input type="text" id="cmsBannerAlt" placeholder="Banner description"/></div>'
+      +'<div class="admin-field"><label>Link (optional)</label><input type="text" id="cmsBannerLink" placeholder="#/page/slug or https://..."/></div>'
+      +'<button class="admin-btn primary" onclick="window._cmsBannerAddUrl()" style="height:44px;white-space:nowrap;align-self:end">Add</button>'
       +'</div>'
-    : '<div style="background:#fef9c3;border:1px solid #fde68a;border-radius:6px;padding:10px 14px;font-size:13px;margin-top:12px">View only — editor or admin access needed to manage banners.</div>')
+    : '<div style="background:#fef9c3;border:1px solid #fde68a;border-radius:6px;padding:10px 14px;font-size:13px;margin-top:12px">View only — editor or admin access needed.</div>')
     +'</div>';
   setTimeout(function(){ window._cmsBannerInitDrop(); },50);
 };

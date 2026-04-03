@@ -55,6 +55,23 @@
   transform: none;
 }
 
+/* Safety: auto-show after 1.5s even if JS hasn't fired */
+@keyframes forceVisible {
+  to { opacity: 1; transform: none; }
+}
+.anim-fade-up,
+.anim-fade-left,
+.anim-fade-right,
+.anim-scale {
+  animation: forceVisible 0s 1.5s forwards;
+}
+.anim-fade-up.visible,
+.anim-fade-left.visible,
+.anim-fade-right.visible,
+.anim-scale.visible {
+  animation: none;
+}
+
 /* Stagger delays */
 .anim-delay-1 { transition-delay: 100ms; }
 .anim-delay-2 { transition-delay: 200ms; }

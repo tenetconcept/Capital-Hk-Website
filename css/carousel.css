@@ -10,8 +10,21 @@
 .banner-swiper {
   max-width: var(--mod-max);
   margin: 0 auto;
-  overflow: visible !important;
+  overflow: hidden;
   padding: 0 24px 48px;
+}
+/* After Swiper initializes, allow visible overflow for shadow effects */
+.banner-swiper.swiper-initialized {
+  overflow: visible;
+}
+/* Pre-Swiper: only show first slide, hide rest to prevent stacking */
+.banner-swiper:not(.swiper-initialized) .swiper-wrapper {
+  overflow: hidden;
+}
+.banner-swiper:not(.swiper-initialized) .swiper-slide ~ .swiper-slide {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
 }
 .banner-slide {
   position: relative;
@@ -129,3 +142,8 @@
 
 /* News Swiper (mobile) */
 .news-swiper { display: none; }
+.news-swiper:not(.swiper-initialized) .swiper-slide ~ .swiper-slide {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}

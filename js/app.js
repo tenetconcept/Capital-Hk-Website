@@ -516,32 +516,77 @@ function newsHubContent(){
 }
 
 // ---------- BLOG PAGE (rd.group-style image cards) ----------
+// Blog article data — shared between listing and detail views
+var BLOG_ARTICLES = [
+  { slug:'hk-news-market', title_en:'Market Analysis: Hong Kong Stocks Q1 2026', title_hans:'市场分析：2026年第一季度港股回顾', title_hant:'市場分析：2026年第一季度港股回顧', date:'2026-03-28', img:'images/ecap-blog-market.png', tag_en:'Market', tag_hans:'市场', tag_hant:'市場',
+    body_en:'<p>The Hong Kong stock market experienced significant movements in Q1 2026, with the Hang Seng Index showing resilience amid global uncertainties. Key sectors including technology and financial services led market gains.</p><p>Our analysts note that the favorable monetary policy environment and strong corporate earnings contributed to a positive quarter. The continued development of the Greater Bay Area economic zone remains a key driver for regional growth.</p><h3>Key Highlights</h3><ul><li>Hang Seng Index gained 8.2% over Q1</li><li>Technology sector outperformed with 12% gains</li><li>Mainland China capital inflow increased 15% via Stock Connect</li><li>IPO market remained active with 23 new listings</li></ul><p>Looking ahead, we expect continued momentum supported by favorable policy measures and improving economic fundamentals.</p>',
+    body_hans:'<p>2026年第一季度，香港股市在全球不确定性中表现出韧性，恒生指数出现显著走势。科技和金融服务等关键行业引领市场涨幅。</p><p>我们的分析师指出，有利的货币政策环境和强劲的企业盈利为积极的一季度做出了贡献。大湾区经济区的持续发展仍然是区域增长的关键驱动力。</p><h3>重点摘要</h3><ul><li>恒生指数一季度上涨8.2%</li><li>科技行业表现优异，涨幅达12%</li><li>通过沪港通的内地资金流入增加15%</li><li>IPO市场保持活跃，新增23宗上市</li></ul><p>展望未来，我们预计在有利政策措施和改善的经济基本面支持下，市场将继续保持动力。</p>',
+    body_hant:'<p>2026年第一季度，香港股市在全球不確定性中表現出韌性，恒生指數出現顯著走勢。科技和金融服務等關鍵行業引領市場漲幅。</p><p>我們的分析師指出，有利的貨幣政策環境和強勁的企業盈利為積極的一季度做出了貢獻。大灣區經濟區的持續發展仍然是區域增長的關鍵驅動力。</p><h3>重點摘要</h3><ul><li>恒生指數一季度上漲8.2%</li><li>科技行業表現優異，漲幅達12%</li><li>通過滬港通的內地資金流入增加15%</li><li>IPO市場保持活躍，新增23宗上市</li></ul><p>展望未來，我們預計在有利政策措施和改善的經濟基本面支持下，市場將繼續保持動力。</p>' },
+  { slug:'hk-news-connect', title_en:'Stock Connect Monthly Update — March 2026', title_hans:'沪港通月度动态 — 2026年3月', title_hant:'滬港通月度動態 — 2026年3月', date:'2026-03-15', img:'images/ecap-blog-connect.png', tag_en:'Stock Connect', tag_hans:'沪港通', tag_hant:'滬港通',
+    body_en:'<p>March 2026 saw record-breaking activity through the Shanghai-Hong Kong Stock Connect program, with daily average turnover reaching new highs.</p><h3>Monthly Highlights</h3><ul><li>Northbound daily average turnover: HK$128 billion</li><li>Southbound daily average turnover: RMB 85 billion</li><li>New eligible stocks added to Stock Connect lists</li><li>Enhanced settlement mechanisms improved trading efficiency</li></ul><p>The expansion of eligible stocks and the introduction of improved settlement processes have been well received by international investors.</p>',
+    body_hans:'<p>2026年3月，沪港通录得创纪录的交易活动，日均成交额创下新高。</p><h3>月度亮点</h3><ul><li>北向日均成交额：1,280亿港元</li><li>南向日均成交额：850亿人民币</li><li>新增股票纳入沪港通名单</li><li>优化结算机制提升交易效率</li></ul><p>合资格股票范围的扩大及改善的结算流程获得国际投资者的好评。</p>',
+    body_hant:'<p>2026年3月，滬港通錄得創紀錄的交易活動，日均成交額創下新高。</p><h3>月度亮點</h3><ul><li>北向日均成交額：1,280億港元</li><li>南向日均成交額：850億人民幣</li><li>新增股票納入滬港通名單</li><li>優化結算機制提升交易效率</li></ul><p>合資格股票範圍的擴大及改善的結算流程獲得國際投資者的好評。</p>' },
+  { slug:'hk-news-ipo', title_en:'New IPO Subscription Guide: Spring 2026', title_hans:'新股认购指南：2026年春季', title_hant:'新股認購指南：2026年春季', date:'2026-03-01', img:'images/ecap-blog-ipo.png', tag_en:'IPO', tag_hans:'新股', tag_hant:'新股',
+    body_en:'<p>Spring 2026 brings an exciting lineup of IPO listings on the Hong Kong Stock Exchange. Here is our comprehensive guide to upcoming subscription opportunities.</p><h3>How to Subscribe via iTrader</h3><ul><li>Login to your iTrader account</li><li>Navigate to IPO Subscription section</li><li>Select the IPO you wish to subscribe</li><li>Enter the number of shares and confirm</li></ul><p>Capital Securities offers competitive financing rates for IPO subscriptions, helping you maximize your investment opportunities.</p>',
+    body_hans:'<p>2026年春季，香港交易所迎来一系列令人期待的IPO上市。以下是我们的新股认购综合指南。</p><h3>通过iTrader认购方法</h3><ul><li>登录您的iTrader帐户</li><li>前往新股认购专区</li><li>选择您想认购的新股</li><li>输入股数并确认</li></ul><p>群益证券提供具竞争力的新股融资利率，帮助您把握投资机遇。</p>',
+    body_hant:'<p>2026年春季，香港交易所迎來一系列令人期待的IPO上市。以下是我們的新股認購綜合指南。</p><h3>通過iTrader認購方法</h3><ul><li>登入您的iTrader帳戶</li><li>前往新股認購專區</li><li>選擇您想認購的新股</li><li>輸入股數並確認</li></ul><p>群益證券提供具競爭力的新股融資利率，幫助您把握投資機遇。</p>' },
+  { slug:'hk-news-global', title_en:'Global Markets Weekly Wrap — February', title_hans:'环球市场每周回顾 — 2月', title_hant:'環球市場每周回顧 — 2月', date:'2026-02-28', img:'images/ecap-blog-global.png', tag_en:'Global', tag_hans:'环球', tag_hant:'環球',
+    body_en:'<p>Global markets ended February on a positive note, with major indices posting gains across most regions. US markets rallied on strong earnings reports, while European markets benefited from improving economic data.</p><h3>Regional Highlights</h3><ul><li>S&P 500: +3.1% for the month</li><li>Nikkei 225: +2.8%</li><li>Euro Stoxx 50: +4.2%</li><li>Hang Seng: +5.6%</li></ul><p>Our global macro team remains cautiously optimistic about the outlook for Q2 2026.</p>',
+    body_hans:'<p>全球市场在2月底收于积极态势，主要指数大部分地区录得涨幅。美国市场受强劲盈利报告推动上涨，而欧洲市场则受益于改善的经济数据。</p><h3>各地区亮点</h3><ul><li>标普500：本月+3.1%</li><li>日经225：+2.8%</li><li>欧洲斯托克50：+4.2%</li><li>恒生指数：+5.6%</li></ul><p>我们的全球宏观团队对2026年第二季度展望保持谨慎乐观。</p>',
+    body_hant:'<p>全球市場在2月底收於積極態勢，主要指數大部分地區錄得漲幅。美國市場受強勁盈利報告推動上漲，而歐洲市場則受益於改善的經濟數據。</p><h3>各地區亮點</h3><ul><li>標普500：本月+3.1%</li><li>日經225：+2.8%</li><li>歐洲斯托克50：+4.2%</li><li>恒生指數：+5.6%</li></ul><p>我們的全球宏觀團隊對2026年第二季度展望保持謹慎樂觀。</p>' },
+  { slug:'hk-news-ashare', title_en:'A-Share Market Outlook 2026', title_hans:'A股市场2026年展望', title_hant:'A股市場2026年展望', date:'2026-02-15', img:'images/ecap-blog-ashare.png', tag_en:'Research', tag_hans:'研究', tag_hant:'研究',
+    body_en:'<p>Our research team presents the A-share market outlook for 2026, highlighting key themes and sectors to watch.</p><h3>Key Themes for 2026</h3><ul><li>Technology self-sufficiency driving semiconductor sector</li><li>Green energy transition accelerating</li><li>Consumer spending recovery</li><li>New infrastructure investment</li></ul><p>We recommend selective positioning in quality growth stocks with strong fundamentals and sector leadership.</p>',
+    body_hans:'<p>我们的研究团队发布A股市场2026年展望，重点介绍值得关注的主要主题和行业。</p><h3>2026年关键主题</h3><ul><li>科技自主推动半导体行业</li><li>绿色能源转型加速</li><li>消费支出持续复苏</li><li>新基建投资加码</li></ul><p>我们建议精选具有强劲基本面和行业领先地位的优质成长型股票。</p>',
+    body_hant:'<p>我們的研究團隊發佈A股市場2026年展望，重點介紹值得關注的主要主題和行業。</p><h3>2026年關鍵主題</h3><ul><li>科技自主推動半導體行業</li><li>綠色能源轉型加速</li><li>消費支出持續復甦</li><li>新基建投資加碼</li></ul><p>我們建議精選具有強勁基本面和行業領先地位的優質成長型股票。</p>' },
+  { slug:'hk-news-awards', title_en:'Capital Securities Annual Awards Ceremony', title_hans:'群益证券年度颁奖典礼', title_hant:'群益證券年度頒獎典禮', date:'2026-01-20', img:'images/ecap-blog-awards.png', tag_en:'Company', tag_hans:'公司', tag_hant:'公司',
+    body_en:'<p>Capital Securities (Hong Kong) held its Annual Awards Ceremony to celebrate outstanding achievements and recognize contributions from our dedicated team members.</p><h3>Award Categories</h3><ul><li>Best Sales Performance</li><li>Outstanding Client Service</li><li>Innovation Award</li><li>Long Service Recognition</li></ul><p>We extend our heartfelt congratulations to all award recipients and thank our entire team for their exceptional dedication throughout the year.</p>',
+    body_hans:'<p>群益证券（香港）举办年度颁奖典礼，表彰杰出成就，感谢团队成员的卓越贡献。</p><h3>奖项类别</h3><ul><li>最佳销售业绩奖</li><li>杰出客户服务奖</li><li>创新奖</li><li>长期服务奖</li></ul><p>我们向所有获奖者致以衷心祝贺，并感谢全体团队一年来的杰出贡献。</p>',
+    body_hant:'<p>群益證券（香港）舉辦年度頒獎典禮，表彰傑出成就，感謝團隊成員的卓越貢獻。</p><h3>獎項類別</h3><ul><li>最佳銷售業績獎</li><li>傑出客戶服務獎</li><li>創新獎</li><li>長期服務獎</li></ul><p>我們向所有獲獎者致以衷心祝賀，並感謝全體團隊一年來的傑出貢獻。</p>' }
+];
+window.BLOG_ARTICLES = BLOG_ARTICLES;
+
 function blogContent(){
-  var articles = [
-    { title: L('Market Analysis: Hong Kong Stocks Q1 2026','市场分析：2026年第一季度港股回顾','市場分析：2026年第一季度港股回顧'), date:'2026-03-28', img:'images/ecap-news-1.svg', tag: L('Market','市场','市場') },
-    { title: L('Stock Connect Monthly Update — March 2026','沪港通月度动态 — 2026年3月','滬港通月度動態 — 2026年3月'), date:'2026-03-15', img:'images/ecap-news-2.svg', tag: L('Stock Connect','沪港通','滬港通') },
-    { title: L('New IPO Subscription Guide: Spring 2026','新股认购指南：2026年春季','新股認購指南：2026年春季'), date:'2026-03-01', img:'images/ecap-banner-1.svg', tag: L('IPO','新股','新股') },
-    { title: L('Global Markets Weekly Wrap — February','环球市场每周回顾 — 2月','環球市場每周回顧 — 2月'), date:'2026-02-28', img:'images/ecap-banner-2.svg', tag: L('Global','环球','環球') },
-    { title: L('A-Share Market Outlook 2026','A股市场2026年展望','A股市場2026年展望'), date:'2026-02-15', img:'images/ecap-news-1.svg', tag: L('Research','研究','研究') },
-    { title: L('Capital Securities Annual Awards Ceremony','群益证券年度颁奖典礼','群益證券年度頒獎典禮'), date:'2026-01-20', img:'images/ecap-news-2.svg', tag: L('Company','公司','公司') }
-  ];
-
-  // Check CMS for blog posts
-  var cmsBanners = [];
-  try { cmsBanners = JSON.parse(localStorage.getItem('ecap_cms_banners')) || []; } catch(e){}
-
   var h = '<div class="blog-grid">';
-  articles.forEach(function(a, i){
-    h += '<a class="blog-card" style="animation-delay:' + (i*0.08).toFixed(2) + 's">';
-    h += '<div class="blog-card-img"><img src="' + escAttr(a.img) + '" alt="' + escAttr(a.title) + '"></div>';
+  BLOG_ARTICLES.forEach(function(a, i){
+    var title = L(a.title_en, a.title_hans, a.title_hant);
+    var tag = L(a.tag_en, a.tag_hans, a.tag_hant);
+    h += '<a class="blog-card" href="#/page/' + escAttr(a.slug) + '" data-spa style="animation-delay:' + (i*0.08).toFixed(2) + 's">';
+    h += '<div class="blog-card-img"><img src="' + escAttr(a.img) + '" alt="' + escAttr(title) + '"></div>';
     h += '<div class="blog-card-body">';
-    h += '<span class="blog-card-tag">' + esc(a.tag) + '</span>';
-    h += '<h3 class="blog-card-title">' + esc(a.title) + '</h3>';
+    h += '<span class="blog-card-tag">' + esc(tag) + '</span>';
+    h += '<h3 class="blog-card-title">' + esc(title) + '</h3>';
     h += '<time class="blog-card-date">' + esc(a.date) + '</time>';
     h += '</div></a>';
   });
   h += '</div>';
-  h += '<div style="text-align:center;margin-top:40px;color:var(--text-muted);font-size:1rem;font-weight:500">' + esc(L('More articles coming soon.','更多文章即将发布。','更多文章即將發佈。')) + '</div>';
+  return h;
+}
+
+// ---------- BLOG ARTICLE DETAIL VIEW ----------
+function blogArticleView(slug){
+  var article = null;
+  BLOG_ARTICLES.forEach(function(a){ if(a.slug === slug) article = a; });
+  if(!article) return null;
+  var title = L(article.title_en, article.title_hans, article.title_hant);
+  var tag = L(article.tag_en, article.tag_hans, article.tag_hant);
+  var body = L(article.body_en, article.body_hans, article.body_hant);
+
+  var h = '<section class="subpage">';
+  // Hero with image
+  h += '<div class="article-hero">';
+  h += '<img src="' + escAttr(article.img) + '" alt="' + escAttr(title) + '">';
+  h += '</div>';
+  // Article content
+  h += '<div class="subpage-content"><div class="mw">';
+  h += '<div class="article-header">';
+  h += '<a href="#/page/hk-news" data-spa class="article-back">&larr; ' + esc(L('Back to News','返回新闻','返回新聞')) + '</a>';
+  h += '<span class="blog-card-tag" style="font-size:0.9375rem">' + esc(tag) + '</span>';
+  h += '<h1 class="article-title">' + esc(title) + '</h1>';
+  h += '<time class="article-date">' + esc(article.date) + '</time>';
+  h += '</div>';
+  h += '<div class="article-body">' + body + '</div>';
+  h += '</div></div>';
+  h += '</section>';
   return h;
 }
 
@@ -567,6 +612,12 @@ function findSiblingPages(slug){
 }
 
 function pageView(slug){
+  // Blog article detail pages — intercept hk-news-* slugs
+  if(slug.indexOf('hk-news-') === 0){
+    var articleHtml = blogArticleView(slug);
+    if(articleHtml) return articleHtml;
+  }
+
   var pg = getPage(slug, currentLang);
   if(!pg){
     return '<section class="subpage"><div class="mw">'
@@ -603,12 +654,18 @@ function pageView(slug){
   // Content area
   h += '<div class="subpage-content"><div class="mw">';
   h += '<div class="subpage-card">';
+
+  // Report listing pages get card-style table treatment
+  var reportPages = ['report-daily','report-ipo','report-stock','report-view','shh-hk-report','shh-hk-mag'];
+  var bodyClass = 'subpage-body';
+  if(reportPages.indexOf(slug) !== -1) bodyClass += ' report-listing';
+
   if(slug === 'news'){
-    h += '<div class="subpage-body">' + newsHubContent() + '</div>';
+    h += '<div class="' + bodyClass + '">' + newsHubContent() + '</div>';
   } else if(slug === 'hk-news'){
-    h += '<div class="subpage-body">' + blogContent() + '</div>';
+    h += '<div class="' + bodyClass + '">' + blogContent() + '</div>';
   } else {
-    h += '<div class="subpage-body">' + pg.body + '</div>';
+    h += '<div class="' + bodyClass + '">' + pg.body + '</div>';
   }
   h += '</div>';
   h += '</div></div>';
@@ -688,7 +745,7 @@ function route(){
   if(hash === "#/" || hash === "#" || hash === ""){
     app.innerHTML = homeView() + footerView();
     window.scrollTo(0,0);
-    if(typeof window.initHomeAnimations === 'function') setTimeout(window.initHomeAnimations, 50);
+    if(typeof window.initHomeAnimations === 'function') requestAnimationFrame(function(){ setTimeout(window.initHomeAnimations, 10); });
   } else if(hash.indexOf("#/page/") === 0){
     var slug = hash.replace("#/page/","").split("?")[0];
     app.innerHTML = pageView(slug) + footerView();

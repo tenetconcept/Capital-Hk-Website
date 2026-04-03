@@ -7,6 +7,8 @@
 // Scroll-triggered animations via IntersectionObserver
 function initScrollAnimations(){
   var els = document.querySelectorAll('.anim-fade-up,.anim-fade-left,.anim-fade-right,.anim-scale');
+  if(!els.length) return;
+
   if(!('IntersectionObserver' in window)){
     els.forEach(function(el){ el.classList.add('visible'); });
     return;
@@ -19,12 +21,11 @@ function initScrollAnimations(){
         observer.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.05, rootMargin: '80px 0px -10px 0px' });
+  }, { threshold: 0.02, rootMargin: '120px 0px 0px 0px' });
 
   els.forEach(function(el){
-    // Elements already in viewport: show immediately
     var rect = el.getBoundingClientRect();
-    if(rect.top < window.innerHeight + 50 && rect.bottom > 0){
+    if(rect.top < window.innerHeight + 100 && rect.bottom > -50){
       el.classList.add('visible');
     } else {
       observer.observe(el);
@@ -32,37 +33,104 @@ function initScrollAnimations(){
   });
 }
 
-// Initialize Swiper carousels for home page
-window.initHomeAnimations = function(){
-  // Banner carousel
-  if(document.querySelector('.banner-swiper')){
-    new Swiper('.banner-swiper', {
+function forceShowAll(){
+  document.querySelectorAll('.anim-fade-up,.anim-fade-left,.anim-fade-right,.anim-scale').forEach(function(el){
+    if(!el.classList.contains('visible')){
+      var rect = el.getBoundingClientRect();
+      if(rect.top < window.innerHeight + 200 && rect.bottom > -100){
+        el.classList.add('visible');
+      }
+    }
+  });
+}
+
+// Swiper init with retry logic
+var _bannerSwiper = null;
+var _newsSwiper = null;
+
+function initBannerSwiper(){
+  var el = document.querySelector('.banner-swiper');
+  if(!el || el.classList.contains('swiper-initialized')) return;
+  if(typeof Swiper === 'undefined') return;
+  try {
+    _bannerSwiper = new Swiper('.banner-swiper', {
       loop: true,
       autoplay: { delay: 5000, disableOnInteraction: false },
       pagination: { el: '.banner-pagination', clickable: true },
       effect: 'slide',
       speed: 600,
-      spaceBetween: 24
+      spaceBetween: 24,
+      observer: true,
+      observeParents: true
     });
-  }
-  // News carousel (mobile only)
-  if(document.querySelector('.news-swiper') && window.innerWidth < 1024){
-    new Swiper('.news-swiper', {
+  } catch(e){}
+}
+
+function initNewsSwiper(){
+  var el = document.querySelector('.news-swiper');
+  if(!el || el.classList.contains('swiper-initialized') || window.innerWidth >= 1024) return;
+  if(typeof Swiper === 'undefined') return;
+  try {
+    _newsSwiper = new Swiper('.news-swiper', {
       slidesPerView: 1.15,
       spaceBetween: 16,
       breakpoints: {
         768: { slidesPerView: 2.2, spaceBetween: 20 }
-      }
+      },
+      observer: true,
+      observeParents: true
     });
-  }
-  // Run scroll animations immediately, then again after images settle
+  } catch(e){}
+}
+
+function destroySwipers(){
+  if(_bannerSwiper && _bannerSwiper.destroy){ try{ _bannerSwiper.destroy(true, true); }catch(e){} _bannerSwiper=null; }
+  if(_newsSwiper && _newsSwiper.destroy){ try{ _newsSwiper.destroy(true, true); }catch(e){} _newsSwiper=null; }
+}
+
+// Initialize home page animations and swipers
+window.initHomeAnimations = function(){
+  destroySwipers();
+
+  // Use requestAnimationFrame to ensure DOM is painted
+  requestAnimationFrame(function(){
+    initBannerSwiper();
+    initNewsSwiper();
+
+    // Retry if banner swiper didn't initialize (images not loaded yet)
+    setTimeout(function(){
+      if(document.querySelector('.banner-swiper') && !document.querySelector('.banner-swiper.swiper-initialized')){
+        initBannerSwiper();
+      }
+    }, 300);
+  });
+
+  // Scroll animations
   initScrollAnimations();
-  setTimeout(initScrollAnimations, 300);
+  setTimeout(forceShowAll, 200);
+  setTimeout(forceShowAll, 800);
 };
 
 // Re-init on route change
 window.addEventListener('hashchange', function(){
-  setTimeout(initScrollAnimations, 80);
+  destroySwipers();
+  setTimeout(initScrollAnimations, 50);
+  setTimeout(forceShowAll, 250);
+});
+
+// Initial page load
+document.addEventListener('DOMContentLoaded', function(){
+  setTimeout(initScrollAnimations, 100);
+  setTimeout(forceShowAll, 500);
+});
+
+// Fallback after full load
+window.addEventListener('load', function(){
+  setTimeout(forceShowAll, 200);
+  // If banner still not initialized, retry
+  if(document.querySelector('.banner-swiper') && !document.querySelector('.banner-swiper.swiper-initialized')){
+    initBannerSwiper();
+  }
 });
 
 })();

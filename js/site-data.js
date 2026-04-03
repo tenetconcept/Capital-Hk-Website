@@ -39,7 +39,7 @@ var SITE_NAV = {
       {label:"下載其他表格", page:"forms-download"}
     ]},
     {label:"探索", children:[
-      {label:"香港新聞", page:"news"},
+      {label:"香港新聞", page:"hk-news"},
       {label:"研究報告", children:[
         {label:"每日評論", page:"report-daily"},
         {label:"新股上市", page:"report-ipo"},
@@ -90,7 +90,7 @@ var SITE_NAV = {
       {label:"下载其他表格", page:"forms-download"}
     ]},
     {label:"探索", children:[
-      {label:"香港新闻", page:"news"},
+      {label:"香港新闻", page:"hk-news"},
       {label:"研究报告", children:[
         {label:"每日评论", page:"report-daily"},
         {label:"新股上市", page:"report-ipo"},
@@ -141,7 +141,7 @@ var SITE_NAV = {
       {label:"Forms Download", page:"forms-download"}
     ]},
     {label:"Discover", children:[
-      {label:"News", page:"news"},
+      {label:"News", page:"hk-news"},
       {label:"Research Reports", children:[
         {label:"Daily Market Update", page:"report-daily"},
         {label:"IPO Summary", page:"report-ipo"},

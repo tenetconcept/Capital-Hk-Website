@@ -63,6 +63,12 @@
 .cms-add-user-box h4{font-size:15px;font-weight:700;margin-bottom:16px}
 .cms-section-box{background:var(--white);border-radius:var(--radius);padding:28px;border:1px solid rgba(0,0,0,.06);box-shadow:var(--shadow-sm)}
 .cms-card-box{background:var(--bg-light);border-radius:var(--radius-sm);padding:20px;border:1px solid rgba(0,0,0,.04)}
+.cms-user-tabs{display:flex;gap:0;margin-bottom:24px;border-bottom:2px solid var(--border-light);overflow-x:auto}
+.cms-utab{padding:12px 24px;font-size:14px;font-weight:600;color:var(--text-muted);background:none;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;cursor:pointer;transition:all .2s;white-space:nowrap;font-family:inherit}
+.cms-utab:hover{color:var(--text)}
+.cms-utab.active{color:var(--brand);border-bottom-color:var(--brand)}
+.cms-user-row.user-disabled{opacity:.6;background:var(--bg-light)}
+.cms-user-row.user-disabled .u-avatar.disabled{background:#ccc}
 .cms-toolbar{display:flex;flex-wrap:wrap;gap:3px;padding:6px 8px;background:#f8f9fa;border:1.5px solid var(--border);border-bottom:none;border-radius:var(--radius-sm) var(--radius-sm) 0 0}
 .cms-tb-btn{min-width:28px;height:26px;padding:0 6px;border:1px solid var(--border);background:var(--white);border-radius:4px;cursor:pointer;font-size:12px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;color:var(--text);transition:all .15s;font-family:inherit}
 .cms-tb-btn:hover{background:var(--brand);color:var(--white);border-color:var(--brand)}

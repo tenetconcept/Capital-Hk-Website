@@ -12,7 +12,7 @@
   z-index: 2;
   text-align: center;
   color: var(--text);
-  padding: 80px 24px 60px;
+  padding: 60px 24px 60px;
   max-width: 800px;
   margin: 0 auto;
 }
@@ -21,12 +21,12 @@
   align-items: center;
   gap: 6px;
   padding: 8px 20px;
-  background: rgba(180,21,64,.08);
-  border: 1px solid rgba(180,21,64,.15);
+  background: rgba(180,21,64,.12);
+  border: 1px solid rgba(180,21,64,.25);
   border-radius: var(--radius-full);
   font-size: 1rem;
   font-weight: 700;
-  color: var(--brand);
+  color: var(--brand-dark);
   margin-bottom: 24px;
 }
 .hero-badge svg { width: 16px; height: 16px; }

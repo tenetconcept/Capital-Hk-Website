@@ -22,27 +22,27 @@
 .utility-social a {
   display: flex;
   align-items: center;
-  color: var(--text-muted);
+  color: var(--white);
   transition: color var(--dur) var(--ease);
 }
-.utility-social a:hover { color: var(--brand); }
+.utility-social a:hover { color: var(--white); }
 .utility-social svg { width: 18px; height: 18px; }
 .utility-lang { display: flex; gap: 4px; align-items: center; }
 .utility-lang a {
   padding: 4px 10px;
   font-size: 12px;
   font-weight: 600;
-  color: var(--text-muted);
+  color: rgba(255,255,255,.9);
   border-radius: var(--radius-full);
   transition: all var(--dur) var(--ease);
 }
-.utility-lang a:hover { color: var(--brand); }
+.utility-lang a:hover { color: var(--white); }
 .utility-lang a.active {
-  background: var(--brand);
+  background: rgba(255,255,255,.25);
   color: var(--white);
 }
 
-/* ===== Main Nav — Two-Row Layout ===== */
+/* ===== Main Nav — Three-Row Layout ===== */
 .nav {
   position: sticky;
   top: 0;
@@ -61,6 +61,9 @@
 
 /* Row 1: Logo + CTA */
 .nav-top {
+  border-bottom: 1px solid rgba(0,0,0,.04);
+}
+.nav-top-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -84,16 +87,16 @@
   white-space: nowrap;
 }
 
-/* Row 2: Nav Links Bar */
+/* Row 2: Nav links bar */
 .nav-bar {
-  border-top: 1px solid rgba(0,0,0,.04);
+  display: block;
   background: transparent;
-  height: var(--nav-bar-h);
 }
 .nav-bar .mw {
   display: flex;
-  justify-content: center;
-  height: 100%;
+  align-items: center;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 /* Nav Links */
@@ -101,7 +104,7 @@
   display: flex;
   align-items: stretch;
   gap: 0;
-  height: 100%;
+  height: var(--nav-bar-h);
 }
 .nav-item {
   position: relative;
@@ -112,7 +115,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 14px 24px;
+  padding: 10px 22px;
   font-size: 1.0625rem;
   font-weight: 700;
   color: var(--text);
@@ -124,6 +127,11 @@
 .nav-item > a:hover, .nav-item > .nav-label:hover,
 .nav-item:hover > a, .nav-item:hover > .nav-label {
   color: var(--brand);
+}
+/* First nav item flush-left with logo */
+.nav-item:first-child > a,
+.nav-item:first-child > .nav-label {
+  padding-left: 0;
 }
 .nav-chevron {
   width: 18px;
@@ -137,8 +145,7 @@
 .nav-dropdown {
   position: absolute;
   top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
   min-width: 280px;
   padding-top: 6px;
   opacity: 0;

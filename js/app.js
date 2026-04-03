@@ -595,17 +595,21 @@ function blogArticleView(slug){
   var body = L(article.body_en, article.body_hans, article.body_hant);
 
   var h = '<section class="subpage">';
-  // Hero with image
+  // Hero image with title overlay below (rd.group style)
+  h += '<div class="article-hero-wrap">';
   h += '<div class="article-hero">';
   h += '<img src="' + escAttr(article.img) + '" alt="' + escAttr(title) + '">';
+  h += '</div>';
+  h += '<div class="article-hero-caption"><div class="mw">';
+  h += '<time class="article-hero-date">' + esc(article.date) + '</time>';
+  h += '<h1 class="article-hero-title">' + esc(title) + '</h1>';
+  h += '</div></div>';
   h += '</div>';
   // Article content
   h += '<div class="subpage-content"><div class="mw">';
   h += '<div class="article-header">';
   h += '<a href="#/page/hk-news" data-spa class="article-back">&larr; ' + esc(L('Back to News','返回新闻','返回新聞')) + '</a>';
   h += '<span class="blog-card-tag" style="font-size:0.9375rem">' + esc(tag) + '</span>';
-  h += '<h1 class="article-title">' + esc(title) + '</h1>';
-  h += '<time class="article-date">' + esc(article.date) + '</time>';
   h += '</div>';
   h += '<div class="article-body">' + body + '</div>';
   h += '</div></div>';
@@ -850,6 +854,11 @@ document.addEventListener('click', function(e){
 });
 
 // ---------- INIT ----------
-route();
+// Defer initial route to ensure cms.js and other scripts are loaded
+if(document.readyState === 'complete'){
+  route();
+} else {
+  window.addEventListener('load', route);
+}
 
 })();

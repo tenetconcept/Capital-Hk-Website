@@ -86,6 +86,8 @@ function checkAdminLogin(username, pass){
       if(found) return {username:found.username, role:found.role||"admin"};
       var disabled = users.find(function(u){ return u.username===username && u.hash===hash && u.enabled===false; });
       if(disabled) return {error:"disabled"};
+      // Fallback: always allow default admin even when custom users exist
+      if(username==="admin" && hash===ADMIN_HASH) return {username:"admin", role:"admin"};
       return null;
     }
     if(username==="admin" && hash===ADMIN_HASH) return {username:"admin", role:"admin"};
@@ -242,6 +244,11 @@ function adminView(){
     // Compact header: logo text + user info only
     +'<div class="cms-main-header"><h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>內容管理系統</h3>'
     +'<div class="cms-header-acts">'
+    +'<div class="cms-lang-switch">'
+    +'<button class="cms-lang-btn'+(window.currentLang==='zh-Hant'?' active':'')+'" onclick="window.setLang(\'zh-Hant\')">繁</button>'
+    +'<button class="cms-lang-btn'+(window.currentLang==='zh-Hans'?' active':'')+'" onclick="window.setLang(\'zh-Hans\')">简</button>'
+    +'<button class="cms-lang-btn'+(window.currentLang==='en'?' active':'')+'" onclick="window.setLang(\'en\')">EN</button>'
+    +'</div>'
     +'<span class="role-badge role-'+_curRole+'" style="margin-left:4px">'+_curRole+'</span>'
     +'<button class="admin-btn secondary" onclick="window._adminLogout()" style="margin-left:4px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> 登出</button>'
     +'</div></div>'

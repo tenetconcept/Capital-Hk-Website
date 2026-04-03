@@ -54,7 +54,6 @@
   font-weight: 700;
   color: var(--text-muted);
   transition: all var(--dur) var(--ease);
-  white-space: nowrap;
   border-radius: 0;
   letter-spacing: -0.01em;
 }

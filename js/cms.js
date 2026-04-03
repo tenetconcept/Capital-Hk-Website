@@ -2,6 +2,169 @@
 // CMS MODULE — Auth, 2FA, RBAC, Editor, Files, Users
 // ============================================
 
+// ————— CMS i18n —————
+var CMS_I18N = {
+  // Login
+  cms_admin:       {en:'CMS Admin', hans:'CMS 管理', hant:'CMS 管理'},
+  login_sub:       {en:'Please login to manage website content', hans:'请登录以管理网站内容', hant:'請登入以管理網站內容'},
+  username:        {en:'Username', hans:'用户名', hant:'用戶名'},
+  password:        {en:'Password', hans:'密码', hant:'密碼'},
+  enter_pwd:       {en:'Enter password', hans:'请输入密码', hant:'請輸入密碼'},
+  login:           {en:'Login', hans:'登录', hant:'登入'},
+  verifying:       {en:'Verifying...', hans:'验证中...', hant:'驗證中...'},
+  logout:          {en:'Logout', hans:'登出', hant:'登出'},
+  // 2FA
+  twofa_code:      {en:'2FA Code', hans:'双重验证码', hant:'雙重驗證碼'},
+  six_digit:       {en:'6-digit code', hans:'6位数字', hant:'6位數字'},
+  verify_2fa:      {en:'Verify 2FA', hans:'验证 2FA', hant:'驗證 2FA'},
+  enter_2fa:       {en:'Enter your 2FA code from authenticator app.', hans:'请输入验证器应用中的验证码。', hant:'請輸入驗證器應用中的驗證碼。'},
+  invalid_2fa:     {en:'Invalid 2FA code. Try again.', hans:'验证码错误，请重试。', hant:'驗證碼錯誤，請重試。'},
+  // Login errors
+  too_many:        {en:'Too many failed attempts. Try again in ', hans:'登录尝试次数过多，请于 ', hant:'登入嘗試次數過多，請於 '},
+  minutes:         {en:' minutes.', hans:' 分钟后重试。', hant:' 分鐘後重試。'},
+  ip_denied:       {en:'Access denied. Your IP is not in the whitelist.', hans:'拒绝访问。您的IP不在白名单中。', hant:'拒絕存取。您的IP不在白名單中。'},
+  acct_disabled:   {en:'Account disabled. Contact admin.', hans:'帐户已停用，请联系管理员。', hant:'帳戶已停用，請聯絡管理員。'},
+  wrong_pwd:       {en:'Incorrect username or password.', hans:'用户名或密码错误。', hant:'用戶名或密碼錯誤。'},
+  attempts_left:   {en:' attempts remaining.', hans:' 次尝试剩余。', hant:' 次嘗試剩餘。'},
+  session_expired: {en:'Session expired. Please login again.', hans:'会话已过期，请重新登录。', hant:'工作階段已過期，請重新登入。'},
+  // CMS header
+  cms_title:       {en:'Content Management System', hans:'内容管理系统', hant:'內容管理系統'},
+  // Section tabs
+  tab_pages:       {en:'Pages', hans:'页面内容', hant:'頁面內容'},
+  tab_banners:     {en:'Banners', hans:'首页横幅', hant:'首頁橫幅'},
+  tab_blog:        {en:'News', hans:'新闻文章', hant:'新聞文章'},
+  tab_files:       {en:'Downloads', hans:'档案下载', hant:'檔案下載'},
+  tab_account:     {en:'My Account', hans:'我的帐户', hant:'我的帳戶'},
+  tab_users:       {en:'Users', hans:'用户管理', hant:'用戶管理'},
+  tab_security:    {en:'Security', hans:'安全设定', hant:'安全設定'},
+  // Sidebar
+  sidebar_title:   {en:'Website Pages', hans:'网站页面', hant:'網站頁面'},
+  sidebar_count:   {en:' pages', hans:' 个页面', hant:' 個頁面'},
+  search_pages:    {en:'Search pages...', hans:'搜索页面...', hant:'搜尋頁面...'},
+  select_page:     {en:'Select a page from the sidebar to start editing', hans:'从左侧选择页面开始编辑', hant:'從左側選擇頁面開始編輯'},
+  // Page editor
+  title_label:     {en:'Title', hans:'标题', hant:'標題'},
+  body_label:      {en:'Body (HTML)', hans:'正文 (HTML)', hant:'正文 (HTML)'},
+  insert_dl:       {en:'Insert Download Link', hans:'插入下载链接', hant:'插入下載連結'},
+  read_only:       {en:'Read-only', hans:'只读', hant:'唯讀'},
+  save_changes:    {en:'Save Changes', hans:'保存修改', hant:'儲存變更'},
+  view_page:       {en:'View Page', hans:'查看页面', hant:'查看頁面'},
+  viewer_nosave:   {en:'Viewer mode — cannot save', hans:'查看模式 — 无法保存', hant:'查看模式 — 無法儲存'},
+  preview:         {en:'Preview', hans:'预览', hant:'預覽'},
+  saved:           {en:'Saved: ', hans:'已保存: ', hant:'已儲存: '},
+  // Export/Import/Reset
+  exported:        {en:'Exported JSON (pages+banners+blog+files)', hans:'已导出JSON（页面+横幅+文章+文件）', hant:'已匯出JSON（頁面+橫幅+文章+檔案）'},
+  imported:        {en:'Imported successfully', hans:'导入成功', hant:'匯入成功'},
+  invalid_json:    {en:'Invalid JSON file', hans:'无效的JSON文件', hant:'無效的JSON檔案'},
+  reset_confirm:   {en:'Reset all CMS edits to default?', hans:'重置所有CMS编辑为默认？', hant:'重設所有CMS編輯為預設？'},
+  reset_done:      {en:'Reset to defaults', hans:'已重置为默认', hant:'已重設為預設'},
+  // Files
+  files_title:     {en:'Downloads Manager', hans:'档案管理', hant:'檔案管理'},
+  files_desc:      {en:'Upload files or add external links. Copy the HTML snippet to paste into any page body.', hans:'上传文件或添加外部链接。复制HTML代码片段可粘贴到任何页面中。', hant:'上傳檔案或添加外部連結。複製HTML程式碼可貼到任何頁面中。'},
+  drag_drop:       {en:'Drag & drop', hans:'拖放', hant:'拖放'},
+  files_here:      {en:' PDF, DOC, DOCX, JPG or PNG files here', hans:' PDF、DOC、DOCX、JPG 或 PNG 文件到此处', hant:' PDF、DOC、DOCX、JPG 或 PNG 檔案到此處'},
+  or_browse:       {en:'or click to browse (max 2MB each)', hans:'或点击浏览（每个最大2MB）', hant:'或點擊瀏覽（每個最大2MB）'},
+  choose_file:     {en:'Choose File', hans:'选择文件', hant:'選擇檔案'},
+  link_title:      {en:'Link title (e.g. Account Opening Form)', hans:'链接标题（如：开户表格）', hant:'連結標題（如：開戶表格）'},
+  ext_url:         {en:'External URL (https://...)', hans:'外部网址 (https://...)', hant:'外部網址 (https://...)'},
+  add_url:         {en:'Add URL', hans:'添加网址', hant:'新增網址'},
+  copy_link:       {en:'Copy Link', hans:'复制链接', hant:'複製連結'},
+  delete:          {en:'Delete', hans:'删除', hant:'刪除'},
+  no_files:        {en:'No files yet.', hans:'暂无文件。', hant:'暫無檔案。'},
+  upload_hint:     {en:' Upload a file or add a URL below.', hans:' 上传文件或在下方添加网址。', hant:' 上傳檔案或在下方新增網址。'},
+  viewer_hint:     {en:' Contact an admin to upload files.', hans:' 请联系管理员上传文件。', hant:' 請聯絡管理員上傳檔案。'},
+  view_only:       {en:'View only — editor or admin access needed.', hans:'仅查看 — 需要编辑或管理员权限。', hant:'僅檢視 — 需要編輯或管理員權限。'},
+  name_desc:       {en:'Name / Description', hans:'名称 / 描述', hant:'名稱 / 描述'},
+  type:            {en:'Type', hans:'类型', hant:'類型'},
+  size:            {en:'Size', hans:'大小', hant:'大小'},
+  uploaded:        {en:'Uploaded', hans:'上传时间', hant:'上傳時間'},
+  actions:         {en:'Actions', hans:'操作', hant:'操作'},
+  copied:          {en:'Copied to clipboard!', hans:'已复制到剪贴板！', hant:'已複製到剪貼簿！'},
+  del_file_q:      {en:'Delete this file/link?', hans:'删除此文件/链接？', hant:'刪除此檔案/連結？'},
+  enter_both:      {en:'Enter both name and URL', hans:'请输入名称和网址', hant:'請輸入名稱和網址'},
+  // Banners
+  banners_title:   {en:'Banner Management', hans:'横幅管理', hant:'橫幅管理'},
+  banners_desc:    {en:'Upload JPG/PNG images for the homepage carousel. Recommended size: <strong>1200&times;500px</strong>. Max 5MB each.', hans:'上传首页轮播的JPG/PNG图片。建议尺寸：<strong>1200&times;500px</strong>。每张最大5MB。', hant:'上傳首頁輪播的JPG/PNG圖片。建議尺寸：<strong>1200&times;500px</strong>。每張最大5MB。'},
+  preview_carousel:{en:'Preview Carousel', hans:'预览轮播', hant:'預覽輪播'},
+  drag_img:        {en:' JPG or PNG images here', hans:' JPG 或 PNG 图片到此处', hant:' JPG 或 PNG 圖片到此處'},
+  or_browse_5:     {en:'or click to browse (max 5MB each)', hans:'或点击浏览（每张最大5MB）', hant:'或點擊瀏覽（每張最大5MB）'},
+  choose_img:      {en:'Choose Image', hans:'选择图片', hant:'選擇圖片'},
+  paste_url:       {en:'Or paste image URL', hans:'或粘贴图片网址', hant:'或貼上圖片網址'},
+  alt_title:       {en:'Alt text / Title', hans:'替代文字 / 标题', hant:'替代文字 / 標題'},
+  banner_desc:     {en:'Banner description', hans:'横幅描述', hant:'橫幅描述'},
+  link_opt:        {en:'Link (optional)', hans:'链接（可选）', hant:'連結（可選）'},
+  add:             {en:'Add', hans:'添加', hant:'新增'},
+  no_banner:       {en:'No custom banners. Using default banner images.', hans:'暂无自定义横幅。使用默认横幅图片。', hant:'暫無自訂橫幅。使用預設橫幅圖片。'},
+  no_link:         {en:'No link', hans:'无链接', hant:'無連結'},
+  del_banner_q:    {en:'Delete this banner?', hans:'删除此横幅？', hant:'刪除此橫幅？'},
+  // Blog
+  blog_title:      {en:'Blog / News Articles', hans:'新闻文章', hant:'新聞文章'},
+  blog_desc:       {en:'Manage articles shown on the <strong>Hong Kong News</strong> page.', hans:'管理<strong>香港新闻</strong>页面上显示的文章。', hant:'管理<strong>香港新聞</strong>頁面上顯示的文章。'},
+  blog_img_hint:   {en:'Card images: <strong>800&times;600px</strong> (4:3). Hero images: <strong>1200&times;525px</strong> (16:7). Images are auto-resized on upload.', hans:'卡片图片: <strong>800&times;600px</strong> (4:3)。大图: <strong>1200&times;525px</strong> (16:7)。上传时自动调整大小。', hant:'卡片圖片: <strong>800&times;600px</strong> (4:3)。大圖: <strong>1200&times;525px</strong> (16:7)。上傳時自動調整大小。'},
+  new_article:     {en:'+ New Article', hans:'+ 新增文章', hant:'+ 新增文章'},
+  edit_article:    {en:'Edit Article', hans:'编辑文章', hant:'編輯文章'},
+  new_article_h:   {en:'New Article', hans:'新增文章', hant:'新增文章'},
+  back:            {en:'Back', hans:'返回', hant:'返回'},
+  slug_url:        {en:'Slug (URL)', hans:'Slug (网址)', hant:'Slug (網址)'},
+  date:            {en:'Date', hans:'日期', hant:'日期'},
+  image:           {en:'Image', hans:'图片', hant:'圖片'},
+  upload:          {en:'Upload', hans:'上传', hant:'上傳'},
+  auto_resize:     {en:'Auto-resized to <strong>1200&times;525px</strong> on upload. Max 5MB.', hans:'上传时自动调整为 <strong>1200&times;525px</strong>。最大5MB。', hant:'上傳時自動調整為 <strong>1200&times;525px</strong>。最大5MB。'},
+  save_article:    {en:'Save Article', hans:'保存文章', hant:'儲存文章'},
+  cancel:          {en:'Cancel', hans:'取消', hant:'取消'},
+  edit:            {en:'Edit', hans:'编辑', hant:'編輯'},
+  del_short:       {en:'Del', hans:'删', hant:'刪'},
+  no_articles:     {en:'No blog articles yet.', hans:'暂无文章。', hant:'暫無文章。'},
+  article_saved:   {en:'Article saved', hans:'文章已保存', hant:'文章已儲存'},
+  del_article_q:   {en:'Delete this article?', hans:'删除此文章？', hant:'刪除此文章？'},
+  article_deleted: {en:'Article deleted', hans:'文章已删除', hant:'文章已刪除'},
+  // My Account
+  my_account:      {en:'My Account', hans:'我的帐户', hant:'我的帳戶'},
+  change_pwd:      {en:'Change Password', hans:'修改密码', hant:'修改密碼'},
+  current_pwd:     {en:'Current Password', hans:'当前密码', hant:'目前密碼'},
+  new_pwd:         {en:'New Password', hans:'新密码', hant:'新密碼'},
+  confirm_pwd:     {en:'Confirm New Password', hans:'确认新密码', hant:'確認新密碼'},
+  update_pwd:      {en:'Update Password', hans:'更新密码', hant:'更新密碼'},
+  twofa_title:     {en:'Two-Factor Authentication', hans:'双重身份验证', hant:'雙重身份驗證'},
+  twofa_on:        {en:'2FA Enabled', hans:'2FA 已启用', hant:'2FA 已啟用'},
+  twofa_off:       {en:'2FA Disabled', hans:'2FA 已停用', hant:'2FA 已停用'},
+  twofa_on_desc:   {en:'Two-factor authentication is active. You will need your authenticator app to login.', hans:'双重身份验证已激活。登录时需要验证器应用。', hant:'雙重身份驗證已啟用。登入時需要驗證器應用程式。'},
+  twofa_off_desc:  {en:'Enable 2FA for extra security. You will need an authenticator app like Google Authenticator.', hans:'启用2FA以增强安全性。您需要Google Authenticator等验证器应用。', hant:'啟用2FA以增強安全性。您需要Google Authenticator等驗證器應用程式。'},
+  disable_2fa:     {en:'Disable 2FA', hans:'停用 2FA', hant:'停用 2FA'},
+  setup_2fa:       {en:'Setup 2FA', hans:'设置 2FA', hant:'設定 2FA'},
+  // User Management
+  user_mgmt:       {en:'User Management', hans:'用户管理', hant:'用戶管理'},
+  users_total:     {en:' users total', hans:' 个用户', hant:' 個用戶'},
+  add_new_user:    {en:'Add New User', hans:'新增用户', hant:'新增用戶'},
+  role:            {en:'Role', hans:'角色', hant:'角色'},
+  add_user:        {en:'Add User', hans:'新增用户', hant:'新增用戶'},
+  you:             {en:'You', hans:'你', hant:'你'},
+  disabled_label:  {en:'(Disabled)', hans:'（已停用）', hant:'（已停用）'},
+  enable:          {en:'Enable', hans:'启用', hant:'啟用'},
+  disable:         {en:'Disable', hans:'停用', hant:'停用'},
+  remove:          {en:'Remove', hans:'移除', hant:'移除'},
+  reset_2fa:       {en:'Reset 2FA', hans:'重置 2FA', hant:'重設 2FA'},
+  // Security
+  security_title:  {en:'Security Settings', hans:'安全设定', hant:'安全設定'},
+  security_desc:   {en:'Manage IP restrictions, session timeout, and view audit log.', hans:'管理IP限制、会话超时和查看审计日志。', hant:'管理IP限制、工作階段逾時和檢視稽核日誌。'},
+  security_overview:{en:'Security Overview', hans:'安全概况', hant:'安全概況'},
+  ip_whitelist:    {en:'IP Whitelist', hans:'IP 白名单', hant:'IP 白名單'},
+  session_timeout: {en:'Session Timeout', hans:'会话超时', hant:'工作階段逾時'},
+  audit_log:       {en:'Login Audit Log', hans:'登录审计日志', hant:'登入稽核日誌'},
+  clear_log:       {en:'Clear Log', hans:'清除日志', hant:'清除日誌'},
+  clear_log_q:     {en:'Clear audit log?', hans:'清除审计日志？', hant:'清除稽核日誌？'},
+  ip_addr:         {en:'IP Address', hans:'IP 地址', hant:'IP 地址'},
+  label_opt:       {en:'Label (optional)', hans:'标签（可选）', hant:'標籤（可選）'},
+  add_ip:          {en:'Add IP', hans:'添加IP', hant:'新增IP'},
+  add_my_ip:       {en:'Add My Current IP', hans:'添加我当前的IP', hant:'新增我目前的IP'},
+  timeout_min:     {en:'Timeout (minutes)', hans:'超时（分钟）', hant:'逾時（分鐘）'},
+  save:            {en:'Save', hans:'保存', hant:'儲存'},
+  no_log:          {en:'No log entries yet.', hans:'暂无日志。', hant:'暫無日誌。'},
+  popup_blocked:   {en:'Pop-up blocked', hans:'弹窗被阻止', hant:'彈出視窗被阻擋'},
+  select_first:    {en:'Select a page first', hans:'请先选择页面', hant:'請先選擇頁面'}
+};
+function CL(key){ var lang=window.currentLang||'zh-Hant'; var e=CMS_I18N[key]; if(!e) return key; if(lang==='en') return e.en; if(lang==='zh-Hans') return e.hans; return e.hant; }
+
 var CMS_KEY = "ecap_cms_pages";
 var CMS_FILES_KEY = "ecap_cms_files";
 var CMS_USERS_KEY = "ecap_cms_users";
@@ -195,13 +358,13 @@ function adminView(){
   if(!isAdminLoggedIn()){
     return '<section class="admin-login"><div class="admin-login-box">'
       +'<div class="login-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--brand)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>'
-      +'<h2>CMS Admin</h2>'
-      +'<p class="login-sub">Please login to manage website content</p>'
+      +'<h2>'+CL('cms_admin')+'</h2>'
+      +'<p class="login-sub">'+CL('login_sub')+'</p>'
       +'<form onsubmit="return window._adminLogin(event)">'
-      +'<div class="login-field"><label>Username</label><input type="text" id="adminUser" value="admin" autocomplete="username" oninput="var t=document.getElementById(\x27totpField\x27);if(t)t.style.display=get2FAConfig()[this.value.trim()]?\x27\x27:\x27none\x27"/></div>'
-      +'<div class="login-field"><label>Password</label><input type="password" id="adminPass" placeholder="Enter password" autocomplete="current-password"/></div>'
-      +'<div class="login-field" id="totpField" style="display:none"><label>2FA Code</label><input type="text" id="adminTOTP" placeholder="6-digit code" maxlength="6" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*" style="letter-spacing:4px;font-size:18px;text-align:center"/></div>'
-      +'<button type="submit" class="login-btn" id="loginBtn">Login</button>'
+      +'<div class="login-field"><label>'+CL('username')+'</label><input type="text" id="adminUser" value="admin" autocomplete="username" oninput="var t=document.getElementById(\x27totpField\x27);if(t)t.style.display=get2FAConfig()[this.value.trim()]?\x27\x27:\x27none\x27"/></div>'
+      +'<div class="login-field"><label>'+CL('password')+'</label><input type="password" id="adminPass" placeholder="'+CL('enter_pwd')+'" autocomplete="current-password"/></div>'
+      +'<div class="login-field" id="totpField" style="display:none"><label>'+CL('twofa_code')+'</label><input type="text" id="adminTOTP" placeholder="'+CL('six_digit')+'" maxlength="6" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*" style="letter-spacing:4px;font-size:18px;text-align:center"/></div>'
+      +'<button type="submit" class="login-btn" id="loginBtn">'+CL('login')+'</button>'
       +'<div class="login-err" id="loginErr"></div>'
       +'</form>'
       +'</div></section>';
@@ -227,8 +390,8 @@ function adminView(){
   return '<div class="cms-layout">'
     // Sidebar
     +'<aside class="cms-sidebar">'
-    +'<div class="cms-sidebar-hdr"><h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>網站頁面</h2><p>共 '+allPages.length+' 個頁面</p></div>'
-    +'<div class="cms-search"><input type="text" id="cmsSearch" placeholder="搜尋頁面..." oninput="window._cmsFilter(this.value)"/></div>'
+    +'<div class="cms-sidebar-hdr"><h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'+CL('sidebar_title')+'</h2><p>'+allPages.length+CL('sidebar_count')+'</p></div>'
+    +'<div class="cms-search"><input type="text" id="cmsSearch" placeholder="'+CL('search_pages')+'" oninput="window._cmsFilter(this.value)"/></div>'
     +'<div class="cms-page-list" id="cmsPageList">'
     + allPages.map(function(slug){
         var edited = cms[slug] ? ' edited' : '';
@@ -242,7 +405,7 @@ function adminView(){
     // Main
     +'<div class="cms-main">'
     // Compact header: logo text + user info only
-    +'<div class="cms-main-header"><h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>內容管理系統</h3>'
+    +'<div class="cms-main-header"><h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>'+CL('cms_title')+'</h3>'
     +'<div class="cms-header-acts">'
     +'<div class="cms-lang-switch">'
     +'<button class="cms-lang-btn'+(window.currentLang==='zh-Hant'?' active':'')+'" onclick="window.setLang(\'zh-Hant\')">繁</button>'
@@ -250,18 +413,18 @@ function adminView(){
     +'<button class="cms-lang-btn'+(window.currentLang==='en'?' active':'')+'" onclick="window.setLang(\'en\')">EN</button>'
     +'</div>'
     +'<span class="role-badge role-'+_curRole+'" style="margin-left:4px">'+_curRole+'</span>'
-    +'<button class="admin-btn secondary" onclick="window._adminLogout()" style="margin-left:4px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> 登出</button>'
+    +'<button class="admin-btn secondary" onclick="window._adminLogout()" style="margin-left:4px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> '+CL('logout')+'</button>'
     +'</div></div>'
     // Section bar with tabs + tools on the right
     +'<div class="cms-section-bar">'
     +'<div class="cms-section-tabs">'
-    +'<button class="cms-section-btn active" id="stab_pages" onclick="window._cmsSectionSwitch(\'pages\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> 頁面內容</button>'
-    +'<button class="cms-section-btn" id="stab_banners" onclick="window._cmsSectionSwitch(\'banners\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> 首頁橫幅</button>'
-    +'<button class="cms-section-btn" id="stab_blog" onclick="window._cmsSectionSwitch(\'blog\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> 新聞文章</button>'
-    +'<button class="cms-section-btn" id="stab_files" onclick="window._cmsSectionSwitch(\'files\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> 檔案下載</button>'
-    +'<button class="cms-section-btn" id="stab_account" onclick="window._cmsSectionSwitch(\'account\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> 我的帳戶</button>'
-    +(_isAdmin?'<button class="cms-section-btn" id="stab_users" onclick="window._cmsSectionSwitch(\'users\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg> 用戶管理</button>':'')
-    +(_isAdmin?'<button class="cms-section-btn" id="stab_security" onclick="window._cmsSectionSwitch(\'security\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> 安全設定</button>':'')
+    +'<button class="cms-section-btn active" id="stab_pages" onclick="window._cmsSectionSwitch(\'pages\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> '+CL('tab_pages')+'</button>'
+    +'<button class="cms-section-btn" id="stab_banners" onclick="window._cmsSectionSwitch(\'banners\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> '+CL('tab_banners')+'</button>'
+    +'<button class="cms-section-btn" id="stab_blog" onclick="window._cmsSectionSwitch(\'blog\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> '+CL('tab_blog')+'</button>'
+    +'<button class="cms-section-btn" id="stab_files" onclick="window._cmsSectionSwitch(\'files\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> '+CL('tab_files')+'</button>'
+    +'<button class="cms-section-btn" id="stab_account" onclick="window._cmsSectionSwitch(\'account\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> '+CL('tab_account')+'</button>'
+    +(_isAdmin?'<button class="cms-section-btn" id="stab_users" onclick="window._cmsSectionSwitch(\'users\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg> '+CL('tab_users')+'</button>':'')
+    +(_isAdmin?'<button class="cms-section-btn" id="stab_security" onclick="window._cmsSectionSwitch(\'security\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> '+CL('tab_security')+'</button>':'')
     +'</div>'
     // Tools on right side of section bar
     +(_isAdmin ? '<div class="cms-section-tools">'
@@ -272,7 +435,7 @@ function adminView(){
     +'</div>' : '')
     +'</div>'
     +'<div class="cms-editor-area" id="cmsEditor">'
-    +'<div class="cms-empty"><div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><p>從左側選擇頁面開始編輯</p></div>'
+    +'<div class="cms-empty"><div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><p>'+CL('select_page')+'</p></div>'
     +'</div></div></div>';
 }
 // Expose for router
@@ -306,16 +469,16 @@ window._adminLogin = function(e){
   var btn = document.getElementById("loginBtn");
   var errEl = document.getElementById("loginErr");
   btn.disabled = true;
-  btn.textContent = "Verifying...";
+  btn.textContent = CL('verifying');
 
   // Check rate limiting
   var lockMins = isLockedOut(user);
   if(lockMins){
     addAuditLog('login_locked', 'User: '+user+', locked for '+lockMins+' min');
-    errEl.textContent = "Too many failed attempts. Try again in "+lockMins+" minutes.";
+    errEl.textContent = CL('too_many')+lockMins+CL('minutes');
     errEl.style.color='';
     btn.disabled = false;
-    btn.textContent = "Login";
+    btn.textContent = CL('login');
     return false;
   }
 
@@ -323,20 +486,20 @@ window._adminLogin = function(e){
   checkIpWhitelist().then(function(ipOk){
     if(!ipOk){
       addAuditLog('login_blocked_ip', 'User: '+user+', IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown'));
-      errEl.textContent = "Access denied. Your IP is not in the whitelist.";
+      errEl.textContent = CL('ip_denied');
       errEl.style.color='';
       btn.disabled = false;
-      btn.textContent = "Login";
+      btn.textContent = CL('login');
       return;
     }
 
     checkAdminLogin(user, pass).then(function(matched){
     if(matched && matched.error==='disabled'){
       addAuditLog('login_disabled', 'User: '+user);
-      errEl.textContent = "Account disabled. Contact admin.";
+      errEl.textContent = CL('acct_disabled');
       errEl.style.color='';
       btn.disabled = false;
-      btn.textContent = "Login";
+      btn.textContent = CL('login');
       return;
     }
     if(matched){
@@ -349,14 +512,14 @@ window._adminLogin = function(e){
         if(totpField.style.display==='none'){
           totpField.style.display='';
           totpInput.focus();
-          errEl.textContent='Enter your 2FA code from authenticator app.';
+          errEl.textContent=CL('enter_2fa');
           errEl.style.color='var(--brand)';
           btn.disabled=false;
-          btn.textContent='Verify 2FA';
+          btn.textContent=CL('verify_2fa');
           return;
         }
         var code = totpInput.value.replace(/\s/g,'');
-        if(code.length!==6){errEl.textContent='Enter 6-digit code.';errEl.style.color='';btn.disabled=false;btn.textContent='Verify 2FA';return;}
+        if(code.length!==6){errEl.textContent='Enter 6-digit code.';errEl.style.color='';btn.disabled=false;btn.textContent=CL('verify_2fa');return;}
         verifyTOTP(userSecret, code).then(function(valid){
           if(valid){
             sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
@@ -372,10 +535,10 @@ window._adminLogin = function(e){
             window.route();
           } else {
             addAuditLog('login_2fa_fail', 'User: '+(matched.username||user));
-            errEl.textContent='Invalid 2FA code. Try again.';
+            errEl.textContent=CL('invalid_2fa');
             errEl.style.color='';
             btn.disabled=false;
-            btn.textContent='Verify 2FA';
+            btn.textContent=CL('verify_2fa');
             totpInput.value='';
             totpInput.focus();
           }
@@ -399,10 +562,10 @@ window._adminLogin = function(e){
       addAuditLog('login_fail', 'User: '+user);
       var attempts = getLoginAttempts();
       var remaining = 5 - ((attempts[user]||{}).count||0);
-      errEl.textContent = "Incorrect username or password." + (remaining <= 2 && remaining > 0 ? " "+remaining+" attempts remaining." : "");
+      errEl.textContent = CL('wrong_pwd') + (remaining <= 2 && remaining > 0 ? " "+remaining+CL('attempts_left') : "");
       errEl.style.color='';
       btn.disabled = false;
-      btn.textContent = "Login";
+      btn.textContent = CL('login');
     }
   });
   });
@@ -421,7 +584,7 @@ function _startSessionTimer(){
       addAuditLog('session_timeout', 'Auto-logout after '+timeoutMin+' minutes');
       sessionStorage.removeItem(ADMIN_SESSION_KEY);
       clearInterval(_sessionTimerHandle);
-      showToast('Session expired. Please login again.');
+      showToast(CL('session_expired'));
       location.hash='#/admin';
       window.route();
     }
@@ -443,7 +606,7 @@ window._cmsFilter = function(q){
 };
 
 window._cmsPreviewPage = function(){
-  if(!_cmsCurrentSlug){ showToast("Select a page first"); return; }
+  if(!_cmsCurrentSlug){ showToast(CL('select_first')); return; }
   var slug = _cmsCurrentSlug;
   var bodyEl = document.getElementById('cms_b_'+slug+'_'+currentLang);
   var titleEl = document.getElementById('cms_t_'+slug+'_'+currentLang);
@@ -453,7 +616,7 @@ window._cmsPreviewPage = function(){
   var css = '';
   try{ css = document.querySelector('style').textContent; }catch(e){}
   var pw = window.open('', '_blank', 'width=960,height=720,scrollbars=yes,resizable=yes');
-  if(!pw){ showToast("Pop-up blocked. Allow pop-ups and try again."); return; }
+  if(!pw){ showToast(CL('popup_blocked')); return; }
   pw.document.write('<!DOCTYPE html><html lang="'+currentLang+'"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Preview — '+title+'</title><style>'+css+'</style></head><body style="padding-top:0"><div style="background:#f59e0b;color:#fff;font-size:12px;font-weight:600;padding:6px 20px;text-align:center;letter-spacing:.5px">PREVIEW MODE — unsaved changes included</div><section class="subpage"><div class="mw"><div class="subpage-header"><div class="breadcrumb">Preview</div><h1>'+title+'</h1></div><div class="subpage-body">'+body+'</div></div></section></body></html>');
   pw.document.close();
 };
@@ -472,11 +635,11 @@ window._cmsEditPage = function(slug){
     var taId = 'cms_b_'+slug+'_'+lang;
     var tbHtml = _canEditPages ? _cmsBuildToolbar(taId) : '';
     html += '<div class="cms-field-group"><h4>'+esc(langNames[lang])+' ('+lang+')</h4>'
-      +'<div class="admin-field"><label>Title</label><input type="text" id="cms_t_'+slug+'_'+lang+'" value="'+escAttr(title)+'"'+(!_canEditPages?' readonly style="background:#f3f4f6;color:var(--text-muted)"':'')+'/></div>'
+      +'<div class="admin-field"><label>'+CL('title_label')+'</label><input type="text" id="cms_t_'+slug+'_'+lang+'" value="'+escAttr(title)+'"'+(!_canEditPages?' readonly style="background:#f3f4f6;color:var(--text-muted)"':'')+'/></div>'
       +'<div class="admin-field">'
       +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
-      +'<label style="margin:0">Body (HTML)</label>'
-      +(_canEditPages ? '<button type="button" class="cms-insert-file-btn" data-slug="'+slug+'" data-lang="'+lang+'" onclick="event.preventDefault();event.stopPropagation();window._cmsShowFilePicker(this)">Insert Download Link</button>' : '<span class="role-badge role-viewer">Read-only</span>')
+      +'<label style="margin:0">'+CL('body_label')+'</label>'
+      +(_canEditPages ? '<button type="button" class="cms-insert-file-btn" data-slug="'+slug+'" data-lang="'+lang+'" onclick="event.preventDefault();event.stopPropagation();window._cmsShowFilePicker(this)">'+CL('insert_dl')+'</button>' : '<span class="role-badge role-viewer">'+CL('read_only')+'</span>')
       +'</div>'
       +tbHtml
       +'<textarea id="'+taId+'" style="min-height:200px;font-family:monospace;font-size:13px"'+(!_canEditPages?' readonly':'')+'>'+escHtml(body)+'</textarea>'
@@ -484,8 +647,8 @@ window._cmsEditPage = function(slug){
   });
 
   html += '<div style="display:flex;gap:8px;margin-top:8px">'
-    +(_canEditPages ? '<button class="admin-btn primary" onclick="window._cmsSavePage(\''+slug+'\')"> Save Changes</button>' : '<span style="font-size:12px;color:var(--text-muted);align-self:center">Viewer mode — cannot save</span>')
-    +'<a href="#/page/'+esc(slug)+'" target="_blank" class="admin-btn secondary" style="text-decoration:none;display:inline-flex;align-items:center"> View Page</a></div>';
+    +(_canEditPages ? '<button class="admin-btn primary" onclick="window._cmsSavePage(\''+slug+'\')">'+CL('save_changes')+'</button>' : '<span style="font-size:12px;color:var(--text-muted);align-self:center">'+CL('viewer_nosave')+'</span>')
+    +'<a href="#/page/'+esc(slug)+'" target="_blank" class="admin-btn secondary" style="text-decoration:none;display:inline-flex;align-items:center">'+CL('view_page')+'</a></div>';
 
   if(_cmsPreviewOn){
     var previewPg = getPage(slug, currentLang);
@@ -535,7 +698,7 @@ window._cmsSavePage = function(slug){
     }
   });
   saveCmsPages(cms);
-  showToast("Saved: " + slug);
+  showToast(CL('saved') + slug);
   // Mark sidebar item as edited
   document.querySelectorAll('.cms-page-item').forEach(function(el){
     if(el.getAttribute('data-slug') === slug) el.classList.add('edited');
@@ -564,7 +727,7 @@ window._cmsExport = function(){
   a.download = "ecapital-cms-"+new Date().toISOString().slice(0,10)+".json";
   a.click();
   URL.revokeObjectURL(a.href);
-  showToast("Exported JSON (pages+banners+blog+files)");
+  showToast(CL('exported'));
 };
 
 window._cmsImport = function(e){
@@ -584,18 +747,18 @@ window._cmsImport = function(e){
         // Legacy: entire object is pages
         saveCmsPages(data);
       }
-      showToast("Imported successfully");
+      showToast(CL('imported'));
       window.route();
-    } catch(err){ showToast("Invalid JSON file"); }
+    } catch(err){ showToast(CL('invalid_json')); }
   };
   reader.readAsText(file);
   e.target.value = "";
 };
 
 window._cmsReset = function(){
-  if(confirm("Reset all CMS edits to default?")) {
+  if(confirm(CL('reset_confirm'))) {
     localStorage.removeItem(CMS_KEY);
-    showToast("Reset to defaults");
+    showToast(CL('reset_done'));
     window.route();
   }
 };
@@ -615,7 +778,7 @@ window._cmsSectionSwitch = function(sec){
   var sidebar = document.querySelector(".cms-sidebar");
   if(sidebar) sidebar.style.display = sec==="pages" ? "" : "none";
   if(sec==="pages") {
-    document.getElementById("cmsEditor").innerHTML = '<div class="cms-empty"><div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><p>Select a page from the sidebar to start editing</p></div>';
+    document.getElementById("cmsEditor").innerHTML = '<div class="cms-empty"><div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><p>'+CL('select_page')+'</p></div>';
   } else if(sec==="files") {
     window._cmsFilesView();
   } else if(sec==="account") {
@@ -645,30 +808,30 @@ window._cmsFilesView = function(){
       +'<td class="file-size">'+sizeStr+'</td>'
       +'<td style="font-size:12px;color:var(--text-muted)">'+dateStr+'<br/>'+esc(byStr)+'</td>'
       +'<td style="white-space:nowrap">'
-      +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px;margin-right:4px" onclick="window._cmsFileCopy('+i+')">Copy Link</button>'
-      +(_canDelFile?'<button class="admin-btn danger" style="font-size:11px;padding:4px 10px" onclick="window._cmsFileDelete('+i+')">Delete</button>':'')
+      +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px;margin-right:4px" onclick="window._cmsFileCopy('+i+')">'+CL('copy_link')+'</button>'
+      +(_canDelFile?'<button class="admin-btn danger" style="font-size:11px;padding:4px 10px" onclick="window._cmsFileDelete('+i+')">'+CL('delete')+'</button>':'')
       +'</td></tr>';
-  }).join("") : '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:24px">No files yet.'+(  _canUpload?' Upload a file or add a URL below.':' Contact an admin to upload files.')+'</td></tr>';
+  }).join("") : '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:24px">'+CL('no_files')+(  _canUpload?CL('upload_hint'):CL('viewer_hint'))+'</td></tr>';
 
   document.getElementById("cmsEditor").innerHTML =
     '<div class="cms-panel">'
-    +'<h3 style="font-size:20px;font-weight:700;margin-bottom:6px">Downloads Manager</h3>'
-    +'<p style="color:var(--text-muted);font-size:13px;margin-bottom:20px">Upload files (stored in browser) or add external links. Copy the HTML snippet to paste into any page body.</p>'
+    +'<h3 style="font-size:20px;font-weight:700;margin-bottom:6px">'+CL('files_title')+'</h3>'
+    +'<p style="color:var(--text-muted);font-size:13px;margin-bottom:20px">'+CL('files_desc')+'</p>'
     +(_canUpload ? '<div class="cms-upload-zone" id="cmsDropZone">' : '<div style="display:none">')
     +'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom:8px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>'
-    +'<p><strong>Drag &amp; drop</strong> PDF, DOC, DOCX, JPG or PNG files here</p>'
-    +'<p style="font-size:12px;color:var(--text-muted)">or click to browse (max 2MB each)</p>'
+    +'<p><strong>'+CL('drag_drop')+'</strong>'+CL('files_here')+'</p>'
+    +'<p style="font-size:12px;color:var(--text-muted)">'+CL('or_browse')+'</p>'
     +'<input type="file" id="cmsFileInput" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="display:none" onchange="window._cmsFileUpload(event)"/>'
-    +'<button class="admin-btn primary" onclick="window._cmsChooseFile()" style="margin-top:8px">Choose File</button>'
+    +'<button class="admin-btn primary" onclick="window._cmsChooseFile()" style="margin-top:8px">'+CL('choose_file')+'</button>'
     +'</div>'
     +(_canUpload ? '<div class="cms-add-url-row">' : '<div style="display:none">')
-    +'<input type="text" id="cmsUrlName" placeholder="Link title (e.g. Account Opening Form)"/>'
-    +'<input type="url" id="cmsUrlHref" placeholder="External URL (https://...)"/>'
-    +'<button class="admin-btn secondary" onclick="window._cmsAddUrl()">Add URL</button>'
+    +'<input type="text" id="cmsUrlName" placeholder="'+CL('link_title')+'"/>'
+    +'<input type="url" id="cmsUrlHref" placeholder="'+CL('ext_url')+'"/>'
+    +'<button class="admin-btn secondary" onclick="window._cmsAddUrl()">'+CL('add_url')+'</button>'
     +'</div>'
     +(_canUpload ? '' : '</div>')
-    +(   _canUpload ? '' : '<div style="background:#fef9c3;border:1px solid #fde68a;border-radius:6px;padding:10px 14px;font-size:13px;margin-bottom:12px">View only — editor or admin access needed to upload or delete files.</div>')
-    +'<table class="cms-files-table"><thead><tr><th>Name / Description</th><th>Type</th><th>Size</th><th>Uploaded</th><th>Actions</th></tr></thead><tbody>'+rows+'</tbody></table>'
+    +(   _canUpload ? '' : '<div style="background:#fef9c3;border:1px solid #fde68a;border-radius:6px;padding:10px 14px;font-size:13px;margin-bottom:12px">'+CL('view_only')+'</div>')
+    +'<table class="cms-files-table"><thead><tr><th>'+CL('name_desc')+'</th><th>'+CL('type')+'</th><th>'+CL('size')+'</th><th>'+CL('uploaded')+'</th><th>'+CL('actions')+'</th></tr></thead><tbody>'+rows+'</tbody></table>'
     +'</div>';
   setTimeout(function(){ window._cmsInitDragDrop(); },50);
 };
@@ -726,7 +889,7 @@ window._cmsFileUpload = function(e){
 window._cmsAddUrl = function(){
   var name = document.getElementById("cmsUrlName").value.trim();
   var url = document.getElementById("cmsUrlHref").value.trim();
-  if(!name || !url){ showToast("Enter both name and URL"); return; }
+  if(!name || !url){ showToast(CL('enter_both')); return; }
   var files = getCmsFiles();
   files.push({id:"u"+Date.now(), name:name, desc:"", type:"external", size:0, url:url, isLocal:false, uploadedAt:new Date().toISOString(), uploadedBy:sessionStorage.getItem("ecap_admin_user")||"admin"});
   saveCmsFiles(files);
@@ -740,11 +903,11 @@ window._cmsFileCopy = function(idx){
   var snippet = f.isLocal
     ? '<a href="'+f.url+'" download="'+f.name.replace(/"/g,"")+'">'+f.name+'</a>'
     : '<a href="'+f.url.replace(/"/g,"")+'" target="_blank" rel="noopener">'+f.name+'</a>';
-  navigator.clipboard ? navigator.clipboard.writeText(snippet).then(function(){ showToast("Copied to clipboard!"); }) : showToast(snippet);
+  navigator.clipboard ? navigator.clipboard.writeText(snippet).then(function(){ showToast(CL('copied')); }) : showToast(snippet);
 };
 
 window._cmsFileDelete = function(idx){
-  if(!confirm("Delete this file/link?")) return;
+  if(!confirm(CL('del_file_q'))) return;
   var files = getCmsFiles();
   files.splice(idx,1);
   saveCmsFiles(files);
@@ -782,25 +945,25 @@ window._cmsUsersView = function(tab){
 
 function _cmsAccountTab(currentUser, cfg2fa){
   return '<div class="cms-section-box">'
-    +'<h3 style="font-size:20px;font-weight:700;margin-bottom:20px">My Account</h3>'
+    +'<h3 style="font-size:20px;font-weight:700;margin-bottom:20px">'+CL('my_account')+'</h3>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start">'
     // Left: Change Password
     +'<div class="cms-card-box">'
-    +'<h4 style="font-size:16px;font-weight:700;margin-bottom:16px">Change Password</h4>'
-    +'<div class="admin-field"><label>Current Password</label><input type="password" id="pwdCurrent" placeholder="Current password"/></div>'
-    +'<div class="admin-field"><label>New Password</label><input type="password" id="pwdNew" placeholder="New password (min 6 chars)"/></div>'
-    +'<div class="admin-field"><label>Confirm New Password</label><input type="password" id="pwdConfirm" placeholder="Confirm new password"/></div>'
-    +'<button class="admin-btn primary" onclick="window._cmsChangePassword()">Update Password</button>'
+    +'<h4 style="font-size:16px;font-weight:700;margin-bottom:16px">'+CL('change_pwd')+'</h4>'
+    +'<div class="admin-field"><label>'+CL('current_pwd')+'</label><input type="password" id="pwdCurrent" placeholder="'+CL('current_pwd')+'"/></div>'
+    +'<div class="admin-field"><label>'+CL('new_pwd')+'</label><input type="password" id="pwdNew" placeholder="'+CL('new_pwd')+'"/></div>'
+    +'<div class="admin-field"><label>'+CL('confirm_pwd')+'</label><input type="password" id="pwdConfirm" placeholder="'+CL('confirm_pwd')+'"/></div>'
+    +'<button class="admin-btn primary" onclick="window._cmsChangePassword()">'+CL('update_pwd')+'</button>'
     +'<div id="pwdMsg" style="font-size:13px;margin-top:8px;min-height:20px"></div>'
     +'</div>'
     // Right: My 2FA
     +'<div class="cms-card-box">'
-    +'<h4 style="font-size:16px;font-weight:700;margin-bottom:16px">Two-Factor Authentication</h4>'
+    +'<h4 style="font-size:16px;font-weight:700;margin-bottom:16px">'+CL('twofa_title')+'</h4>'
     +'<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">'
-    +'<span style="font-size:14px;padding:4px 10px;border-radius:100px;font-weight:700;'+(cfg2fa[currentUser]?'background:#d1fae5;color:#059669':'background:#fee2e2;color:#dc2626')+'">'+(cfg2fa[currentUser]?'2FA Enabled':'2FA Disabled')+'</span>'
+    +'<span style="font-size:14px;padding:4px 10px;border-radius:100px;font-weight:700;'+(cfg2fa[currentUser]?'background:#d1fae5;color:#059669':'background:#fee2e2;color:#dc2626')+'">'+(cfg2fa[currentUser]?CL('twofa_on'):CL('twofa_off'))+'</span>'
     +'</div>'
-    +'<p style="font-size:14px;color:var(--text-sec);line-height:1.6;margin-bottom:16px">'+(cfg2fa[currentUser]?'Two-factor authentication is active. You will need your authenticator app to login.':'Enable 2FA for extra security. You will need an authenticator app like Google Authenticator.')+'</p>'
-    +'<button class="admin-btn '+(cfg2fa[currentUser]?'danger':'primary')+'" onclick="window._cms2FASetup(sessionStorage.getItem(\'ecap_admin_user\')||\'admin\')">'+(cfg2fa[currentUser]?'Disable 2FA':'Setup 2FA')+'</button>'
+    +'<p style="font-size:14px;color:var(--text-sec);line-height:1.6;margin-bottom:16px">'+(cfg2fa[currentUser]?CL('twofa_on_desc'):CL('twofa_off_desc'))+'</p>'
+    +'<button class="admin-btn '+(cfg2fa[currentUser]?'danger':'primary')+'" onclick="window._cms2FASetup(sessionStorage.getItem(\'ecap_admin_user\')||\'admin\')">'+(cfg2fa[currentUser]?CL('disable_2fa'):CL('setup_2fa'))+'</button>'
     +'</div>'
     +'</div>'
     +'</div>';
@@ -814,7 +977,7 @@ function _cmsUserMgmtTab(users, currentUser, cfg2fa){
     return '<div class="cms-user-row'+(disabled?' user-disabled':'')+'">'
       +'<div class="u-avatar'+(disabled?' disabled':'')+'">'+esc(u.username[0].toUpperCase())+'</div>'
       +'<div style="flex:1;min-width:0">'
-      +'<div class="u-name">'+esc(u.username)+(isMe?' <span class="u-tag">You</span>':'')+(disabled?' <span style="color:#dc2626;font-size:12px;font-weight:600">(Disabled)</span>':'')+'</div>'
+      +'<div class="u-name">'+esc(u.username)+(isMe?' <span class="u-tag">'+CL('you')+'</span>':'')+(disabled?' <span style="color:#dc2626;font-size:12px;font-weight:600">'+CL('disabled_label')+'</span>':'')+'</div>'
       +'<div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap">'
       +'<span class="role-badge role-'+uRole+'">'+uRole+'</span>'
       +'<span style="font-size:11px;padding:2px 8px;border-radius:100px;font-weight:600;'+(cfg2fa[u.username]?'background:#d1fae5;color:#059669':'background:#fee2e2;color:#dc2626')+'">'+(cfg2fa[u.username]?'2FA ON':'2FA OFF')+'</span>'
@@ -822,30 +985,30 @@ function _cmsUserMgmtTab(users, currentUser, cfg2fa){
       +'</div>'
       +'</div>'
       +'<div style="display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0">'
-      +(!isMe?'<button class="admin-btn secondary" style="font-size:12px;padding:5px 12px" onclick="window._cmsEditUser('+i+')">Edit</button>':'')
-      +(!isMe&&cfg2fa[u.username]?'<button class="admin-btn secondary" style="font-size:12px;padding:5px 12px" onclick="window._cmsReset2FA(\''+u.username+'\')">Reset 2FA</button>':'')
-      +(!isMe?'<button class="admin-btn '+(disabled?'primary':'secondary')+'" style="font-size:12px;padding:5px 12px" onclick="window._cmsToggleUser('+i+')">'+(disabled?'Enable':'Disable')+'</button>':'')
-      +(!isMe?'<button class="admin-btn danger" style="font-size:12px;padding:5px 14px" onclick="window._cmsUserDelete('+i+')">Remove</button>':'')
+      +(!isMe?'<button class="admin-btn secondary" style="font-size:12px;padding:5px 12px" onclick="window._cmsEditUser('+i+')">'+CL('edit')+'</button>':'')
+      +(!isMe&&cfg2fa[u.username]?'<button class="admin-btn secondary" style="font-size:12px;padding:5px 12px" onclick="window._cmsReset2FA(\''+u.username+'\')">'+CL('reset_2fa')+'</button>':'')
+      +(!isMe?'<button class="admin-btn '+(disabled?'primary':'secondary')+'" style="font-size:12px;padding:5px 12px" onclick="window._cmsToggleUser('+i+')">'+(disabled?CL('enable'):CL('disable'))+'</button>':'')
+      +(!isMe?'<button class="admin-btn danger" style="font-size:12px;padding:5px 14px" onclick="window._cmsUserDelete('+i+')">'+CL('remove')+'</button>':'')
       +'</div></div>';
   }).join("") : '<div style="color:var(--text-muted);font-size:14px;padding:8px 0">Using default admin account. Add users below to replace it.</div>';
 
   return '<div class="cms-section-box">'
-    +'<h3 style="font-size:20px;font-weight:700;margin-bottom:4px">User Management</h3>'
-    +'<p style="color:var(--text-muted);font-size:13px;margin-bottom:20px">'+(users.length||1)+' users total</p>'
+    +'<h3 style="font-size:20px;font-weight:700;margin-bottom:4px">'+CL('user_mgmt')+'</h3>'
+    +'<p style="color:var(--text-muted);font-size:13px;margin-bottom:20px">'+(users.length||1)+CL('users_total')+'</p>'
     +'<div class="cms-users-list" style="margin-bottom:24px">'+userRows+'</div>'
     // Add new user
     +'<div class="cms-card-box">'
-    +'<h4 style="font-size:16px;font-weight:700;margin-bottom:16px">Add New User</h4>'
+    +'<h4 style="font-size:16px;font-weight:700;margin-bottom:16px">'+CL('add_new_user')+'</h4>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
-    +'<div class="admin-field"><label>Username</label><input type="text" id="newUsername" placeholder="e.g. editor1"/></div>'
-    +'<div class="admin-field"><label>Password</label><input type="password" id="newUserPass" placeholder="Min 8 chars, mix upper/lower/numbers"/></div>'
+    +'<div class="admin-field"><label>'+CL('username')+'</label><input type="text" id="newUsername" placeholder="e.g. editor1"/></div>'
+    +'<div class="admin-field"><label>'+CL('password')+'</label><input type="password" id="newUserPass" placeholder="Min 8 chars, mix upper/lower/numbers"/></div>'
     +'</div>'
-    +'<div class="admin-field"><label>Role</label><select id="newUserRole" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--white)">'
+    +'<div class="admin-field"><label>'+CL('role')+'</label><select id="newUserRole" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--white)">'
     +'<option value="admin">Admin \u2014 Full access (pages, files, users, export)</option>'
     +'<option value="editor" selected>Editor \u2014 Edit pages & uploads, no user management</option>'
     +'<option value="viewer">Viewer \u2014 Read-only, cannot save or upload</option>'
     +'</select></div>'
-    +'<button class="admin-btn primary" onclick="window._cmsUserAdd()">Add User</button>'
+    +'<button class="admin-btn primary" onclick="window._cmsUserAdd()">'+CL('add_user')+'</button>'
     +'<div id="addUserMsg" style="font-size:13px;margin-top:8px;min-height:20px"></div>'
     +'</div>'
     +'</div>';
@@ -862,8 +1025,8 @@ function _cmsSecurityTab(){
       +'<span style="font-family:monospace;font-size:14px;flex:1">'+esc(item.ip)+'</span>'
       +'<span style="font-size:12px;color:var(--text-muted)">'+esc(item.label||'')+'</span>'
       +'<span style="font-size:11px;padding:2px 8px;border-radius:100px;font-weight:600;'+(item.enabled!==false?'background:#d1fae5;color:#059669':'background:#fee2e2;color:#dc2626')+'">'+(item.enabled!==false?'Active':'Disabled')+'</span>'
-      +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="window._cmsToggleIp('+i+')">'+(item.enabled!==false?'Disable':'Enable')+'</button>'
-      +'<button class="admin-btn danger" style="font-size:11px;padding:4px 10px" onclick="window._cmsRemoveIp('+i+')">Remove</button>'
+      +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="window._cmsToggleIp('+i+')">'+(item.enabled!==false?CL('disable'):CL('enable'))+'</button>'
+      +'<button class="admin-btn danger" style="font-size:11px;padding:4px 10px" onclick="window._cmsRemoveIp('+i+')">'+CL('remove')+'</button>'
       +'</div>';
   }).join('') : '<div style="color:var(--text-muted);font-size:13px;padding:8px 0">No IP restrictions. All IPs can access CMS.</div>';
 
@@ -879,14 +1042,14 @@ function _cmsSecurityTab(){
   }).join('');
 
   return '<div class="cms-section-box">'
-    +'<h3 style="font-size:20px;font-weight:700;margin-bottom:4px">Security Settings</h3>'
-    +'<p style="color:var(--text-muted);font-size:13px;margin-bottom:24px">Manage IP restrictions, session timeout, and view audit log.</p>'
+    +'<h3 style="font-size:20px;font-weight:700;margin-bottom:4px">'+CL('security_title')+'</h3>'
+    +'<p style="color:var(--text-muted);font-size:13px;margin-bottom:24px">'+CL('security_desc')+'</p>'
     // Security Status Overview
     +'<div class="cms-card-box" style="margin-bottom:24px;background:linear-gradient(135deg,rgba(180,21,64,.04),rgba(180,21,64,.08));border:1px solid rgba(180,21,64,.12)">'
-    +'<h4 style="font-size:16px;font-weight:700;margin-bottom:12px">Security Overview</h4>'
+    +'<h4 style="font-size:16px;font-weight:700;margin-bottom:12px">'+CL('security_overview')+'</h4>'
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px">'
-    +'<div>&#128274; <strong>IP Whitelist:</strong> '+(whitelist.length?'<span style="color:#059669">'+whitelist.filter(function(x){return x.enabled!==false}).length+' active IPs</span>':'<span style="color:#f59e0b">Off (all IPs allowed)</span>')+'</div>'
-    +'<div>&#9201; <strong>Session Timeout:</strong> '+timeout+' minutes</div>'
+    +'<div>&#128274; <strong>'+CL('ip_whitelist')+':</strong> '+(whitelist.length?'<span style="color:#059669">'+whitelist.filter(function(x){return x.enabled!==false}).length+' active IPs</span>':'<span style="color:#f59e0b">Off (all IPs allowed)</span>')+'</div>'
+    +'<div>&#9201; <strong>'+CL('session_timeout')+':</strong> '+timeout+' minutes</div>'
     +'<div>&#128272; <strong>2FA:</strong> '+(Object.keys(get2FAConfig()).length?'<span style="color:#059669">'+Object.keys(get2FAConfig()).length+' users enabled</span>':'<span style="color:#f59e0b">No users enabled</span>')+'</div>'
     +'<div>&#128737; <strong>Rate Limiting:</strong> <span style="color:#059669">5 attempts / 15 min lockout</span></div>'
     +'<div>&#128270; <strong>Session Fingerprint:</strong> <span style="color:#059669">Active</span></div>'
@@ -895,32 +1058,32 @@ function _cmsSecurityTab(){
     +'</div>'
     // IP Whitelist
     +'<div class="cms-card-box" style="margin-bottom:24px">'
-    +'<h4 style="font-size:16px;font-weight:700;margin-bottom:4px">IP Whitelist</h4>'
+    +'<h4 style="font-size:16px;font-weight:700;margin-bottom:4px">'+CL('ip_whitelist')+'</h4>'
     +'<p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">Only listed IPs can login to CMS. Leave empty to allow all IPs.'+(clientIp?' Your current IP: <strong>'+esc(clientIp)+'</strong>':'')+'</p>'
     +ipRows
     +'<div style="display:flex;gap:8px;margin-top:12px;align-items:end">'
-    +'<div class="admin-field" style="flex:1;margin:0"><label>IP Address</label><input type="text" id="newIpAddr" placeholder="e.g. 192.168.1.100"/></div>'
-    +'<div class="admin-field" style="flex:1;margin:0"><label>Label (optional)</label><input type="text" id="newIpLabel" placeholder="e.g. Office"/></div>'
-    +'<button class="admin-btn primary" onclick="window._cmsAddIp()" style="height:44px;white-space:nowrap">Add IP</button>'
+    +'<div class="admin-field" style="flex:1;margin:0"><label>'+CL('ip_addr')+'</label><input type="text" id="newIpAddr" placeholder="e.g. 192.168.1.100"/></div>'
+    +'<div class="admin-field" style="flex:1;margin:0"><label>'+CL('label_opt')+'</label><input type="text" id="newIpLabel" placeholder="e.g. Office"/></div>'
+    +'<button class="admin-btn primary" onclick="window._cmsAddIp()" style="height:44px;white-space:nowrap">'+CL('add_ip')+'</button>'
     +'</div>'
-    +'<button class="admin-btn secondary" style="margin-top:8px;font-size:12px" onclick="window._cmsAddMyIp()">Add My Current IP</button>'
+    +'<button class="admin-btn secondary" style="margin-top:8px;font-size:12px" onclick="window._cmsAddMyIp()">'+CL('add_my_ip')+'</button>'
     +'</div>'
     // Session Timeout
     +'<div class="cms-card-box" style="margin-bottom:24px">'
-    +'<h4 style="font-size:16px;font-weight:700;margin-bottom:12px">Session Timeout</h4>'
+    +'<h4 style="font-size:16px;font-weight:700;margin-bottom:12px">'+CL('session_timeout')+'</h4>'
     +'<div style="display:flex;gap:12px;align-items:center">'
-    +'<div class="admin-field" style="margin:0;flex:0 0 200px"><label>Timeout (minutes)</label><input type="number" id="sessionTimeout" value="'+timeout+'" min="5" max="480" style="width:100%"/></div>'
-    +'<button class="admin-btn primary" onclick="window._cmsSaveTimeout()" style="align-self:end;height:44px">Save</button>'
+    +'<div class="admin-field" style="margin:0;flex:0 0 200px"><label>'+CL('timeout_min')+'</label><input type="number" id="sessionTimeout" value="'+timeout+'" min="5" max="480" style="width:100%"/></div>'
+    +'<button class="admin-btn primary" onclick="window._cmsSaveTimeout()" style="align-self:end;height:44px">'+CL('save')+'</button>'
     +'</div>'
     +'<p style="font-size:12px;color:var(--text-muted);margin-top:8px">Auto-logout after inactivity. Current: '+timeout+' minutes.</p>'
     +'</div>'
     // Audit Log
     +'<div class="cms-card-box">'
     +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
-    +'<h4 style="font-size:16px;font-weight:700;margin:0">Login Audit Log</h4>'
-    +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="if(confirm(\'Clear audit log?\'))localStorage.removeItem(\''+CMS_AUDIT_KEY+'\');window._cmsUsersView(\'security\')">Clear Log</button>'
+    +'<h4 style="font-size:16px;font-weight:700;margin:0">'+CL('audit_log')+'</h4>'
+    +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="if(confirm(CL(\'clear_log_q\')))localStorage.removeItem(\''+CMS_AUDIT_KEY+'\');window._cmsUsersView(\'security\')">'+CL('clear_log')+'</button>'
     +'</div>'
-    +(auditRows||'<div style="color:var(--text-muted);font-size:13px">No log entries yet.</div>')
+    +(auditRows||'<div style="color:var(--text-muted);font-size:13px">'+CL('no_log')+'</div>')
     +'</div>'
     +'</div>';
 }
@@ -999,15 +1162,15 @@ window._cmsEditUser = function(idx){
   div.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center';
   div.innerHTML = '<div style="background:var(--white);border-radius:12px;padding:32px;max-width:440px;width:90%;box-shadow:0 12px 40px rgba(0,0,0,.2)">'
     +'<h3 style="margin:0 0 20px;font-size:18px;font-weight:700">Edit User: '+esc(u.username)+'</h3>'
-    +'<div class="admin-field"><label>Role</label><select id="editUserRole" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--white)">'
+    +'<div class="admin-field"><label>'+CL('role')+'</label><select id="editUserRole" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--white)">'
     +'<option value="admin"'+(u.role==='admin'?' selected':'')+'>Admin</option>'
     +'<option value="editor"'+(u.role==='editor'?' selected':'')+'>Editor</option>'
     +'<option value="viewer"'+(u.role==='viewer'?' selected':'')+'>Viewer</option>'
     +'</select></div>'
     +'<div class="admin-field"><label>New Password (leave blank to keep)</label><input type="password" id="editUserPass" placeholder="Min 6 characters"/></div>'
     +'<div style="display:flex;gap:8px;margin-top:16px">'
-    +'<button class="admin-btn primary" id="editUserSaveBtn">Save Changes</button>'
-    +'<button class="admin-btn secondary" id="editUserCancelBtn">Cancel</button>'
+    +'<button class="admin-btn primary" id="editUserSaveBtn">'+CL('save_changes')+'</button>'
+    +'<button class="admin-btn secondary" id="editUserCancelBtn">'+CL('cancel')+'</button>'
     +'</div>'
     +'<div id="editUserMsg" style="font-size:13px;margin-top:8px"></div>'
     +'</div>';
@@ -1127,7 +1290,7 @@ window._cms2FASetup = function(username){
     +'<input type="text" id="verify2FA" maxlength="6" placeholder="000000" style="width:120px;text-align:center;font-size:20px;letter-spacing:6px;padding:8px;border:1.5px solid var(--border);border-radius:8px;margin-bottom:12px" inputmode="numeric"/>'
     +'<div style="display:flex;gap:8px;justify-content:center">'
     +'<button class="admin-btn primary" id="verify2FABtn" style="min-width:100px">Verify &amp; Enable</button>'
-    +'<button class="admin-btn secondary" id="cancel2FABtn">Cancel</button>'
+    +'<button class="admin-btn secondary" id="cancel2FABtn">'+CL('cancel')+'</button>'
     +'</div>'
     +'<div id="verify2FAErr" style="font-size:12px;color:#dc2626;margin-top:8px"></div>'
     +'</div>';
@@ -1192,7 +1355,7 @@ window._cmsShowFilePicker = function(btn){
       inner += '<div class="cfp-item" data-file-idx="'+i+'" data-ta-id="'+textareaId+'">'+icon+'<span>'+esc(f.name)+'</span></div>';
     });
   }
-  inner += '<div class="cfp-close">Cancel</div>';
+  inner += '<div class="cfp-close">'+CL('cancel')+'</div>';
   div.innerHTML = inner;
 
   // Event delegation for item clicks
@@ -1338,19 +1501,19 @@ window._cmsBlogView = function(){
       +'</div>'
       +'<div class="cms-item-actions">'
       +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="window._cmsBlogPreview('+i+')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>'
-      +(_canEdit?'<button class="admin-btn primary" style="font-size:11px;padding:4px 10px" onclick="window._cmsBlogEdit('+i+')">Edit</button>':'')
+      +(_canEdit?'<button class="admin-btn primary" style="font-size:11px;padding:4px 10px" onclick="window._cmsBlogEdit('+i+')">'+CL('edit')+'</button>':'')
       +(i>0?'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px" onclick="window._cmsBlogMove('+i+',-1)">&uarr;</button>':'')
       +(i<articles.length-1?'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px" onclick="window._cmsBlogMove('+i+',1)">&darr;</button>':'')
-      +(_canEdit?'<button class="admin-btn danger" style="font-size:11px;padding:4px 8px" onclick="window._cmsBlogDelete('+i+')">Del</button>':'')
+      +(_canEdit?'<button class="admin-btn danger" style="font-size:11px;padding:4px 8px" onclick="window._cmsBlogDelete('+i+')">'+CL('del_short')+'</button>':'')
       +'</div></div>';
-  }).join("") : '<div class="cms-item-meta" style="padding:12px 0">No blog articles yet.</div>';
+  }).join("") : '<div class="cms-item-meta" style="padding:12px 0">'+CL('no_articles')+'</div>';
 
   document.getElementById("cmsEditor").innerHTML =
     '<div class="cms-panel">'
-    +'<div class="cms-panel-header"><h3>Blog / News Articles</h3>'
-    +'<p>Manage articles shown on the <strong>Hong Kong News</strong> page.<br>Card images: <strong>800&times;600px</strong> (4:3). Hero images: <strong>1200&times;525px</strong> (16:7). Images are auto-resized on upload.</p></div>'
+    +'<div class="cms-panel-header"><h3>'+CL('blog_title')+'</h3>'
+    +'<p>'+CL('blog_desc')+'<br>'+CL('blog_img_hint')+'</p></div>'
     +'<div id="cmsBlogList">' + rows + '</div>'
-    +(_canEdit?'<button class="admin-btn primary" style="margin-top:12px" onclick="window._cmsBlogEdit(-1)">+ New Article</button>':'')
+    +(_canEdit?'<button class="admin-btn primary" style="margin-top:12px" onclick="window._cmsBlogEdit(-1)">'+CL('new_article')+'</button>':'')
     +'</div>';
 };
 
@@ -1361,13 +1524,13 @@ window._cmsBlogEdit = function(idx){
 
   var h = '<div class="cms-panel">'
     +'<div class="cms-form-row" style="align-items:center;margin-bottom:16px">'
-    +'<button class="admin-btn secondary" onclick="window._cmsBlogView()">&larr; Back</button>'
-    +'<h3 style="font-size:18px;font-weight:700;margin:0">'+(idx>=0?'Edit Article':'New Article')+'</h3>'
+    +'<button class="admin-btn secondary" onclick="window._cmsBlogView()">&larr; '+CL('back')+'</button>'
+    +'<h3 style="font-size:18px;font-weight:700;margin:0">'+(idx>=0?CL('edit_article'):CL('new_article_h'))+'</h3>'
     +'</div>'
     // Row 1: slug + date
     +'<div class="cms-form-row">'
-    +'<div class="admin-field" style="flex:2"><label>Slug (URL)</label><input type="text" id="blogSlug" value="'+escAttr(a.slug)+'" placeholder="hk-news-my-article"'+(idx>=0?' readonly style="opacity:.6"':'')+'/></div>'
-    +'<div class="admin-field" style="flex:1"><label>Date</label><input type="date" id="blogDate" value="'+escAttr(a.date)+'"/></div>'
+    +'<div class="admin-field" style="flex:2"><label>'+CL('slug_url')+'</label><input type="text" id="blogSlug" value="'+escAttr(a.slug)+'" placeholder="hk-news-my-article"'+(idx>=0?' readonly style="opacity:.6"':'')+'/></div>'
+    +'<div class="admin-field" style="flex:1"><label>'+CL('date')+'</label><input type="date" id="blogDate" value="'+escAttr(a.date)+'"/></div>'
     +'</div>'
     // Row 2: tags
     +'<div class="cms-form-row">'
@@ -1380,13 +1543,13 @@ window._cmsBlogEdit = function(idx){
     +'<div class="admin-field"><label>Title (简体)</label><input type="text" id="blogTitleHans" value="'+escAttr(a.title_hans)+'"/></div>'
     +'<div class="admin-field"><label>Title (EN)</label><input type="text" id="blogTitleEn" value="'+escAttr(a.title_en)+'"/></div>'
     // Image
-    +'<div class="admin-field"><label>Image</label>'
+    +'<div class="admin-field"><label>'+CL('image')+'</label>'
     +'<div class="cms-form-row" style="align-items:end;margin-bottom:0">'
     +'<input type="text" id="blogImg" value="'+escAttr(a.img)+'" placeholder="images/ecap-blog-xxx.png or paste URL" style="flex:1"/>'
-    +'<button class="admin-btn secondary" onclick="document.getElementById(\'blogImgFile\').click()" style="height:44px;white-space:nowrap">Upload</button>'
+    +'<button class="admin-btn secondary" onclick="document.getElementById(\'blogImgFile\').click()" style="height:44px;white-space:nowrap">'+CL('upload')+'</button>'
     +'<input type="file" id="blogImgFile" accept=".jpg,.jpeg,.png,.webp" style="display:none" onchange="window._cmsBlogImgUpload(event)"/>'
     +'</div>'
-    +'<p class="cms-item-meta" style="margin-top:4px">Auto-resized to <strong>1200&times;525px</strong> on upload. Max 5MB.</p>'
+    +'<p class="cms-item-meta" style="margin-top:4px">'+CL('auto_resize')+'</p>'
     +(a.img?'<img src="'+escAttr(a.img)+'" style="max-width:300px;height:auto;border-radius:8px;margin-top:8px" onerror="this.style.display=\'none\'"/>':'')
     +'</div>'
     // Body tabs
@@ -1402,8 +1565,8 @@ window._cmsBlogEdit = function(idx){
     +'</div>'
     // Save
     +'<div class="cms-form-row">'
-    +'<button class="admin-btn primary" onclick="window._cmsBlogSave()">Save Article</button>'
-    +'<button class="admin-btn secondary" onclick="window._cmsBlogView()">Cancel</button>'
+    +'<button class="admin-btn primary" onclick="window._cmsBlogSave()">'+CL('save_article')+'</button>'
+    +'<button class="admin-btn secondary" onclick="window._cmsBlogView()">'+CL('cancel')+'</button>'
     +'</div>'
     +'</div>';
 
@@ -1481,19 +1644,19 @@ window._cmsBlogSave = function(){
   // Update global BLOG_ARTICLES so front-end picks up instantly
   if(typeof window.BLOG_ARTICLES !== 'undefined') window.BLOG_ARTICLES = articles;
   addAuditLog('blog_save', slug);
-  showToast('Article saved');
+  showToast(CL('article_saved'));
   window._cmsBlogView();
 };
 
 window._cmsBlogDelete = function(idx){
-  if(!confirm('Delete this article?')) return;
+  if(!confirm(CL('del_article_q'))) return;
   var articles = _getBlogArticles();
   var slug = articles[idx] ? articles[idx].slug : '';
   articles.splice(idx,1);
   saveCmsBlog(articles);
   if(typeof window.BLOG_ARTICLES !== 'undefined') window.BLOG_ARTICLES = articles;
   addAuditLog('blog_delete', slug);
-  showToast('Article deleted');
+  showToast(CL('article_deleted'));
   window._cmsBlogView();
 };
 
@@ -1517,34 +1680,34 @@ window._cmsBannersView = function(){
       +'<img class="cms-item-thumb" src="'+escAttr(b.img)+'"/>'
       +'<div class="cms-item-info">'
       +'<div class="cms-item-title">'+esc(b.alt||'Banner '+(i+1))+'</div>'
-      +'<div class="cms-item-meta">'+esc(b.link||'No link')+'</div>'
+      +'<div class="cms-item-meta">'+esc(b.link||CL('no_link'))+'</div>'
       +'</div>'
       +'<div class="cms-item-actions">'
       +(i>0?'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerMove('+i+',-1)">&uarr;</button>':'')
       +(i<banners.length-1?'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerMove('+i+',1)">&darr;</button>':'')
-      +(_canUpload?'<button class="admin-btn danger" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerDelete('+i+')">Delete</button>':'')
+      +(_canUpload?'<button class="admin-btn danger" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerDelete('+i+')">'+CL('delete')+'</button>':'')
       +'</div></div>';
-  }).join("") : '<div class="cms-item-meta" style="padding:12px 0">No custom banners. Using default banner images.</div>';
+  }).join("") : '<div class="cms-item-meta" style="padding:12px 0">'+CL('no_banner')+'</div>';
 
   document.getElementById("cmsEditor").innerHTML =
     '<div class="cms-panel">'
-    +'<div class="cms-panel-header"><h3>Banner Management</h3>'
-    +'<p>Upload JPG/PNG images for the homepage carousel. Recommended size: <strong>1200&times;500px</strong>. Max 5MB each.</p></div>'
-    +(banners.length ? '<button class="admin-btn secondary" style="margin-bottom:12px" onclick="window._cmsBannerPreview()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> 預覽輪播</button>' : '')
+    +'<div class="cms-panel-header"><h3>'+CL('banners_title')+'</h3>'
+    +'<p>'+CL('banners_desc')+'</p></div>'
+    +(banners.length ? '<button class="admin-btn secondary" style="margin-bottom:12px" onclick="window._cmsBannerPreview()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> '+CL('preview_carousel')+'</button>' : '')
     +'<div class="cms-banners-list" id="cmsBannersList">' + rows + '</div>'
     +(_canUpload ?
       '<div class="cms-drop-zone" id="cmsBannerDropZone">'
       +'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom:8px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>'
-      +'<p><strong>Drag &amp; drop</strong> JPG or PNG images here</p>'
-      +'<p class="cms-item-meta">or click to browse (max 5MB each)</p>'
+      +'<p><strong>'+CL('drag_drop')+'</strong>'+CL('drag_img')+'</p>'
+      +'<p class="cms-item-meta">'+CL('or_browse_5')+'</p>'
       +'<input type="file" id="cmsBannerInput" accept=".jpg,.jpeg,.png,.webp" style="display:none" onchange="window._cmsBannerUpload(event)" multiple/>'
-      +'<button class="admin-btn primary" onclick="document.getElementById(\'cmsBannerInput\').click()" style="margin-top:8px">Choose Image</button>'
+      +'<button class="admin-btn primary" onclick="document.getElementById(\'cmsBannerInput\').click()" style="margin-top:8px">'+CL('choose_img')+'</button>'
       +'</div>'
       +'<div class="cms-url-row">'
-      +'<div class="admin-field"><label>Or paste image URL</label><input type="url" id="cmsBannerUrl" placeholder="https://..."/></div>'
-      +'<div class="admin-field"><label>Alt text / Title</label><input type="text" id="cmsBannerAlt" placeholder="Banner description"/></div>'
-      +'<div class="admin-field"><label>Link (optional)</label><input type="text" id="cmsBannerLink" placeholder="#/page/slug or https://..."/></div>'
-      +'<button class="admin-btn primary" onclick="window._cmsBannerAddUrl()" style="height:44px;white-space:nowrap;align-self:end">Add</button>'
+      +'<div class="admin-field"><label>'+CL('paste_url')+'</label><input type="url" id="cmsBannerUrl" placeholder="https://..."/></div>'
+      +'<div class="admin-field"><label>'+CL('alt_title')+'</label><input type="text" id="cmsBannerAlt" placeholder="'+CL('banner_desc')+'"/></div>'
+      +'<div class="admin-field"><label>'+CL('link_opt')+'</label><input type="text" id="cmsBannerLink" placeholder="#/page/slug or https://..."/></div>'
+      +'<button class="admin-btn primary" onclick="window._cmsBannerAddUrl()" style="height:44px;white-space:nowrap;align-self:end">'+CL('add')+'</button>'
       +'</div>'
     : '<div style="background:#fef9c3;border:1px solid #fde68a;border-radius:6px;padding:10px 14px;font-size:13px;margin-top:12px">View only — editor or admin access needed.</div>')
     +'</div>';
@@ -1601,7 +1764,7 @@ window._cmsBannerAddUrl = function(){
 };
 
 window._cmsBannerDelete = function(idx){
-  if(!confirm('Delete this banner?')) return;
+  if(!confirm(CL('del_banner_q'))) return;
   var banners = getCmsBanners();
   banners.splice(idx,1);
   saveCmsBanners(banners);

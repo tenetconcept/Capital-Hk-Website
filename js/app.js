@@ -595,15 +595,15 @@ function blogArticleView(slug){
   var body = L(article.body_en, article.body_hans, article.body_hant);
 
   var h = '<section class="subpage">';
-  // Hero image with title overlay below (rd.group style)
+  // Hero image with title overlay on image (rd.group style)
   h += '<div class="article-hero-wrap">';
   h += '<div class="article-hero">';
   h += '<img src="' + escAttr(article.img) + '" alt="' + escAttr(title) + '">';
-  h += '</div>';
-  h += '<div class="article-hero-caption"><div class="mw">';
+  h += '<div class="article-hero-caption">';
   h += '<time class="article-hero-date">' + esc(article.date) + '</time>';
   h += '<h1 class="article-hero-title">' + esc(title) + '</h1>';
-  h += '</div></div>';
+  h += '</div>';
+  h += '</div>';
   h += '</div>';
   // Article content
   h += '<div class="subpage-content"><div class="mw">';

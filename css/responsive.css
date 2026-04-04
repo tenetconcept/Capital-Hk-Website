@@ -48,10 +48,10 @@
   html { overflow-x: clip; }
   body { overflow-x: clip; }
 
-  /* Fix iOS background-attachment: fixed bug — gradient to white before content */
+  /* Fix iOS background-attachment: fixed bug — matches desktop warm pink */
   body {
     background-attachment: scroll;
-    background: linear-gradient(180deg, #B41540 0%, #D88A9C 4%, #F5E8EB 8%, #FFFFFF 12%, #FFFFFF 88%, #F5E8EB 92%, #D88A9C 96%, #B41540 100%);
+    background: linear-gradient(180deg, #B41540 0%, #D88A9C 4%, #F0EAEB 10%, #F0EAEB 90%, #D88A9C 96%, #B41540 100%);
   }
 
   /* Clip overflow on app container instead of body for animations */
@@ -66,23 +66,7 @@
   .sec-desc { font-size: 1rem; line-height: 1.55; }
   .sec-label { font-size: 0.8125rem; margin-bottom: 8px; }
 
-  /* ===========================================
-     NAV BAR — Same transparent style as desktop
-     =========================================== */
-  .nav {
-    background: linear-gradient(180deg, rgba(255,255,255,.4) 0%, rgba(255,255,255,.2) 60%, rgba(255,255,255,0) 100%);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: none;
-    box-shadow: none;
-  }
-  .nav.scrolled {
-    background: rgba(255,255,255,.88);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    box-shadow: 0 1px 8px rgba(0,0,0,.06);
-    border-bottom-color: rgba(0,0,0,.06);
-  }
+  /* --- NAV --- */
   .nav-top { border-bottom: none; }
   .nav-top-inner {
     padding: 0 16px;

@@ -2,22 +2,33 @@
    NAVIGATION — rd.group 2-row layout + Dropdowns + Mobile
    ============================ */
 
-/* ===== Main Nav — rd.group transparent style ===== */
+/* ===== Main Nav — rd.group smooth scroll transition ===== */
 .nav {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: linear-gradient(180deg, rgba(255,255,255,.35) 0%, rgba(255,255,255,.15) 60%, rgba(255,255,255,0) 100%);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: box-shadow var(--dur-slow) var(--ease), background var(--dur-slow) var(--ease), border-color var(--dur-slow) var(--ease);
+  background: transparent;
   border-bottom: 1px solid transparent;
+  transition: border-color var(--dur-slow) var(--ease);
 }
-.nav.scrolled {
-  background: rgba(255,255,255,.85);
+/* Scrolled solid background — fades in via opacity for smooth transition */
+.nav::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,.88);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   box-shadow: 0 2px 20px rgba(0,0,0,.06);
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease);
+  z-index: -1;
+  pointer-events: none;
+}
+.nav.scrolled::before {
+  opacity: 1;
+}
+.nav.scrolled {
   border-bottom-color: var(--border-light);
 }
 

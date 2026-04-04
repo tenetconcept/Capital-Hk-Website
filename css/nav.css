@@ -4,48 +4,42 @@
 
 /* ===== Main Nav — rd.group smooth scroll transition ===== */
 .nav {
+  --scroll-p: 0;
   position: sticky;
   top: 0;
   z-index: 1000;
   background: transparent;
-  border-bottom: 1px solid transparent;
-  transition: border-color var(--dur-slow) var(--ease);
 }
-/* Always-on subtle frosted glass layer */
+/* Always-on subtle frosted glass — warm pink to match page */
 .nav::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(255,255,255,.25) 0%, rgba(255,255,255,0) 100%);
+  background: linear-gradient(180deg, rgba(240,234,235,.2) 0%, rgba(240,234,235,0) 100%);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: -2;
   pointer-events: none;
 }
-/* Scrolled overlay — gradient white fading to transparent at bottom (rd.group style) */
+/* Scrolled overlay — warm pink matching --bg-body, gradual via --scroll-p */
 .nav::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(255,255,255,.92) 50%, rgba(255,255,255,0) 100%);
+  background: linear-gradient(180deg, rgba(240,234,235,.96) 60%, rgba(240,234,235,0) 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 1px 12px rgba(0,0,0,.04);
-  opacity: 0;
-  transition: opacity 500ms ease-in-out;
+  opacity: var(--scroll-p);
   z-index: -1;
   pointer-events: none;
 }
-.nav.scrolled::before {
-  opacity: 1;
-}
-.nav.scrolled {
-  border-bottom-color: rgba(0,0,0,.04);
-}
 
-/* Row 1: Logo left, Lang + Social right */
+/* Row 1: Logo left, Lang + Social right — collapses on scroll */
 .nav-top {
-  border-bottom: 1px solid rgba(0,0,0,.04);
+  overflow: hidden;
+  max-height: calc(var(--nav-h) * (1 - var(--scroll-p)));
+  opacity: calc(1 - var(--scroll-p) * 1.5);
+  transition: none;
 }
 .nav-top-inner {
   display: flex;
@@ -64,7 +58,10 @@
 }
 .nav-logo img { height: 36px; }
 .nav-logo-text {
-  display: none;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--brand);
+  letter-spacing: 0.02em;
 }
 
 /* Row 1 right side: lang + social */
@@ -101,6 +98,7 @@
 .nav-bar {
   display: block;
   background: transparent;
+  padding-top: calc(var(--scroll-p) * 8px);
 }
 .nav-bar-inner {
   display: flex;

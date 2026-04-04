@@ -831,13 +831,17 @@ document.addEventListener('click', function(e){
   }
 });
 
-// Nav scroll effect
+// Nav scroll effect — gradual Row 1 collapse + overlay fade (rd.group style)
 var lastScroll = 0;
 window.addEventListener('scroll', function(){
   var nav = document.getElementById('mainNav');
   var y = window.pageYOffset;
   if(nav){
-    nav.classList.toggle('scrolled', y > 40);
+    // Longer range on mobile (no Row 1 collapse, just overlay)
+    var range = window.innerWidth <= 1024 ? 250 : 120;
+    var p = Math.min(y / range, 1);
+    nav.style.setProperty('--scroll-p', p);
+    nav.classList.toggle('scrolled', y > 10);
   }
   lastScroll = y;
 }, {passive: true});

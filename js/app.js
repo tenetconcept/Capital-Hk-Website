@@ -170,8 +170,10 @@ function buildNav(){
   // Update nav CTA buttons text
   var ctaLogin = document.getElementById('navCtaLogin');
   var ctaOpen = document.getElementById('navCtaOpen');
+  var ctaOpenMobile = document.getElementById('navCtaOpenMobile');
   if(ctaLogin) ctaLogin.textContent = T("nav_login");
   if(ctaOpen) ctaOpen.textContent = T("nav_open");
+  if(ctaOpenMobile) ctaOpenMobile.textContent = T("nav_open");
 
   // Build mobile menu
   buildMobileMenu(items);
@@ -833,13 +835,9 @@ document.addEventListener('click', function(e){
 var lastScroll = 0;
 window.addEventListener('scroll', function(){
   var nav = document.getElementById('mainNav');
-  var utilBar = document.getElementById('utilityBar');
   var y = window.pageYOffset;
   if(nav){
     nav.classList.toggle('scrolled', y > 40);
-  }
-  if(utilBar){
-    utilBar.classList.toggle('hidden', y > 60);
   }
   lastScroll = y;
 }, {passive: true});

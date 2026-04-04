@@ -7,9 +7,10 @@
   .nav-links { display: none; }
   .nav-bar { display: none; }
   .nav-ham { display: flex; }
-  .nav-cta .btn-outline { display: none; }
-
-  .utility-bar { display: none; }
+  .nav-top-right { display: none; }
+  /* Show mobile CTA in nav-top */
+  .nav-cta-mobile { display: flex; align-items: center; }
+  .nav-cta-mobile .btn { padding: 8px 16px; font-size: 0.8125rem; font-weight: 700; }
 
   .feature-inner {
     grid-template-columns: 1fr;
@@ -41,15 +42,14 @@
   :root {
     --nav-h: 56px;
     --nav-bar-h: 0px;
-    --utility-h: 0px;
   }
 
   html, body { overflow-x: hidden; }
 
-  /* Fix iOS background-attachment: fixed bug — same gradient as desktop */
+  /* Fix iOS background-attachment: fixed bug — gradient to white before content */
   body {
     background-attachment: scroll;
-    background: linear-gradient(180deg, #B41540 0%, #F0EAEB 18%, #F0EAEB 82%, #B41540 100%);
+    background: linear-gradient(180deg, #B41540 0%, #E8D0D5 8%, #FFFFFF 16%, #FFFFFF 84%, #E8D0D5 92%, #B41540 100%);
   }
 
   /* Clip overflow on app container instead of body for animations */
@@ -90,16 +90,14 @@
   .nav-logo { gap: 8px; flex: 1; }
   .nav-logo img { height: 28px; }
   .nav-logo-text { display: none; }
-  .nav-cta .btn-gradient {
+  .nav-cta-mobile .btn-gradient {
     padding: 7px 14px;
     font-size: 0.75rem;
     font-weight: 700;
     border-radius: var(--radius-full);
   }
-  .nav-cta { gap: 6px; }
   .nav-ham { padding: 6px; }
   .nav-ham span { width: 22px; height: 2px; background: var(--text); }
-  /* Nav text colors adapt to scrolled vs unscrolled state via JS body class if needed */
 
   /* ===========================================
      MOBILE MENU — Clean, well-aligned
@@ -251,10 +249,10 @@
      FOOTER — Compact 2-col link grid
      =========================================== */
   .footer {
-    background: #FFFFFF;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    border-top: 1px solid rgba(0,0,0,.08);
+    background: rgba(255,255,255,.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: none;
   }
   .footer::before { height: 3px; }
   .footer-main { padding: 24px 0 16px; }

@@ -1,46 +1,6 @@
 /* ============================
-   NAVIGATION — Utility bar + Two-row nav + rd.group-style Dropdowns + Mobile
+   NAVIGATION — rd.group 2-row layout + Dropdowns + Mobile
    ============================ */
-
-/* Utility Bar */
-.utility-bar {
-  background: transparent;
-  border-bottom: 1px solid rgba(0,0,0,.04);
-  height: var(--utility-h);
-  transition: all var(--dur-slow) var(--ease);
-  z-index: 1001;
-  position: relative;
-}
-.utility-bar.hidden { margin-top: calc(var(--utility-h) * -1); opacity: 0; }
-.utility-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 100%;
-}
-.utility-social { display: flex; gap: 12px; align-items: center; }
-.utility-social a {
-  display: flex;
-  align-items: center;
-  color: var(--white);
-  transition: color var(--dur) var(--ease);
-}
-.utility-social a:hover { color: var(--white); }
-.utility-social svg { width: 18px; height: 18px; }
-.utility-lang { display: flex; gap: 4px; align-items: center; }
-.utility-lang a {
-  padding: 4px 10px;
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(255,255,255,.9);
-  border-radius: var(--radius-full);
-  transition: all var(--dur) var(--ease);
-}
-.utility-lang a:hover { color: var(--white); }
-.utility-lang a.active {
-  background: rgba(255,255,255,.25);
-  color: var(--white);
-}
 
 /* ===== Main Nav — rd.group transparent style ===== */
 .nav {
@@ -61,7 +21,7 @@
   border-bottom-color: var(--border-light);
 }
 
-/* Row 1: Logo + CTA */
+/* Row 1: Logo left, Lang + Social right */
 .nav-top {
   border-bottom: 1px solid rgba(0,0,0,.04);
 }
@@ -89,14 +49,45 @@
   white-space: nowrap;
 }
 
-/* Row 2: Nav links bar */
+/* Row 1 right side: lang + social */
+.nav-top-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.utility-lang { display: flex; gap: 4px; align-items: center; }
+.utility-lang a {
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-sec);
+  border-radius: var(--radius-full);
+  transition: all var(--dur) var(--ease);
+}
+.utility-lang a:hover { color: var(--brand); }
+.utility-lang a.active {
+  background: rgba(180,21,64,.1);
+  color: var(--brand);
+}
+.utility-social { display: flex; gap: 10px; align-items: center; }
+.utility-social a {
+  display: flex;
+  align-items: center;
+  color: var(--text-muted);
+  transition: color var(--dur) var(--ease);
+}
+.utility-social a:hover { color: var(--brand); }
+.utility-social svg { width: 16px; height: 16px; }
+
+/* Row 2: Nav links left, CTA right */
 .nav-bar {
   display: block;
   background: transparent;
 }
-.nav-bar .mw {
+.nav-bar-inner {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding-top: 0;
   padding-bottom: 0;
 }
@@ -229,9 +220,12 @@
   color: var(--white);
 }
 
-/* Nav CTA */
+/* Nav CTA — in Row 2 (desktop) */
 .nav-cta { display: flex; gap: 10px; align-items: center; flex-shrink: 0; }
-.nav-cta .btn { padding: 12px 24px; font-size: 1rem; font-weight: 700; }
+.nav-cta .btn { padding: 10px 22px; font-size: 0.9375rem; font-weight: 700; }
+
+/* Nav CTA — mobile only (in nav-top, hidden on desktop) */
+.nav-cta-mobile { display: none; }
 
 /* Hamburger */
 .nav-ham {

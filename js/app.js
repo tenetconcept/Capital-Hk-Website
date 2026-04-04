@@ -52,6 +52,8 @@ function setLang(lang){
   document.documentElement.style.fontFamily = lang === 'zh-Hans'
     ? '"Be Vietnam Pro","Noto Sans SC","Noto Sans TC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif'
     : '';
+  // Close mobile menu if open
+  if(typeof window._mmClose === 'function') window._mmClose();
   // Animate page transition on language switch
   var app = document.getElementById('app');
   if(app){

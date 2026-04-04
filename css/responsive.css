@@ -46,10 +46,10 @@
 
   html, body { overflow-x: hidden; }
 
-  /* Fix iOS background-attachment: fixed bug — solid bg on mobile */
+  /* Fix iOS background-attachment: fixed bug — softer gradient on mobile */
   body {
     background-attachment: scroll;
-    background: var(--bg-body);
+    background: linear-gradient(180deg, #B41540 0%, var(--bg-body) 12%, var(--bg-body) 88%, #B41540 100%);
   }
 
   .section { padding: 40px 0; }
@@ -83,7 +83,7 @@
   }
   .nav-logo { gap: 8px; }
   .nav-logo img { height: 28px; }
-  .nav-logo-text { font-size: 0.8125rem; line-height: 1.15; }
+  .nav-logo-text { display: none; }
   .nav-cta .btn-gradient {
     padding: 8px 16px;
     font-size: 0.75rem;
@@ -249,19 +249,22 @@
     border-top: 1px solid rgba(0,0,0,.08);
   }
   .footer::before { height: 3px; }
-  .footer-main { padding: 28px 0 16px; }
+  .footer-main { padding: 24px 0 16px; }
   .footer-grid {
     grid-template-columns: 1fr 1fr;
-    gap: 16px 24px;
+    gap: 20px 32px;
   }
   .footer-brand {
     grid-column: span 2;
     padding-bottom: 16px;
     border-bottom: 1px solid rgba(0,0,0,.06);
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
-  .footer-brand img { height: 24px; margin-bottom: 8px; }
-  .footer-brand-name { font-size: 0.8125rem; margin-bottom: 4px; }
-  .footer-brand-addr { font-size: 0.75rem; line-height: 1.5; color: var(--text-muted); }
+  .footer-brand img { height: 24px; margin-bottom: 0; }
+  .footer-brand-name { font-size: 0.8125rem; margin-bottom: 0; }
+  .footer-brand-addr { display: none; }
   .footer-col { padding: 0; }
   .footer-col-title {
     font-size: 0.8125rem;
@@ -271,7 +274,7 @@
   }
   .footer-col a {
     font-size: 0.75rem;
-    padding: 2px 0;
+    padding: 3px 0;
     color: var(--text-sec);
   }
   .footer-btm {
@@ -279,7 +282,7 @@
     gap: 10px;
     text-align: center;
     padding: 14px 0;
-    margin-top: 16px;
+    margin-top: 12px;
     border-top: 1px solid rgba(0,0,0,.06);
   }
   .footer-social { justify-content: center; gap: 16px; }
@@ -367,24 +370,31 @@
   .btn { padding: 12px 24px; font-size: 0.9375rem; }
 
   /* ===========================================
-     ANIMATIONS — Mobile-friendly reduced motion
+     ANIMATIONS — Mobile: all vertical to avoid overflow-x clip
      =========================================== */
   .anim-fade-up {
-    transform: translateY(20px);
+    transform: translateY(24px);
     transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
   }
   .anim-fade-left {
-    transform: translateX(-20px);
+    opacity: 0;
+    transform: translateY(24px);
     transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
   }
   .anim-fade-right {
-    transform: translateX(20px);
+    opacity: 0;
+    transform: translateY(24px);
     transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
   }
   .anim-scale {
     transform: scale(0.92);
     transition: opacity 0.45s var(--ease), transform 0.45s var(--ease);
   }
+  /* Stagger delays — slightly longer on mobile for visual effect */
+  .anim-delay-1 { transition-delay: 80ms; }
+  .anim-delay-2 { transition-delay: 160ms; }
+  .anim-delay-3 { transition-delay: 240ms; }
+  .anim-delay-4 { transition-delay: 320ms; }
 }
 
 /* Small mobile */
@@ -422,9 +432,7 @@
   .feature-list-desc { font-size: 0.8125rem; }
 
   .footer-main { padding: 20px 0 12px; }
-  .footer-grid { gap: 12px 16px; }
-  .footer-brand-name { font-size: 0.75rem; }
-  .footer-brand-addr { font-size: 0.6875rem; }
+  .footer-grid { gap: 16px 20px; }
   .footer-col-title { font-size: 0.75rem; }
   .footer-col a { font-size: 0.6875rem; }
 
@@ -442,7 +450,6 @@
 
   /* Nav: tighter on small screens */
   .nav-logo img { height: 24px; }
-  .nav-logo-text { font-size: 0.75rem; }
   .nav-cta .btn-gradient { padding: 6px 12px; font-size: 0.6875rem; }
 
   /* Mobile menu: slightly smaller text */

@@ -4,41 +4,39 @@
 
 /* ===== Main Nav — rd.group smooth scroll transition ===== */
 .nav {
-  --scroll-p: 0;
   position: sticky;
   top: 0;
   z-index: 1000;
   background: transparent;
 }
-/* Always-on subtle frosted glass */
-.nav::after {
-  content: '';
+
+/* Background overlay div — rd.group pattern:
+   Solid warm pink top half, fading to transparent bottom half.
+   Starts invisible (opacity:0), CSS transition fades in on .scrolled class. */
+.nav-bg {
   position: absolute;
-  inset: 0;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  z-index: -2;
-  pointer-events: none;
-}
-/* Scrolled overlay — warm pink matching body (#F0EAEB), gradual via --scroll-p */
-.nav::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: #F0EAEB;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  opacity: var(--scroll-p);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, var(--bg-body, #F0EAEB) 50%, rgba(240,234,235,0) 100%);
+  opacity: 0;
+  transition: opacity 500ms ease-in-out;
   z-index: -1;
   pointer-events: none;
 }
+.nav.scrolled .nav-bg { opacity: 1; }
 
-/* Row 1: Logo left, Lang + Social right — collapses on scroll */
+/* Row 1: Logo left, Lang + Social right — fades out + collapses on scroll */
 .nav-top {
   overflow: hidden;
-  max-height: calc(var(--nav-h) * (1 - var(--scroll-p)));
-  opacity: calc(1 - var(--scroll-p) * 1.5);
-  transition: none;
+  max-height: 100px;
+  opacity: 1;
+  transition: opacity 500ms ease-in-out, max-height 500ms ease-in-out;
+}
+.nav.scrolled .nav-top {
+  opacity: 0;
+  max-height: 0;
 }
 .nav-top-inner {
   display: flex;
@@ -94,7 +92,11 @@
 .nav-bar {
   display: block;
   background: transparent;
-  padding-top: calc(var(--scroll-p) * 8px);
+  padding-top: 0;
+  transition: padding-top 500ms ease-in-out;
+}
+.nav.scrolled .nav-bar {
+  padding-top: 8px;
 }
 .nav-bar-inner {
   display: flex;

@@ -8,11 +8,12 @@
   .nav-bar { display: none; }
   .nav-ham { display: flex; }
   .nav-top-right { display: none; }
-  /* On mobile, Row 1 is the only row — don't collapse it */
+  /* On tablet/mobile, Row 1 is the only row — don't collapse it on scroll */
   .nav-top {
-    max-height: none;
-    opacity: 1;
+    max-height: none !important;
+    opacity: 1 !important;
     overflow: visible;
+    transition: none;
   }
   /* Show mobile CTA in nav-top */
   .nav-cta-mobile { display: flex; align-items: center; }

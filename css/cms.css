@@ -83,7 +83,7 @@ body.cms-active .cms-sidebar{top:var(--nav-h);height:calc(100vh - var(--nav-h))}
 .cms-add-user-box h4{font-size:15px;font-weight:700;margin-bottom:16px}
 .cms-section-box{background:var(--white);border-radius:var(--radius);padding:28px;border:1px solid rgba(0,0,0,.06);box-shadow:var(--shadow-sm)}
 .cms-card-box{background:var(--bg-light);border-radius:var(--radius-sm);padding:20px;border:1px solid rgba(0,0,0,.04)}
-.cms-user-tabs{display:flex;gap:0;margin-bottom:24px;border-bottom:2px solid var(--border-light);overflow-x:auto}
+.cms-user-tabs{display:flex;gap:0;margin-bottom:24px;border-bottom:2px solid var(--border-light)}
 .cms-utab{padding:12px 24px;font-size:14px;font-weight:600;color:var(--text-muted);background:none;border:none;border-bottom:3px solid transparent;margin-bottom:-2px;cursor:pointer;transition:all .2s;white-space:nowrap;font-family:inherit}
 .cms-utab:hover{color:var(--text)}
 .cms-utab.active{color:var(--brand);border-bottom-color:var(--brand)}

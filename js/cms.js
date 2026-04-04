@@ -83,8 +83,8 @@ var CMS_I18N = {
   del_file_q:      {en:'Delete this file/link?', hans:'删除此文件/链接？', hant:'刪除此檔案/連結？'},
   enter_both:      {en:'Enter both name and URL', hans:'请输入名称和网址', hant:'請輸入名稱和網址'},
   // Banners
-  banners_title:   {en:'Banner Management', hans:'横幅管理', hant:'橫幅管理'},
-  banners_desc:    {en:'Upload JPG/PNG images for the homepage carousel. Recommended size: <strong>1200&times;500px</strong>. Max 5MB each.', hans:'上传首页轮播的JPG/PNG图片。建议尺寸：<strong>1200&times;500px</strong>。每张最大5MB。', hant:'上傳首頁輪播的JPG/PNG圖片。建議尺寸：<strong>1200&times;500px</strong>。每張最大5MB。'},
+  banners_title:   {en:'Homepage Banner Carousel', hans:'首页横幅轮播', hant:'首頁橫幅輪播'},
+  banners_desc:    {en:'These banners display in the <strong>sliding carousel at the top of the homepage</strong>, below the hero section. Upload JPG/PNG images. Recommended size: <strong>1200&times;500px</strong>. Max 5MB each.', hans:'这些横幅显示在<strong>首页顶部的滑动轮播区域</strong>，位于主视觉下方。上传JPG/PNG图片。建议尺寸：<strong>1200&times;500px</strong>。每张最大5MB。', hant:'這些橫幅顯示在<strong>首頁頂部的滑動輪播區域</strong>，位於主視覺下方。上傳JPG/PNG圖片。建議尺寸：<strong>1200&times;500px</strong>。每張最大5MB。'},
   preview_carousel:{en:'Preview Carousel', hans:'预览轮播', hant:'預覽輪播'},
   drag_img:        {en:' JPG or PNG images here', hans:' JPG 或 PNG 图片到此处', hant:' JPG 或 PNG 圖片到此處'},
   or_browse_5:     {en:'or click to browse (max 5MB each)', hans:'或点击浏览（每张最大5MB）', hant:'或點擊瀏覽（每張最大5MB）'},
@@ -114,6 +114,9 @@ var CMS_I18N = {
   cancel:          {en:'Cancel', hans:'取消', hant:'取消'},
   edit:            {en:'Edit', hans:'编辑', hant:'編輯'},
   del_short:       {en:'Del', hans:'删', hant:'刪'},
+  btn_preview:     {en:'Preview', hans:'预览', hant:'預覽'},
+  btn_move_up:     {en:'Move Up', hans:'上移', hant:'上移'},
+  btn_move_down:   {en:'Move Down', hans:'下移', hant:'下移'},
   no_articles:     {en:'No blog articles yet.', hans:'暂无文章。', hant:'暫無文章。'},
   article_saved:   {en:'Article saved', hans:'文章已保存', hant:'文章已儲存'},
   del_article_q:   {en:'Delete this article?', hans:'删除此文章？', hant:'刪除此文章？'},
@@ -151,6 +154,12 @@ var CMS_I18N = {
   ip_whitelist:    {en:'IP Whitelist', hans:'IP 白名单', hant:'IP 白名單'},
   session_timeout: {en:'Session Timeout', hans:'会话超时', hant:'工作階段逾時'},
   audit_log:       {en:'Login Audit Log', hans:'登录审计日志', hant:'登入稽核日誌'},
+  audit_log_desc:  {en:'Recent login activity. Shows user, action, IP address, and timestamp.', hans:'最近的登录活动。显示用户、操作、IP地址及时间。', hant:'最近的登入活動。顯示用戶、操作、IP地址及時間。'},
+  audit_col_time:  {en:'Time', hans:'时间', hant:'時間'},
+  audit_col_user:  {en:'User', hans:'用户', hant:'用戶'},
+  audit_col_action:{en:'Action', hans:'操作', hant:'操作'},
+  audit_col_ip:    {en:'IP Address', hans:'IP地址', hant:'IP地址'},
+  audit_col_detail:{en:'Detail', hans:'详情', hant:'詳情'},
   clear_log:       {en:'Clear Log', hans:'清除日志', hant:'清除日誌'},
   clear_log_q:     {en:'Clear audit log?', hans:'清除审计日志？', hant:'清除稽核日誌？'},
   ip_addr:         {en:'IP Address', hans:'IP 地址', hant:'IP 地址'},
@@ -1835,11 +1844,15 @@ function _cmsSecurityTab(){
     +'</div>'
     // Audit Log
     +'<div class="cms-card-box">'
-    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
     +'<h4 style="font-size:16px;font-weight:700;margin:0">'+CL('audit_log')+'</h4>'
     +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="if(confirm(CL(\'clear_log_q\')))localStorage.removeItem(\''+CMS_AUDIT_KEY+'\');window._cmsUsersView(\'security\')">'+CL('clear_log')+'</button>'
     +'</div>'
-    +(auditRows||'<div style="color:var(--text-muted);font-size:13px">'+CL('no_log')+'</div>')
+    +'<p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">'+CL('audit_log_desc')+'</p>'
+    +'<div style="display:grid;grid-template-columns:24px 150px 80px 1fr auto auto;gap:8px;padding:6px 0;border-bottom:2px solid var(--border);font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">'
+    +'<span></span><span>'+CL('audit_col_time')+'</span><span>'+CL('audit_col_user')+'</span><span>'+CL('audit_col_action')+'</span><span>'+CL('audit_col_ip')+'</span><span>'+CL('audit_col_detail')+'</span>'
+    +'</div>'
+    +(auditRows||'<div style="color:var(--text-muted);font-size:13px;padding:12px 0">'+CL('no_log')+'</div>')
     +'</div>'
     +'</div>';
 }
@@ -2325,10 +2338,10 @@ window._cmsBlogView = function(){
       +'<div class="cms-item-meta">slug: '+esc(a.slug||'')+'</div>'
       +'</div>'
       +'<div class="cms-item-actions" style="display:flex;gap:4px;align-items:center;min-width:220px;justify-content:flex-end">'
-      +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="window._cmsBlogPreview('+i+')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>'
+      +'<button class="admin-btn secondary" title="'+CL('btn_preview')+'" style="font-size:11px;padding:4px 10px" onclick="window._cmsBlogPreview('+i+')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> '+CL('btn_preview')+'</button>'
       +(_canEdit?'<button class="admin-btn primary" style="font-size:11px;padding:4px 10px" onclick="window._cmsBlogEdit('+i+')">'+CL('edit')+'</button>':'')
-      +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px;'+(i<=0?'visibility:hidden':'') +'" onclick="window._cmsBlogMove('+i+',-1)">&uarr;</button>'
-      +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px;'+(i>=articles.length-1?'visibility:hidden':'')+'" onclick="window._cmsBlogMove('+i+',1)">&darr;</button>'
+      +'<button class="admin-btn secondary" title="'+CL('btn_move_up')+'" style="font-size:11px;padding:4px 8px;'+(i<=0?'visibility:hidden':'') +'" onclick="window._cmsBlogMove('+i+',-1)">&uarr;</button>'
+      +'<button class="admin-btn secondary" title="'+CL('btn_move_down')+'" style="font-size:11px;padding:4px 8px;'+(i>=articles.length-1?'visibility:hidden':'')+'" onclick="window._cmsBlogMove('+i+',1)">&darr;</button>'
       +(_canEdit?'<button class="admin-btn danger" style="font-size:11px;padding:4px 8px" onclick="window._cmsBlogDelete('+i+')">'+CL('del_short')+'</button>':'')
       +'</div></div>';
   }).join("") : '<div class="cms-item-meta" style="padding:12px 0">'+CL('no_articles')+'</div>';
@@ -2508,8 +2521,8 @@ window._cmsBannersView = function(){
       +'<div class="cms-item-meta">'+esc(b.link||CL('no_link'))+'</div>'
       +'</div>'
       +'<div class="cms-item-actions">'
-      +(i>0?'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerMove('+i+',-1)">&uarr;</button>':'')
-      +(i<banners.length-1?'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerMove('+i+',1)">&darr;</button>':'')
+      +(i>0?'<button class="admin-btn secondary" title="'+CL('btn_move_up')+'" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerMove('+i+',-1)">&uarr;</button>':'')
+      +(i<banners.length-1?'<button class="admin-btn secondary" title="'+CL('btn_move_down')+'" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerMove('+i+',1)">&darr;</button>':'')
       +(_canUpload?'<button class="admin-btn danger" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerDelete('+i+')">'+CL('delete')+'</button>':'')
       +'</div></div>';
   }).join("") : '<div class="cms-item-meta" style="padding:12px 0">'+CL('no_banner')+'</div>';

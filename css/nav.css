@@ -10,22 +10,24 @@
   z-index: 1000;
   background: transparent;
 }
-/* Always-on frosted glass — blur only, no color tint so gradient shows through */
+/* Always-on subtle frosted glass */
 .nav::after {
   content: '';
   position: absolute;
   inset: 0;
-  backdrop-filter: blur(calc(8px + var(--scroll-p) * 16px));
-  -webkit-backdrop-filter: blur(calc(8px + var(--scroll-p) * 16px));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   z-index: -2;
   pointer-events: none;
 }
-/* Scrolled tint — very subtle warm pink, body gradient still visible */
+/* Scrolled overlay — warm pink matching body (#F0EAEB), gradual via --scroll-p */
 .nav::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(240,234,235,.3);
+  background: #F0EAEB;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   opacity: var(--scroll-p);
   z-index: -1;
   pointer-events: none;

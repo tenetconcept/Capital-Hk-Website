@@ -36,7 +36,7 @@ var CMS_I18N = {
   tab_pages:       {en:'Pages', hans:'页面内容', hant:'頁面內容'},
   tab_banners:     {en:'Banners', hans:'首页横幅', hant:'首頁橫幅'},
   tab_blog:        {en:'News', hans:'新闻文章', hant:'新聞文章'},
-  tab_files:       {en:'Downloads', hans:'档案下载', hant:'檔案下載'},
+  tab_files:       {en:'File Manager', hans:'档案管理', hant:'檔案管理'},
   tab_account:     {en:'My Account', hans:'我的帐户', hant:'我的帳戶'},
   tab_users:       {en:'Users', hans:'用户管理', hant:'用戶管理'},
   tab_security:    {en:'Security', hans:'安全设定', hant:'安全設定'},
@@ -62,7 +62,7 @@ var CMS_I18N = {
   reset_confirm:   {en:'Reset all CMS edits to default?', hans:'重置所有CMS编辑为默认？', hant:'重設所有CMS編輯為預設？'},
   reset_done:      {en:'Reset to defaults', hans:'已重置为默认', hant:'已重設為預設'},
   // Files
-  files_title:     {en:'Downloads Manager', hans:'档案管理', hant:'檔案管理'},
+  files_title:     {en:'File Manager', hans:'档案管理', hant:'檔案管理'},
   files_desc:      {en:'Upload files or add external links. Copy the HTML snippet to paste into any page body.', hans:'上传文件或添加外部链接。复制HTML代码片段可粘贴到任何页面中。', hant:'上傳檔案或添加外部連結。複製HTML程式碼可貼到任何頁面中。'},
   drag_drop:       {en:'Drag & drop', hans:'拖放', hant:'拖放'},
   files_here:      {en:' PDF, DOC, DOCX, JPG or PNG files here', hans:' PDF、DOC、DOCX、JPG 或 PNG 文件到此处', hant:' PDF、DOC、DOCX、JPG 或 PNG 檔案到此處'},
@@ -190,7 +190,7 @@ var CMS_I18N = {
   perm_pages:      {en:'Pages', hans:'页面内容', hant:'頁面內容'},
   perm_banners:    {en:'Banners', hans:'首页横幅', hant:'首頁橫幅'},
   perm_blog:       {en:'News Articles', hans:'新闻文章', hant:'新聞文章'},
-  perm_files:      {en:'Downloads', hans:'档案下载', hant:'檔案下載'},
+  perm_files:      {en:'File Manager', hans:'档案管理', hant:'檔案管理'},
   perm_users:      {en:'User Management', hans:'用户管理', hant:'用戶管理'},
   perm_security:   {en:'Security Settings', hans:'安全设定', hant:'安全設定'},
   custom_perms:    {en:'Custom Permissions', hans:'自定义权限', hant:'自訂權限'},
@@ -287,7 +287,7 @@ var CMS_I18N = {
   img_resized:     {en:'Image resized to 1200×525px', hans:'图片已调整为1200×525px', hant:'圖片已調整為1200×525px'},
   view_only_msg:   {en:'View only — editor or admin access needed.', hans:'仅查看 — 需要编辑或管理员权限。', hant:'僅檢視 — 需要編輯或管理員權限。'},
   insert_dl_title: {en:'Insert Download Link', hans:'插入下载链接', hant:'插入下載連結'},
-  no_files_dl:     {en:'No files yet. Go to the Downloads tab to upload files first.', hans:'暂无文件。请先到档案下载标签上传文件。', hant:'暫無檔案。請先到檔案下載標籤上傳檔案。'},
+  no_files_dl:     {en:'No files yet. Go to the File Manager tab to upload files first.', hans:'暂无文件。请先到档案管理标签上传文件。', hant:'暫無檔案。請先到檔案管理標籤上傳檔案。'},
   select_file:     {en:'Select file to insert', hans:'选择要插入的文件', hant:'選擇要插入的檔案'},
   inserted_file:   {en:'Inserted: ', hans:'已插入：', hant:'已插入：'},
   textarea_err:    {en:'Textarea not found', hans:'找不到文本框', hant:'找不到文字框'},
@@ -2283,6 +2283,16 @@ window._cmsInsertFile = function(textareaId, idx){
   var snippet = f.isLocal
     ? '<a href="'+f.url+'" download="'+f.name.replace(/"/g,'&quot;')+'">'+f.name+'</a>'
     : '<a href="'+f.url+'" target="_blank" rel="noopener">'+f.name+'</a>';
+  // Insert into CKEditor if available
+  var editor = _cmsEditors[textareaId];
+  if(editor){
+    var viewFragment = editor.data.processor.toView(snippet);
+    var modelFragment = editor.data.toModel(viewFragment);
+    editor.model.insertContent(modelFragment);
+    showToast(CL('inserted_file')+f.name);
+    return;
+  }
+  // Fallback: insert into textarea
   var ta = document.getElementById(textareaId);
   if(!ta){ showToast(CL('textarea_err')); return; }
   var s = ta.selectionStart, en = ta.selectionEnd;

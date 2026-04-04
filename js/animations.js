@@ -5,7 +5,11 @@
 "use strict";
 
 var _scrollObserver = null;
+var _scrollFallbackHandler = null;
 var ANIM_SEL = '.anim-fade-up:not(.visible),.anim-fade-left:not(.visible),.anim-fade-right:not(.visible),.anim-scale:not(.visible)';
+// Element must be this many px above the viewport bottom before it animates.
+// Prevents animations firing when element is barely peeking at the bottom edge.
+var TRIGGER_INSET = 120;
 
 function initScrollAnimations(){
   var els = document.querySelectorAll('.anim-fade-up,.anim-fade-left,.anim-fade-right,.anim-scale');
@@ -25,37 +29,42 @@ function initScrollAnimations(){
         _scrollObserver.unobserve(entry.target);
       }
     });
-  // threshold 0.1: 10% of element must be visible in the trigger zone
-  // rootMargin bottom -80px: element must be 80px INTO the viewport before triggering
-  // This prevents animations firing when element is barely peeking at the bottom edge
-  }, { threshold: 0.1, rootMargin: '0px 0px -80px 0px' });
+  // threshold 0.15: 15% of element visible in the trigger zone
+  // rootMargin: negative bottom = element must be TRIGGER_INSET px into viewport
+  }, { threshold: 0.15, rootMargin: '0px 0px -' + TRIGGER_INSET + 'px 0px' });
 
   els.forEach(function(el){ _scrollObserver.observe(el); });
 }
 
-// Force-show elements clearly within the viewport.
-// Uses vh - 60 so elements near the bottom edge are NOT shown prematurely.
-function forceShowAll(){
-  var vh = window.innerHeight;
-  document.querySelectorAll(ANIM_SEL)
-    .forEach(function(el){
-      var rect = el.getBoundingClientRect();
-      if(rect.top < vh - 60 && rect.bottom > -30){
-        el.classList.add('visible');
-      }
-    });
+// ——— Scroll-event fallback (iOS IntersectionObserver quirks) ———
+// Only fires on actual scroll — no timers, no premature showing.
+// Same conservative inset as the observer.
+function scrollFallback(){
+  var cutoff = window.innerHeight - TRIGGER_INSET;
+  document.querySelectorAll(ANIM_SEL).forEach(function(el){
+    var rect = el.getBoundingClientRect();
+    if(rect.top < cutoff && rect.bottom > 0){
+      el.classList.add('visible');
+    }
+  });
 }
 
-// Nuclear fallback — only shows elements the user has ALREADY scrolled well past.
-// Conservative: subtracts 40px so elements near the bottom edge are left for the observer.
-function forceShowEverything(){
-  var scrolledTo = window.pageYOffset + window.innerHeight - 40;
-  document.querySelectorAll(ANIM_SEL)
-    .forEach(function(el){
-      var rect = el.getBoundingClientRect();
-      var elAbsTop = rect.top + window.pageYOffset;
-      if(elAbsTop < scrolledTo){ el.classList.add('visible'); }
+function attachScrollFallback(){
+  if(_scrollFallbackHandler) window.removeEventListener('scroll', _scrollFallbackHandler);
+  _scrollFallbackHandler = scrollFallback;
+  window.addEventListener('scroll', _scrollFallbackHandler, {passive:true});
+  setTimeout(function(){
+    if(_scrollFallbackHandler){ window.removeEventListener('scroll', _scrollFallbackHandler); _scrollFallbackHandler = null; }
+  }, 20000);
+}
+
+// ——— startObserving: double-rAF guarantees opacity:0 is PAINTED before observer fires ———
+function startObserving(){
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      initScrollAnimations();
     });
+  });
 }
 
 // ——— Swiper ———
@@ -100,15 +109,6 @@ function destroySwipers(){
   if(_newsSwiper  && _newsSwiper.destroy) { try{ _newsSwiper.destroy(true,true);  }catch(e){} _newsSwiper=null;  }
 }
 
-// ——— startObserving: double-rAF guarantees opacity:0 is PAINTED before we add .visible ———
-function startObserving(){
-  requestAnimationFrame(function(){
-    requestAnimationFrame(function(){
-      initScrollAnimations();
-    });
-  });
-}
-
 // ——— initHomeAnimations (called by app.js after home page renders) ———
 window.initHomeAnimations = function(){
   destroySwipers();
@@ -124,33 +124,14 @@ window.initHomeAnimations = function(){
   });
 
   startObserving();
-
-  // Periodic fallback: poll every 500ms for 5s (iOS IntersectionObserver quirks).
-  // Uses the conservative forceShowAll (vh - 60) so nothing fires prematurely.
-  var _animInterval = setInterval(forceShowAll, 500);
-  setTimeout(function(){ clearInterval(_animInterval); }, 5000);
-
-  // Nuclear fallback at 6s: show any elements user has scrolled to but observer missed.
-  setTimeout(forceShowEverything, 6000);
-
-  // Scroll fallback (iOS quirks) — limited to 15 events over 8s
-  var _scrollChecks = 0;
-  var _onScroll = function(){
-    _scrollChecks++;
-    forceShowAll();
-    if(_scrollChecks >= 15) window.removeEventListener('scroll', _onScroll);
-  };
-  window.addEventListener('scroll', _onScroll, {passive:true});
-  setTimeout(function(){ window.removeEventListener('scroll', _onScroll); }, 8000);
+  attachScrollFallback();
 };
 
 // ——— Route change (hash SPA navigation) ———
 window.addEventListener('hashchange', function(){
   destroySwipers();
   startObserving();
-  var _i = setInterval(forceShowAll, 500);
-  setTimeout(function(){ clearInterval(_i); }, 5000);
-  setTimeout(forceShowEverything, 6000);
+  attachScrollFallback();
 });
 
 // ——— Initial page load ———
@@ -158,13 +139,8 @@ document.addEventListener('DOMContentLoaded', function(){
   setTimeout(startObserving, 200);
 });
 
-// window.load: show above-fold elements via observer; Swiper retry
+// window.load: just retry Swiper if needed — NO forced showing
 window.addEventListener('load', function(){
-  requestAnimationFrame(function(){
-    requestAnimationFrame(function(){
-      forceShowAll();
-    });
-  });
   if(document.querySelector('.banner-swiper') && !document.querySelector('.banner-swiper.swiper-initialized')){
     initBannerSwiper();
   }

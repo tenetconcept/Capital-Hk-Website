@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /#/admin
+
+Sitemap: https://www.e-capital.com.hk/sitemap.xml

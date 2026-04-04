@@ -6,7 +6,66 @@
 <meta http-equiv="X-Content-Type-Options" content="nosniff"/>
 <meta name="referrer" content="strict-origin-when-cross-origin"/>
 <title>群益證券(香港) — Capital Securities (Hong Kong)</title>
-<meta name="description" content="群益證券(香港)有限公司 — 提供證券、期貨、期權交易及滬港通服務。Capital Securities (Hong Kong) Limited — Securities, Futures, Options trading and Shanghai-HK Stock Connect."/>
+<meta name="description" id="metaDesc" content="群益證券(香港)有限公司 — 提供證券、期貨、期權交易及滬港通服務。Capital Securities (Hong Kong) Limited — Securities, Futures, Options trading and Shanghai-HK Stock Connect."/>
+<meta name="keywords" content="群益證券,群益香港,Capital Securities,Hong Kong,證券,期貨,期權,滬港通,股票交易,開戶,IPO,新股,Securities,Futures,Options,Stock Connect,Trading"/>
+
+<!-- Open Graph -->
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="群益證券(香港) Capital Securities"/>
+<meta property="og:title" id="ogTitle" content="群益證券(香港) — Capital Securities (Hong Kong)"/>
+<meta property="og:description" id="ogDesc" content="群益證券(香港)有限公司 — 提供證券、期貨、期權交易及滬港通服務。"/>
+<meta property="og:url" id="ogUrl" content="https://www.e-capital.com.hk/"/>
+<meta property="og:image" content="https://www.e-capital.com.hk/images/logo_09.png"/>
+<meta property="og:locale" content="zh_Hant_HK"/>
+<meta property="og:locale:alternate" content="zh_Hans_CN"/>
+<meta property="og:locale:alternate" content="en_US"/>
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" id="twTitle" content="群益證券(香港) — Capital Securities (Hong Kong)"/>
+<meta name="twitter:description" id="twDesc" content="群益證券(香港)有限公司 — 提供證券、期貨、期權交易及滬港通服務。"/>
+<meta name="twitter:image" content="https://www.e-capital.com.hk/images/logo_09.png"/>
+
+<!-- Canonical + hreflang -->
+<link rel="canonical" id="canonical" href="https://www.e-capital.com.hk/"/>
+<link rel="alternate" hreflang="zh-Hant" href="https://www.e-capital.com.hk/"/>
+<link rel="alternate" hreflang="zh-Hans" href="https://www.e-capital.com.hk/"/>
+<link rel="alternate" hreflang="en" href="https://www.e-capital.com.hk/"/>
+<link rel="alternate" hreflang="x-default" href="https://www.e-capital.com.hk/"/>
+
+<!-- JSON-LD Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FinancialService",
+  "name": "群益證券(香港)有限公司",
+  "alternateName": "Capital Securities (Hong Kong) Limited",
+  "url": "https://www.e-capital.com.hk",
+  "logo": "https://www.e-capital.com.hk/images/logo_09.png",
+  "description": "提供證券、期貨、期權交易及滬港通服務",
+  "telephone": "+852-2530-9966",
+  "email": "info@e-capital.com.hk",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "Hong Kong",
+    "addressCountry": "HK"
+  },
+  "sameAs": [
+    "https://www.facebook.com/ecapitalhk"
+  ],
+  "areaServed": {
+    "@type": "Country",
+    "name": "Hong Kong"
+  },
+  "serviceType": ["Securities Trading", "Futures Trading", "Options Trading", "Shanghai-Hong Kong Stock Connect"],
+  "currenciesAccepted": "HKD",
+  "parentOrganization": {
+    "@type": "Organization",
+    "name": "群益金鼎證券",
+    "alternateName": "Capital Securities Corporation"
+  }
+}
+</script>
 
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,11 +88,9 @@
 <link rel="stylesheet" href="css/animations.css">
 <link rel="stylesheet" href="css/responsive.css">
 
-<!-- CKEditor 5 Classic — CDN -->
-<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
-
-<!-- Favicon -->
+<!-- Favicon + Apple Touch Icon -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23B41540'/><text x='16' y='23' font-size='20' font-weight='bold' fill='white' text-anchor='middle' font-family='sans-serif'>C</text></svg>">
+<link rel="apple-touch-icon" href="https://www.e-capital.com.hk/images/logo_09.png">
 </head>
 <body>
 
@@ -43,7 +100,7 @@
   <div class="nav-top">
     <div class="mw nav-top-inner">
       <a href="#/" class="nav-logo" data-spa>
-        <img src="https://www.e-capital.com.hk/images/logo_09.png" alt="e-Capital" height="36">
+        <img src="https://www.e-capital.com.hk/images/logo_09.png" alt="群益證券(香港) Capital Securities" height="36">
         <div class="nav-logo-text">群益香港</div>
       </a>
       <div class="nav-top-right">
@@ -72,7 +129,7 @@
       </button>
     </div>
   </div>
-  <div class="nav-bar">
+  <nav class="nav-bar" aria-label="Main navigation">
     <div class="mw nav-bar-inner">
       <ul class="nav-links" id="navLinks"></ul>
       <div class="nav-cta">
@@ -80,17 +137,28 @@
         <a href="#/page/stock-account-opening" data-spa class="btn btn-gradient" id="navCtaOpen">開立帳戶</a>
       </div>
     </div>
-  </div>
+  </nav>
 </header>
 
 <!-- MOBILE MENU -->
-<div class="mobile-menu" id="mobileMenu"></div>
+<div class="mobile-menu" id="mobileMenu" role="dialog" aria-label="Mobile menu"></div>
 
 <!-- APP CONTAINER -->
-<div id="app"></div>
+<main id="app"></main>
+
+<!-- Fallback for no-JS crawlers -->
+<noscript>
+  <div style="padding:60px 24px;text-align:center;max-width:600px;margin:0 auto">
+    <h1>群益證券(香港)有限公司</h1>
+    <h2>Capital Securities (Hong Kong) Limited</h2>
+    <p>提供證券、期貨、期權交易及滬港通服務。Securities, Futures, Options trading and Shanghai-HK Stock Connect.</p>
+    <p>Please enable JavaScript to use this website.</p>
+    <p>Tel: +852-2530-9966 | Email: info@e-capital.com.hk</p>
+  </div>
+</noscript>
 
 <!-- TOAST -->
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="alert" aria-live="polite"></div>
 
 <!-- SCRIPTS -->
 <script src="lib/swiper-bundle.min.js"></script>

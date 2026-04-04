@@ -4,6 +4,18 @@
 
 // CKEditor instance store: key = textarea-id, value = editor instance
 var _cmsEditors = {};
+var _ckLoaded = typeof ClassicEditor !== 'undefined';
+var _ckLoading = false;
+function _loadCKEditor(cb){
+  if(_ckLoaded){ if(cb) cb(); return; }
+  if(_ckLoading){ setTimeout(function(){ _loadCKEditor(cb); }, 200); return; }
+  _ckLoading = true;
+  var s = document.createElement('script');
+  s.src = 'https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js';
+  s.onload = function(){ _ckLoaded = true; _ckLoading = false; if(cb) cb(); };
+  s.onerror = function(){ _ckLoading = false; };
+  document.head.appendChild(s);
+}
 
 // ————— CMS i18n —————
 var CMS_I18N = {
@@ -37,6 +49,8 @@ var CMS_I18N = {
   tab_banners:     {en:'Banners', hans:'首页横幅', hant:'首頁橫幅'},
   tab_blog:        {en:'News', hans:'新闻文章', hant:'新聞文章'},
   tab_files:       {en:'File Manager', hans:'档案管理', hant:'檔案管理'},
+  tab_home:        {en:'Homepage', hans:'首页', hant:'首頁'},
+  tab_home_desc:   {en:'banners & hero', hans:'横幅轮播', hant:'橫幅輪播'},
   tab_account:     {en:'My Account', hans:'我的帐户', hant:'我的帳戶'},
   tab_users:       {en:'Users', hans:'用户管理', hant:'用戶管理'},
   tab_security:    {en:'Security', hans:'安全设定', hant:'安全設定'},
@@ -685,6 +699,8 @@ function getEffectiveIpWhitelist(username){
 
 // ————————————————————— ADMIN VIEW —————————————————————
 function adminView(){
+  // Preload CKEditor CDN (non-blocking)
+  _loadCKEditor();
   // --- Mobile Block ---
   if(window.innerWidth <= 768){
     return '<section class="admin-login"><div class="admin-login-box" style="text-align:center">'
@@ -734,6 +750,12 @@ function adminView(){
     +'<div class="cms-sidebar-hdr"><h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'+CL('sidebar_title')+'</h2><p>'+allPages.length+CL('sidebar_count')+'</p></div>'
     +'<div class="cms-search"><input type="text" id="cmsSearch" placeholder="'+CL('search_pages')+'" oninput="window._cmsFilter(this.value)"/></div>'
     +'<div class="cms-page-list" id="cmsPageList">'
+    // Homepage item at top of sidebar
+    +'<div class="cms-page-item cms-page-home" data-slug="__home__" onclick="window._cmsBannersView()">'
+    +'<span class="page-dot" style="background:var(--brand)"></span>'
+    +'<div class="page-info"><span class="page-name" style="font-weight:700">'+CL('tab_home')+'</span>'
+    +'<span class="page-slug">'+CL('tab_home_desc')+'</span></div></div>'
+    +'<div style="border-bottom:1px solid var(--border-light);margin:4px 10px"></div>'
     + allPages.map(function(slug){
         var edited = cms[slug] ? ' edited' : '';
         var title = _pageTitle(slug);
@@ -775,7 +797,6 @@ function adminView(){
     +'<div class="cms-section-bar">'
     +'<div class="cms-section-tabs">'
     +'<button class="cms-section-btn active" id="stab_pages" onclick="window._cmsSectionSwitch(\'pages\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> '+CL('tab_pages')+'</button>'
-    +'<button class="cms-section-btn" id="stab_banners" onclick="window._cmsSectionSwitch(\'banners\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg> '+CL('tab_banners')+'</button>'
     +'<button class="cms-section-btn" id="stab_blog" onclick="window._cmsSectionSwitch(\'blog\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> '+CL('tab_blog')+'</button>'
     +'<button class="cms-section-btn" id="stab_files" onclick="window._cmsSectionSwitch(\'files\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> '+CL('tab_files')+'</button>'
     +(_canViewUsers?'<button class="cms-section-btn" id="stab_users" onclick="window._cmsSectionSwitch(\'users\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg> '+CL('tab_users')+'</button>':'')
@@ -1354,11 +1375,11 @@ window._cmsReset = function(){
 var _cmsSection = "pages";
 window._cmsSectionSwitch = function(sec){
   if(typeof sec === "number"){
-    var secs = ["pages","files","users","banners"];
+    var secs = ["pages","files","users","blog"];
     sec = secs[sec] || "pages";
   }
   _cmsSection = sec;
-  ["pages","banners","blog","files","account","users","security"].forEach(function(s){
+  ["pages","blog","files","account","users","security"].forEach(function(s){
     var b = document.getElementById("stab_"+s);
     if(b) b.classList.toggle("active", s===sec);
   });
@@ -1374,8 +1395,6 @@ window._cmsSectionSwitch = function(sec){
     window._cmsUserMgmtView();
   } else if(sec==="security") {
     window._cmsSecurityView();
-  } else if(sec==="banners") {
-    window._cmsBannersView();
   } else if(sec==="blog") {
     window._cmsBlogView();
   }
@@ -2623,6 +2642,10 @@ window._cmsBlogMove = function(idx, dir){
 
 // ————————————————————— CMS BANNERS MANAGER —————————————————————
 window._cmsBannersView = function(){
+  // Highlight homepage item in sidebar
+  document.querySelectorAll('.cms-page-item').forEach(function(el){ el.classList.remove('active'); });
+  var homeItem = document.querySelector('.cms-page-home');
+  if(homeItem) homeItem.classList.add('active');
   var banners = getCmsBanners();
   var _canUpload = _cmsHasPermission("upload");
   var rows = banners.length ? banners.map(function(b,i){

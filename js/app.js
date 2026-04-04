@@ -13,6 +13,26 @@ window.currentLang = currentLang;
 
 // ---------- CMS Data Accessors ----------
 var CMS_KEY = "ecap_cms_pages";
+
+// ---------- SEO — Dynamic meta updates ----------
+var SITE_URL = "https://www.e-capital.com.hk";
+var DEFAULT_TITLE = "群益證券(香港) — Capital Securities (Hong Kong)";
+var DEFAULT_DESC = "群益證券(香港)有限公司 — 提供證券、期貨、期權交易及滬港通服務。Capital Securities (Hong Kong) Limited — Securities, Futures, Options trading and Shanghai-HK Stock Connect.";
+
+function updateSEO(title, desc, path){
+  var t = title ? title + " — 群益證券(香港)" : DEFAULT_TITLE;
+  var d = desc || DEFAULT_DESC;
+  var url = SITE_URL + "/" + (path || "");
+  document.title = t;
+  var el;
+  if((el = document.getElementById("metaDesc"))) el.setAttribute("content", d);
+  if((el = document.getElementById("ogTitle")))  el.setAttribute("content", t);
+  if((el = document.getElementById("ogDesc")))   el.setAttribute("content", d);
+  if((el = document.getElementById("ogUrl")))    el.setAttribute("content", url);
+  if((el = document.getElementById("twTitle")))  el.setAttribute("content", t);
+  if((el = document.getElementById("twDesc")))   el.setAttribute("content", d);
+  if((el = document.getElementById("canonical"))) el.setAttribute("href", url);
+}
 function getCmsPages(){ try{ var d=JSON.parse(localStorage.getItem(CMS_KEY)); return d||{}; }catch(e){ return {}; } }
 function saveCmsPages(d){ localStorage.setItem(CMS_KEY, JSON.stringify(d)); }
 function getPage(slug, lang){
@@ -598,14 +618,14 @@ function blogArticleView(slug){
   var tag = L(article.tag_en, article.tag_hans, article.tag_hant);
   var body = L(article.body_en, article.body_hans, article.body_hant);
 
-  var h = '<section class="subpage">';
+  var h = '<article class="subpage" itemscope itemtype="https://schema.org/NewsArticle">';
   // Hero image with title overlay on image (rd.group style)
   h += '<div class="article-hero-wrap">';
   h += '<div class="article-hero">';
-  h += '<img src="' + escAttr(article.img) + '" alt="' + escAttr(title) + '">';
+  h += '<img src="' + escAttr(article.img) + '" alt="' + escAttr(title) + '" itemprop="image">';
   h += '<div class="article-hero-caption">';
-  h += '<time class="article-hero-date">' + esc(article.date) + '</time>';
-  h += '<h1 class="article-hero-title">' + esc(title) + '</h1>';
+  h += '<time class="article-hero-date" itemprop="datePublished" datetime="' + escAttr(article.date) + '">' + esc(article.date) + '</time>';
+  h += '<h1 class="article-hero-title" itemprop="headline">' + esc(title) + '</h1>';
   h += '</div>';
   h += '</div>';
   h += '</div>';
@@ -615,9 +635,9 @@ function blogArticleView(slug){
   h += '<a href="#/page/hk-news" data-spa class="article-back">&larr; ' + esc(L('Back to News','返回新闻','返回新聞')) + '</a>';
   h += '<span class="blog-card-tag" style="font-size:0.9375rem">' + esc(tag) + '</span>';
   h += '</div>';
-  h += '<div class="article-body">' + body + '</div>';
+  h += '<div class="article-body" itemprop="articleBody">' + body + '</div>';
   h += '</div></div>';
-  h += '</section>';
+  h += '</article>';
   return h;
 }
 
@@ -778,11 +798,14 @@ function route(){
 
   if(hash === "#/" || hash === "#" || hash === ""){
     app.innerHTML = homeView() + footerView();
+    updateSEO(null, null, "");
     window.scrollTo(0,0);
     if(typeof window.initHomeAnimations === 'function') requestAnimationFrame(function(){ setTimeout(window.initHomeAnimations, 10); });
   } else if(hash.indexOf("#/page/") === 0){
     var slug = hash.replace("#/page/","").split("?")[0];
     app.innerHTML = pageView(slug) + footerView();
+    var pg = getPage(slug, currentLang);
+    updateSEO(pg ? pg.title : slug, pg ? (pg.body||"").replace(/<[^>]*>/g,"").substring(0,160) : null, "#/page/" + slug);
     // Disable legacy forms and ASPX links
     app.querySelectorAll('form').forEach(function(f){ f.addEventListener('submit', function(e){ e.preventDefault(); }); });
     app.querySelectorAll('a[href^="javascript:"]').forEach(function(a){ a.setAttribute('href','#'); });
@@ -790,6 +813,7 @@ function route(){
     window.scrollTo(0,0);
   } else if(hash === "#/admin"){
     document.body.classList.add('cms-active');
+    updateSEO("CMS Admin", null, "#/admin");
     if(typeof window.adminView === 'function'){
       app.innerHTML = window.adminView();
     } else {
@@ -798,6 +822,7 @@ function route(){
     window.scrollTo(0,0);
   } else {
     app.innerHTML = pageView('__404__') + footerView();
+    updateSEO("404 Not Found", null, "");
     window.scrollTo(0,0);
   }
 }

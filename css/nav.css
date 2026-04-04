@@ -11,15 +11,15 @@
 }
 
 /* Background overlay div — rd.group pattern:
-   Extends 120px below nav so the gradient covers the body's red zone.
-   Top portion solid warm pink, fading to transparent at bottom. */
+   Extends below nav to cover content bleed-through.
+   Near-white so no pink tint; fades to transparent at bottom. */
 .nav-bg {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  bottom: -120px;
-  background: linear-gradient(180deg, var(--bg-body, #F0EAEB) 40%, rgba(240,234,235,0) 100%);
+  bottom: -80px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.96) 35%, rgba(255,255,255,0) 100%);
   opacity: 0;
   transition: opacity 500ms ease-in-out;
   z-index: -1;

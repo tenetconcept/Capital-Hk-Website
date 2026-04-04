@@ -1390,7 +1390,16 @@ window._cmsFilesView = function(){
     var sizeStr = f.size ? (f.size < 1024 ? f.size+"B" : f.size < 1048576 ? Math.round(f.size/1024)+"KB" : Math.round(f.size/1048576)+"MB") : "—";
     var dateStr = f.uploadedAt ? new Date(f.uploadedAt).toLocaleDateString("zh-HK",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}) : "—";
     var byStr = f.uploadedBy || "—";
-    return '<tr><td><span class="file-name">'+esc(f.name)+'</span>'+(f.desc?'<br/><span style="font-size:11px;color:var(--text-muted)">'+esc(f.desc)+'</span>':'')+'</td>'
+    var _fIsImg = /\.(jpe?g|png|gif|webp|svg)$/i.test(f.name) || /^image\//i.test(f.type||'');
+    var _fIsExt = f.type === 'external';
+    var _fThumb = _fIsImg && f.url
+      ? '<img src="'+f.url+'" alt="" style="width:64px;height:42px;object-fit:cover;border-radius:6px;border:1px solid rgba(0,0,0,.08);flex-shrink:0;background:#f3f4f6;display:block">'
+      : _fIsExt
+      ? '<span style="width:40px;height:40px;background:#dbeafe;color:#1d4ed8;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0;letter-spacing:0">URL</span>'
+      : /pdf/i.test(f.type||f.name||'')
+      ? '<span style="width:40px;height:40px;background:#fee2e2;color:#dc2626;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0">PDF</span>'
+      : '<span style="width:40px;height:40px;background:#f0f0f0;color:#666;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0">DOC</span>';
+    return '<tr><td><div style="display:flex;align-items:center;gap:10px">'+_fThumb+'<div><span class="file-name">'+esc(f.name)+'</span>'+(f.desc?'<br/><span style="font-size:11px;color:var(--text-muted)">'+esc(f.desc)+'</span>':'')+'</div></div></td>'
       +'<td><span class="file-type">'+esc(f.type||"link")+'</span></td>'
       +'<td class="file-size">'+sizeStr+'</td>'
       +'<td style="font-size:12px;color:var(--text-muted)">'+dateStr+'<br/>'+esc(byStr)+'</td>'
@@ -2242,7 +2251,9 @@ window._cmsShowFilePicker = function(btn){
     files.forEach(function(f, i){
       var isImg = /\.(jpe?g|png|gif|webp|svg)$/i.test(f.name) || /^image\//i.test(f.type||'');
       var isExt = f.type === 'external';
-      var icon = isImg
+      var icon = isImg && f.url
+        ? '<img src="'+f.url+'" style="width:40px;height:28px;object-fit:cover;border-radius:4px;flex-shrink:0;background:#f3f4f6">'
+        : isImg
         ? '<span style="font-size:15px">🖼</span>'
         : isExt
         ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>'

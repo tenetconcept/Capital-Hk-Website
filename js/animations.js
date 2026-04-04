@@ -8,8 +8,9 @@ var _scrollObserver = null;
 var _scrollFallbackHandler = null;
 var ANIM_SEL = '.anim-fade-up:not(.visible),.anim-fade-left:not(.visible),.anim-fade-right:not(.visible),.anim-scale:not(.visible)';
 // Element must be this many px above the viewport bottom before it animates.
-// Prevents animations firing when element is barely peeking at the bottom edge.
-var TRIGGER_INSET = 120;
+// Desktop: fixed 120px (confirmed OK). Mobile: 10% of viewport height (~67-93px).
+var IS_MOBILE = window.innerWidth <= 768;
+var TRIGGER_INSET = IS_MOBILE ? Math.round(window.innerHeight * 0.10) : 120;
 
 function initScrollAnimations(){
   var els = document.querySelectorAll('.anim-fade-up,.anim-fade-left,.anim-fade-right,.anim-scale');

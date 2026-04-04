@@ -26,16 +26,13 @@ function initScrollAnimations(){
         _scrollObserver.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.01, rootMargin: '50px 0px 50px 0px' });
+  }, { threshold: 0.01, rootMargin: '0px 0px -10px 0px' });
 
+  // Observe ALL elements — IntersectionObserver fires asynchronously,
+  // which ensures the initial opacity:0 state is painted before .visible
+  // is added. Synchronous immediate-visible was causing animations to skip.
   els.forEach(function(el){
-    // Elements already in or near viewport — show immediately
-    var rect = el.getBoundingClientRect();
-    if(rect.top < window.innerHeight + 80 && rect.bottom > -80){
-      el.classList.add('visible');
-    } else {
-      _scrollObserver.observe(el);
-    }
+    _scrollObserver.observe(el);
   });
 }
 
@@ -118,13 +115,12 @@ window.initHomeAnimations = function(){
     }, 300);
   });
 
-  // Scroll animations — multiple attempts for reliability
+  // Scroll animations — let IntersectionObserver handle timing, use forceShowAll only as fallback
   requestAnimationFrame(function(){
     initScrollAnimations();
-    setTimeout(forceShowAll, 50);
   });
-  setTimeout(forceShowAll, 300);
-  setTimeout(forceShowAll, 800);
+  setTimeout(forceShowAll, 500);
+  setTimeout(forceShowAll, 1200);
   // Absolute failsafe — show everything after 2.5s
   setTimeout(forceShowEverything, 2500);
 
@@ -146,9 +142,8 @@ window.addEventListener('hashchange', function(){
   destroySwipers();
   requestAnimationFrame(function(){
     initScrollAnimations();
-    setTimeout(forceShowAll, 100);
   });
-  setTimeout(forceShowAll, 400);
+  setTimeout(forceShowAll, 500);
   setTimeout(forceShowEverything, 2500);
 });
 
@@ -156,7 +151,6 @@ window.addEventListener('hashchange', function(){
 document.addEventListener('DOMContentLoaded', function(){
   requestAnimationFrame(function(){
     initScrollAnimations();
-    setTimeout(forceShowAll, 100);
   });
 });
 

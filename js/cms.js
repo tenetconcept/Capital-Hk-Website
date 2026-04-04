@@ -2,6 +2,9 @@
 // CMS MODULE — Auth, 2FA, RBAC, Editor, Files, Users
 // ============================================
 
+// CKEditor instance store: key = textarea-id, value = editor instance
+var _cmsEditors = {};
+
 // ————— CMS i18n —————
 var CMS_I18N = {
   // Login
@@ -1142,10 +1145,9 @@ window._cmsFilter = function(q){
 window._cmsPreviewPage = function(){
   if(!_cmsCurrentSlug){ showToast(CL('select_first')); return; }
   var slug = _cmsCurrentSlug;
-  var bodyEl = document.getElementById('cms_b_'+slug+'_'+currentLang);
   var titleEl = document.getElementById('cms_t_'+slug+'_'+currentLang);
   var pg = getPage(slug, currentLang) || {};
-  var body = bodyEl ? bodyEl.value : (pg.body||'');
+  var body = window._cmsGetBody('cms_b_'+slug+'_'+currentLang) || (pg.body||'');
   var title = titleEl ? titleEl.value : (pg.title||slug);
   var css = '';
   try{ css = document.querySelector('style').textContent; }catch(e){}
@@ -1157,26 +1159,37 @@ window._cmsPreviewPage = function(){
 
 window._cmsEditPage = function(slug){
   _cmsCurrentSlug = slug;
+  // Destroy any existing CKEditor instances
+  Object.keys(_cmsEditors).forEach(function(k){ try{ _cmsEditors[k].destroy(); }catch(e){} });
+  _cmsEditors = {};
+
   var langs = ["zh-Hant","zh-Hans","en"];
   var langNames = {"zh-Hant":"繁體中文","zh-Hans":"简体中文","en":"English"};
   var html = '<h3 style="font-size:20px;font-weight:700;margin-bottom:16px">'+esc(slug)+'</h3>';
 
     var _canEditPages = _cmsHasPermission('editPage');
+  var hasCKEditor = typeof ClassicEditor !== 'undefined';
+
   langs.forEach(function(lang){
     var pg = getPage(slug, lang);
     var title = pg ? pg.title : '';
     var body = pg ? pg.body : '';
     var taId = 'cms_b_'+slug+'_'+lang;
-    var tbHtml = _canEditPages ? _cmsBuildToolbar(taId) : '';
+    // Only show old toolbar if CKEditor is not available
+    var tbHtml = (!hasCKEditor && _canEditPages) ? _cmsBuildToolbar(taId) : '';
     html += '<div class="cms-field-group"><h4>'+esc(langNames[lang])+' ('+lang+')</h4>'
       +'<div class="admin-field"><label>'+CL('title_label')+'</label><input type="text" id="cms_t_'+slug+'_'+lang+'" value="'+escAttr(title)+'"'+(!_canEditPages?' readonly style="background:#f3f4f6;color:var(--text-muted)"':'')+'/></div>'
       +'<div class="admin-field">'
       +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
       +'<label style="margin:0">'+CL('body_label')+'</label>'
+      +'<div style="display:flex;gap:6px;align-items:center">'
+      +(_canEditPages && hasCKEditor ? '<button type="button" class="cms-tb-btn" style="font-size:11px;padding:2px 8px" onclick="window._cmsToggleSource(\''+taId+'\')">&#60;/&#62; Source</button>' : '')
       +(_canEditPages ? '<button type="button" class="cms-insert-file-btn" data-slug="'+slug+'" data-lang="'+lang+'" onclick="event.preventDefault();event.stopPropagation();window._cmsShowFilePicker(this)">'+CL('insert_dl')+'</button>' : '<span class="role-badge role-viewer">'+CL('read_only')+'</span>')
-      +'</div>'
+      +'</div></div>'
       +tbHtml
+      +'<div id="'+taId+'_wrap">'
       +'<textarea id="'+taId+'" style="min-height:200px;font-family:monospace;font-size:13px"'+(!_canEditPages?' readonly':'')+'>'+escHtml(body)+'</textarea>'
+      +'</div>'
       +'</div></div>';
   });
 
@@ -1193,19 +1206,46 @@ window._cmsEditPage = function(slug){
 
   document.getElementById("cmsEditor").innerHTML = html;
 
-  // Attach toolbar events
-  document.querySelectorAll('.cms-toolbar').forEach(function(tb){
-    tb.addEventListener('click', function(e){
-      var btn = e.target.closest('.cms-tb-btn');
-      if(!btn) return;
-      window._cmsToolbarAction(tb.getAttribute('data-ta'), btn.getAttribute('data-a'));
+  // Initialize CKEditor on each textarea (if available and editable)
+  if(hasCKEditor && _canEditPages){
+    langs.forEach(function(lang){
+      var taId = 'cms_b_'+slug+'_'+lang;
+      var ta = document.getElementById(taId);
+      if(!ta) return;
+      ClassicEditor.create(ta, {
+        toolbar: ['heading','|','bold','italic','link','|','bulletedList','numberedList','|','blockQuote','insertTable','|','undo','redo'],
+        heading: { options: [
+          { model:'paragraph', title:'Paragraph', class:'ck-heading_paragraph' },
+          { model:'heading2', view:'h2', title:'Heading 2', class:'ck-heading_heading2' },
+          { model:'heading3', view:'h3', title:'Heading 3', class:'ck-heading_heading3' },
+          { model:'heading4', view:'h4', title:'Heading 4', class:'ck-heading_heading4' }
+        ]},
+        language: lang === 'en' ? 'en' : 'zh-cn'
+      }).then(function(editor){
+        _cmsEditors[taId] = editor;
+        // Live preview on content change
+        editor.model.document.on('change:data', function(){
+          window._cmsLivePreview(slug);
+        });
+      }).catch(function(err){
+        console.warn('CKEditor init failed for '+taId+', falling back to textarea:', err);
+      });
     });
-  });
-  // Auto-resize textareas
-  document.querySelectorAll('.cms-editor-area textarea').forEach(function(ta){
-    ta.addEventListener('input', function(){ this.style.height='auto'; this.style.height=this.scrollHeight+'px'; });
-    ta.style.height = ta.scrollHeight+'px';
-  });
+  } else {
+    // Fallback: attach old toolbar events
+    document.querySelectorAll('.cms-toolbar').forEach(function(tb){
+      tb.addEventListener('click', function(e){
+        var btn = e.target.closest('.cms-tb-btn');
+        if(!btn) return;
+        window._cmsToolbarAction(tb.getAttribute('data-ta'), btn.getAttribute('data-a'));
+      });
+    });
+    // Auto-resize textareas
+    document.querySelectorAll('.cms-editor-area textarea').forEach(function(ta){
+      ta.addEventListener('input', function(){ this.style.height='auto'; this.style.height=this.scrollHeight+'px'; });
+      ta.style.height = ta.scrollHeight+'px';
+    });
+  }
 
   // Highlight active page in sidebar
   document.querySelectorAll('.cms-page-item').forEach(function(el){
@@ -1213,12 +1253,24 @@ window._cmsEditPage = function(slug){
   });
 };
 
+// Helper: get body content from CKEditor instance, source textarea, or fallback textarea
+window._cmsGetBody = function(taId){
+  // Check if source view is active
+  var wrap = document.getElementById(taId+'_wrap');
+  if(wrap){
+    var srcTa = wrap.querySelector('textarea.cms-source-ta');
+    if(srcTa) return srcTa.value;
+  }
+  if(_cmsEditors[taId]) return _cmsEditors[taId].getData();
+  var ta = document.getElementById(taId);
+  return ta ? ta.value : '';
+};
+
 window._cmsLivePreview = function(slug){
   if(!_cmsPreviewOn) return;
-  var tEl = document.getElementById("cms_t_"+slug+"_"+currentLang);
-  var bEl = document.getElementById("cms_b_"+slug+"_"+currentLang);
+  var taId = 'cms_b_'+slug+'_'+currentLang;
   var preview = document.getElementById("cmsPreviewBody");
-  if(bEl && preview) preview.innerHTML = bEl.value;
+  if(preview) preview.innerHTML = window._cmsGetBody(taId);
 };
 
 window._cmsSavePage = function(slug){
@@ -1226,9 +1278,10 @@ window._cmsSavePage = function(slug){
   if(!cms[slug]) cms[slug] = {};
   ["zh-Hant","zh-Hans","en"].forEach(function(lang){
     var tEl = document.getElementById("cms_t_"+slug+"_"+lang);
-    var bEl = document.getElementById("cms_b_"+slug+"_"+lang);
-    if(tEl && bEl){
-      cms[slug][lang] = { title: tEl.value, body: bEl.value };
+    var taId = 'cms_b_'+slug+'_'+lang;
+    var body = window._cmsGetBody(taId);
+    if(tEl){
+      cms[slug][lang] = { title: tEl.value, body: body };
     }
   });
   saveCmsPages(cms);
@@ -2307,6 +2360,29 @@ window._cmsToolbarAction = function(taId, action){
       break;
     case 'br':  insert('<br/>\n'); break;
     case 'hr':  insert('\n<hr/>\n'); break;
+  }
+};
+
+// Toggle between CKEditor (WYSIWYG) and raw HTML source textarea
+window._cmsToggleSource = function(taId){
+  var editor = _cmsEditors[taId];
+  var wrap = document.getElementById(taId+'_wrap');
+  if(!wrap) return;
+  var existing = wrap.querySelector('textarea.cms-source-ta');
+  if(existing){
+    // Switch back to WYSIWYG — push source textarea content into CKEditor
+    if(editor) editor.setData(existing.value);
+    existing.remove();
+    if(editor) editor.ui.view.element.style.display = '';
+  } else {
+    // Switch to source — show raw HTML textarea
+    var html = editor ? editor.getData() : '';
+    if(editor) editor.ui.view.element.style.display = 'none';
+    var ta = document.createElement('textarea');
+    ta.className = 'cms-source-ta';
+    ta.style.cssText = 'width:100%;min-height:300px;font-family:monospace;font-size:13px;padding:12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);box-sizing:border-box';
+    ta.value = html;
+    wrap.appendChild(ta);
   }
 };
 

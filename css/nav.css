@@ -10,25 +10,22 @@
   z-index: 1000;
   background: transparent;
 }
-/* Always-on subtle frosted glass — warm pink to match page */
+/* Always-on frosted glass — blur only, no color tint so gradient shows through */
 .nav::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(240,234,235,.2) 0%, rgba(240,234,235,0) 100%);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(calc(8px + var(--scroll-p) * 16px));
+  -webkit-backdrop-filter: blur(calc(8px + var(--scroll-p) * 16px));
   z-index: -2;
   pointer-events: none;
 }
-/* Scrolled overlay — warm pink matching --bg-body, gradual via --scroll-p */
+/* Scrolled tint — very subtle warm pink, body gradient still visible */
 .nav::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(240,234,235,.96) 60%, rgba(240,234,235,0) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(240,234,235,.3);
   opacity: var(--scroll-p);
   z-index: -1;
   pointer-events: none;
@@ -56,12 +53,9 @@
   gap: 10px;
   flex-shrink: 0;
 }
-.nav-logo img { height: 36px; }
+.nav-logo img { height: 36px; mix-blend-mode: multiply; }
 .nav-logo-text {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: var(--brand);
-  letter-spacing: 0.02em;
+  display: none;
 }
 
 /* Row 1 right side: lang + social */

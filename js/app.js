@@ -755,7 +755,7 @@ function footerView(){
   // Bottom
   h += '<div class="footer-btm">';
   h += '<div class="footer-copy">&copy; ' + new Date().getFullYear() + ' ' + esc(isEn ? 'Capital Securities (Hong Kong) Limited. All rights reserved.' : (isHans ? '群益证券(香港)有限公司 版权所有' : '群益證券(香港)有限公司 版權所有'));
-  h += ' &middot; <a href="#/admin">CMS</a></div>';
+  h += ' <span class="cms-link">&middot; <a href="#/admin">CMS</a></span></div>';
   h += '</div>';
   h += '</div></footer>';
   return h;

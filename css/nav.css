@@ -11,15 +11,15 @@
 }
 
 /* Background overlay div — rd.group pattern:
-   Solid warm pink top half, fading to transparent bottom half.
-   Starts invisible (opacity:0), CSS transition fades in on .scrolled class. */
+   Extends 120px below nav so the gradient covers the body's red zone.
+   Top portion solid warm pink, fading to transparent at bottom. */
 .nav-bg {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(180deg, var(--bg-body, #F0EAEB) 50%, rgba(240,234,235,0) 100%);
+  right: 0;
+  bottom: -120px;
+  background: linear-gradient(180deg, var(--bg-body, #F0EAEB) 40%, rgba(240,234,235,0) 100%);
   opacity: 0;
   transition: opacity 500ms ease-in-out;
   z-index: -1;
@@ -96,7 +96,8 @@
   transition: padding-top 500ms ease-in-out;
 }
 .nav.scrolled .nav-bar {
-  padding-top: 8px;
+  padding-top: 14px;
+  padding-bottom: 6px;
 }
 .nav-bar-inner {
   display: flex;

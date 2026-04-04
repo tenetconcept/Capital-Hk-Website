@@ -74,6 +74,7 @@
   .sec-label { font-size: 0.8125rem; margin-bottom: 8px; }
 
   /* --- NAV --- */
+  .nav-bg { bottom: -40px; }
   .nav-top { border-bottom: none; }
   .nav-top-inner {
     padding: 0 16px;

@@ -30,8 +30,8 @@
   align-items: center;
   justify-content: space-between;
   height: var(--nav-h);
-  padding: 0 clamp(16px, 3vw, 40px);
-  max-width: var(--mod-max-xl);
+  padding: 0 24px;
+  max-width: var(--mod-max);
   margin: 0 auto;
 }
 .nav-logo {
@@ -42,11 +42,7 @@
 }
 .nav-logo img { height: 36px; }
 .nav-logo-text {
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--text);
-  line-height: 1.2;
-  white-space: nowrap;
+  display: none;
 }
 
 /* Row 1 right side: lang + social */

@@ -44,12 +44,14 @@
     --nav-bar-h: 0px;
   }
 
-  html, body { overflow-x: hidden; }
+  /* overflow-x: clip prevents horizontal scroll without breaking position: sticky */
+  html { overflow-x: clip; }
+  body { overflow-x: clip; }
 
   /* Fix iOS background-attachment: fixed bug — gradient to white before content */
   body {
     background-attachment: scroll;
-    background: linear-gradient(180deg, #B41540 0%, #E8D0D5 8%, #FFFFFF 16%, #FFFFFF 84%, #E8D0D5 92%, #B41540 100%);
+    background: linear-gradient(180deg, #B41540 0%, #D88A9C 4%, #F5E8EB 8%, #FFFFFF 12%, #FFFFFF 88%, #F5E8EB 92%, #D88A9C 96%, #B41540 100%);
   }
 
   /* Clip overflow on app container instead of body for animations */
@@ -89,7 +91,6 @@
   }
   .nav-logo { gap: 8px; flex: 1; }
   .nav-logo img { height: 28px; }
-  .nav-logo-text { display: none; }
   .nav-cta-mobile .btn-gradient {
     padding: 7px 14px;
     font-size: 0.75rem;

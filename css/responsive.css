@@ -65,19 +65,21 @@
   .sec-label { font-size: 0.8125rem; margin-bottom: 8px; }
 
   /* ===========================================
-     NAV BAR — Solid white, clean & minimal
+     NAV BAR — Match desktop rd.group fade style
      =========================================== */
   .nav {
-    background: #FFFFFF;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    border-bottom: 1px solid rgba(0,0,0,.08);
-    box-shadow: 0 1px 4px rgba(0,0,0,.04);
+    background: linear-gradient(180deg, rgba(255,255,255,.97) 0%, rgba(255,255,255,.8) 60%, rgba(255,255,255,0) 100%);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: none;
+    box-shadow: none;
   }
   .nav.scrolled {
-    background: #FFFFFF;
-    box-shadow: 0 2px 12px rgba(0,0,0,.08);
-    border-bottom-color: rgba(0,0,0,.08);
+    background: rgba(255,255,255,.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 1px 8px rgba(0,0,0,.06);
+    border-bottom-color: rgba(0,0,0,.06);
   }
   .nav-top { border-bottom: none; }
   .nav-top-inner {
@@ -92,9 +94,10 @@
     font-size: 0.75rem;
     font-weight: 700;
     border-radius: var(--radius-full);
-    margin-right: 4px;
+    margin-right: 0;
   }
-  .nav-ham { padding: 6px; margin-left: 2px; }
+  .nav-cta { gap: 6px; }
+  .nav-ham { padding: 6px; margin-left: 0; }
   .nav-ham span { width: 22px; height: 2px; background: var(--text); }
 
   /* ===========================================
@@ -253,10 +256,11 @@
     border-top: 1px solid rgba(0,0,0,.08);
   }
   .footer::before { height: 3px; }
-  .footer-main { padding: 24px 4px 16px; }
+  .footer-main { padding: 24px 0 16px; }
   .footer-grid {
     grid-template-columns: 1fr 1fr;
     gap: 20px 24px;
+    text-align: center;
   }
   .footer-brand {
     grid-column: span 2;
@@ -264,6 +268,7 @@
     border-bottom: 1px solid rgba(0,0,0,.06);
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
   }
   .footer-brand img { height: 24px; margin-bottom: 0; }
@@ -434,7 +439,7 @@
   .feature-list-desc { font-size: 0.8125rem; }
 
   .footer-main { padding: 20px 0 12px; }
-  .footer-grid { gap: 16px 20px; }
+  .footer-grid { gap: 16px 20px; text-align: center; }
   .footer-col-title { font-size: 0.75rem; }
   .footer-col a { font-size: 0.6875rem; }
 

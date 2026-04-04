@@ -58,7 +58,7 @@
   /* Fix iOS background-attachment: fixed bug — matches desktop warm pink */
   body {
     background-attachment: scroll;
-    background: linear-gradient(180deg, #B41540 0%, #D88A9C 4%, #F0EAEB 10%, #F0EAEB 90%, #D88A9C 96%, #B41540 100%);
+    background: linear-gradient(180deg, #B41540 0%, #D88A9C 2%, #F0EAEB 5%, #F0EAEB 95%, #D88A9C 98%, #B41540 100%);
   }
 
   /* Clip overflow on app container instead of body for animations */

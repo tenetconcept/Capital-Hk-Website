@@ -46,10 +46,10 @@
 
   html, body { overflow-x: hidden; }
 
-  /* Fix iOS background-attachment: fixed bug — softer gradient on mobile */
+  /* Fix iOS background-attachment: fixed bug — same gradient as desktop */
   body {
     background-attachment: scroll;
-    background: linear-gradient(180deg, #B41540 0%, var(--bg-body) 12%, var(--bg-body) 88%, #B41540 100%);
+    background: linear-gradient(180deg, #B41540 0%, #F0EAEB 18%, #F0EAEB 82%, #B41540 100%);
   }
 
   /* Clip overflow on app container instead of body for animations */
@@ -65,17 +65,17 @@
   .sec-label { font-size: 0.8125rem; margin-bottom: 8px; }
 
   /* ===========================================
-     NAV BAR — Match desktop rd.group fade style
+     NAV BAR — Same transparent style as desktop
      =========================================== */
   .nav {
-    background: linear-gradient(180deg, rgba(255,255,255,.97) 0%, rgba(255,255,255,.8) 60%, rgba(255,255,255,0) 100%);
+    background: linear-gradient(180deg, rgba(255,255,255,.4) 0%, rgba(255,255,255,.2) 60%, rgba(255,255,255,0) 100%);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
     border-bottom: none;
     box-shadow: none;
   }
   .nav.scrolled {
-    background: rgba(255,255,255,.95);
+    background: rgba(255,255,255,.88);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     box-shadow: 0 1px 8px rgba(0,0,0,.06);
@@ -85,8 +85,9 @@
   .nav-top-inner {
     padding: 0 16px;
     height: var(--nav-h);
+    gap: 8px;
   }
-  .nav-logo { gap: 8px; }
+  .nav-logo { gap: 8px; flex: 1; }
   .nav-logo img { height: 28px; }
   .nav-logo-text { display: none; }
   .nav-cta .btn-gradient {
@@ -94,11 +95,11 @@
     font-size: 0.75rem;
     font-weight: 700;
     border-radius: var(--radius-full);
-    margin-right: 0;
   }
   .nav-cta { gap: 6px; }
-  .nav-ham { padding: 6px; margin-left: 0; }
+  .nav-ham { padding: 6px; }
   .nav-ham span { width: 22px; height: 2px; background: var(--text); }
+  /* Nav text colors adapt to scrolled vs unscrolled state via JS body class if needed */
 
   /* ===========================================
      MOBILE MENU — Clean, well-aligned

@@ -2240,10 +2240,17 @@ window._cmsShowFilePicker = function(btn){
   } else {
     inner += '<div class="cfp-title">'+CL('select_file')+'</div>';
     files.forEach(function(f, i){
-      var icon = f.type==='external'
+      var isImg = /\.(jpe?g|png|gif|webp|svg)$/i.test(f.name) || /^image\//i.test(f.type||'');
+      var isExt = f.type === 'external';
+      var icon = isImg
+        ? '<span style="font-size:15px">🖼</span>'
+        : isExt
         ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>'
         : '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
-      inner += '<div class="cfp-item" data-file-idx="'+i+'" data-ta-id="'+textareaId+'">'+icon+'<span>'+esc(f.name)+'</span></div>';
+      var badge = isImg ? '<span style="font-size:9px;padding:1px 5px;background:rgba(0,128,0,.1);color:green;border-radius:4px;margin-left:4px">IMG</span>'
+        : isExt ? '<span style="font-size:9px;padding:1px 5px;background:rgba(0,0,200,.1);color:#339;border-radius:4px;margin-left:4px">URL</span>'
+        : '<span style="font-size:9px;padding:1px 5px;background:rgba(180,21,64,.1);color:var(--brand);border-radius:4px;margin-left:4px">DL</span>';
+      inner += '<div class="cfp-item" data-file-idx="'+i+'" data-ta-id="'+textareaId+'">'+icon+'<span>'+esc(f.name)+'</span>'+badge+'</div>';
     });
   }
   inner += '<div class="cfp-close">'+CL('cancel')+'</div>';
@@ -2280,9 +2287,17 @@ window._cmsShowFilePicker = function(btn){
 window._cmsInsertFile = function(textareaId, idx){
   var f = getCmsFiles()[idx];
   if(!f) return;
-  var snippet = f.isLocal
-    ? '<a href="'+f.url+'" download="'+f.name.replace(/"/g,'&quot;')+'">'+f.name+'</a>'
-    : '<a href="'+f.url+'" target="_blank" rel="noopener">'+f.name+'</a>';
+  // Detect image files — insert as <img> tag
+  var isImg = /\.(jpe?g|png|gif|webp|svg)$/i.test(f.name) || /^image\//i.test(f.type||'');
+  var snippet;
+  if(isImg){
+    var src = f.url || f.data || '';
+    snippet = '<img src="'+src+'" alt="'+f.name.replace(/"/g,'&quot;').replace(/\.[^.]+$/,'')+'" style="max-width:100%;height:auto"/>';
+  } else if(f.type === 'external'){
+    snippet = '<a href="'+f.url+'" target="_blank" rel="noopener">'+f.name+'</a>';
+  } else {
+    snippet = '<a href="'+f.url+'" download="'+f.name.replace(/"/g,'&quot;')+'">'+f.name+'</a>';
+  }
   // Insert into CKEditor if available
   var editor = _cmsEditors[textareaId];
   if(editor){
@@ -2600,17 +2615,31 @@ window._cmsBannersView = function(){
   var banners = getCmsBanners();
   var _canUpload = _cmsHasPermission("upload");
   var rows = banners.length ? banners.map(function(b,i){
-    return '<div class="cms-item-card">'
-      +'<img class="cms-item-thumb" src="'+escAttr(b.img)+'"/>'
+    return '<div class="cms-item-card" id="cmsBC_'+i+'">'
+      +'<img class="cms-item-thumb" src="'+escAttr(b.img)+'" style="cursor:pointer;border-radius:6px" onclick="window._cmsBannerEdit('+i+')" title="Click to edit"/>'
       +'<div class="cms-item-info">'
       +'<div class="cms-item-title">'+esc(b.alt||'Banner '+(i+1))+'</div>'
-      +'<div class="cms-item-meta">'+esc(b.link||CL('no_link'))+'</div>'
+      +'<div class="cms-item-meta" style="word-break:break-all">'+esc(b.link||CL('no_link'))+'</div>'
       +'</div>'
       +'<div class="cms-item-actions">'
+      +(_canUpload?'<button class="admin-btn secondary" title="Edit" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerEdit('+i+')">&#9998; Edit</button>':'')
       +(i>0?'<button class="admin-btn secondary" title="'+CL('btn_move_up')+'" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerMove('+i+',-1)">&uarr;</button>':'')
       +(i<banners.length-1?'<button class="admin-btn secondary" title="'+CL('btn_move_down')+'" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerMove('+i+',1)">&darr;</button>':'')
       +(_canUpload?'<button class="admin-btn danger" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerDelete('+i+')">'+CL('delete')+'</button>':'')
-      +'</div></div>';
+      +'</div>'
+      +'<div id="cmsBE_'+i+'" style="display:none;width:100%;margin-top:10px;padding-top:10px;border-top:1px solid var(--border-light)">'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">'
+      +'<div><label style="font-size:11px;color:var(--text-muted);display:block;margin-bottom:2px">標題 / Alt Text</label>'
+      +'<input id="cmsBEAlt_'+i+'" type="text" value="'+escAttr(b.alt||'')+'" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:13px"/></div>'
+      +'<div><label style="font-size:11px;color:var(--text-muted);display:block;margin-bottom:2px">連結 URL (選填)</label>'
+      +'<input id="cmsBELink_'+i+'" type="text" value="'+escAttr(b.link||'')+'" placeholder="#/page/... or https://..." style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:13px"/></div>'
+      +'</div>'
+      +'<div style="display:flex;gap:6px">'
+      +'<button class="admin-btn primary" style="font-size:12px;padding:5px 14px" onclick="window._cmsBannerSave('+i+')">&#10003; 儲存</button>'
+      +'<button class="admin-btn secondary" style="font-size:12px;padding:5px 14px" onclick="window._cmsBannerEditClose('+i+')">取消</button>'
+      +'</div>'
+      +'</div>'
+      +'</div>';
   }).join("") : '<div class="cms-item-meta" style="padding:12px 0">'+CL('no_banner')+'</div>';
 
   document.getElementById("cmsEditor").innerHTML =
@@ -2706,7 +2735,30 @@ window._cmsBannerMove = function(idx, dir){
   window._cmsBannersView();
 };
 
-// Banner carousel preview in popup
+window._cmsBannerEdit = function(idx){
+  var el = document.getElementById('cmsBE_'+idx);
+  if(!el) return;
+  var isOpen = el.style.display !== 'none';
+  // Close any other open edit forms first
+  document.querySelectorAll('[id^="cmsBE_"]').forEach(function(e){ e.style.display='none'; });
+  el.style.display = isOpen ? 'none' : 'block';
+};
+window._cmsBannerEditClose = function(idx){
+  var el = document.getElementById('cmsBE_'+idx);
+  if(el) el.style.display = 'none';
+};
+window._cmsBannerSave = function(idx){
+  var altEl  = document.getElementById('cmsBEAlt_'+idx);
+  var linkEl = document.getElementById('cmsBELink_'+idx);
+  if(!altEl) return;
+  var banners = getCmsBanners();
+  if(!banners[idx]) return;
+  banners[idx].alt  = altEl.value.trim();
+  banners[idx].link = linkEl ? linkEl.value.trim() : '';
+  saveCmsBanners(banners);
+  showToast('已儲存');
+  window._cmsBannersView();
+};
 window._cmsBannerPreview = function(){
   var banners = getCmsBanners();
   if(!banners.length){ showToast(CL('no_banners_preview')); return; }

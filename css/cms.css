@@ -159,7 +159,7 @@ body.cms-active .cms-sidebar{top:var(--nav-h);height:calc(100vh - var(--nav-h))}
 }
 
 /* CMS Panel Items — consistent card layout */
-.cms-item-card{display:flex;gap:12px;align-items:center;padding:14px 16px;border:1px solid rgba(0,0,0,.06);border-radius:10px;margin-bottom:8px;background:var(--white);transition:all .15s ease;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.cms-item-card{display:flex;flex-wrap:wrap;gap:12px;align-items:center;padding:14px 16px;border:1px solid rgba(0,0,0,.06);border-radius:10px;margin-bottom:8px;background:var(--white);transition:all .15s ease;box-shadow:0 1px 3px rgba(0,0,0,.04)}
 .cms-item-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.08);border-color:rgba(180,21,64,.15)}
 .cms-item-thumb{width:120px;height:68px;object-fit:cover;border-radius:8px;flex-shrink:0;background:#f3f4f6}
 .cms-item-info{flex:1;min-width:0}

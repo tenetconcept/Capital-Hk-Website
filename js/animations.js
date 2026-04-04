@@ -4,7 +4,6 @@
 (function(){
 "use strict";
 
-// Scroll-triggered animations via IntersectionObserver
 var _scrollObserver = null;
 
 function initScrollAnimations(){
@@ -12,11 +11,11 @@ function initScrollAnimations(){
   if(!els.length) return;
 
   if(!('IntersectionObserver' in window)){
-    els.forEach(function(el){ el.classList.add('visible'); });
+    // Old browser: small delay so opacity:0 is painted first
+    setTimeout(function(){ els.forEach(function(el){ el.classList.add('visible'); }); }, 50);
     return;
   }
 
-  // Clean up old observer
   if(_scrollObserver){ try{ _scrollObserver.disconnect(); }catch(e){} }
 
   _scrollObserver = new IntersectionObserver(function(entries){
@@ -26,35 +25,39 @@ function initScrollAnimations(){
         _scrollObserver.unobserve(entry.target);
       }
     });
-  }, { threshold: 0.01, rootMargin: '0px 0px -10px 0px' });
+  // threshold 0.05: element needs 5% visible to trigger
+  // rootMargin: no pre-loading — animate exactly when entering viewport
+  }, { threshold: 0.05, rootMargin: '0px 0px 0px 0px' });
 
-  // Observe ALL elements — IntersectionObserver fires asynchronously,
-  // which ensures the initial opacity:0 state is painted before .visible
-  // is added. Synchronous immediate-visible was causing animations to skip.
-  els.forEach(function(el){
-    _scrollObserver.observe(el);
-  });
+  els.forEach(function(el){ _scrollObserver.observe(el); });
 }
 
-// Force-show all animation elements currently visible in viewport
+// Force-show elements that are in or near the current viewport.
+// Small margin (+30px) so elements just offscreen also trigger.
 function forceShowAll(){
-  var els = document.querySelectorAll('.anim-fade-up:not(.visible),.anim-fade-left:not(.visible),.anim-fade-right:not(.visible),.anim-scale:not(.visible)');
-  els.forEach(function(el){
-    var rect = el.getBoundingClientRect();
-    if(rect.top < window.innerHeight + 300 && rect.bottom > -200){
-      el.classList.add('visible');
-    }
-  });
+  var vh = window.innerHeight;
+  document.querySelectorAll('.anim-fade-up:not(.visible),.anim-fade-left:not(.visible),.anim-fade-right:not(.visible),.anim-scale:not(.visible)')
+    .forEach(function(el){
+      var rect = el.getBoundingClientRect();
+      if(rect.top < vh + 30 && rect.bottom > -30){
+        el.classList.add('visible');
+      }
+    });
 }
 
-// Nuclear option: show absolutely everything after timeout
+// Nuclear fallback — only shows elements the user has ALREADY scrolled to.
+// Never force-shows elements below the current scroll position (that would skip their animation).
 function forceShowEverything(){
-  document.querySelectorAll('.anim-fade-up:not(.visible),.anim-fade-left:not(.visible),.anim-fade-right:not(.visible),.anim-scale:not(.visible)').forEach(function(el){
-    el.classList.add('visible');
-  });
+  var scrolledTo = window.pageYOffset + window.innerHeight + 100;
+  document.querySelectorAll('.anim-fade-up:not(.visible),.anim-fade-left:not(.visible),.anim-fade-right:not(.visible),.anim-scale:not(.visible)')
+    .forEach(function(el){
+      var rect = el.getBoundingClientRect();
+      var elAbsTop = rect.top + window.pageYOffset;
+      if(elAbsTop < scrolledTo){ el.classList.add('visible'); }
+    });
 }
 
-// Swiper init with retry logic
+// ——— Swiper ———
 var _bannerSwiper = null;
 var _newsSwiper = null;
 
@@ -84,9 +87,7 @@ function initNewsSwiper(){
     _newsSwiper = new Swiper('.news-swiper', {
       slidesPerView: 1.15,
       spaceBetween: 16,
-      breakpoints: {
-        768: { slidesPerView: 2.2, spaceBetween: 20 }
-      },
+      breakpoints: { 768: { slidesPerView: 2.2, spaceBetween: 20 } },
       observer: true,
       observeParents: true
     });
@@ -94,20 +95,29 @@ function initNewsSwiper(){
 }
 
 function destroySwipers(){
-  if(_bannerSwiper && _bannerSwiper.destroy){ try{ _bannerSwiper.destroy(true, true); }catch(e){} _bannerSwiper=null; }
-  if(_newsSwiper && _newsSwiper.destroy){ try{ _newsSwiper.destroy(true, true); }catch(e){} _newsSwiper=null; }
+  if(_bannerSwiper && _bannerSwiper.destroy){ try{ _bannerSwiper.destroy(true,true); }catch(e){} _bannerSwiper=null; }
+  if(_newsSwiper  && _newsSwiper.destroy) { try{ _newsSwiper.destroy(true,true);  }catch(e){} _newsSwiper=null;  }
 }
 
-// Initialize home page animations and swipers
+// ——— startObserving: double-rAF guarantees opacity:0 is PAINTED before we add .visible ———
+// Frame 1 (rAF1): browser computes styles — elements exist at opacity:0 but not yet on screen
+// Frame 2 (rAF2): browser paints frame 1 — opacity:0 is ON SCREEN
+// rAF2 callback: we attach observer — next time .visible is added, transition plays correctly
+function startObserving(){
+  requestAnimationFrame(function(){         // frame 1 queued
+    requestAnimationFrame(function(){       // fires AFTER frame 1 is painted
+      initScrollAnimations();
+    });
+  });
+}
+
+// ——— initHomeAnimations (called by app.js after home page renders) ———
 window.initHomeAnimations = function(){
   destroySwipers();
 
-  // Use requestAnimationFrame to ensure DOM is painted
   requestAnimationFrame(function(){
     initBannerSwiper();
     initNewsSwiper();
-
-    // Retry if banner swiper didn't initialize
     setTimeout(function(){
       if(document.querySelector('.banner-swiper') && !document.querySelector('.banner-swiper.swiper-initialized')){
         initBannerSwiper();
@@ -115,49 +125,50 @@ window.initHomeAnimations = function(){
     }, 300);
   });
 
-  // Scroll animations — let IntersectionObserver handle timing, use forceShowAll only as fallback
-  requestAnimationFrame(function(){
-    initScrollAnimations();
-  });
-  setTimeout(forceShowAll, 500);
-  setTimeout(forceShowAll, 1200);
-  // Absolute failsafe — show everything after 2.5s
-  setTimeout(forceShowEverything, 2500);
+  startObserving();
 
-  // Also catch on first scroll
-  var _scrolled = false;
+  // Periodic fallback: poll every 300ms for 8s.
+  // Handles iOS IntersectionObserver quirks — only shows elements already in viewport.
+  var _animInterval = setInterval(forceShowAll, 300);
+  setTimeout(function(){ clearInterval(_animInterval); }, 8000);
+
+  // Nuclear fallback at 8s: show any elements user has scrolled to but observer missed.
+  setTimeout(forceShowEverything, 8000);
+
+  // First-scroll + recurring scroll fallback (iOS IntersectionObserver quirks)
+  var _scrollChecks = 0;
   var _onScroll = function(){
-    if(!_scrolled){
-      _scrolled = true;
-      forceShowAll();
-    }
+    _scrollChecks++;
+    forceShowAll();
+    if(_scrollChecks >= 20) window.removeEventListener('scroll', _onScroll);
   };
   window.addEventListener('scroll', _onScroll, {passive:true});
-  // Cleanup after 10s
   setTimeout(function(){ window.removeEventListener('scroll', _onScroll); }, 10000);
 };
 
-// Re-init on route change
+// ——— Route change (hash SPA navigation) ———
 window.addEventListener('hashchange', function(){
   destroySwipers();
+  startObserving();
+  var _i = setInterval(forceShowAll, 300);
+  setTimeout(function(){ clearInterval(_i); }, 8000);
+  setTimeout(forceShowEverything, 8000);
+});
+
+// ——— Initial page load ———
+// Delay 200ms so the SPA has time to render home content before we query elements
+document.addEventListener('DOMContentLoaded', function(){
+  setTimeout(startObserving, 200);
+});
+
+// window.load: elements are in DOM — use rAF so opacity:0 is painted before showing
+window.addEventListener('load', function(){
   requestAnimationFrame(function(){
-    initScrollAnimations();
+    requestAnimationFrame(function(){
+      forceShowAll();
+    });
   });
   setTimeout(forceShowAll, 500);
-  setTimeout(forceShowEverything, 2500);
-});
-
-// Initial page load
-document.addEventListener('DOMContentLoaded', function(){
-  requestAnimationFrame(function(){
-    initScrollAnimations();
-  });
-});
-
-// Fallback after full load
-window.addEventListener('load', function(){
-  forceShowAll();
-  setTimeout(forceShowAll, 300);
   if(document.querySelector('.banner-swiper') && !document.querySelector('.banner-swiper.swiper-initialized')){
     initBannerSwiper();
   }

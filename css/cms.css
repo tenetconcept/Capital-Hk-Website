@@ -3,14 +3,15 @@
    ============================ */
 
 /* CMS Active — hide main site nav, only show logo bar */
+body.cms-active{overflow-x:visible}
 body.cms-active .utility-bar,
 body.cms-active .nav-bar,
 body.cms-active .mobile-menu,
 body.cms-active .nav-cta{display:none}
 body.cms-active .nav{border-bottom:1px solid rgba(0,0,0,.06);background:var(--white);position:sticky;top:0;z-index:1000}
 body.cms-active .cms-layout{min-height:calc(100vh - var(--nav-h))}
-body.cms-active .cms-sidebar{top:var(--nav-h);height:calc(100vh - var(--nav-h))}
 body.cms-active .cms-sticky-top{top:var(--nav-h)}
+body.cms-active .cms-sidebar{top:var(--nav-h);height:calc(100vh - var(--nav-h))}
 
 .cms-layout{display:flex;gap:0;min-height:calc(100vh - var(--nav-h) - var(--nav-bar-h))}
 .cms-sidebar{width:280px;background:var(--white);border-right:1px solid rgba(0,0,0,.06);padding:24px 0;overflow-y:auto;flex-shrink:0;position:sticky;top:calc(var(--nav-h) + var(--nav-bar-h));height:calc(100vh - var(--nav-h) - var(--nav-bar-h));align-self:flex-start}

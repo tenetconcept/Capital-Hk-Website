@@ -111,12 +111,29 @@ function setLang(lang){
   if(typeof window._mmClose === 'function') window._mmClose();
   // Rebuild nav immediately so header updates at once (no perceived lag)
   if(typeof buildNav === 'function') buildNav();
-  // Animate page transition on language switch
+  // Save CMS state before re-render, so we can restore after
+  var _cmsState = null;
+  if(location.hash === '#/admin' && typeof window._cmsSection !== 'undefined'){
+    _cmsState = { section: window._cmsSection, slug: window._cmsCurrentSlug || null };
+  }
+  // Re-render
   var app = document.getElementById('app');
   if(app){
     app.classList.add('lang-switching');
     setTimeout(function(){
       route();
+      // Restore CMS state
+      if(_cmsState){
+        if(_cmsState.section === 'nav'){
+          window._cmsSectionSwitch('nav');
+        } else if(_cmsState.slug === '__home__' || _cmsState.section === 'home'){
+          if(typeof window._cmsHomeView === 'function') window._cmsHomeView();
+        } else if(_cmsState.slug && _cmsState.section === 'pages'){
+          if(typeof window._cmsEditPage === 'function') window._cmsEditPage(_cmsState.slug);
+        } else if(_cmsState.section && _cmsState.section !== 'pages'){
+          window._cmsSectionSwitch(_cmsState.section);
+        }
+      }
       requestAnimationFrame(function(){
         app.classList.remove('lang-switching');
       });

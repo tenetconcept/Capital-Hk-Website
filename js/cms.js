@@ -255,7 +255,7 @@ var CMS_I18N = {
   drag_drop:       {en:'Drag & drop', hans:'拖放', hant:'拖放'},
   dnd_hint:        {en:'Drag cards to reorder', hans:'拖动卡片以重新排序', hant:'拖動卡片以重新排序'},
   ck_help:         {en:'Editor Help', hans:'编辑器帮助', hant:'編輯器説明'},
-  ck_help_title:   {en:'CKEditor Usage Guide', hans:'CKEditor 使用指南', hant:'CKEditor 使用指南'},
+  ck_help_title:   {en:'Editor Guide', hans:'编辑器说明', hant:'編輯器説明'},
   tab_nav:         {en:'Navigation', hans:'导航', hant:'導航'},
   tab_nav_desc:    {en:'Manage website navigation menu', hans:'管理网站导航菜单', hant:'管理網站導航選單'},
   files_here:      {en:' PDF, DOC, DOCX, JPG or PNG files here', hans:' PDF、DOC、DOCX、JPG 或 PNG 文件到此处', hant:' PDF、DOC、DOCX、JPG 或 PNG 檔案到此處'},
@@ -1008,6 +1008,10 @@ function adminView(){
     return slug;
   }
 
+  // Sidebar dot: grey = unedited, green = has CMS edits
+  var _homeEdited = (typeof getCmsHome === 'function' && getCmsHome() && Object.keys(getCmsHome()).length) ? ' edited' : '';
+  var _navEdited = (typeof getCmsNav === 'function' && getCmsNav() && Object.keys(getCmsNav()).length) ? ' edited' : '';
+
   return '<div class="cms-layout">'
     // Sidebar
     +'<aside class="cms-sidebar">'
@@ -1015,10 +1019,14 @@ function adminView(){
     +'<div class="cms-search"><input type="text" id="cmsSearch" placeholder="'+CL('search_pages')+'" oninput="window._cmsFilter(this.value)"/></div>'
     +'<div class="cms-page-list" id="cmsPageList">'
     // Homepage item at top of sidebar
-    +'<div class="cms-page-item cms-page-home" data-slug="__home__" onclick="window._cmsHomeView()">'
-    +'<span class="page-dot" style="background:var(--brand)"></span>'
+    +'<div class="cms-page-item cms-page-home'+_homeEdited+'" data-slug="__home__" onclick="window._cmsHomeView()">'
+    +'<span class="page-dot"></span>'
     +'<div class="page-info"><span class="page-name" style="font-weight:700">'+CL('tab_home')+'</span>'
     +'<span class="page-slug">'+CL('tab_home_desc')+'</span></div></div>'
+    +'<div class="cms-page-item cms-page-nav'+_navEdited+'" data-slug="__nav__" onclick="window._cmsSectionSwitch(\'nav\')">'
+    +'<span class="page-dot"></span>'
+    +'<div class="page-info"><span class="page-name" style="font-weight:700">'+CL('tab_nav')+'</span>'
+    +'<span class="page-slug">'+CL('tab_nav_desc')+'</span></div></div>'
     +'<div style="border-bottom:1px solid var(--border-light);margin:4px 10px"></div>'
     + allPages.map(function(slug){
         var edited = cms[slug] ? ' edited' : '';
@@ -1058,10 +1066,9 @@ function adminView(){
     // Section bar with tabs + tools on the right
     +'<div class="cms-section-bar">'
     +'<div class="cms-section-tabs">'
-    +'<button class="cms-section-btn active" id="stab_pages" onclick="window._cmsSectionSwitch(\'pages\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> '+CL('tab_pages')+'</button>'
     +'<button class="cms-section-btn" id="stab_blog" onclick="window._cmsSectionSwitch(\'blog\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> '+CL('tab_blog')+'</button>'
+    +'<button class="cms-section-btn active" id="stab_pages" onclick="window._cmsSectionSwitch(\'pages\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> '+CL('tab_pages')+'</button>'
     +'<button class="cms-section-btn" id="stab_files" onclick="window._cmsSectionSwitch(\'files\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> '+CL('tab_files')+'</button>'
-    +'<button class="cms-section-btn" id="stab_nav" onclick="window._cmsSectionSwitch(\'nav\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg> '+CL('tab_nav')+'</button>'
     +(_canViewUsers?'<button class="cms-section-btn" id="stab_users" onclick="window._cmsSectionSwitch(\'users\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg> '+CL('tab_users')+'</button>':'')
     +(_canViewSecurity?'<button class="cms-section-btn" id="stab_security" onclick="window._cmsSectionSwitch(\'security\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> '+CL('tab_security')+'</button>':'')
     +'</div>'
@@ -1276,8 +1283,16 @@ window._adminLogin = function(e){
     return false;
   }
 
-  // Check IP whitelist first
-  checkIpWhitelist().then(function(ipOk){
+  // Always fetch client IP for audit logging, then check whitelist
+  (function(){
+    var stored = sessionStorage.getItem('ecap_client_ip');
+    if(stored) return Promise.resolve();
+    return fetch('https://api.ipify.org?format=json').then(function(r){return r.json();}).then(function(d){
+      sessionStorage.setItem('ecap_client_ip', d.ip);
+    }).catch(function(){});
+  })().then(function(){
+  return checkIpWhitelist();
+  }).then(function(ipOk){
     if(!ipOk){
       addAuditLog('login_blocked_ip', 'User: '+user+', IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown'));
       errEl.textContent = CL('ip_denied');
@@ -1389,7 +1404,7 @@ window._adminLogin = function(e){
       btn.textContent = CL('login');
     }
   });
-  });
+  }); // end IP+whitelist chain
   return false;
 };
 
@@ -1444,6 +1459,7 @@ window._cmsPreviewPage = function(){
 
 window._cmsEditPage = function(slug){
   _cmsCurrentSlug = slug;
+  window._cmsCurrentSlug = slug;
   // Destroy any existing CKEditor instances
   Object.keys(_cmsEditors).forEach(function(k){ try{ _cmsEditors[k].destroy(); }catch(e){} });
   _cmsEditors = {};
@@ -1699,18 +1715,23 @@ window._cmsReset = function(){
 
 // ————————————————————— CMS SECTION SWITCHER —————————————————————
 var _cmsSection = "pages";
+window._cmsSection = _cmsSection;
 window._cmsSectionSwitch = function(sec){
   if(typeof sec === "number"){
     var secs = ["pages","files","users","blog"];
     sec = secs[sec] || "pages";
   }
   _cmsSection = sec;
+  window._cmsSection = sec;
   ["pages","blog","files","nav","account","users","security"].forEach(function(s){
     var b = document.getElementById("stab_"+s);
     if(b) b.classList.toggle("active", s===sec);
   });
+  // Highlight sidebar items
+  document.querySelectorAll('.cms-page-item').forEach(function(el){ el.classList.remove('active'); });
+  if(sec==="nav"){ var navItem=document.querySelector('.cms-page-nav'); if(navItem) navItem.classList.add('active'); }
   var sidebar = document.querySelector(".cms-sidebar");
-  if(sidebar) sidebar.style.display = sec==="pages" ? "" : "none";
+  if(sidebar) sidebar.style.display = (sec==="pages" || sec==="nav") ? "" : "none";
   // Clear header actions (each view will set its own)
   window._cmsUpdateHeaderActions('');
   if(sec==="pages") {
@@ -2199,14 +2220,15 @@ function _cmsSecurityTab(){
   }).join('') : '<div style="color:var(--text-muted);font-size:13px;padding:8px 0">'+CL('no_ip_restrict')+'</div>';
 
   var auditRows = auditLog.slice(0,20).map(function(entry){
-    var icon = entry.action.indexOf('login_success')>=0?'&#9989;':entry.action.indexOf('fail')>=0||entry.action.indexOf('blocked')>=0?'&#10060;':'&#128276;';
-    return '<div style="display:grid;grid-template-columns:24px 150px 80px 1fr auto auto;gap:8px;padding:8px 0;border-bottom:1px solid var(--border-light);font-size:13px;align-items:center">'
+    var icon = entry.action.indexOf('login_success')>=0?'&#9989;':entry.action.indexOf('fail')>=0||entry.action.indexOf('blocked')>=0||entry.action.indexOf('locked')>=0?'&#10060;':'&#128276;';
+    var actionText = esc(entry.action.replace(/_/g,' '));
+    if(entry.detail) actionText += ' <span style="color:var(--text-muted);font-size:11px">('+esc(entry.detail)+')</span>';
+    return '<div style="display:grid;grid-template-columns:24px 1fr 80px 120px 130px;gap:10px;padding:10px 0;border-bottom:1px solid var(--border-light);font-size:13px;align-items:center">'
       +'<span>'+icon+'</span>'
-      +'<span style="color:var(--text-muted);font-size:12px;white-space:nowrap">'+new Date(entry.time).toLocaleString('zh-HK')+'</span>'
+      +'<span style="color:var(--text-sec);line-height:1.4">'+actionText+'</span>'
       +'<span style="font-weight:600">'+esc(entry.user)+'</span>'
-      +'<span style="color:var(--text-sec)">'+esc(entry.action.replace(/_/g,' '))+'</span>'
-      +'<span style="color:var(--text-muted);font-size:12px;font-family:monospace">'+(entry.ip?esc(entry.ip):'')+'</span>'
-      +(entry.detail?'<span style="color:var(--text-muted);font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(entry.detail)+'</span>':'<span></span>')
+      +'<span style="color:var(--text-muted);font-size:12px;font-family:monospace">'+(entry.ip?esc(entry.ip):'<span style="opacity:.4">—</span>')+'</span>'
+      +'<span style="color:var(--text-muted);font-size:11px;white-space:nowrap">'+new Date(entry.time).toLocaleString('zh-HK')+'</span>'
       +'</div>';
   }).join('');
 
@@ -2263,8 +2285,8 @@ function _cmsSecurityTab(){
     +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="if(confirm(CL(\'clear_log_q\')))localStorage.removeItem(\''+CMS_AUDIT_KEY+'\');window._cmsUsersView(\'security\')">'+CL('clear_log')+'</button>'
     +'</div>'
     +'<p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">'+CL('audit_log_desc')+'</p>'
-    +'<div style="display:grid;grid-template-columns:24px 150px 80px 1fr auto auto;gap:8px;padding:6px 0;border-bottom:2px solid var(--border);font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">'
-    +'<span></span><span>'+CL('audit_col_time')+'</span><span>'+CL('audit_col_user')+'</span><span>'+CL('audit_col_action')+'</span><span>'+CL('audit_col_ip')+'</span><span>'+CL('audit_col_detail')+'</span>'
+    +'<div style="display:grid;grid-template-columns:24px 1fr 80px 120px 130px;gap:10px;padding:6px 0;border-bottom:2px solid var(--border);font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">'
+    +'<span></span><span>'+CL('audit_col_action')+'</span><span>'+CL('audit_col_user')+'</span><span>'+CL('audit_col_ip')+'</span><span>'+CL('audit_col_time')+'</span>'
     +'</div>'
     +(auditRows||'<div style="color:var(--text-muted);font-size:13px;padding:12px 0">'+CL('no_log')+'</div>')
     +'</div>'
@@ -2992,6 +3014,9 @@ window.getCmsNav = getCmsNav;
 window.saveCmsNav = saveCmsNav;
 
 window._cmsHomeView = function(){
+  _cmsSection = 'home';
+  window._cmsSection = 'home';
+  window._cmsCurrentSlug = '__home__';
   // Destroy any existing CKEditor instances from previous render
   Object.keys(_cmsEditors).forEach(function(k){ try{ _cmsEditors[k].destroy(); }catch(e){} });
   _cmsEditors = {};
@@ -3523,16 +3548,24 @@ window._cmsHomeSave = function(){
 // Render full banner manager into a container (for homepage editor accordion)
 function _cmsRenderBannersFull(container){
   var banners = getCmsBanners();
+  var _cl = window.currentLang || 'zh-Hant';
+  var _L = function(en,hans,hant){ return _cl==='en'?en:(_cl==='zh-Hans'?hans:hant); };
+  var defaultBanners = [
+    { img: 'images/ecap-banner-1.png', alt: _L('iTrader Platform', 'iTrader 交易平台', 'iTrader 交易平台'), link: '#/page/stock-ipo' },
+    { img: 'images/ecap-banner-2.png', alt: _L('Stock Connect', '沪港通服务', '滬港通服務'), link: '#/page/shh-hk' },
+    { img: 'images/ecap-banner-3.png', alt: _L('Open Account', '开立帐户', '開立帳戶'), link: '#/page/stock-account-opening' }
+  ];
   // Persist hardcoded defaults to localStorage if none saved yet
   if(!banners.length){
-    var _cl = window.currentLang || 'zh-Hant';
-    var _L = function(en,hans,hant){ return _cl==='en'?en:(_cl==='zh-Hans'?hans:hant); };
-    banners = [
-      { img: 'images/ecap-banner-1.png', alt: _L('iTrader Platform', 'iTrader 交易平台', 'iTrader 交易平台'), link: '#/page/stock-ipo' },
-      { img: 'images/ecap-banner-2.png', alt: _L('Stock Connect', '沪港通服务', '滬港通服務'), link: '#/page/shh-hk' },
-      { img: 'images/ecap-banner-3.png', alt: _L('Open Account', '开立帐户', '開立帳戶'), link: '#/page/stock-account-opening' }
-    ];
+    banners = defaultBanners;
     saveCmsBanners(banners);
+  } else {
+    // Check if defaults are missing (user uploaded only, lost defaults)
+    var hasDefault = banners.some(function(b){ return b.img && b.img.indexOf('ecap-banner-')>=0; });
+    if(!hasDefault){
+      banners = defaultBanners.concat(banners);
+      saveCmsBanners(banners);
+    }
   }
   var _canUpload = _cmsHasPermission("upload");
   var _noImgSrc = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='68'%3E%3Crect width='120' height='68' fill='%23f3f4f6'/%3E%3Ctext x='60' y='38' text-anchor='middle' fill='%23bbb' font-size='11' font-family='sans-serif'%3ENo Image%3C/text%3E%3C/svg%3E";
@@ -4142,7 +4175,7 @@ window._cmsCkHelp = function(){
   function badge(icon){ return '<span style="display:inline-flex;align-items:center;gap:3px;background:var(--bg-light);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:12px;vertical-align:middle">'+icon+'</span>'; }
   var content = {
     'zh-Hant': {
-      title: 'CKEditor 使用指南',
+      title: '編輯器説明',
       sections: [
         {h:'基本格式',items:[badge(ic.bold)+' <b>粗體</b> — 選取文字後點擊或按 Ctrl+B',badge(ic.italic)+' <i>斜體</i> — 選取文字後點擊或按 Ctrl+I',badge(ic.heading)+' 標題 — 使用「Heading」下拉選單選擇 H2 / H3 / H4']},
         {h:'插入連結',items:[badge(ic.link)+' 選取文字 → 點擊連結圖示','輸入網址（如 https://... 或 #/page/slug）','按 Enter 確認']},
@@ -4155,7 +4188,7 @@ window._cmsCkHelp = function(){
       ]
     },
     'zh-Hans': {
-      title: 'CKEditor 使用指南',
+      title: '编辑器说明',
       sections: [
         {h:'基本格式',items:[badge(ic.bold)+' <b>粗体</b> — 选取文字后点击或按 Ctrl+B',badge(ic.italic)+' <i>斜体</i> — 选取文字后点击或按 Ctrl+I',badge(ic.heading)+' 标题 — 使用「Heading」下拉菜单选择 H2 / H3 / H4']},
         {h:'插入链接',items:[badge(ic.link)+' 选取文字 → 点击链接图标','输入网址（如 https://... 或 #/page/slug）','按 Enter 确认']},
@@ -4168,7 +4201,7 @@ window._cmsCkHelp = function(){
       ]
     },
     'en': {
-      title: 'CKEditor Usage Guide',
+      title: 'Editor Guide',
       sections: [
         {h:'Basic Formatting',items:[badge(ic.bold)+' <b>Bold</b> — Select text and click or press Ctrl+B',badge(ic.italic)+' <i>Italic</i> — Select text and click or press Ctrl+I',badge(ic.heading)+' Headings — Use the "Heading" dropdown to select H2 / H3 / H4']},
         {h:'Insert Links',items:[badge(ic.link)+' Select text → Click the link icon','Enter URL (e.g. https://... or #/page/slug)','Press Enter to confirm']},

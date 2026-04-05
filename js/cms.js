@@ -2657,6 +2657,10 @@ window._cmsBlogMove = function(idx, dir){
 
 // ————————————————————— CMS HOMEPAGE EDITOR —————————————————————
 window._cmsHomeView = function(){
+  // Destroy any existing CKEditor instances from previous render
+  Object.keys(_cmsEditors).forEach(function(k){ try{ _cmsEditors[k].destroy(); }catch(e){} });
+  _cmsEditors = {};
+
   // Highlight homepage item in sidebar
   document.querySelectorAll('.cms-page-item').forEach(function(el){ el.classList.remove('active'); });
   var homeItem = document.querySelector('.cms-page-home');
@@ -2664,6 +2668,7 @@ window._cmsHomeView = function(){
 
   var lang = window.currentLang || 'zh-Hant';
   var ch = window.getCmsHome ? window.getCmsHome() : {};
+  var hasCK = typeof ClassicEditor !== 'undefined';
 
   // Default values — shown as initial content when no CMS override saved
   var defaults = {
@@ -2690,15 +2695,24 @@ window._cmsHomeView = function(){
       +'</div>';
   }
 
-  function fieldRow(id, labelKey, val, placeholder, isTextarea){
+  // Plain text input
+  function plainField(id, labelKey, val){
     var esc_v = (val||'').replace(/"/g,'&quot;').replace(/</g,'&lt;');
-    var esc_p = (placeholder||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').substring(0,80);
-    if(isTextarea){
-      return '<div class="admin-field"><label>'+CL(labelKey)+'</label>'
-        +'<textarea id="'+id+'" rows="2" style="font-size:13px" placeholder="'+esc_p+'">'+esc_v+'</textarea></div>';
-    }
     return '<div class="admin-field"><label>'+CL(labelKey)+'</label>'
-      +'<input type="text" id="'+id+'" value="'+esc_v+'" placeholder="'+esc_p+'"/></div>';
+      +'<input type="text" id="'+id+'" value="'+esc_v+'"/></div>';
+  }
+
+  // Rich text field — CKEditor will attach to the textarea
+  function richField(id, labelKey, val){
+    var esc_v = escHtml(val||'');
+    return '<div class="admin-field">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
+      +'<label style="margin:0">'+CL(labelKey)+'</label>'
+      +(hasCK ? '<button type="button" class="cms-tb-btn" style="font-size:11px;padding:2px 8px" onclick="window._cmsToggleSource(\''+id+'\')">&#60;/&#62; Source</button>' : '')
+      +'</div>'
+      +'<div id="'+id+'_wrap">'
+      +'<textarea id="'+id+'" class="cms-home-ck" style="min-height:120px;font-size:13px">'+esc_v+'</textarea>'
+      +'</div></div>';
   }
 
   // Build HTML
@@ -2710,9 +2724,9 @@ window._cmsHomeView = function(){
 
   // 1. Hero
   html += sectionAccordion('hero', 'home_hero',
-    fieldRow('cms_h_hero_badge','home_badge', gv('hero','badge'), defaults.hero.badge)
-    +fieldRow('cms_h_hero_title','home_title', gv('hero','title'), defaults.hero.title)
-    +fieldRow('cms_h_hero_subtitle','home_subtitle', gv('hero','subtitle'), defaults.hero.subtitle, true)
+    plainField('cms_h_hero_badge','home_badge', gv('hero','badge'))
+    +richField('cms_h_hero_title','home_title', gv('hero','title'))
+    +richField('cms_h_hero_subtitle','home_subtitle', gv('hero','subtitle'))
   );
 
   // 2. Banners (embed existing)
@@ -2720,19 +2734,19 @@ window._cmsHomeView = function(){
     '<div id="cmsHomeBanners"></div>');
 
   // 3-5. Services
-  ['svc1','svc2','svc3'].forEach(function(svc, i){
+  ['svc1','svc2','svc3'].forEach(function(svc){
     html += sectionAccordion(svc, 'home_'+svc,
-      fieldRow('cms_h_'+svc+'_label','home_label', gv(svc,'label'), defaults[svc].label)
-      +fieldRow('cms_h_'+svc+'_title','home_title', gv(svc,'title'), defaults[svc].title)
-      +fieldRow('cms_h_'+svc+'_desc','home_desc', gv(svc,'desc'), defaults[svc].desc, true)
-      +fieldRow('cms_h_'+svc+'_img','home_img', gv(svc,'img'), defaults[svc].img)
+      plainField('cms_h_'+svc+'_label','home_label', gv(svc,'label'))
+      +richField('cms_h_'+svc+'_title','home_title', gv(svc,'title'))
+      +richField('cms_h_'+svc+'_desc','home_desc', gv(svc,'desc'))
+      +plainField('cms_h_'+svc+'_img','home_img', gv(svc,'img'))
     );
   });
 
   // 6. CTA
   html += sectionAccordion('cta', 'home_cta',
-    fieldRow('cms_h_cta_title','home_title', gv('cta','title'), defaults.cta.title)
-    +fieldRow('cms_h_cta_desc','home_desc', gv('cta','desc'), defaults.cta.desc, true)
+    richField('cms_h_cta_title','home_title', gv('cta','title'))
+    +richField('cms_h_cta_desc','home_desc', gv('cta','desc'))
   );
 
   html += '<div style="margin-top:16px;display:flex;gap:8px">'
@@ -2751,6 +2765,26 @@ window._cmsHomeView = function(){
   // Auto-open first section
   var first = document.querySelector('.cms-home-sec');
   if(first) first.classList.add('open');
+
+  // Initialize CKEditor on rich text fields
+  if(hasCK){
+    document.querySelectorAll('.cms-home-ck').forEach(function(ta){
+      ClassicEditor.create(ta, {
+        toolbar: ['heading','|','bold','italic','link','|','bulletedList','numberedList','|','blockQuote','insertTable','|','undo','redo'],
+        heading: { options: [
+          { model:'paragraph', title:'Paragraph', class:'ck-heading_paragraph' },
+          { model:'heading2', view:'h2', title:'Heading 2', class:'ck-heading_heading2' },
+          { model:'heading3', view:'h3', title:'Heading 3', class:'ck-heading_heading3' },
+          { model:'heading4', view:'h4', title:'Heading 4', class:'ck-heading_heading4' }
+        ]},
+        language: lang === 'en' ? 'en' : 'zh-cn'
+      }).then(function(editor){
+        _cmsEditors[ta.id] = editor;
+      }).catch(function(err){
+        console.warn('CKEditor init failed for '+ta.id+':', err);
+      });
+    });
+  }
 };
 
 // Save all homepage fields
@@ -2765,12 +2799,17 @@ window._cmsHomeSave = function(){
     svc3: ['label','title','desc','img'],
     cta: ['title','desc']
   };
+  // Read from CKEditor if available, else from input/textarea
+  function getVal(id){
+    if(_cmsEditors[id]) return _cmsEditors[id].getData().trim();
+    var el = document.getElementById(id);
+    return el ? (el.value||'').trim() : '';
+  }
   sections.forEach(function(sec){
     if(!ch[sec]) ch[sec] = {};
     if(!ch[sec][lang]) ch[sec][lang] = {};
     fields[sec].forEach(function(f){
-      var el = document.getElementById('cms_h_'+sec+'_'+f);
-      var val = el ? (el.value||'').trim() : '';
+      var val = getVal('cms_h_'+sec+'_'+f);
       if(val) ch[sec][lang][f] = val;
       else delete ch[sec][lang][f];
     });

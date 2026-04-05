@@ -420,6 +420,12 @@ var CMS_I18N = {
   pwd_weak:        {en:'Weak', hans:'弱', hant:'弱'},
   pwd_medium:      {en:'Medium', hans:'中等', hant:'中等'},
   pwd_strong:      {en:'Strong', hans:'强', hant:'強'},
+  pwd_req_len:     {en:'At least 8 characters', hans:'至少8个字符', hant:'至少8個字元'},
+  pwd_req_lower:   {en:'At least 1 lowercase letter', hans:'至少1个小写字母', hant:'至少1個小寫字母'},
+  pwd_req_upper:   {en:'At least 1 uppercase letter', hans:'至少1个大写字母', hant:'至少1個大寫字母'},
+  pwd_req_digit:   {en:'At least 1 digit', hans:'至少1个数字', hant:'至少1個數字'},
+  pwd_req_symbol:  {en:'At least 1 special character', hans:'至少1个特殊字符', hant:'至少1個特殊符號'},
+  pwd_complexity:  {en:'Password requirements:', hans:'密码要求：', hant:'密碼要求：'},
   active_ips:      {en:' active IPs', hans:' 个活跃IP', hant:' 個活躍IP'},
   off_all_ips:     {en:'Off (all IPs allowed)', hans:'关闭（允许所有IP）', hant:'關閉（允許所有IP）'},
   users_enabled:   {en:' users enabled', hans:' 个用户已启用', hant:' 個用戶已啟用'},
@@ -639,9 +645,9 @@ window.saveCmsBlog = saveCmsBlog;
 function getIpWhitelist(){ try{var d=JSON.parse(localStorage.getItem(CMS_IP_KEY));return d||[];}catch(e){return[];} }
 function saveIpWhitelist(d){ localStorage.setItem(CMS_IP_KEY,JSON.stringify(d)); }
 function getAuditLog(){ try{var d=JSON.parse(localStorage.getItem(CMS_AUDIT_KEY));return d||[];}catch(e){return[];} }
-function addAuditLog(action, detail){
+function addAuditLog(action, detail, overrideUser){
   var log = getAuditLog();
-  log.unshift({time:new Date().toISOString(), user:sessionStorage.getItem('ecap_admin_user')||'unknown', action:action, detail:detail||'', ip:sessionStorage.getItem('ecap_client_ip')||''});
+  log.unshift({time:new Date().toISOString(), user:overrideUser||sessionStorage.getItem('ecap_admin_user')||'unknown', action:action, detail:detail||'', ip:sessionStorage.getItem('ecap_client_ip')||''});
   if(log.length > 100) log = log.slice(0,100);
   localStorage.setItem(CMS_AUDIT_KEY, JSON.stringify(log));
 }
@@ -696,20 +702,24 @@ function generateSecret(){
 function checkAdminLogin(username, pass){
   return sha256hex(pass).then(function(hash){
     var users = getCmsUsers();
+    console.log('[CMS Login] user:', username, 'hash:', hash.slice(0,8)+'...', 'users:', users.length);
     if(users.length > 0){
-      // Find user by username first, then verify hash separately for better debugging
       var userByName = users.find(function(u){ return u.username===username; });
       if(userByName){
+        console.log('[CMS Login] found user:', userByName.username, 'stored hash:', (userByName.hash||'').slice(0,8)+'...', 'enabled:', userByName.enabled);
         if(userByName.enabled===false) return {error:"disabled"};
         if(userByName.hash===hash) return {username:userByName.username, role:userByName.role||"admin"};
         // Hash mismatch — also try trimmed password (in case whitespace)
         return sha256hex(pass.trim()).then(function(h2){
+          console.log('[CMS Login] trim hash:', h2.slice(0,8)+'...');
           if(userByName.hash===h2) return {username:userByName.username, role:userByName.role||"admin"};
+          console.warn('[CMS Login] hash mismatch for', username);
           return null;
         });
       }
       // Fallback: always allow default admin even when custom users exist
       if(username==="admin" && hash===ADMIN_HASH) return {username:"admin", role:"admin"};
+      console.warn('[CMS Login] user not found:', username);
       return null;
     }
     if(username==="admin" && hash===ADMIN_HASH) return {username:"admin", role:"admin"};
@@ -787,6 +797,15 @@ function checkPasswordStrength(pass){
   if(score <= 2) return {level:'weak', color:'#dc2626', label:CL('pwd_weak')};
   if(score <= 4) return {level:'medium', color:'#f59e0b', label:CL('pwd_medium')};
   return {level:'strong', color:'#059669', label:CL('pwd_strong')};
+}
+function validatePasswordComplexity(pass){
+  var errors = [];
+  if(pass.length < 8) errors.push(CL('pwd_req_len'));
+  if(!/[a-z]/.test(pass)) errors.push(CL('pwd_req_lower'));
+  if(!/[A-Z]/.test(pass)) errors.push(CL('pwd_req_upper'));
+  if(!/[0-9]/.test(pass)) errors.push(CL('pwd_req_digit'));
+  if(!/[^a-zA-Z0-9]/.test(pass)) errors.push(CL('pwd_req_symbol'));
+  return errors;
 }
 
 // ————— Last Login Tracking —————
@@ -1246,8 +1265,13 @@ window._cmsForceChangePwdScreen = function(username){
 
   document.getElementById('forcePwdNew').focus();
   document.getElementById('forcePwdNew').addEventListener('input', function(){
-    var s=checkPasswordStrength(this.value);
-    document.getElementById('forcePwdStrength').innerHTML=this.value?'<span style="color:'+s.color+'">'+s.label+'</span>':'';
+    var val = this.value;
+    if(!val){ document.getElementById('forcePwdStrength').innerHTML=''; return; }
+    var errs = validatePasswordComplexity(val);
+    var s = checkPasswordStrength(val);
+    var html = '<span style="color:'+s.color+'">'+s.label+'</span>';
+    if(errs.length) html += '<div style="font-size:11px;color:#dc2626;margin-top:4px">'+errs.map(function(e){return '&#10007; '+e;}).join('<br>')+'</div>';
+    document.getElementById('forcePwdStrength').innerHTML=html;
   });
   document.getElementById('forcePwdLogoutBtn').addEventListener('click', function(){
     sessionStorage.removeItem('ecap_force2fa_user');
@@ -1262,8 +1286,8 @@ window._cmsForceChangePwdScreen = function(username){
     var errEl = document.getElementById('forcePwdErr');
     if(newPwd.length<8){errEl.textContent=CL('pwd_min8');return;}
     if(newPwd!==confirmPwd){errEl.textContent=CL('pwd_mismatch');return;}
-    var str=checkPasswordStrength(newPwd);
-    if(str.level==='weak'){errEl.textContent=CL('pwd_too_weak');return;}
+    var _cpxErrs=validatePasswordComplexity(newPwd);
+    if(_cpxErrs.length){errEl.innerHTML=CL('pwd_complexity')+'<br>'+_cpxErrs.join('<br>');return;}
     sha256hex(newPwd).then(function(hash){
       var users=getCmsUsers();
       users.forEach(function(u){if(u.username===username){u.hash=hash;u.mustChangePassword=false;}});
@@ -1401,7 +1425,7 @@ window._adminLogin = function(e){
   // Check rate limiting
   var lockMins = isLockedOut(user);
   if(lockMins){
-    addAuditLog('login_locked', 'User: '+user+', IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown')+', locked for '+lockMins+' min');
+    addAuditLog('login_locked', 'IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown')+', locked for '+lockMins+' min', user);
     errEl.textContent = CL('too_many')+lockMins+CL('minutes');
     errEl.style.color='';
     btn.disabled = false;
@@ -1427,7 +1451,7 @@ window._adminLogin = function(e){
   return checkIpWhitelist();
   }).then(function(ipOk){
     if(!ipOk){
-      addAuditLog('login_blocked_ip', 'User: '+user+', IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown'));
+      addAuditLog('login_blocked_ip', 'IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown'), user);
       errEl.textContent = CL('ip_denied');
       errEl.style.color='';
       btn.disabled = false;
@@ -1437,7 +1461,7 @@ window._adminLogin = function(e){
 
     checkAdminLogin(user, pass).then(function(matched){
     if(matched && matched.error==='disabled'){
-      addAuditLog('login_disabled', 'User: '+user);
+      addAuditLog('login_disabled', '', user);
       errEl.textContent = CL('acct_disabled');
       errEl.style.color='';
       btn.disabled = false;
@@ -1553,7 +1577,7 @@ window._adminLogin = function(e){
       window.route();
     } else {
       recordFailedLogin(user);
-      addAuditLog('login_fail', 'User: '+user+', IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown'));
+      addAuditLog('login_fail', 'IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown'), user);
       var attempts = getLoginAttempts();
       var rlCfg = getRateLimitConfig();
       var remaining = (rlCfg.maxAttempts||5) - ((attempts[user]||{}).count||0);
@@ -2122,7 +2146,8 @@ function _cmsAccountTab(currentUser, cfg2fa){
     +'<div class="cms-card-box">'
     +'<h4 style="font-size:16px;font-weight:700;margin-bottom:16px">'+CL('change_pwd')+'</h4>'
     +'<div class="admin-field"><label>'+CL('current_pwd')+'</label><input type="password" id="pwdCurrent" placeholder="'+CL('current_pwd')+'"/></div>'
-    +'<div class="admin-field"><label>'+CL('new_pwd')+'</label><input type="password" id="pwdNew" placeholder="'+CL('new_pwd')+'"/></div>'
+    +'<div class="admin-field"><label>'+CL('new_pwd')+'</label><input type="password" id="pwdNew" placeholder="'+CL('new_pwd')+'" oninput="var v=this.value,el=document.getElementById(\'pwdStrength\');if(!v){el.innerHTML=\'\';return;}var e=validatePasswordComplexity(v),s=checkPasswordStrength(v),h=\'<span style=color:\'+s.color+\'>\'+s.label+\'</span>\';if(e.length)h+=\'<div style=font-size:11px;color:#dc2626;margin-top:4px>\'+e.map(function(x){return \'&#10007; \'+x}).join(\'<br>\')+\'</div>\';el.innerHTML=h"/></div>'
+    +'<div id="pwdStrength" style="font-size:12px;margin:-8px 0 8px"></div>'
     +'<div class="admin-field"><label>'+CL('confirm_pwd')+'</label><input type="password" id="pwdConfirm" placeholder="'+CL('confirm_pwd')+'"/></div>'
     +'<button class="admin-btn primary" onclick="window._cmsChangePassword()">'+CL('update_pwd')+'</button>'
     +'<div id="pwdMsg" style="font-size:13px;margin-top:8px;min-height:20px"></div>'
@@ -2672,8 +2697,8 @@ window._cmsChangePassword = function(){
   var cf = document.getElementById("pwdConfirm").value;
   var msg = document.getElementById("pwdMsg");
   if(nw.length < 8){ msg.style.color="#dc3545"; msg.textContent=CL('pwd_min8'); return; }
-  var strength = checkPasswordStrength(nw);
-  if(strength.level==='weak'){ msg.style.color="#dc3545"; msg.textContent=CL('pwd_char_req'); return; }
+  var _cpxErrs2 = validatePasswordComplexity(nw);
+  if(_cpxErrs2.length){ msg.style.color="#dc3545"; msg.innerHTML=CL('pwd_complexity')+'<br>'+_cpxErrs2.join('<br>'); return; }
   if(nw !== cf){ msg.style.color="#dc3545"; msg.textContent=CL('pwd_mismatch'); return; }
   var currentUser = sessionStorage.getItem("ecap_admin_user") || "admin";
   checkAdminLogin(currentUser, cur).then(function(ok){
@@ -2722,7 +2747,9 @@ window._cmsUserAdd = function(){
   var force2FA = document.getElementById("newUserForce2FA") ? document.getElementById("newUserForce2FA").checked : true;
   var mustChangePwd = document.getElementById("newUserMustChangePwd") ? document.getElementById("newUserMustChangePwd").checked : true;
   sha256hex(pass).then(function(hash){
-    users.push({username:uname, hash:hash, groupId:groupId, perms:null, enabled:true, force2FA:force2FA, mustChangePassword:mustChangePwd, sessionTimeout:0, ipWhitelist:[], timezone:'Asia/Hong_Kong', lastLogin:null});
+    var grp = groupId ? getCmsGroups().find(function(g){return g.id===groupId;}) : null;
+    var role = grp ? (grp.role||'editor') : 'editor';
+    users.push({username:uname, hash:hash, role:role, groupId:groupId, perms:null, enabled:true, force2FA:force2FA, mustChangePassword:mustChangePwd, sessionTimeout:0, ipWhitelist:[], timezone:'Asia/Hong_Kong', lastLogin:null});
     saveCmsUsers(users);
     var grpName = groupId ? (getCmsGroups().find(function(g){return g.id===groupId;})||{}).name||groupId : CL('custom_perms');
     msg.style.color="#28a745"; msg.textContent=CL('user_added')+uname+CL('user_as')+grpName;

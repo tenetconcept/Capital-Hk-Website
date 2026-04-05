@@ -27,6 +27,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 input, select, textarea { font-family: inherit; }
 h1, h2, h3, h4, h5, h6 { line-height: 1.25; font-weight: 700; letter-spacing: -0.01em; }
 
+/* Language switch animation */
+#app.lang-switching{opacity:.3;transition:opacity .15s ease}
+#app:not(.lang-switching){transition:opacity .2s ease}
+.nav-links{transition:opacity .2s ease}
+.nav-links.lang-switching{opacity:0}
+
 /* Typography Scale — 50% bigger + bold, rd.group-matched */
 .text-title { font-size: clamp(3rem, 6vw, 5rem); font-weight: 700; line-height: 1.1; }
 .text-h1 { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 700; line-height: 1.15; }

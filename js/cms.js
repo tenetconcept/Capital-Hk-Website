@@ -384,6 +384,7 @@ var CMS_I18N = {
   perm_write:      {en:'Write', hans:'写入', hant:'寫入'},
   perm_pages:      {en:'Pages', hans:'页面内容', hant:'頁面內容'},
   perm_banners:    {en:'Banners', hans:'首页横幅', hant:'首頁橫幅'},
+  perm_nav:        {en:'Navigation', hans:'导航选单', hant:'導航選單'},
   perm_blog:       {en:'News Articles', hans:'新闻文章', hant:'新聞文章'},
   perm_files:      {en:'File Manager', hans:'档案管理', hant:'檔案管理'},
   perm_users:      {en:'User Management', hans:'用户管理', hant:'用戶管理'},
@@ -790,7 +791,7 @@ function checkIpWhitelist(username){
   });
 }
 // ————— GRANULAR PERMISSION SYSTEM —————
-var CMS_SECTIONS = ['pages','banners','blog','files','users','security'];
+var CMS_SECTIONS = ['pages','banners','nav','blog','files','users','security'];
 var CMS_PERM_ACTIONS = ['read','write'];
 var CMS_GROUPS_KEY = 'ecap_cms_groups';
 var CMS_RATELIMIT_KEY = 'ecap_cms_ratelimit';
@@ -883,7 +884,7 @@ function _cmsCurrentRole(){
 }
 
 // ————— DATA MIGRATION —————
-var CMS_MIGRATED_KEY = 'ecap_cms_migrated_v2';
+var CMS_MIGRATED_KEY = 'ecap_cms_migrated_v3';
 function _cmsMigrateData(){
   if(localStorage.getItem(CMS_MIGRATED_KEY)==='1') return;
   // 1) Create default groups if none exist
@@ -893,7 +894,7 @@ function _cmsMigrateData(){
       {id:'g_admin', name:'管理員', perms:_cmsFullPerms(), sessionTimeout:0, ipWhitelist:[]},
       {id:'g_editor',name:'編輯員', perms:(function(){
         var p=_cmsEmptyPerms();
-        ['pages','banners','blog','files'].forEach(function(s){ p[s+'.read']=true; p[s+'.write']=true; });
+        ['pages','banners','nav','blog','files'].forEach(function(s){ p[s+'.read']=true; p[s+'.write']=true; });
         p['users.read']=true; p['security.read']=true;
         return p;
       })(), sessionTimeout:0, ipWhitelist:[]},
@@ -905,6 +906,16 @@ function _cmsMigrateData(){
     ];
     saveCmsGroups(groups);
   }
+  // 1b) Ensure all groups have nav permissions (added in v3)
+  var gChanged = false;
+  groups.forEach(function(g){
+    if(typeof g.perms['nav.read'] === 'undefined'){
+      g.perms['nav.read'] = g.perms['pages.read'] || false;
+      g.perms['nav.write'] = g.perms['pages.write'] || false;
+      gChanged = true;
+    }
+  });
+  if(gChanged) saveCmsGroups(groups);
   // 2) Migrate existing users: role → groupId, add new fields
   var users=getCmsUsers();
   var roleGroupMap={admin:'g_admin',editor:'g_editor',viewer:'g_viewer'};
@@ -1289,7 +1300,14 @@ window._adminLogin = function(e){
     if(stored) return Promise.resolve();
     return fetch('https://api.ipify.org?format=json').then(function(r){return r.json();}).then(function(d){
       sessionStorage.setItem('ecap_client_ip', d.ip);
-    }).catch(function(){});
+    }).catch(function(){
+      // Fallback: try alternative IP service
+      return fetch('https://api.seeip.org/jsonip?').then(function(r){return r.json();}).then(function(d){
+        sessionStorage.setItem('ecap_client_ip', d.ip);
+      }).catch(function(){
+        sessionStorage.setItem('ecap_client_ip', 'unavailable');
+      });
+    });
   })().then(function(){
   return checkIpWhitelist();
   }).then(function(ipOk){
@@ -2049,7 +2067,7 @@ function _cmsUserMgmtTab(users, currentUser, cfg2fa){
 }
 
 // ————— Groups Sub-View —————
-var CMS_PERM_LABELS = {pages:'perm_pages',banners:'perm_banners',blog:'perm_blog',files:'perm_files',users:'perm_users',security:'perm_security'};
+var CMS_PERM_LABELS = {pages:'perm_pages',banners:'perm_banners',nav:'perm_nav',blog:'perm_blog',files:'perm_files',users:'perm_users',security:'perm_security'};
 
 function _cmsGroupsSubView(){
   var groups = getCmsGroups();

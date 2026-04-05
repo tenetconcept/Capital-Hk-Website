@@ -111,31 +111,44 @@ function setLang(lang){
   if(typeof window._mmClose === 'function') window._mmClose();
   // Rebuild nav immediately so header updates at once (no perceived lag)
   if(typeof buildNav === 'function') buildNav();
+  // Fade nav links during switch
+  var navLinksEl = document.getElementById('navLinks');
+  if(navLinksEl) navLinksEl.classList.add('lang-switching');
   // Save CMS state before re-render, so we can restore after
   var _cmsState = null;
-  if(location.hash === '#/admin' && typeof window._cmsSection !== 'undefined'){
-    _cmsState = { section: window._cmsSection, slug: window._cmsCurrentSlug || null };
+  if(location.hash === '#/admin'){
+    _cmsState = { section: window._cmsSection || 'pages', slug: window._cmsCurrentSlug || null };
   }
   // Re-render
   var app = document.getElementById('app');
   if(app){
     app.classList.add('lang-switching');
+    // Remember scroll position so we don't jump
+    var scrollY = window.pageYOffset;
     setTimeout(function(){
       route();
-      // Restore CMS state
+      // Force nav rebuild after route in case route replaced DOM
+      buildNav();
+      // Restore scroll position (route() calls scrollTo(0,0))
+      if(location.hash !== '#/admin') window.scrollTo(0, scrollY);
+      // Restore CMS state after DOM settles
       if(_cmsState){
-        if(_cmsState.section === 'nav'){
-          window._cmsSectionSwitch('nav');
-        } else if(_cmsState.slug === '__home__' || _cmsState.section === 'home'){
-          if(typeof window._cmsHomeView === 'function') window._cmsHomeView();
-        } else if(_cmsState.slug && _cmsState.section === 'pages'){
-          if(typeof window._cmsEditPage === 'function') window._cmsEditPage(_cmsState.slug);
-        } else if(_cmsState.section && _cmsState.section !== 'pages'){
-          window._cmsSectionSwitch(_cmsState.section);
-        }
+        setTimeout(function(){
+          if(_cmsState.section === 'nav'){
+            if(typeof window._cmsSectionSwitch === 'function') window._cmsSectionSwitch('nav');
+          } else if(_cmsState.slug === '__home__' || _cmsState.section === 'home'){
+            if(typeof window._cmsHomeView === 'function') window._cmsHomeView();
+          } else if(_cmsState.slug && _cmsState.section === 'pages'){
+            if(typeof window._cmsEditPage === 'function') window._cmsEditPage(_cmsState.slug);
+          } else if(_cmsState.section && _cmsState.section !== 'pages'){
+            if(typeof window._cmsSectionSwitch === 'function') window._cmsSectionSwitch(_cmsState.section);
+          }
+        }, 50);
       }
       requestAnimationFrame(function(){
         app.classList.remove('lang-switching');
+        var nl = document.getElementById('navLinks');
+        if(nl) nl.classList.remove('lang-switching');
       });
     }, 250);
   } else {
@@ -906,7 +919,10 @@ function route(){
   if(!app) return;
 
   // Remove CMS body class for non-admin routes
-  if(hash !== "#/admin") document.body.classList.remove('cms-active');
+  if(hash !== "#/admin"){
+    document.body.classList.remove('cms-active');
+    document.documentElement.classList.remove('cms-active-html');
+  }
 
   buildNav();
 
@@ -927,6 +943,7 @@ function route(){
     window.scrollTo(0,0);
   } else if(hash === "#/admin"){
     document.body.classList.add('cms-active');
+    document.documentElement.classList.add('cms-active-html');
     updateSEO("CMS Admin", null, "#/admin");
     if(typeof window.adminView === 'function'){
       app.innerHTML = window.adminView();
@@ -934,6 +951,17 @@ function route(){
       app.innerHTML = '<div style="padding:200px 24px;text-align:center"><h2>CMS Loading...</h2></div>';
     }
     window.scrollTo(0,0);
+    // Measure sticky-top height for sidebar positioning
+    requestAnimationFrame(function(){
+      var stickyTop = document.querySelector('.cms-sticky-top');
+      if(stickyTop){
+        var h = stickyTop.offsetHeight;
+        document.documentElement.style.setProperty('--cms-bar-h', h + 'px');
+      }
+    });
+    // Remove scrolled class in CMS mode
+    var navEl = document.getElementById('mainNav');
+    if(navEl) navEl.classList.remove('scrolled');
   } else {
     app.innerHTML = pageView('__404__') + footerView();
     updateSEO("404 Not Found", null, "");
@@ -976,7 +1004,11 @@ window.addEventListener('scroll', function(){
   var nav = document.getElementById('mainNav');
   var y = window.pageYOffset;
   if(nav){
-    nav.classList.toggle('scrolled', y > 40);
+    if(document.body.classList.contains('cms-active')){
+      nav.classList.remove('scrolled');
+    } else {
+      nav.classList.toggle('scrolled', y > 40);
+    }
   }
   lastScroll = y;
 }, {passive: true});

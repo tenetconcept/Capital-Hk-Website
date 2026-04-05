@@ -719,16 +719,16 @@ function checkAdminLogin(username, pass){
           console.log('[CMS Login] trim hash: ', h2);
           if(userByName.hash===h2) return {username:userByName.username, role:userByName.role||"admin"};
           console.warn('[CMS Login] HASH MISMATCH for', username, '— stored:', userByName.hash, 'got:', hash);
-          return null;
+          return {error:"wrong_password"};
         });
       }
       // Fallback: always allow default admin even when custom users exist
       if(username==="admin" && hash===ADMIN_HASH) return {username:"admin", role:"admin"};
       console.warn('[CMS Login] user not found:', username);
-      return null;
+      return {error:"not_found"};
     }
     if(username==="admin" && hash===ADMIN_HASH) return {username:"admin", role:"admin"};
-    return null;
+    return {error:"not_found"};
   });
 }
 
@@ -1582,13 +1582,31 @@ window._adminLogin = function(e){
       addAuditLog('login_success', 'User: '+_loginUser+', 2FA: no');
       _startSessionTimer();
       window.route();
-    } else {
+    } else if(matched && matched.error==='not_found'){
+      console.error('[CMS Login] User not found:', user);
       recordFailedLogin(user);
-      addAuditLog('login_fail', 'IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown'), user);
+      addAuditLog('login_user_not_found', 'IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown')+', user: '+user, user);
+      errEl.textContent = CL('wrong_pwd');
+      errEl.style.color='';
+      btn.disabled = false;
+      btn.textContent = CL('login');
+    } else if(matched && matched.error==='wrong_password'){
+      console.error('[CMS Login] Wrong password for user:', user);
+      console.error('[CMS Login] All stored users:', JSON.stringify(getCmsUsers().map(function(u){return{username:u.username,hash:u.hash&&u.hash.slice(0,8)+'...',enabled:u.enabled};})));
+      recordFailedLogin(user);
+      addAuditLog('login_fail_password', 'IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown'), user);
       var attempts = getLoginAttempts();
       var rlCfg = getRateLimitConfig();
       var remaining = (rlCfg.maxAttempts||5) - ((attempts[user]||{}).count||0);
       errEl.textContent = CL('wrong_pwd') + (remaining <= 2 && remaining > 0 ? " "+remaining+CL('attempts_left') : "");
+      errEl.style.color='';
+      btn.disabled = false;
+      btn.textContent = CL('login');
+    } else {
+      console.error('[CMS Login] FAILED for user:', user, 'result:', matched);
+      recordFailedLogin(user);
+      addAuditLog('login_fail', 'IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown'), user);
+      errEl.textContent = CL('wrong_pwd');
       errEl.style.color='';
       btn.disabled = false;
       btn.textContent = CL('login');
@@ -2425,7 +2443,7 @@ function _cmsSecurityTab(){
   }).join('') : '<div style="color:var(--text-muted);font-size:13px;padding:8px 0">'+CL('no_ip_restrict')+'</div>';
 
   var auditRows = auditLog.slice(0,20).map(function(entry){
-    var icon = entry.action.indexOf('login_success')>=0?'&#9989;':entry.action.indexOf('fail')>=0||entry.action.indexOf('blocked')>=0||entry.action.indexOf('locked')>=0?'&#10060;':'&#128276;';
+    var icon = entry.action.indexOf('login_success')>=0?'&#9989;':entry.action.indexOf('fail')>=0||entry.action.indexOf('blocked')>=0||entry.action.indexOf('locked')>=0||entry.action.indexOf('not_found')>=0||entry.action.indexOf('disabled')>=0?'&#10060;':'&#128276;';
     var actionText = esc(entry.action.replace(/_/g,' '));
     if(entry.detail) actionText += ' <span style="color:var(--text-muted);font-size:11px">('+esc(entry.detail)+')</span>';
     return '<div style="display:grid;grid-template-columns:24px 1fr 80px 120px 130px;gap:10px;padding:10px 0;border-bottom:1px solid var(--border-light);font-size:13px;align-items:center">'
@@ -2718,11 +2736,11 @@ window._cmsChangePassword = function(){
       var users = getCmsUsers();
       if(users.length === 0){
         // Move from default to custom user list
-        users = [{username:"admin", hash:hash}];
+        users = [{username:"admin", hash:hash, role:"admin", enabled:true}];
       } else {
         var found = false;
-        users = users.map(function(u){ if(u.username===currentUser){found=true;return{username:u.username,hash:hash};}return u; });
-        if(!found) users.push({username:currentUser,hash:hash});
+        users.forEach(function(u){ if(u.username===currentUser){ u.hash=hash; found=true; } });
+        if(!found) users.push({username:currentUser, hash:hash, role:"admin", enabled:true});
       }
       saveCmsUsers(users);
       msg.style.color="#28a745"; msg.textContent=CL('pwd_updated');
@@ -2751,17 +2769,20 @@ window._cmsUserAdd = function(){
   var msg = document.getElementById("addUserMsg");
   if(!uname){ msg.style.color="#dc3545"; msg.textContent=CL('enter_username'); return; }
   if(!pass){ msg.style.color="#dc3545"; msg.textContent=CL('auto_gen_pwd'); return; }
-  var users = getCmsUsers();
-  if(users.some(function(u){return u.username===uname;})){ msg.style.color="#dc3545"; msg.textContent=CL('username_exists'); return; }
+  if(getCmsUsers().some(function(u){return u.username===uname;})){ msg.style.color="#dc3545"; msg.textContent=CL('username_exists'); return; }
   var grpEl = document.getElementById("newUserGroup");
   var groupId = grpEl ? grpEl.value : (getCmsGroups()[0]||{}).id||null;
   var force2FA = document.getElementById("newUserForce2FA") ? document.getElementById("newUserForce2FA").checked : false;
   var mustChangePwd = document.getElementById("newUserMustChangePwd") ? document.getElementById("newUserMustChangePwd").checked : false;
   sha256hex(pass).then(function(hash){
+    // Re-read users fresh inside the async callback to avoid stale data
+    var users = getCmsUsers();
+    if(users.some(function(u){return u.username===uname;})){ msg.style.color="#dc3545"; msg.textContent=CL('username_exists'); return; }
     var grp = groupId ? getCmsGroups().find(function(g){return g.id===groupId;}) : null;
     var role = grp ? (grp.role||'editor') : 'editor';
     users.push({username:uname, hash:hash, role:role, groupId:groupId, perms:null, enabled:true, force2FA:force2FA, mustChangePassword:mustChangePwd, sessionTimeout:0, ipWhitelist:[], timezone:'Asia/Hong_Kong', lastLogin:null});
     saveCmsUsers(users);
+    console.log('[CMS] User created:', uname, 'hash:', hash, 'users now:', users.length);
     var grpName = groupId ? (getCmsGroups().find(function(g){return g.id===groupId;})||{}).name||groupId : CL('custom_perms');
     msg.style.color="#28a745"; msg.textContent=CL('user_added')+uname+CL('user_as')+grpName;
     document.getElementById("newUsername").value="";

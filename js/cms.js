@@ -245,12 +245,10 @@ var CMS_I18N = {
   viewer_nosave:   {en:'Viewer mode — cannot save', hans:'查看模式 — 无法保存', hant:'查看模式 — 無法儲存'},
   preview:         {en:'Preview', hans:'预览', hant:'預覽'},
   saved:           {en:'Saved: ', hans:'已保存: ', hant:'已儲存: '},
-  // Export/Import/Reset
+  // Export/Import
   exported:        {en:'Exported JSON (pages+banners+blog+files)', hans:'已导出JSON（页面+横幅+文章+文件）', hant:'已匯出JSON（頁面+橫幅+文章+檔案）'},
   imported:        {en:'Imported successfully', hans:'导入成功', hant:'匯入成功'},
   invalid_json:    {en:'Invalid JSON file', hans:'无效的JSON文件', hant:'無效的JSON檔案'},
-  reset_confirm:   {en:'Reset all CMS edits to default?', hans:'重置所有CMS编辑为默认？', hant:'重設所有CMS編輯為預設？'},
-  reset_done:      {en:'Reset to defaults', hans:'已重置为默认', hant:'已重設為預設'},
   // Files
   files_title:     {en:'File Manager', hans:'档案管理', hant:'檔案管理'},
   files_desc:      {en:'Upload files or add external links. Copy the HTML snippet to paste into any page body.', hans:'上传文件或添加外部链接。复制HTML代码片段可粘贴到任何页面中。', hant:'上傳檔案或添加外部連結。複製HTML程式碼可貼到任何頁面中。'},
@@ -600,7 +598,6 @@ var CMS_I18N = {
   export_json:     {en:'Export', hans:'导出', hant:'匯出'},
   import_json:     {en:'Import', hans:'导入', hant:'匯入'},
   export_csv:      {en:'Export CSV', hans:'导出 CSV', hant:'匯出 CSV'},
-  reset_data:      {en:'Reset', hans:'重置', hant:'重設'},
   nav_menu_desc:   {en:'Manage website menu items — drag to reorder, click edit to change labels & links', hans:'管理网站菜单项目 — 拖动排序，点击编辑更改标签及链接', hant:'管理網站選單項目 — 拖動排序，點擊編輯更改標籤及連結'}
 };
 function CL(key){ var lang=window.currentLang||'zh-Hant'; var e=CMS_I18N[key]; if(!e) return key; if(lang==='en') return e.en; if(lang==='zh-Hans') return e.hans; return e.hant; }
@@ -853,7 +850,8 @@ function setConcurrentLimit(n){ localStorage.setItem('ecap_concurrent_limit', St
 window.getConcurrentLimit = getConcurrentLimit;
 
 // Active sessions management
-var SESSION_TAB_ID = 'tab_'+Date.now()+'_'+Math.random().toString(36).substr(2,6);
+var SESSION_TAB_ID = sessionStorage.getItem('ecap_tab_id') || ('tab_'+Date.now()+'_'+Math.random().toString(36).substr(2,6));
+sessionStorage.setItem('ecap_tab_id', SESSION_TAB_ID);
 window._sessionTabId = SESSION_TAB_ID;
 
 function getActiveSessions(){ try{ return JSON.parse(localStorage.getItem('ecap_active_sessions')||'[]'); }catch(e){ return []; } }
@@ -986,8 +984,7 @@ function _cmsResolvePerms(username){
 // Legacy action map: maps old action names to new granular perms
 var _LEGACY_PERM_MAP = {
   editPage:'pages.write', save:'pages.write', upload:'files.write',
-  deleteFile:'files.write', users:'users.write', export:'pages.write',
-  reset:'security.write'
+  deleteFile:'files.write', users:'users.write', export:'pages.write'
 };
 
 // Backward-compatible permission check — accepts both old and new action names
@@ -1114,7 +1111,7 @@ function adminView(){
       +'<form onsubmit="return window._adminLogin(event)">'
       +'<div class="login-field"><label>'+CL('username')+'</label><input type="text" id="adminUser" value="admin" autocomplete="username" oninput="var t=document.getElementById(\x27totpField\x27);if(t)t.style.display=get2FAConfig()[this.value.trim()]?\x27\x27:\x27none\x27"/></div>'
       +'<div class="login-field"><label>'+CL('password')+'</label><div style="position:relative"><input type="password" id="adminPass" placeholder="'+CL('enter_pwd')+'" autocomplete="current-password" style="padding-right:40px"/><button type="button" onclick="var p=document.getElementById(\x27adminPass\x27);p.type=p.type===\x27password\x27?\x27text\x27:\x27password\x27;this.innerHTML=p.type===\x27password\x27?\x27&#128065;\x27:\x27&#128064;\x27" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;padding:4px;opacity:.5">&#128065;</button></div></div>'
-      +'<div class="login-field" id="totpField" style="display:none"><label>'+CL('twofa_code')+'</label><input type="text" id="adminTOTP" placeholder="'+CL('six_digit')+'" maxlength="6" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*" style="letter-spacing:4px;font-size:18px;text-align:center"/></div>'
+      +'<div class="login-field" id="totpField" style="display:none"><label>'+CL('twofa_code')+'</label><input type="text" id="adminTOTP" placeholder="\u00B7\u00B7\u00B7\u00B7\u00B7\u00B7" maxlength="6" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*" style="letter-spacing:4px;font-size:18px;text-align:center"/></div>'
       +'<button type="submit" class="login-btn" id="loginBtn">'+CL('login')+'</button>'
       +'<div class="login-err" id="loginErr"></div>'
       +'</form>'
@@ -1358,7 +1355,7 @@ window._cmsForce2FAScreen = function(username){
     +'<img src="'+qrUrl+'" alt="QR" style="width:200px;height:200px;border:1px solid var(--border);border-radius:8px;margin-bottom:12px"/>'
     +'<div style="font-family:monospace;font-size:14px;letter-spacing:2px;background:var(--bg-box);padding:8px 12px;border-radius:6px;margin-bottom:16px;word-break:break-all">'+secret+'</div>'
     +'<p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">'+CL('enter_code_verify')+'</p>'
-    +'<input type="text" id="force2FACode" maxlength="6" placeholder="000000" style="width:120px;text-align:center;font-size:20px;letter-spacing:6px;padding:8px;border:1.5px solid var(--border);border-radius:8px;margin-bottom:12px" inputmode="numeric"/>'
+    +'<input type="text" id="force2FACode" maxlength="6" placeholder="\u00B7\u00B7\u00B7\u00B7\u00B7\u00B7" style="width:120px;text-align:center;font-size:20px;letter-spacing:6px;padding:8px;border:1.5px solid var(--border);border-radius:8px;margin-bottom:12px" inputmode="numeric"/>'
     +'<div style="display:flex;gap:8px;justify-content:center">'
     +'<button class="admin-btn primary" id="force2FAVerifyBtn">'+CL('verify_enable')+'</button>'
     +'<button class="admin-btn secondary" id="force2FALogoutBtn">'+CL('logout')+'</button>'
@@ -1930,18 +1927,6 @@ window._cmsImport = function(e){
   };
   reader.readAsText(file);
   e.target.value = "";
-};
-
-window._cmsReset = function(){
-  if(confirm(CL('reset_confirm'))) {
-    localStorage.removeItem(CMS_KEY);
-    localStorage.removeItem('ecap_cms_home');
-    localStorage.removeItem('ecap_cms_banners');
-    localStorage.removeItem('ecap_cms_footer');
-    localStorage.removeItem('ecap_cms_nav');
-    showToast(CL('reset_done'));
-    window.route();
-  }
 };
 
 // ————————————————————— CMS SECTION SWITCHER —————————————————————
@@ -2874,7 +2859,7 @@ window._cms2FASetup = function(username){
     +'<img src="'+qrUrl+'" alt="QR" style="width:200px;height:200px;border:1px solid var(--border);border-radius:8px;margin-bottom:12px"/>'
     +'<div style="font-family:monospace;font-size:14px;letter-spacing:2px;background:var(--bg-box);padding:8px 12px;border-radius:6px;margin-bottom:16px;word-break:break-all">'+secret+'</div>'
     +'<p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">'+CL('enter_code_verify')+'</p>'
-    +'<input type="text" id="verify2FA" maxlength="6" placeholder="000000" style="width:120px;text-align:center;font-size:20px;letter-spacing:6px;padding:8px;border:1.5px solid var(--border);border-radius:8px;margin-bottom:12px" inputmode="numeric"/>'
+    +'<input type="text" id="verify2FA" maxlength="6" placeholder="\u00B7\u00B7\u00B7\u00B7\u00B7\u00B7" style="width:120px;text-align:center;font-size:20px;letter-spacing:6px;padding:8px;border:1.5px solid var(--border);border-radius:8px;margin-bottom:12px" inputmode="numeric"/>'
     +'<div style="display:flex;gap:8px;justify-content:center">'
     +'<button class="admin-btn primary" id="verify2FABtn" style="min-width:100px">'+CL('verify_enable')+'</button>'
     +'<button class="admin-btn secondary" id="cancel2FABtn">'+CL('cancel')+'</button>'

@@ -360,6 +360,8 @@ var CMS_I18N = {
   audit_col_detail:{en:'Detail', hans:'详情', hant:'詳情'},
   clear_log:       {en:'Clear Log', hans:'清除日志', hant:'清除日誌'},
   clear_log_q:     {en:'Clear audit log?', hans:'清除审计日志？', hant:'清除稽核日誌？'},
+  clear_filter:    {en:'Clear', hans:'清除', hant:'清除'},
+  csv_filtered_q:  {en:'Export only the filtered date range? (Cancel = export all)', hans:'只导出筛选的日期范围？（取消 = 导出全部）', hant:'只匯出篩選的日期範圍？（取消 = 匯出全部）'},
   ip_addr:         {en:'IP Address', hans:'IP 地址', hant:'IP 地址'},
   label_opt:       {en:'Label (optional)', hans:'标签（可选）', hant:'標籤（可選）'},
   add_ip:          {en:'Add IP', hans:'添加IP', hant:'新增IP'},
@@ -431,6 +433,8 @@ var CMS_I18N = {
   off_all_ips:     {en:'Off (all IPs allowed)', hans:'关闭（允许所有IP）', hant:'關閉（允許所有IP）'},
   users_enabled:   {en:' users enabled', hans:' 个用户已启用', hant:' 個用戶已啟用'},
   no_users_2fa:    {en:'No users enabled', hans:'没有用户启用', hant:'沒有用戶啟用'},
+  users_no_2fa:    {en:' users without 2FA', hans:' 个用户未启用2FA', hant:' 個用戶未啟用2FA'},
+  all_users_2fa:   {en:'All users have 2FA', hans:'所有用户已启用2FA', hant:'所有用戶已啟用2FA'},
   session_fp:      {en:'Session Fingerprint', hans:'会话指纹', hant:'工作階段指紋'},
   active:          {en:'Active', hans:'活跃', hant:'活躍'},
   entries:         {en:' entries', hans:' 条记录', hant:' 條記錄'},
@@ -598,6 +602,10 @@ var CMS_I18N = {
   export_json:     {en:'Export', hans:'导出', hant:'匯出'},
   import_json:     {en:'Import', hans:'导入', hant:'匯入'},
   export_csv:      {en:'Export CSV', hans:'导出 CSV', hant:'匯出 CSV'},
+  backup_restore:  {en:'Backup & Restore', hans:'备份与还原', hant:'備份與還原'},
+  backup_desc:     {en:'Export all CMS data (pages, blog, files, banners, nav) as JSON backup. Restore from a previously exported file.', hans:'将所有CMS数据（页面、文章、文件、横幅、导航）导出为JSON备份。从之前导出的文件还原。', hant:'將所有CMS資料（頁面、文章、檔案、橫幅、導航）匯出為JSON備份。從之前匯出的檔案還原。'},
+  backup_export:   {en:'Backup (Export)', hans:'备份（导出）', hant:'備份（匯出）'},
+  backup_import:   {en:'Restore (Import)', hans:'还原（导入）', hant:'還原（匯入）'},
   nav_menu_desc:   {en:'Manage website menu items — drag to reorder, click edit to change labels & links', hans:'管理网站菜单项目 — 拖动排序，点击编辑更改标签及链接', hant:'管理網站選單項目 — 拖動排序，點擊編輯更改標籤及連結'}
 };
 function CL(key){ var lang=window.currentLang||'zh-Hant'; var e=CMS_I18N[key]; if(!e) return key; if(lang==='en') return e.en; if(lang==='zh-Hans') return e.hans; return e.hant; }
@@ -2451,7 +2459,27 @@ function _cmsSecurityTab(){
       +'</div>';
   }).join('') : '<div style="color:var(--text-muted);font-size:13px;padding:8px 0">'+CL('no_ip_restrict')+'</div>';
 
-  var auditRows = auditLog.slice(0,20).map(function(entry){
+  var _auditPage = window._auditPage || 0;
+  var _auditPerPage = 20;
+  var _auditFrom = window._auditDateFrom || '';
+  var _auditTo = window._auditDateTo || '';
+
+  // Filter audit log by date range
+  var filteredLog = auditLog;
+  if(_auditFrom){
+    var fromTs = new Date(_auditFrom).getTime();
+    filteredLog = filteredLog.filter(function(e){ return new Date(e.time).getTime() >= fromTs; });
+  }
+  if(_auditTo){
+    var toTs = new Date(_auditTo+'T23:59:59').getTime();
+    filteredLog = filteredLog.filter(function(e){ return new Date(e.time).getTime() <= toTs; });
+  }
+  var totalPages = Math.max(1, Math.ceil(filteredLog.length / _auditPerPage));
+  if(_auditPage >= totalPages) _auditPage = totalPages - 1;
+  if(_auditPage < 0) _auditPage = 0;
+  var pagedLog = filteredLog.slice(_auditPage * _auditPerPage, (_auditPage + 1) * _auditPerPage);
+
+  var auditRows = pagedLog.map(function(entry){
     var icon = entry.action.indexOf('login_success')>=0?'&#9989;':entry.action.indexOf('fail')>=0||entry.action.indexOf('blocked')>=0||entry.action.indexOf('locked')>=0||entry.action.indexOf('not_found')>=0||entry.action.indexOf('disabled')>=0?'&#10060;':'&#128276;';
     var actionText = esc(entry.action.replace(/_/g,' '));
     if(entry.detail) actionText += ' <span style="color:var(--text-muted);font-size:11px">('+esc(entry.detail)+')</span>';
@@ -2473,16 +2501,29 @@ function _cmsSecurityTab(){
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px">'
     +'<div>&#128274; <strong>'+CL('ip_whitelist')+':</strong> '+(whitelist.length?'<span style="color:#059669">'+whitelist.filter(function(x){return x.enabled!==false}).length+CL('active_ips')+'</span>':'<span style="color:#f59e0b">'+CL('off_all_ips')+'</span>')+'</div>'
     +'<div>&#9201; <strong>'+CL('session_timeout')+':</strong> '+timeout+CL('minutes_unit')+'</div>'
-    +'<div>&#128272; <strong>2FA:</strong> '+(Object.keys(get2FAConfig()).length?'<span style="color:#059669">'+Object.keys(get2FAConfig()).length+CL('users_enabled')+'</span>':'<span style="color:#f59e0b">'+CL('no_users_2fa')+'</span>')+'</div>'
+    +'<div>&#128272; <strong>2FA:</strong> '+(function(){
+      var cfg2fa=get2FAConfig(); var totalUsers=Math.max(getCmsUsers().length,1); var enabled2fa=Object.keys(cfg2fa).length; var without=totalUsers-enabled2fa;
+      return without>0?'<span style="color:#dc2626">'+without+CL('users_no_2fa')+'</span>':'<span style="color:#059669">'+CL('all_users_2fa')+'</span>';
+    })()+'</div>'
     +'<div>&#128737; <strong>'+CL('rate_limit')+':</strong> <span style="color:#059669">'+getRateLimitConfig().maxAttempts+' / '+getRateLimitConfig().lockoutMinutes+' min</span></div>'
     +'<div>&#128270; <strong>'+CL('concurrent_login')+':</strong> <span style="color:#059669">'+(getConcurrentLimit()||CL('unlimited'))+'</span></div>'
     +'<div>&#128196; <strong>'+CL('audit_log')+':</strong> '+auditLog.length+CL('entries')+'</div>'
     +'</div>'
     +'</div>'
+    // Backup & Restore
+    +'<div class="cms-card-box" style="margin-bottom:24px">'
+    +'<h4 style="font-size:16px;font-weight:700;margin-bottom:4px">'+CL('backup_restore')+'</h4>'
+    +'<p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">'+CL('backup_desc')+'</p>'
+    +'<div style="display:flex;gap:8px;flex-wrap:wrap">'
+    +'<button class="admin-btn primary" style="font-size:13px" onclick="window._cmsExport()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> '+CL('backup_export')+'</button>'
+    +'<button class="admin-btn secondary" style="font-size:13px" onclick="document.getElementById(\'cmsImportFileRestore\').click()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> '+CL('backup_import')+'</button>'
+    +'<input type="file" id="cmsImportFileRestore" accept=".json" style="display:none" onchange="window._cmsImport(event)"/>'
+    +'</div>'
+    +'</div>'
     // IP Whitelist
     +'<div class="cms-card-box" style="margin-bottom:24px">'
     +'<h4 style="font-size:16px;font-weight:700;margin-bottom:4px">'+CL('ip_whitelist')+'</h4>'
-    +'<p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">'+CL('ip_desc')+(clientIp?' '+CL('your_ip')+'<strong>'+esc(clientIp)+'</strong>':'')+'</p>'
+    +'<p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">'+CL('ip_desc')+(clientIp?' '+CL('your_ip')+'<strong>'+esc(clientIp)+'</strong>':'')+'</p>'
     +ipRows
     +'<div style="display:flex;gap:8px;margin-top:12px;align-items:end">'
     +'<div class="admin-field" style="flex:1;margin:0"><label>'+CL('ip_addr')+'</label><input type="text" id="newIpAddr" placeholder="e.g. 192.168.1.100"/></div>'
@@ -2498,22 +2539,22 @@ function _cmsSecurityTab(){
     +'<div class="admin-field" style="margin:0;flex:0 0 200px"><label>'+CL('timeout_min')+'</label><input type="number" id="sessionTimeout" value="'+timeout+'" min="5" max="480" style="width:100%"/></div>'
     +'<button class="admin-btn primary" onclick="window._cmsSaveTimeout()" style="align-self:end;height:44px">'+CL('save')+'</button>'
     +'</div>'
-    +'<p style="font-size:12px;color:var(--text-muted);margin-top:8px">'+CL('timeout_auto')+timeout+CL('minutes_unit')+'</p>'
+    +'<p style="font-size:12px;color:var(--text-muted);margin-top:6px">'+CL('timeout_auto')+timeout+CL('minutes_unit')+'</p>'
     +'</div>'
     // Concurrent Login Limit
     +'<div class="cms-card-box" style="margin-bottom:24px">'
     +'<h4 style="font-size:16px;font-weight:700;margin-bottom:4px">'+CL('concurrent_login')+'</h4>'
-    +'<p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">'+CL('concurrent_desc')+'</p>'
+    +'<p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">'+CL('concurrent_desc')+'</p>'
     +'<div style="display:flex;gap:12px;align-items:center">'
     +'<div class="admin-field" style="margin:0;flex:0 0 200px"><label>'+CL('concurrent_max')+'</label><input type="number" id="concurrentLimit" value="'+getConcurrentLimit()+'" min="0" max="10" style="width:100%"/></div>'
     +'<button class="admin-btn primary" onclick="window._cmsSaveConcurrent()" style="align-self:end;height:44px">'+CL('save')+'</button>'
     +'</div>'
-    +'<p style="font-size:12px;color:var(--text-muted);margin-top:8px">0 = '+CL('unlimited')+'</p>'
+    +'<p style="font-size:12px;color:var(--text-muted);margin-top:6px">0 = '+CL('unlimited')+'</p>'
     +'</div>'
     // Rate Limiting Config
     +'<div class="cms-card-box" style="margin-bottom:24px">'
     +'<h4 style="font-size:16px;font-weight:700;margin-bottom:4px">'+CL('rate_limit')+'</h4>'
-    +'<p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">'+CL('rate_limit_desc')+'</p>'
+    +'<p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">'+CL('rate_limit_desc')+'</p>'
     +'<div style="display:flex;gap:12px;align-items:end;flex-wrap:wrap">'
     +'<div class="admin-field" style="margin:0;flex:0 0 180px"><label>'+CL('max_attempts')+'</label><input type="number" id="rlMaxAttempts" value="'+rlCfg.maxAttempts+'" min="1" max="50" style="width:100%"/></div>'
     +'<div class="admin-field" style="margin:0;flex:0 0 180px"><label>'+CL('lockout_min')+'</label><input type="number" id="rlLockoutMin" value="'+rlCfg.lockoutMinutes+'" min="1" max="1440" style="width:100%"/></div>'
@@ -2544,28 +2585,56 @@ function _cmsSecurityTab(){
     +'</div>'
     // Audit Log
     +'<div class="cms-card-box">'
-    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;flex-wrap:wrap;gap:8px">'
     +'<h4 style="font-size:16px;font-weight:700;margin:0">'+CL('audit_log')+'</h4>'
-    +'<div style="display:flex;gap:6px">'
+    +'<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">'
+    +'<input type="date" id="auditDateFrom" value="'+esc(_auditFrom)+'" onchange="window._auditDateFrom=this.value;window._auditPage=0;window._cmsSecurityView()" style="font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-family:inherit"/>'
+    +'<span style="font-size:11px;color:var(--text-muted)">–</span>'
+    +'<input type="date" id="auditDateTo" value="'+esc(_auditTo)+'" onchange="window._auditDateTo=this.value;window._auditPage=0;window._cmsSecurityView()" style="font-size:11px;padding:4px 6px;border:1px solid var(--border);border-radius:6px;font-family:inherit"/>'
+    +(_auditFrom||_auditTo?'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px" onclick="window._auditDateFrom=\x27\x27;window._auditDateTo=\x27\x27;window._auditPage=0;window._cmsSecurityView()">'+CL('clear_filter')+'</button>':'')
     +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="window._cmsExportAuditCsv()">'+CL('export_csv')+'</button>'
     +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="if(confirm(CL(\'clear_log_q\'))){localStorage.removeItem(\''+CMS_AUDIT_KEY+'\');window._cmsSecurityView();}">'+CL('clear_log')+'</button>'
     +'</div>'
     +'</div>'
-    +'<p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">'+CL('audit_log_desc')+'</p>'
+    +'<p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">'+CL('audit_log_desc')+' ('+filteredLog.length+CL('entries')+')'+'</p>'
     +'<div style="display:grid;grid-template-columns:24px 1fr 80px 120px 130px;gap:10px;padding:6px 0;border-bottom:2px solid var(--border);font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">'
     +'<span></span><span>'+CL('audit_col_action')+'</span><span>'+CL('audit_col_user')+'</span><span>'+CL('audit_col_ip')+'</span><span>'+CL('audit_col_time')+'</span>'
     +'</div>'
     +(auditRows||'<div style="color:var(--text-muted);font-size:13px;padding:12px 0">'+CL('no_log')+'</div>')
+    // Pagination
+    +(totalPages>1?'<div style="display:flex;justify-content:center;align-items:center;gap:8px;padding:12px 0;margin-top:8px;border-top:1px solid var(--border-light)">'
+    +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="window._auditPage=0;window._cmsSecurityView()"'+(_auditPage<=0?' disabled':'')+'>&#171;</button>'
+    +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="window._auditPage='+(_auditPage-1)+';window._cmsSecurityView()"'+(_auditPage<=0?' disabled':'')+'>&#8249;</button>'
+    +'<span style="font-size:12px;color:var(--text-muted);min-width:80px;text-align:center">'+(_auditPage+1)+' / '+totalPages+'</span>'
+    +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="window._auditPage='+(_auditPage+1)+';window._cmsSecurityView()"'+(_auditPage>=totalPages-1?' disabled':'')+'>&#8250;</button>'
+    +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="window._auditPage='+(totalPages-1)+';window._cmsSecurityView()"'+(_auditPage>=totalPages-1?' disabled':'')+'>&#187;</button>'
+    +'</div>':'')
     +'</div>'
     +'</div>';
 }
 
-// Export audit log as CSV
+// Export audit log as CSV — respects active date filter
 window._cmsExportAuditCsv = function(){
   var log = getAuditLog();
   if(!log.length){ showToast(CL('no_log')); return; }
+  var hasFilter = window._auditDateFrom || window._auditDateTo;
+  var useFilter = hasFilter && confirm(CL('csv_filtered_q'));
+  var data = log;
+  var suffix = 'all';
+  if(useFilter){
+    if(window._auditDateFrom){
+      var fromTs = new Date(window._auditDateFrom).getTime();
+      data = data.filter(function(e){ return new Date(e.time).getTime() >= fromTs; });
+    }
+    if(window._auditDateTo){
+      var toTs = new Date(window._auditDateTo+'T23:59:59').getTime();
+      data = data.filter(function(e){ return new Date(e.time).getTime() <= toTs; });
+    }
+    suffix = (window._auditDateFrom||'start')+'_'+(window._auditDateTo||'end');
+  }
+  if(!data.length){ showToast(CL('no_log')); return; }
   var csvRows = ['Time,User,Action,Detail,IP'];
-  log.forEach(function(e){
+  data.forEach(function(e){
     var row = [
       '"'+(e.time||'').replace(/"/g,'""')+'"',
       '"'+(e.user||'').replace(/"/g,'""')+'"',
@@ -2579,7 +2648,7 @@ window._cmsExportAuditCsv = function(){
   var url = URL.createObjectURL(blob);
   var a = document.createElement('a');
   a.href = url;
-  a.download = 'audit_log_'+new Date().toISOString().slice(0,10)+'.csv';
+  a.download = 'audit_log_'+suffix+'_'+new Date().toISOString().slice(0,10)+'.csv';
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);

@@ -1478,7 +1478,7 @@ window._adminLogin = function(e){
       btn.textContent = CL('login');
       return;
     }
-    if(matched){
+    if(matched && !matched.error){
       // Check if 2FA is enabled for this user
       var cfg2fa = get2FAConfig();
       var userSecret = cfg2fa[matched.username||user];

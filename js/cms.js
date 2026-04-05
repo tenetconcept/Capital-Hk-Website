@@ -2665,9 +2665,7 @@ window._cmsHomeView = function(){
   var lang = window.currentLang || 'zh-Hant';
   var ch = window.getCmsHome ? window.getCmsHome() : {};
 
-  function gv(sec, field){ return (ch[sec] && ch[sec][lang] && ch[sec][lang][field]) || ''; }
-
-  // Default values for placeholders
+  // Default values — shown as initial content when no CMS override saved
   var defaults = {
     hero: {
       badge: lang==='en'?'SFC Licensed':(lang==='zh-Hans'?'香港证监会持牌':'香港證監會持牌'),
@@ -2679,6 +2677,8 @@ window._cmsHomeView = function(){
     svc3: { label: lang==='en'?'Futures & Options':(lang==='zh-Hans'?'期货及期权':'期貨及期權'), title: lang==='en'?'Futures & Options Trading':(lang==='zh-Hans'?'期货及期权交易服务':'期貨及期權交易服務'), desc: lang==='en'?'Trade futures and options on major exchanges.':(lang==='zh-Hans'?'透过专业 Sharp Point 交易平台，交易主要交易所的期货及期权。':'透過專業 Sharp Point 交易平台，交易主要交易所的期貨及期權。'), img: 'images/ecap-svc-futures.png' },
     cta: { title: lang==='en'?'Open Your Account Today':(lang==='zh-Hans'?'立即开户 把握投资先机':'立即開戶 把握投資先機'), desc: lang==='en'?'Start trading in Hong Kong, Shanghai and global markets with Capital Securities.':(lang==='zh-Hans'?'群益证券为您提供港股、A股及环球市场交易服务。':'群益證券為您提供港股、A股及環球市場交易服務。') }
   };
+
+  function gv(sec, field){ return (ch[sec] && ch[sec][lang] && ch[sec][lang][field]) || (defaults[sec] && defaults[sec][field]) || ''; }
 
   function sectionAccordion(id, titleKey, bodyHtml){
     return '<div class="cms-home-sec">'

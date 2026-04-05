@@ -192,6 +192,8 @@ body.cms-active .cms-sidebar{top:var(--nav-h);height:calc(100vh - var(--nav-h))}
 .dnd-handle{cursor:grab;color:var(--text-muted);padding:0 6px;font-size:18px;flex-shrink:0;user-select:none;opacity:.45;transition:opacity .15s;line-height:1;align-self:center}
 .dnd-handle:hover{opacity:.9}
 .dnd-handle:active{cursor:grabbing}
+[draggable="true"]{cursor:grab}
+[draggable="true"] input,[draggable="true"] textarea,[draggable="true"] select,[draggable="true"] button,[draggable="true"] .admin-btn{cursor:revert}
 [draggable].dnd-dragging{opacity:.35!important;box-shadow:0 4px 16px rgba(0,0,0,.15)}
 [draggable].dnd-over{outline:2px solid var(--brand);outline-offset:2px}
 

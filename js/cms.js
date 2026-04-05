@@ -18,14 +18,16 @@ function _loadCKEditor(cb){
 }
 
 // ————— Drag-and-drop list reordering —————
-// Attach native HTML5 DnD to a list container. Items must have class dnd-handle inside them.
+// Attach native HTML5 DnD to a list container. Direct children with draggable="true" become sortable.
 // onSwap(fromIdx, toIdx) is called when user drops one item onto another.
 function _cmsDndInit(listEl, onSwap){
   if(!listEl) return;
   var dragSrc = null;
   function attach(el){
     el.addEventListener('dragstart', function(e){
-      if(!e.target.closest('.dnd-handle')){ e.preventDefault(); return; }
+      // Skip if drag started from an input/textarea/select/button (let native behaviour handle those)
+      var tag = (e.target.tagName||'').toLowerCase();
+      if(tag === 'input' || tag === 'textarea' || tag === 'select' || tag === 'button') return;
       dragSrc = el;
       e.dataTransfer.effectAllowed = 'move';
       setTimeout(function(){ el.classList.add('dnd-dragging'); }, 0);
@@ -93,6 +95,48 @@ function _cmsCkUploadPlugin(editor){
   }catch(e){ console.warn('CKEditor upload adapter error:', e); }
 }
 
+// ————— CKEditor: upload any file (doc/pdf/ppt/img) and insert into editor —————
+window._cmsCkFileUpload = function(input, taId){
+  var file = input && input.files && input.files[0];
+  if(!file){ return; }
+  if(file.size > 2*1024*1024){ showToast('Max 2 MB'); input.value=''; return; }
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var url = e.target.result;
+    // Save to CMS file library
+    var files = getCmsFiles();
+    files.push({
+      id: 'f'+Date.now()+Math.random().toString(36).substr(2,4),
+      name: file.name, desc: '', type: file.type||'application/octet-stream', size: file.size,
+      url: url, isLocal: true,
+      uploadedAt: new Date().toISOString(),
+      uploadedBy: sessionStorage.getItem('ecap_admin_user')||'admin'
+    });
+    saveCmsFiles(files);
+    // Insert into CKEditor
+    var editor = _cmsEditors[taId];
+    if(!editor){ showToast('Editor not ready'); input.value=''; return; }
+    var isImg = /\.(jpe?g|png|gif|webp|svg)$/i.test(file.name) || (file.type && file.type.indexOf('image/') === 0);
+    var snippet;
+    if(isImg){
+      snippet = '<img src="'+url+'" alt="'+file.name.replace(/"/g,'&quot;')+'" style="max-width:100%;height:auto"/>';
+    } else {
+      snippet = '<a href="'+url+'" download="'+file.name.replace(/"/g,'&quot;')+'">'+file.name.replace(/</g,'&lt;')+'</a>';
+    }
+    try{
+      var viewFragment = editor.data.processor.toView(snippet);
+      var modelFragment = editor.data.toModel(viewFragment);
+      editor.model.insertContent(modelFragment);
+    }catch(err){
+      // Fallback: set full data
+      editor.setData(editor.getData() + snippet);
+    }
+    showToast(CL('saved') + file.name);
+    input.value = '';
+  };
+  reader.readAsDataURL(file);
+};
+
 // ————— CMS i18n —————
 var CMS_I18N = {
   // Login
@@ -151,7 +195,8 @@ var CMS_I18N = {
   // Page editor
   title_label:     {en:'Title', hans:'标题', hant:'標題'},
   body_label:      {en:'Body (HTML)', hans:'正文 (HTML)', hant:'正文 (HTML)'},
-  insert_dl:       {en:'Insert Download Link', hans:'插入下载链接', hant:'插入下載連結'},
+  insert_dl:       {en:'Insert from Library', hans:'从文件库插入', hant:'從檔案庫插入'},
+  upload_insert:   {en:'Upload & Insert', hans:'上传并插入', hant:'上傳並插入'},
   read_only:       {en:'Read-only', hans:'只读', hant:'唯讀'},
   save_changes:    {en:'Save Changes', hans:'保存修改', hant:'儲存變更'},
   view_page:       {en:'View Page', hans:'查看页面', hant:'查看頁面'},
@@ -1397,12 +1442,15 @@ window._cmsEditPage = function(slug){
         editor.model.document.on('change:data', function(){
           window._cmsLivePreview(slug);
         });
-        // Inject "Insert from Library" file bar below CKEditor
+        // Inject file bar below CKEditor: "Insert from Library" + "Upload & Insert"
         var wrapDiv = document.getElementById(taId+'_wrap');
         if(wrapDiv){
           var bar = document.createElement('div');
           bar.className = 'cms-ck-filebar';
-          bar.innerHTML = '<button type="button" class="cms-insert-file-btn" data-slug="'+escAttr(slug)+'" data-lang="'+escAttr(lang)+'" onclick="event.preventDefault();event.stopPropagation();window._cmsShowFilePicker(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg> '+CL('insert_dl')+'</button>';
+          var _fid = 'cmsCkFile_'+taId.replace(/[^a-zA-Z0-9_]/g,'');
+          bar.innerHTML = '<button type="button" class="cms-insert-file-btn" data-slug="'+escAttr(slug)+'" data-lang="'+escAttr(lang)+'" onclick="event.preventDefault();event.stopPropagation();window._cmsShowFilePicker(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg> '+CL('insert_dl')+'</button>'
+            +'<button type="button" class="cms-insert-file-btn" onclick="document.getElementById(\''+_fid+'\').click()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> '+CL('upload_insert')+'</button>'
+            +'<input type="file" id="'+_fid+'" accept=".jpg,.jpeg,.png,.webp,.gif,.svg,.pdf,.doc,.docx,.ppt,.pptx" style="display:none" onchange="window._cmsCkFileUpload(this,\''+escAttr(taId)+'\')">';
           wrapDiv.appendChild(bar);
         }
       }).catch(function(err){

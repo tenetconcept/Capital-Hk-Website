@@ -7,7 +7,7 @@ body.cms-active .utility-bar,
 body.cms-active .nav-bar,
 body.cms-active .mobile-menu,
 body.cms-active .nav-cta{display:none}
-body.cms-active .nav{border-bottom:1px solid rgba(0,0,0,.06)}
+body.cms-active .nav{border-bottom:1px solid rgba(0,0,0,.06);background:var(--white);position:sticky;top:0;z-index:1000}
 body.cms-active .cms-layout{min-height:calc(100vh - var(--nav-h))}
 body.cms-active .cms-sidebar{top:var(--nav-h);height:calc(100vh - var(--nav-h))}
 body.cms-active .cms-sticky-top{top:var(--nav-h)}

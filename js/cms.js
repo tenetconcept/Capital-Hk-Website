@@ -572,9 +572,35 @@ var CMS_I18N = {
   tz_custom:       {en:'Custom', hans:'自定义', hant:'自訂'},
   utc_offset:      {en:'UTC Offset', hans:'UTC偏移', hant:'UTC偏移'},
   cms_mobile_block:{en:'CMS is only available on desktop devices. Please use a computer to access the management system.', hans:'CMS仅在桌面设备上可用。请使用电脑访问管理系统。', hant:'CMS僅在桌面裝置上可用。請使用電腦存取管理系統。'},
-  go_home:         {en:'Go to Homepage', hans:'返回首页', hant:'返回首頁'}
+  go_home:         {en:'Go to Homepage', hans:'返回首页', hant:'返回首頁'},
+  export_json:     {en:'Export', hans:'导出', hant:'匯出'},
+  import_json:     {en:'Import', hans:'导入', hant:'匯入'},
+  reset_data:      {en:'Reset', hans:'重置', hant:'重設'},
+  nav_menu_desc:   {en:'Manage website menu items — drag to reorder, click edit to change labels & links', hans:'管理网站菜单项目 — 拖动排序，点击编辑更改标签及链接', hant:'管理網站選單項目 — 拖動排序，點擊編輯更改標籤及連結'}
 };
 function CL(key){ var lang=window.currentLang||'zh-Hant'; var e=CMS_I18N[key]; if(!e) return key; if(lang==='en') return e.en; if(lang==='zh-Hans') return e.hans; return e.hant; }
+
+// ————— Dynamic header action buttons —————
+// Updates the CMS header bar actions based on current context
+window._cmsUpdateHeaderActions = function(btns){
+  var el = document.getElementById('cmsHeaderActions');
+  if(!el) return;
+  el.innerHTML = btns || '';
+};
+
+// ————— Page transition helper —————
+window._cmsTransition = function(targetEl){
+  if(!targetEl) return;
+  targetEl.style.opacity = '0';
+  targetEl.style.transform = 'translateY(8px)';
+  targetEl.style.transition = 'opacity .25s ease, transform .25s ease';
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      targetEl.style.opacity = '1';
+      targetEl.style.transform = 'translateY(0)';
+    });
+  });
+};
 
 var CMS_KEY = "ecap_cms_pages";
 var CMS_FILES_KEY = "ecap_cms_files";
@@ -1007,14 +1033,10 @@ function adminView(){
     +'<div class="cms-main">'
     // Sticky wrapper for header + section bar
     +'<div class="cms-sticky-top">'
-    // Compact header: logo text + user info only
+    // Compact header: logo text + dynamic action bar + user info
     +'<div class="cms-main-header"><h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>'+CL('cms_title')+'</h3>'
     +'<div class="cms-header-acts">'
-    +'<div class="cms-lang-switch">'
-    +'<button class="cms-lang-btn'+(window.currentLang==='zh-Hant'?' active':'')+'" onclick="window.setLang(\'zh-Hant\')">繁</button>'
-    +'<button class="cms-lang-btn'+(window.currentLang==='zh-Hans'?' active':'')+'" onclick="window.setLang(\'zh-Hans\')">简</button>'
-    +'<button class="cms-lang-btn'+(window.currentLang==='en'?' active':'')+'" onclick="window.setLang(\'en\')">EN</button>'
-    +'</div>'
+    +'<div id="cmsHeaderActions" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"></div>'
     +'<div class="cms-avatar-wrap" style="margin-left:4px;position:relative">'
     +'<button class="cms-avatar-btn" onclick="window._cmsToggleAvatarMenu()" style="display:flex;align-items:center;gap:6px;padding:4px 10px;border:1.5px solid var(--border);border-radius:100px;background:var(--white);cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;color:var(--text)">'
     +'<span style="width:28px;height:28px;border-radius:50%;background:var(--brand-gradient);color:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700">'+(sessionStorage.getItem("ecap_admin_user")||"A")[0].toUpperCase()+'</span>'
@@ -1045,10 +1067,10 @@ function adminView(){
     +'</div>'
     // Tools on right side of section bar
     +(_canExport ? '<div class="cms-section-tools">'
-    +'<button class="cms-tool-btn" onclick="window._cmsExport()" title="匯出"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></button>'
-    +'<button class="cms-tool-btn" onclick="document.getElementById(\'cmsImportFile\').click()" title="匯入"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></button>'
+    +'<button class="cms-tool-btn" onclick="window._cmsExport()" title="'+CL('export_json')+'" style="width:auto;padding:0 8px;gap:4px;font-size:11px;font-weight:600"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> '+CL('export_json')+'</button>'
+    +'<button class="cms-tool-btn" onclick="document.getElementById(\'cmsImportFile\').click()" title="'+CL('import_json')+'" style="width:auto;padding:0 8px;gap:4px;font-size:11px;font-weight:600"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> '+CL('import_json')+'</button>'
     +'<input type="file" id="cmsImportFile" accept=".json" style="display:none" onchange="window._cmsImport(event)"/>'
-    +'<button class="cms-tool-btn" onclick="window._cmsReset()" title="重設">&#x21BA;</button>'
+    +'<button class="cms-tool-btn" onclick="window._cmsReset()" title="'+CL('reset_data')+'" style="width:auto;padding:0 8px;gap:4px;font-size:11px;font-weight:600">&#x21BA; '+CL('reset_data')+'</button>'
     +'</div>' : '')
     +'</div>'
     +'</div>' // close cms-sticky-top
@@ -1435,15 +1457,18 @@ window._cmsEditPage = function(slug){
   var _pgDisplay = getPage(slug, currentLang);
   var _pageTitle = (_pgDisplay && _pgDisplay.title) ? _pgDisplay.title : slug;
 
-  // Sticky toolbar (matches homepage editor pattern)
-  var html = '<div style="position:sticky;top:0;z-index:5;background:var(--bg-body);padding:12px 0 10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;border-bottom:1px solid rgba(0,0,0,.06);margin-bottom:16px">'
+  // Update header bar actions
+  window._cmsUpdateHeaderActions(
+    '<button class="admin-btn secondary" style="font-size:12px;padding:5px 10px" onclick="window._cmsCkHelp()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> '+CL('ck_help')+'</button>'
+    +(_canEditPages ? '<button class="admin-btn primary" onclick="window._cmsSavePage(\''+slug+'\')">'+CL('save_changes')+'</button>' : '')
+    +'<a href="#/page/'+esc(slug)+'" target="_blank" class="admin-btn secondary" style="text-decoration:none;display:inline-flex;align-items:center">'+CL('view_page')+'</a>'
+  );
+
+  // Page title heading (not sticky — actions are in the header bar now)
+  var html = '<div style="padding:12px 0 10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;border-bottom:1px solid rgba(0,0,0,.06);margin-bottom:16px">'
     +'<div><h3 style="font-size:20px;font-weight:700;margin:0">'+esc(_pageTitle)+'</h3>'
     +'<span style="font-size:11px;color:var(--text-muted);font-family:monospace">/'+esc(slug)+'</span></div>'
-    +'<div style="display:flex;gap:8px;align-items:center">'
-    +'<button class="admin-btn secondary" style="font-size:12px;padding:5px 10px" onclick="window._cmsCkHelp()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> '+CL('ck_help')+'</button>'
-    +(_canEditPages ? '<button class="admin-btn primary" onclick="window._cmsSavePage(\''+slug+'\')">'+CL('save_changes')+'</button>' : '<span style="font-size:12px;color:var(--text-muted)">'+CL('viewer_nosave')+'</span>')
-    +'<a href="#/page/'+esc(slug)+'" target="_blank" class="admin-btn secondary" style="text-decoration:none;display:inline-flex;align-items:center">'+CL('view_page')+'</a>'
-    +'</div></div>';
+    +'</div>';
 
   langs.forEach(function(lang){
     var pg = getPage(slug, lang);
@@ -1686,6 +1711,8 @@ window._cmsSectionSwitch = function(sec){
   });
   var sidebar = document.querySelector(".cms-sidebar");
   if(sidebar) sidebar.style.display = sec==="pages" ? "" : "none";
+  // Clear header actions (each view will set its own)
+  window._cmsUpdateHeaderActions('');
   if(sec==="pages") {
     document.getElementById("cmsEditor").innerHTML = '<div class="cms-empty"><div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><p>'+CL('select_page')+'</p></div>';
   } else if(sec==="files") {
@@ -1701,6 +1728,9 @@ window._cmsSectionSwitch = function(sec){
   } else if(sec==="nav") {
     window._cmsNavStandaloneView();
   }
+  // Animate the editor area
+  var edArea = document.getElementById('cmsEditor');
+  if(edArea) window._cmsTransition(edArea);
 };
 
 // ————————————————————— CMS FILES MANAGER —————————————————————
@@ -3058,16 +3088,19 @@ window._cmsHomeView = function(){
   // Escape for safe embedding in onclick attribute strings
   function escQ(s){ return s.replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
 
-  // Build HTML — sticky title bar with inline expand/collapse + save
+  // Build HTML — update header bar actions
+  window._cmsUpdateHeaderActions(
+    '<button class="admin-btn secondary" style="font-size:12px;padding:5px 10px" onclick="window._cmsCkHelp()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> '+CL('ck_help')+'</button>'
+    +'<button class="admin-btn primary" style="font-size:13px" onclick="window._cmsHomeSave()">'+CL('save_changes')+'</button>'
+    +'<a href="#/" target="_blank" class="admin-btn secondary" style="text-decoration:none;display:inline-flex;align-items:center;font-size:13px">'+CL('view_page')+'</a>'
+  );
+
   var html = '<div class="cms-panel" style="max-width:none">'
-    +'<div style="position:sticky;top:0;z-index:5;background:var(--bg-body);padding:12px 0 10px;margin:-4px 0 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--border-light)">'
+    +'<div style="padding:8px 0 10px;display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--border-light);margin-bottom:12px">'
     +'<h3 style="font-size:17px;font-weight:700;margin:0;white-space:nowrap">'+CL('tab_home')+'</h3>'
     +'<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">'
     +'<button class="admin-btn secondary" style="font-size:12px;padding:5px 12px" onclick="document.querySelectorAll(\'.cms-home-sec\').forEach(function(s){s.classList.add(\'open\')})">'+CL('expand_all')+'</button>'
     +'<button class="admin-btn secondary" style="font-size:12px;padding:5px 12px" onclick="document.querySelectorAll(\'.cms-home-sec\').forEach(function(s){s.classList.remove(\'open\')})">'+CL('collapse_all')+'</button>'
-    +'<button class="admin-btn secondary" style="font-size:12px;padding:5px 10px" onclick="window._cmsCkHelp()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> '+CL('ck_help')+'</button>'
-    +'<button class="admin-btn primary" style="font-size:13px" onclick="window._cmsHomeSave()">'+CL('save_changes')+'</button>'
-    +'<a href="#/" target="_blank" class="admin-btn secondary" style="text-decoration:none;display:inline-flex;align-items:center;font-size:13px">'+CL('view_page')+'</a>'
     +'</div></div>';
 
   // ========== Section Order (not language-dependent) ==========
@@ -3490,7 +3523,7 @@ window._cmsHomeSave = function(){
 // Render full banner manager into a container (for homepage editor accordion)
 function _cmsRenderBannersFull(container){
   var banners = getCmsBanners();
-  // Show hardcoded defaults if no banners saved (matches public bannerSection fallback)
+  // Persist hardcoded defaults to localStorage if none saved yet
   if(!banners.length){
     var _cl = window.currentLang || 'zh-Hant';
     var _L = function(en,hans,hant){ return _cl==='en'?en:(_cl==='zh-Hans'?hans:hant); };
@@ -3499,6 +3532,7 @@ function _cmsRenderBannersFull(container){
       { img: 'images/ecap-banner-2.png', alt: _L('Stock Connect', '沪港通服务', '滬港通服務'), link: '#/page/shh-hk' },
       { img: 'images/ecap-banner-3.png', alt: _L('Open Account', '开立帐户', '開立帳戶'), link: '#/page/stock-account-opening' }
     ];
+    saveCmsBanners(banners);
   }
   var _canUpload = _cmsHasPermission("upload");
   var _noImgSrc = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='68'%3E%3Crect width='120' height='68' fill='%23f3f4f6'/%3E%3Ctext x='60' y='38' text-anchor='middle' fill='%23bbb' font-size='11' font-family='sans-serif'%3ENo Image%3C/text%3E%3C/svg%3E";
@@ -4090,44 +4124,60 @@ window._cmsCkHelp = function(){
   var existing = document.getElementById('cmsCkHelpModal');
   if(existing){ existing.remove(); return; }
   var lang = window.currentLang || 'zh-Hant';
+  // SVG icon snippets matching the CKEditor toolbar
+  var ic = {
+    bold: '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:-2px"><path d="M6 4h8a4 4 0 014 4 4 4 0 01-4 4H6z"/><path d="M6 12h9a4 4 0 014 4 4 4 0 01-4 4H6z"/></svg>',
+    italic: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg>',
+    link: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>',
+    img: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>',
+    ul: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>',
+    ol: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>',
+    table: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>',
+    heading: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M6 4v16"/><path d="M18 4v16"/><path d="M6 12h12"/></svg>',
+    upload: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>',
+    source: '<span style="font-family:monospace;font-weight:700;font-size:12px;border:1px solid var(--border);border-radius:3px;padding:0 4px">&lt;/&gt;</span>',
+    undo: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>',
+    redo: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>'
+  };
+  function badge(icon){ return '<span style="display:inline-flex;align-items:center;gap:3px;background:var(--bg-light);border:1px solid var(--border);border-radius:4px;padding:2px 6px;font-size:12px;vertical-align:middle">'+icon+'</span>'; }
   var content = {
     'zh-Hant': {
       title: 'CKEditor 使用指南',
       sections: [
-        {h:'基本格式',items:['<b>粗體</b> — 選取文字後點擊 <b>B</b> 或按 Ctrl+B','<i>斜體</i> — 選取文字後點擊 <i>I</i> 或按 Ctrl+I','標題 — 使用工具列「Heading」下拉選單選擇 H2 / H3 / H4']},
-        {h:'插入連結',items:['選取文字 → 點擊工具列 🔗 連結圖示','輸入網址（如 https://... 或 #/page/slug）','按 Enter 確認']},
-        {h:'插入圖片',items:['方法一：點擊工具列「圖片上傳」圖示，選擇圖片檔案','方法二：直接將圖片拖放到編輯區域','方法三：複製圖片後在編輯區按 Ctrl+V 貼上','圖片會自動上傳並保存到檔案庫']},
-        {h:'插入文件（PDF / DOC / PPT）',items:['點擊工具列「上傳並插入」按鈕','選擇文件（支援 PDF、DOC、DOCX、PPT、PPTX）','文件會以下載連結形式插入到內容中']},
-        {h:'從檔案庫插入',items:['點擊工具列「從檔案庫插入」按鈕','從已上傳的檔案中選擇','圖片會以 &lt;img&gt; 標籤插入，文件會以下載連結插入']},
-        {h:'清單與表格',items:['項目符號清單 — 點擊工具列清單圖示','編號清單 — 點擊工具列編號清單圖示','表格 — 點擊「插入表格」選擇行列數']},
-        {h:'原始碼模式',items:['點擊編輯區上方的「&lt;/&gt; Source」按鈕可切換原始碼模式','可直接編輯 HTML 原始碼','再次點擊切換回視覺編輯模式']},
-        {h:'快捷鍵',items:['Ctrl+B — 粗體','Ctrl+I — 斜體','Ctrl+Z — 復原','Ctrl+Y — 重做','Ctrl+K — 插入連結']}
+        {h:'基本格式',items:[badge(ic.bold)+' <b>粗體</b> — 選取文字後點擊或按 Ctrl+B',badge(ic.italic)+' <i>斜體</i> — 選取文字後點擊或按 Ctrl+I',badge(ic.heading)+' 標題 — 使用「Heading」下拉選單選擇 H2 / H3 / H4']},
+        {h:'插入連結',items:[badge(ic.link)+' 選取文字 → 點擊連結圖示','輸入網址（如 https://... 或 #/page/slug）','按 Enter 確認']},
+        {h:'插入圖片',items:[badge(ic.img)+' 點擊「圖片上傳」圖示，選擇圖片檔案','直接將圖片拖放到編輯區域','複製圖片後在編輯區按 Ctrl+V 貼上','圖片會自動上傳並保存到檔案庫']},
+        {h:'插入文件（PDF / DOC / PPT）',items:[badge(ic.upload)+' 點擊「上傳並插入」按鈕','選擇文件（支援 PDF、DOC、DOCX、PPT、PPTX）','文件會以下載連結形式插入到內容中']},
+        {h:'從檔案庫插入',items:['點擊「從檔案庫插入」按鈕','從已上傳的檔案中選擇','圖片會以 &lt;img&gt; 標籤插入，文件會以下載連結插入']},
+        {h:'清單與表格',items:[badge(ic.ul)+' 項目符號清單',badge(ic.ol)+' 編號清單',badge(ic.table)+' 表格 — 點擊「插入表格」選擇行列數']},
+        {h:'原始碼模式',items:[badge(ic.source)+' 點擊編輯區上方的「Source」按鈕可切換原始碼模式','可直接編輯 HTML 原始碼','再次點擊切換回視覺編輯模式']},
+        {h:'快捷鍵',items:['<kbd>Ctrl+B</kbd> — 粗體','<kbd>Ctrl+I</kbd> — 斜體','<kbd>Ctrl+Z</kbd> — '+badge(ic.undo)+' 復原','<kbd>Ctrl+Y</kbd> — '+badge(ic.redo)+' 重做','<kbd>Ctrl+K</kbd> — '+badge(ic.link)+' 插入連結']}
       ]
     },
     'zh-Hans': {
       title: 'CKEditor 使用指南',
       sections: [
-        {h:'基本格式',items:['<b>粗体</b> — 选取文字后点击 <b>B</b> 或按 Ctrl+B','<i>斜体</i> — 选取文字后点击 <i>I</i> 或按 Ctrl+I','标题 — 使用工具栏「Heading」下拉菜单选择 H2 / H3 / H4']},
-        {h:'插入链接',items:['选取文字 → 点击工具栏 🔗 链接图标','输入网址（如 https://... 或 #/page/slug）','按 Enter 确认']},
-        {h:'插入图片',items:['方法一：点击工具栏「图片上传」图标，选择图片文件','方法二：直接将图片拖放到编辑区域','方法三：复制图片后在编辑区按 Ctrl+V 粘贴','图片会自动上传并保存到文件库']},
-        {h:'插入文件（PDF / DOC / PPT）',items:['点击工具栏「上传并插入」按钮','选择文件（支持 PDF、DOC、DOCX、PPT、PPTX）','文件会以下载链接形式插入到内容中']},
-        {h:'从文件库插入',items:['点击工具栏「从文件库插入」按钮','从已上传的文件中选择','图片会以 &lt;img&gt; 标签插入，文件会以下载链接插入']},
-        {h:'列表与表格',items:['项目符号列表 — 点击工具栏列表图标','编号列表 — 点击工具栏编号列表图标','表格 — 点击「插入表格」选择行列数']},
-        {h:'源代码模式',items:['点击编辑区上方的「&lt;/&gt; Source」按钮可切换源代码模式','可直接编辑 HTML 源代码','再次点击切换回视觉编辑模式']},
-        {h:'快捷键',items:['Ctrl+B — 粗体','Ctrl+I — 斜体','Ctrl+Z — 撤销','Ctrl+Y — 重做','Ctrl+K — 插入链接']}
+        {h:'基本格式',items:[badge(ic.bold)+' <b>粗体</b> — 选取文字后点击或按 Ctrl+B',badge(ic.italic)+' <i>斜体</i> — 选取文字后点击或按 Ctrl+I',badge(ic.heading)+' 标题 — 使用「Heading」下拉菜单选择 H2 / H3 / H4']},
+        {h:'插入链接',items:[badge(ic.link)+' 选取文字 → 点击链接图标','输入网址（如 https://... 或 #/page/slug）','按 Enter 确认']},
+        {h:'插入图片',items:[badge(ic.img)+' 点击「图片上传」图标，选择图片文件','直接将图片拖放到编辑区域','复制图片后在编辑区按 Ctrl+V 粘贴','图片会自动上传并保存到文件库']},
+        {h:'插入文件（PDF / DOC / PPT）',items:[badge(ic.upload)+' 点击「上传并插入」按钮','选择文件（支持 PDF、DOC、DOCX、PPT、PPTX）','文件会以下载链接形式插入到内容中']},
+        {h:'从文件库插入',items:['点击「从文件库插入」按钮','从已上传的文件中选择','图片会以 &lt;img&gt; 标签插入，文件会以下载链接插入']},
+        {h:'列表与表格',items:[badge(ic.ul)+' 项目符号列表',badge(ic.ol)+' 编号列表',badge(ic.table)+' 表格 — 点击「插入表格」选择行列数']},
+        {h:'源代码模式',items:[badge(ic.source)+' 点击编辑区上方的「Source」按钮可切换源代码模式','可直接编辑 HTML 源代码','再次点击切换回视觉编辑模式']},
+        {h:'快捷键',items:['<kbd>Ctrl+B</kbd> — 粗体','<kbd>Ctrl+I</kbd> — 斜体','<kbd>Ctrl+Z</kbd> — '+badge(ic.undo)+' 撤销','<kbd>Ctrl+Y</kbd> — '+badge(ic.redo)+' 重做','<kbd>Ctrl+K</kbd> — '+badge(ic.link)+' 插入链接']}
       ]
     },
     'en': {
       title: 'CKEditor Usage Guide',
       sections: [
-        {h:'Basic Formatting',items:['<b>Bold</b> — Select text and click <b>B</b> or press Ctrl+B','<i>Italic</i> — Select text and click <i>I</i> or press Ctrl+I','Headings — Use the "Heading" dropdown in the toolbar to select H2 / H3 / H4']},
-        {h:'Insert Links',items:['Select text → Click the 🔗 link icon in the toolbar','Enter URL (e.g. https://... or #/page/slug)','Press Enter to confirm']},
-        {h:'Insert Images',items:['Method 1: Click the "Image Upload" icon in the toolbar, select an image file','Method 2: Drag and drop an image directly into the editor','Method 3: Copy an image and press Ctrl+V to paste','Images are automatically uploaded and saved to the file library']},
-        {h:'Insert Documents (PDF / DOC / PPT)',items:['Click the "Upload & Insert" button in the toolbar','Select a file (supports PDF, DOC, DOCX, PPT, PPTX)','The file will be inserted as a download link']},
-        {h:'Insert from Library',items:['Click the "Insert from Library" button in the toolbar','Choose from previously uploaded files','Images are inserted as &lt;img&gt; tags, documents as download links']},
-        {h:'Lists & Tables',items:['Bullet list — Click the list icon in the toolbar','Numbered list — Click the numbered list icon','Table — Click "Insert Table" and choose rows/columns']},
-        {h:'Source Code Mode',items:['Click the "&lt;/&gt; Source" button above the editor to toggle source mode','You can edit HTML source code directly','Click again to switch back to visual editing mode']},
-        {h:'Keyboard Shortcuts',items:['Ctrl+B — Bold','Ctrl+I — Italic','Ctrl+Z — Undo','Ctrl+Y — Redo','Ctrl+K — Insert link']}
+        {h:'Basic Formatting',items:[badge(ic.bold)+' <b>Bold</b> — Select text and click or press Ctrl+B',badge(ic.italic)+' <i>Italic</i> — Select text and click or press Ctrl+I',badge(ic.heading)+' Headings — Use the "Heading" dropdown to select H2 / H3 / H4']},
+        {h:'Insert Links',items:[badge(ic.link)+' Select text → Click the link icon','Enter URL (e.g. https://... or #/page/slug)','Press Enter to confirm']},
+        {h:'Insert Images',items:[badge(ic.img)+' Click the "Image Upload" icon, select an image file','Drag and drop an image directly into the editor','Copy an image and press Ctrl+V to paste','Images are automatically uploaded and saved to the file library']},
+        {h:'Insert Documents (PDF / DOC / PPT)',items:[badge(ic.upload)+' Click the "Upload & Insert" button','Select a file (supports PDF, DOC, DOCX, PPT, PPTX)','The file will be inserted as a download link']},
+        {h:'Insert from Library',items:['Click the "Insert from Library" button','Choose from previously uploaded files','Images are inserted as &lt;img&gt; tags, documents as download links']},
+        {h:'Lists & Tables',items:[badge(ic.ul)+' Bullet list',badge(ic.ol)+' Numbered list',badge(ic.table)+' Table — Click "Insert Table" and choose rows/columns']},
+        {h:'Source Code Mode',items:[badge(ic.source)+' Click the "Source" button above the editor to toggle source mode','You can edit HTML source code directly','Click again to switch back to visual editing mode']},
+        {h:'Keyboard Shortcuts',items:['<kbd>Ctrl+B</kbd> — Bold','<kbd>Ctrl+I</kbd> — Italic','<kbd>Ctrl+Z</kbd> — '+badge(ic.undo)+' Undo','<kbd>Ctrl+Y</kbd> — '+badge(ic.redo)+' Redo','<kbd>Ctrl+K</kbd> — '+badge(ic.link)+' Insert link']}
       ]
     }
   };
@@ -4135,7 +4185,7 @@ window._cmsCkHelp = function(){
   var bodyHtml = '';
   c.sections.forEach(function(s){
     bodyHtml += '<h3 style="font-size:15px;font-weight:700;margin:18px 0 8px;color:var(--brand)">'+s.h+'</h3><ul style="margin:0 0 8px;padding-left:20px">';
-    s.items.forEach(function(item){ bodyHtml += '<li style="margin-bottom:5px;font-size:13px;line-height:1.6">'+item+'</li>'; });
+    s.items.forEach(function(item){ bodyHtml += '<li style="margin-bottom:5px;font-size:13px;line-height:1.8">'+item+'</li>'; });
     bodyHtml += '</ul>';
   });
   var overlay = document.createElement('div');
@@ -4163,50 +4213,63 @@ window._cmsNavStandaloneView = function(){
 
   function escQ(s){ return s.replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
 
-  var html = '<div class="cms-panel" style="max-width:none">'
-    +'<div style="position:sticky;top:0;z-index:5;background:var(--bg-body);padding:12px 0 10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;border-bottom:1px solid rgba(0,0,0,.06);margin-bottom:16px">'
-    +'<div><h3 style="font-size:20px;font-weight:700;margin:0">'+CL('home_nav')+'</h3>'
-    +'<span style="font-size:11px;color:var(--text-muted)">'+CL('tab_nav_desc')+'</span></div>'
-    +'<div style="display:flex;gap:8px;align-items:center">'
-    +'<button class="admin-btn primary" onclick="window._cmsNavSave();showToast(CL(\'saved\')+ CL(\'home_nav\'))">'+CL('save_changes')+'</button>'
+  // Update header bar actions
+  window._cmsUpdateHeaderActions(
+    '<button class="admin-btn primary" onclick="window._cmsNavSave();showToast(CL(\'saved\')+\' \'+CL(\'home_nav\'))">'+CL('save_changes')+'</button>'
     +'<button class="admin-btn danger" style="font-size:12px" onclick="if(confirm(CL(\'nav_reset_q\'))){saveCmsNav({});window._cmsNavStandaloneView();}">'+CL('nav_reset')+'</button>'
-    +'</div></div>';
+  );
 
-  html += '<p style="font-size:11px;color:var(--text-muted);margin:0 0 12px;display:flex;align-items:center;gap:4px"><span class="dnd-handle" style="font-size:14px;padding:0">&#x2807;</span>'+CL('dnd_hint')+'</p>';
+  var html = '<div class="cms-panel" style="max-width:none">'
+    +'<div style="padding:8px 0 10px;border-bottom:1px solid rgba(0,0,0,.06);margin-bottom:16px">'
+    +'<h3 style="font-size:20px;font-weight:700;margin:0">'+CL('home_nav')+'</h3>'
+    +'<span style="font-size:12px;color:var(--text-muted)">'+CL('nav_menu_desc')+'</span></div>';
 
   langs.forEach(function(lang){
     var navItems = navData[lang] || (window.SITE && window.SITE.nav ? window.SITE.nav[lang] || window.SITE.nav['zh-Hant'] : []);
     html += '<div class="cms-field-group"><h4>'+escHtml(langNames[lang])+' ('+lang+')</h4>';
     html += '<div id="cmsNavTree_'+lang+'">';
     navItems.forEach(function(item, i){
-      html += '<div class="cms-card-box" style="margin-bottom:6px;padding:10px 14px" draggable="true">'
-        +'<div class="cms-form-row" style="align-items:center;margin-bottom:0">'
+      var hasChildren = item.children && item.children.length;
+      html += '<div class="cms-item-card" style="flex-direction:column;align-items:stretch;padding:12px 16px" draggable="true">'
+        +'<div style="display:flex;align-items:center;gap:10px">'
         +'<span class="dnd-handle" title="Drag to reorder">&#x2807;</span>'
-        +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNL_'+lang+'_'+i+'" value="'+escAttr(item.label)+'" placeholder="'+CL('nav_item_label')+'"/></div>'
-        +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNP_'+lang+'_'+i+'" value="'+escAttr(item.page||item.ext||'')+'" placeholder="'+CL('nav_item_page')+' / '+CL('nav_item_ext')+'"/></div>'
+        +'<span style="font-weight:700;font-size:14px;flex:1;color:var(--text)">'+esc(item.label)+'</span>'
+        +'<span style="font-size:11px;color:var(--text-muted);font-family:monospace">'+esc(item.page||item.ext||'')+'</span>'
+        +(hasChildren ? '<span style="font-size:10px;color:var(--brand);background:rgba(180,21,64,.08);padding:2px 8px;border-radius:100px;font-weight:600">'+item.children.length+' sub</span>' : '')
+        +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="var el=document.getElementById(\'cmsNE_'+lang+'_'+i+'\');el.style.display=el.style.display===\'none\'?\'block\':\'none\'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> '+CL('edit')+'</button>'
         +'<button class="admin-btn danger" style="padding:4px 8px;font-size:11px" onclick="window._cmsRemoveRepeater(\'nav\','+i+',\''+escQ(lang)+'\')">&#10005;</button>'
         +'</div>';
-      if(item.children && item.children.length){
+      // Collapsible edit form
+      html += '<div id="cmsNE_'+lang+'_'+i+'" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border-light)">'
+        +'<div class="cms-form-row">'
+        +'<div class="admin-field" style="flex:1;margin:0"><label style="font-size:11px">'+CL('nav_item_label')+'</label><input type="text" id="cmsNL_'+lang+'_'+i+'" value="'+escAttr(item.label)+'" placeholder="'+CL('nav_item_label')+'"/></div>'
+        +'<div class="admin-field" style="flex:1;margin:0"><label style="font-size:11px">'+CL('nav_item_page')+' / '+CL('nav_item_ext')+'</label><input type="text" id="cmsNP_'+lang+'_'+i+'" value="'+escAttr(item.page||item.ext||'')+'" placeholder="slug or https://..."/></div>'
+        +'</div>';
+      // Sub-items
+      if(hasChildren){
         item.children.forEach(function(ch2, j){
-          html += '<div style="margin-left:24px;margin-top:4px" class="cms-form-row">'
-            +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNC_'+lang+'_'+i+'_'+j+'" value="'+escAttr(ch2.label)+'" placeholder="'+CL('nav_item_label')+'"/></div>'
-            +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNCP_'+lang+'_'+i+'_'+j+'" value="'+escAttr(ch2.page||ch2.ext||'')+'" placeholder="'+CL('nav_item_page')+'"/></div>'
-            +'<button class="admin-btn danger" style="padding:4px 6px;font-size:10px" onclick="window._cmsRemoveRepeater(\'navch_'+i+'\','+j+',\''+escQ(lang)+'\')">&#10005;</button>'
+          html += '<div style="margin-left:20px;margin-top:6px;padding:8px 12px;background:var(--bg-light);border-radius:8px;border:1px solid rgba(0,0,0,.04)">'
+            +'<div class="cms-form-row" style="margin-bottom:0;align-items:center">'
+            +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNC_'+lang+'_'+i+'_'+j+'" value="'+escAttr(ch2.label)+'" placeholder="'+CL('nav_item_label')+'" style="font-size:12px;padding:6px 10px"/></div>'
+            +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNCP_'+lang+'_'+i+'_'+j+'" value="'+escAttr(ch2.page||ch2.ext||'')+'" placeholder="'+CL('nav_item_page')+'" style="font-size:12px;padding:6px 10px"/></div>'
+            +'<button class="admin-btn danger" style="padding:3px 6px;font-size:10px" onclick="window._cmsRemoveRepeater(\'navch_'+i+'\','+j+',\''+escQ(lang)+'\')">&#10005;</button>'
             +'</div>';
           if(ch2.children && ch2.children.length){
             ch2.children.forEach(function(ch3, k){
-              html += '<div style="margin-left:48px;margin-top:2px" class="cms-form-row">'
-                +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNCC_'+lang+'_'+i+'_'+j+'_'+k+'" value="'+escAttr(ch3.label)+'" placeholder="'+CL('nav_item_label')+'"/></div>'
-                +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNCCP_'+lang+'_'+i+'_'+j+'_'+k+'" value="'+escAttr(ch3.page||ch3.ext||'')+'" placeholder="'+CL('nav_item_page')+'"/></div>'
-                +'<button class="admin-btn danger" style="padding:4px 6px;font-size:10px" onclick="window._cmsRemoveRepeater(\'navgch_'+i+'_'+j+'\','+k+',\''+escQ(lang)+'\')">&#10005;</button>'
+              html += '<div style="margin-left:20px;margin-top:4px" class="cms-form-row" style="margin-bottom:0">'
+                +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNCC_'+lang+'_'+i+'_'+j+'_'+k+'" value="'+escAttr(ch3.label)+'" placeholder="'+CL('nav_item_label')+'" style="font-size:11px;padding:5px 8px"/></div>'
+                +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNCCP_'+lang+'_'+i+'_'+j+'_'+k+'" value="'+escAttr(ch3.page||ch3.ext||'')+'" placeholder="'+CL('nav_item_page')+'" style="font-size:11px;padding:5px 8px"/></div>'
+                +'<button class="admin-btn danger" style="padding:2px 5px;font-size:9px" onclick="window._cmsRemoveRepeater(\'navgch_'+i+'_'+j+'\','+k+',\''+escQ(lang)+'\')">&#10005;</button>'
                 +'</div>';
             });
           }
-          html += '<button class="admin-btn secondary" style="font-size:10px;margin-left:48px;margin-top:2px;padding:2px 8px" onclick="window._cmsAddRepeater(\'navgch_'+i+'_'+j+'\',\''+escQ(lang)+'\')">'+CL('nav_add_child')+'</button>';
+          html += '<button class="admin-btn secondary" style="font-size:10px;margin-left:20px;margin-top:4px;padding:2px 8px" onclick="window._cmsAddRepeater(\'navgch_'+i+'_'+j+'\',\''+escQ(lang)+'\')">'+CL('nav_add_child')+'</button>';
+          html += '</div>';
         });
       }
-      html += '<button class="admin-btn secondary" style="font-size:10px;margin-left:24px;margin-top:4px;padding:2px 8px" onclick="window._cmsAddRepeater(\'navch_'+i+'\',\''+escQ(lang)+'\')">'+CL('nav_add_child')+'</button>';
-      html += '</div>';
+      html += '<button class="admin-btn secondary" style="font-size:10px;margin-left:20px;margin-top:6px;padding:2px 8px" onclick="window._cmsAddRepeater(\'navch_'+i+'\',\''+escQ(lang)+'\')">'+CL('nav_add_child')+'</button>';
+      html += '</div>'; // close edit form
+      html += '</div>'; // close card
     });
     html += '</div>';
     html += '<div style="display:flex;gap:8px;margin-top:8px">'

@@ -119,7 +119,7 @@ function _cmsCkUploadPlugin(editor){
 window._cmsCkFileUpload = function(input, taId){
   var file = input && input.files && input.files[0];
   if(!file){ return; }
-  if(file.size > 2*1024*1024){ showToast('Max 2 MB'); input.value=''; return; }
+  if(file.size > 2*1024*1024){ showToast(CL('file_too_big')); input.value=''; return; }
   var reader = new FileReader();
   reader.onload = function(e){
     var rawUrl = e.target.result;
@@ -138,7 +138,7 @@ window._cmsCkFileUpload = function(input, taId){
       saveCmsFiles(files);
       // Insert into CKEditor
       var editor = _cmsEditors[taId];
-      if(!editor){ showToast('Editor not ready'); input.value=''; return; }
+      if(!editor){ showToast(CL('editor_not_ready')); input.value=''; return; }
       var snippet;
       if(isImg){
         snippet = '<img src="'+url+'" alt="'+file.name.replace(/"/g,'&quot;')+'" style="max-width:100%;height:auto"/>';
@@ -237,6 +237,8 @@ var CMS_I18N = {
   body_label:      {en:'Body (HTML)', hans:'正文 (HTML)', hant:'正文 (HTML)'},
   insert_dl:       {en:'Insert from Library', hans:'从文件库插入', hant:'從檔案庫插入'},
   upload_insert:   {en:'Upload & Insert', hans:'上传并插入', hant:'上傳並插入'},
+  file_too_big:    {en:'File too large (max 2 MB)', hans:'文件过大（最大 2 MB）', hant:'檔案過大（最大 2 MB）'},
+  editor_not_ready:{en:'Editor not ready', hans:'编辑器未就绪', hant:'編輯器未就緒'},
   read_only:       {en:'Read-only', hans:'只读', hant:'唯讀'},
   save_changes:    {en:'Save Changes', hans:'保存修改', hant:'儲存變更'},
   view_page:       {en:'View Page', hans:'查看页面', hant:'查看頁面'},
@@ -695,10 +697,17 @@ function checkAdminLogin(username, pass){
   return sha256hex(pass).then(function(hash){
     var users = getCmsUsers();
     if(users.length > 0){
-      var found = users.find(function(u){ return u.username===username && u.hash===hash && u.enabled!==false; });
-      if(found) return {username:found.username, role:found.role||"admin"};
-      var disabled = users.find(function(u){ return u.username===username && u.hash===hash && u.enabled===false; });
-      if(disabled) return {error:"disabled"};
+      // Find user by username first, then verify hash separately for better debugging
+      var userByName = users.find(function(u){ return u.username===username; });
+      if(userByName){
+        if(userByName.enabled===false) return {error:"disabled"};
+        if(userByName.hash===hash) return {username:userByName.username, role:userByName.role||"admin"};
+        // Hash mismatch — also try trimmed password (in case whitespace)
+        return sha256hex(pass.trim()).then(function(h2){
+          if(userByName.hash===h2) return {username:userByName.username, role:userByName.role||"admin"};
+          return null;
+        });
+      }
       // Fallback: always allow default admin even when custom users exist
       if(username==="admin" && hash===ADMIN_HASH) return {username:"admin", role:"admin"};
       return null;
@@ -803,7 +812,7 @@ function checkIpWhitelist(username){
   });
 }
 // ————— GRANULAR PERMISSION SYSTEM —————
-var CMS_SECTIONS = ['pages','banners','nav','blog','files','users','security'];
+var CMS_SECTIONS = ['pages','blog','files','users','security'];
 var CMS_PERM_ACTIONS = ['read','write'];
 var CMS_GROUPS_KEY = 'ecap_cms_groups';
 var CMS_RATELIMIT_KEY = 'ecap_cms_ratelimit';
@@ -873,8 +882,10 @@ window.addEventListener('beforeunload', function(){
 window._cmsKickSession = function(tabId){
   if(!confirm(CL('kick_confirm'))) return;
   var sessions = getActiveSessions();
+  var kicked = sessions.find(function(s){ return s.tabId === tabId; });
   sessions = sessions.filter(function(s){ return s.tabId !== tabId; });
   saveActiveSessions(sessions);
+  addAuditLog('session_kicked', 'Kicked user: '+(kicked?kicked.user:'unknown')+', tabId: '+tabId);
   showToast(CL('kicked'));
   window._cmsSecurityView();
 };
@@ -979,7 +990,7 @@ function _cmsMigrateData(){
       {id:'g_admin', name:'管理員', perms:_cmsFullPerms(), sessionTimeout:0, ipWhitelist:[]},
       {id:'g_editor',name:'編輯員', perms:(function(){
         var p=_cmsEmptyPerms();
-        ['pages','banners','nav','blog','files'].forEach(function(s){ p[s+'.read']=true; p[s+'.write']=true; });
+        ['pages','blog','files'].forEach(function(s){ p[s+'.read']=true; p[s+'.write']=true; });
         p['users.read']=true; p['security.read']=true;
         return p;
       })(), sessionTimeout:0, ipWhitelist:[]},
@@ -991,16 +1002,6 @@ function _cmsMigrateData(){
     ];
     saveCmsGroups(groups);
   }
-  // 1b) Ensure all groups have nav permissions (added in v3)
-  var gChanged = false;
-  groups.forEach(function(g){
-    if(typeof g.perms['nav.read'] === 'undefined'){
-      g.perms['nav.read'] = g.perms['pages.read'] || false;
-      g.perms['nav.write'] = g.perms['pages.write'] || false;
-      gChanged = true;
-    }
-  });
-  if(gChanged) saveCmsGroups(groups);
   // 2) Migrate existing users: role → groupId, add new fields
   var users=getCmsUsers();
   var roleGroupMap={admin:'g_admin',editor:'g_editor',viewer:'g_viewer'};
@@ -1400,7 +1401,7 @@ window._adminLogin = function(e){
   // Check rate limiting
   var lockMins = isLockedOut(user);
   if(lockMins){
-    addAuditLog('login_locked', 'User: '+user+', locked for '+lockMins+' min');
+    addAuditLog('login_locked', 'User: '+user+', IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown')+', locked for '+lockMins+' min');
     errEl.textContent = CL('too_many')+lockMins+CL('minutes');
     errEl.style.color='';
     btn.disabled = false;
@@ -1552,7 +1553,7 @@ window._adminLogin = function(e){
       window.route();
     } else {
       recordFailedLogin(user);
-      addAuditLog('login_fail', 'User: '+user);
+      addAuditLog('login_fail', 'User: '+user+', IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown'));
       var attempts = getLoginAttempts();
       var rlCfg = getRateLimitConfig();
       var remaining = (rlCfg.maxAttempts||5) - ((attempts[user]||{}).count||0);
@@ -1918,6 +1919,11 @@ window._cmsFilesView = function(){
   var files = getCmsFiles();
   var _canUpload = _cmsHasPermission("upload");
   var _canDelFile = _cmsHasPermission("deleteFile");
+
+  // Update header bar actions
+  window._cmsUpdateHeaderActions(
+    '<button class="admin-btn secondary" style="font-size:12px;padding:5px 10px" onclick="window._cmsCkHelp()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> '+CL('ck_help')+'</button>'
+  );
   var rows = files.length ? files.map(function(f,i){
     var sizeStr = f.size ? (f.size < 1024 ? f.size+"B" : f.size < 1048576 ? Math.round(f.size/1024)+"KB" : Math.round(f.size/1048576)+"MB") : "—";
     var dateStr = f.uploadedAt ? new Date(f.uploadedAt).toLocaleDateString("zh-HK",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}) : "—";
@@ -2054,6 +2060,11 @@ window._cmsAccountView = function(){
 var _cmsUserSubTab = 'users';
 window._cmsUserMgmtView = function(subTab){
   if(subTab) _cmsUserSubTab = subTab;
+
+  // Update header bar actions
+  window._cmsUpdateHeaderActions(
+    '<button class="admin-btn secondary" style="font-size:12px;padding:5px 10px" onclick="window._cmsCkHelp()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> '+CL('ck_help')+'</button>'
+  );
   var currentUser = sessionStorage.getItem("ecap_admin_user") || "admin";
   var users = getCmsUsers();
   var cfg2fa = get2FAConfig();
@@ -2208,7 +2219,7 @@ function _cmsUserMgmtTab(users, currentUser, cfg2fa){
 }
 
 // ————— Groups Sub-View —————
-var CMS_PERM_LABELS = {pages:'perm_pages',banners:'perm_banners',nav:'perm_nav',blog:'perm_blog',files:'perm_files',users:'perm_users',security:'perm_security'};
+var CMS_PERM_LABELS = {pages:'perm_pages',blog:'perm_blog',files:'perm_files',users:'perm_users',security:'perm_security'};
 
 function _cmsGroupsSubView(){
   var groups = getCmsGroups();
@@ -2472,7 +2483,7 @@ function _cmsSecurityTab(){
     +'<div class="cms-card-box">'
     +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
     +'<h4 style="font-size:16px;font-weight:700;margin:0">'+CL('audit_log')+'</h4>'
-    +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="if(confirm(CL(\'clear_log_q\')))localStorage.removeItem(\''+CMS_AUDIT_KEY+'\');window._cmsUsersView(\'security\')">'+CL('clear_log')+'</button>'
+    +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="if(confirm(CL(\'clear_log_q\'))){localStorage.removeItem(\''+CMS_AUDIT_KEY+'\');window._cmsSecurityView();}">'+CL('clear_log')+'</button>'
     +'</div>'
     +'<p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">'+CL('audit_log_desc')+'</p>'
     +'<div style="display:grid;grid-template-columns:24px 1fr 80px 120px 130px;gap:10px;padding:6px 0;border-bottom:2px solid var(--border);font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">'
@@ -2727,7 +2738,7 @@ window._cmsReset2FA = function(username){
   delete cfg[username];
   save2FAConfig(cfg);
   showToast(CL('twofa_reset').replace('{0}',username));
-  window._cmsUsersView();
+  window._cmsUsersView('users');
 };
 window._cms2FASetup = function(username){
   var cfg = get2FAConfig();
@@ -2736,7 +2747,7 @@ window._cms2FASetup = function(username){
     delete cfg[username];
     save2FAConfig(cfg);
     showToast(CL('twofa_disabled').replace('{0}',username));
-    window._cmsUsersView();
+    window._cmsUsersView('users');
     return;
   }
   var secret = generateSecret();
@@ -2772,7 +2783,7 @@ window._cms2FASetup = function(username){
         save2FAConfig(c);
         showToast(CL('twofa_enabled').replace('{0}',username));
         div.remove();
-        window._cmsUsersView();
+        window._cmsUsersView('users');
       } else {
         document.getElementById('verify2FAErr').textContent=CL('invalid_code_retry');
       }
@@ -2789,7 +2800,7 @@ window._cmsUserDelete = function(idx){
   users.splice(idx,1);
   saveCmsUsers(users);
   showToast(CL('removed_user').replace('{0}',username));
-  window._cmsUsersView();
+  window._cmsUsersView('users');
 };
 
 
@@ -2797,9 +2808,13 @@ window._cmsUserDelete = function(idx){
 window._cmsShowFilePicker = function(btn){
   var existingPicker = document.getElementById('cmsFilePicker');
   if(existingPicker){ existingPicker.remove(); return; }
-  var slug = btn.getAttribute('data-slug');
-  var lang = btn.getAttribute('data-lang');
-  var textareaId = 'cms_b_'+slug+'_'+lang;
+  // Support both data-slug/data-lang pattern and direct data-ta-id
+  var textareaId = btn.getAttribute('data-ta-id');
+  if(!textareaId){
+    var slug = btn.getAttribute('data-slug');
+    var lang = btn.getAttribute('data-lang');
+    textareaId = 'cms_b_'+slug+'_'+lang;
+  }
   var files = getCmsFiles();
 
   var div = document.createElement('div');
@@ -3007,8 +3022,17 @@ function _getBlogArticles(){
 }
 
 window._cmsBlogView = function(){
+  // Destroy any existing CKEditor instances
+  Object.keys(_cmsEditors).forEach(function(k){ try{ _cmsEditors[k].destroy(); }catch(e){} });
+  _cmsEditors = {};
+
   var articles = _getBlogArticles();
   var _canEdit = _cmsHasPermission("editPage");
+
+  // Update header bar actions
+  window._cmsUpdateHeaderActions(
+    '<button class="admin-btn secondary" style="font-size:12px;padding:5px 10px" onclick="window._cmsCkHelp()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> '+CL('ck_help')+'</button>'
+  );
 
   var rows = articles.length ? articles.map(function(a,i){
     var title = a.title_hant || a.title_en || 'Untitled';
@@ -3040,9 +3064,14 @@ window._cmsBlogView = function(){
 };
 
 window._cmsBlogEdit = function(idx){
+  // Destroy any existing CKEditor instances
+  Object.keys(_cmsEditors).forEach(function(k){ try{ _cmsEditors[k].destroy(); }catch(e){} });
+  _cmsEditors = {};
+
   var articles = _getBlogArticles();
   _cmsBlogEditIdx = idx;
   var a = idx >= 0 ? articles[idx] : {slug:'hk-news-',title_en:'',title_hans:'',title_hant:'',tag_en:'',tag_hans:'',tag_hant:'',date:new Date().toISOString().slice(0,10),img:'',body_en:'',body_hans:'',body_hant:''};
+  var hasCK = typeof ClassicEditor !== 'undefined';
 
   var h = '<div class="cms-panel">'
     +'<div class="cms-form-row" style="align-items:center;margin-bottom:16px">'
@@ -3081,9 +3110,9 @@ window._cmsBlogEdit = function(idx){
     +'<button class="cms-section-btn" id="blogBodyTabHans" onclick="window._cmsBlogBodyTab(\'hans\')">简体内容</button>'
     +'<button class="cms-section-btn" id="blogBodyTabEn" onclick="window._cmsBlogBodyTab(\'en\')">EN Content</button>'
     +'</div>'
-    +'<textarea id="blogBodyHant" class="admin-field" style="min-height:300px;font-family:monospace;font-size:13px">'+escHtml(a.body_hant||'')+'</textarea>'
-    +'<textarea id="blogBodyHans" class="admin-field" style="min-height:300px;font-family:monospace;font-size:13px;display:none">'+escHtml(a.body_hans||'')+'</textarea>'
-    +'<textarea id="blogBodyEn" class="admin-field" style="min-height:300px;font-family:monospace;font-size:13px;display:none">'+escHtml(a.body_en||'')+'</textarea>'
+    +'<div id="blogBodyHant_wrap"><textarea id="blogBodyHant" class="admin-field" style="min-height:300px;font-family:monospace;font-size:13px">'+escHtml(a.body_hant||'')+'</textarea></div>'
+    +'<div id="blogBodyHans_wrap" style="display:none"><textarea id="blogBodyHans" class="admin-field" style="min-height:300px;font-family:monospace;font-size:13px">'+escHtml(a.body_hans||'')+'</textarea></div>'
+    +'<div id="blogBodyEn_wrap" style="display:none"><textarea id="blogBodyEn" class="admin-field" style="min-height:300px;font-family:monospace;font-size:13px">'+escHtml(a.body_en||'')+'</textarea></div>'
     +'</div>'
     // Save
     +'<div class="cms-form-row">'
@@ -3093,13 +3122,72 @@ window._cmsBlogEdit = function(idx){
     +'</div>';
 
   document.getElementById("cmsEditor").innerHTML = h;
+
+  // Initialize CKEditor on each body textarea
+  if(hasCK){
+    var blogTas = [
+      {id:'blogBodyHant', lang:'zh-cn'},
+      {id:'blogBodyHans', lang:'zh-cn'},
+      {id:'blogBodyEn', lang:'en'}
+    ];
+    blogTas.forEach(function(cfg){
+      var ta = document.getElementById(cfg.id);
+      if(!ta) return;
+      ClassicEditor.create(ta, {
+        extraPlugins: [_cmsCkUploadPlugin],
+        toolbar: {items:['heading','|','bold','italic','underline','strikethrough','|','link','imageUpload','blockQuote','insertTable','horizontalLine','|','bulletedList','numberedList','|','outdent','indent','|','fontColor','fontBackgroundColor','removeFormat','|','undo','redo'],shouldNotGroupWhenFull:false},
+        heading: { options: [
+          { model:'paragraph', title:'Paragraph', class:'ck-heading_paragraph' },
+          { model:'heading2', view:'h2', title:'Heading 2', class:'ck-heading_heading2' },
+          { model:'heading3', view:'h3', title:'Heading 3', class:'ck-heading_heading3' },
+          { model:'heading4', view:'h4', title:'Heading 4', class:'ck-heading_heading4' }
+        ]},
+        language: cfg.lang
+      }).then(function(editor){
+        _cmsEditors[cfg.id] = editor;
+        // Inject file buttons into CKEditor toolbar
+        var wrapDiv = document.getElementById(cfg.id+'_wrap');
+        if(wrapDiv){
+          var ckToolbar = wrapDiv.querySelector('.ck-toolbar__items');
+          if(ckToolbar){
+            var sep = document.createElement('span');
+            sep.className = 'ck ck-toolbar__separator';
+            ckToolbar.appendChild(sep);
+            var libBtn = document.createElement('button');
+            libBtn.type = 'button';
+            libBtn.className = 'ck ck-button cms-ck-tb-btn';
+            libBtn.setAttribute('data-ta-id', cfg.id);
+            libBtn.title = CL('insert_dl');
+            libBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg><span class="cms-ck-tb-label"> '+CL('insert_dl')+'</span>';
+            libBtn.onclick = function(e){ e.preventDefault(); e.stopPropagation(); window._cmsShowFilePicker(this); };
+            ckToolbar.appendChild(libBtn);
+            var upBtn = document.createElement('button');
+            upBtn.type = 'button';
+            upBtn.className = 'ck ck-button cms-ck-tb-btn';
+            upBtn.setAttribute('data-ta-id', cfg.id);
+            upBtn.title = CL('upload_insert');
+            upBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span class="cms-ck-tb-label"> '+CL('upload_insert')+'</span>';
+            var fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = '.jpg,.jpeg,.png,.gif,.webp,.svg,.pdf,.doc,.docx,.xls,.xlsx,.zip';
+            fileInput.style.display = 'none';
+            fileInput.id = 'cmsCkFile_'+cfg.id;
+            fileInput.onchange = function(){ window._cmsCkFileUpload(this, cfg.id); };
+            upBtn.onclick = function(e){ e.preventDefault(); e.stopPropagation(); fileInput.click(); };
+            ckToolbar.appendChild(upBtn);
+            ckToolbar.appendChild(fileInput);
+          }
+        }
+      })['catch'](function(err){ console.warn('Blog CKEditor init failed for '+cfg.id, err); });
+    });
+  }
 };
 
 window._cmsBlogBodyTab = function(lang){
   ['hant','hans','en'].forEach(function(l){
-    var ta = document.getElementById('blogBody'+l.charAt(0).toUpperCase()+l.slice(1));
+    var wrap = document.getElementById('blogBody'+l.charAt(0).toUpperCase()+l.slice(1)+'_wrap');
     var btn = document.getElementById('blogBodyTab'+l.charAt(0).toUpperCase()+l.slice(1));
-    if(ta) ta.style.display = l===lang ? '' : 'none';
+    if(wrap) wrap.style.display = l===lang ? '' : 'none';
     if(btn) btn.classList.toggle('active', l===lang);
   });
 };
@@ -3147,9 +3235,9 @@ window._cmsBlogSave = function(){
     title_hans: document.getElementById('blogTitleHans').value.trim(),
     title_en: document.getElementById('blogTitleEn').value.trim(),
     img: document.getElementById('blogImg').value.trim(),
-    body_hant: document.getElementById('blogBodyHant').value,
-    body_hans: document.getElementById('blogBodyHans').value,
-    body_en: document.getElementById('blogBodyEn').value
+    body_hant: _cmsEditors['blogBodyHant'] ? _cmsEditors['blogBodyHant'].getData() : document.getElementById('blogBodyHant').value,
+    body_hans: _cmsEditors['blogBodyHans'] ? _cmsEditors['blogBodyHans'].getData() : document.getElementById('blogBodyHans').value,
+    body_en: _cmsEditors['blogBodyEn'] ? _cmsEditors['blogBodyEn'].getData() : document.getElementById('blogBodyEn').value
   };
 
   var articles = _getBlogArticles();
@@ -3613,6 +3701,39 @@ window._cmsHomeView = function(){
         language: ckLang
       }).then(function(editor){
         _cmsEditors[ta.id] = editor;
+        // Inject file buttons into CKEditor toolbar (same as page editor)
+        var wrapDiv = ta.parentElement;
+        if(wrapDiv){
+          var ckToolbar = wrapDiv.querySelector('.ck-toolbar__items');
+          if(ckToolbar){
+            var _fid = 'cmsCkFile_'+ta.id.replace(/[^a-zA-Z0-9_]/g,'');
+            var sep = document.createElement('span');
+            sep.className = 'ck ck-toolbar__separator';
+            ckToolbar.appendChild(sep);
+            var libBtn = document.createElement('button');
+            libBtn.type = 'button';
+            libBtn.className = 'ck ck-button cms-ck-tb-btn';
+            libBtn.setAttribute('data-ta-id', ta.id);
+            libBtn.title = CL('insert_dl');
+            libBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg><span class="cms-ck-tb-label"> '+CL('insert_dl')+'</span>';
+            libBtn.onclick = function(e){ e.preventDefault(); e.stopPropagation(); window._cmsShowFilePicker(this); };
+            ckToolbar.appendChild(libBtn);
+            var upBtn = document.createElement('button');
+            upBtn.type = 'button';
+            upBtn.className = 'ck ck-button cms-ck-tb-btn';
+            upBtn.title = CL('upload_insert');
+            upBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span class="cms-ck-tb-label"> '+CL('upload_insert')+'</span>';
+            upBtn.onclick = function(e){ e.preventDefault(); document.getElementById(_fid).click(); };
+            ckToolbar.appendChild(upBtn);
+            var finput = document.createElement('input');
+            finput.type = 'file';
+            finput.id = _fid;
+            finput.accept = '.jpg,.jpeg,.png,.webp,.gif,.svg,.pdf,.doc,.docx,.ppt,.pptx';
+            finput.style.display = 'none';
+            finput.onchange = function(){ window._cmsCkFileUpload(this, ta.id); };
+            wrapDiv.appendChild(finput);
+          }
+        }
       }).catch(function(err){
         console.warn('CKEditor init failed for '+ta.id+':', err);
       });
@@ -4454,13 +4575,13 @@ window._cmsNavStandaloneView = function(){
     navItems.forEach(function(item, i){
       var hasChildren = item.children && item.children.length;
       html += '<div class="cms-item-card" style="flex-direction:column;align-items:stretch;padding:12px 16px" draggable="true">'
-        +'<div style="display:flex;align-items:center;gap:10px">'
-        +'<span class="dnd-handle" title="Drag to reorder">&#x2807;</span>'
+        +'<div style="display:flex;align-items:center;gap:10px;cursor:pointer" onclick="var el=document.getElementById(\'cmsNE_'+lang+'_'+i+'\');el.style.display=el.style.display===\'none\'?\'block\':\'none\'">'
+        +'<span class="dnd-handle" title="Drag to reorder" onclick="event.stopPropagation()">&#x2807;</span>'
         +'<span style="font-weight:700;font-size:14px;flex:1;color:var(--text)">'+esc(item.label)+'</span>'
         +'<span style="font-size:11px;color:var(--text-muted);font-family:monospace">'+esc(item.page||item.ext||'')+'</span>'
         +(hasChildren ? '<span style="font-size:10px;color:var(--brand);background:rgba(180,21,64,.08);padding:2px 8px;border-radius:100px;font-weight:600">'+item.children.length+' sub</span>' : '')
-        +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="var el=document.getElementById(\'cmsNE_'+lang+'_'+i+'\');el.style.display=el.style.display===\'none\'?\'block\':\'none\'"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> '+CL('edit')+'</button>'
-        +'<button class="admin-btn danger" style="padding:4px 8px;font-size:11px" onclick="window._cmsRemoveRepeater(\'nav\','+i+',\''+escQ(lang)+'\')">&#10005;</button>'
+        +'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>'
+        +'<button class="admin-btn danger" style="padding:4px 8px;font-size:11px" onclick="event.stopPropagation();window._cmsRemoveRepeater(\'nav\','+i+',\''+escQ(lang)+'\')">&#10005;</button>'
         +'</div>';
       // Collapsible edit form
       html += '<div id="cmsNE_'+lang+'_'+i+'" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border-light)">'

@@ -30,8 +30,8 @@ h1, h2, h3, h4, h5, h6 { line-height: 1.25; font-weight: 700; letter-spacing: -0
 /* Language switch crossfade */
 #app{transition:opacity .18s ease}
 #app.lang-switching{opacity:0}
-.nav-links{transition:opacity .18s ease}
-.nav-links.lang-switching{opacity:0}
+.nav-links,.nav-cta,.nav-cta-mobile{transition:opacity .18s ease}
+.nav-links.lang-switching,.nav-cta.lang-switching,.nav-cta-mobile.lang-switching{opacity:0}
 
 /* Typography Scale — 50% bigger + bold, rd.group-matched */
 .text-title { font-size: clamp(3rem, 6vw, 5rem); font-weight: 700; line-height: 1.1; }

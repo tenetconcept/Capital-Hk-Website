@@ -37,7 +37,7 @@ body.cms-active .cms-sidebar{position:sticky;top:calc(var(--nav-h) + var(--cms-b
 .cms-page-item.active .page-name{color:var(--brand)}
 .cms-main{flex:1;background:var(--bg-body);min-width:0}
 .cms-sticky-top{position:sticky;top:0;z-index:10;background:var(--white)}
-.cms-main-header{background:var(--white);border-bottom:1px solid rgba(0,0,0,.06);padding:16px 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+.cms-main-header{background:var(--white);border-bottom:1px solid rgba(0,0,0,.06);padding:16px 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;min-height:60px}
 .cms-main-header h3{font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px}
 .cms-main-header .cms-header-acts{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .cms-lang-switch{display:flex;gap:2px;background:var(--bg-light);border-radius:6px;padding:2px}

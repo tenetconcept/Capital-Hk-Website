@@ -66,7 +66,7 @@ window.saveCmsHome = saveCmsHome;
 // Helper: get a CMS home field with fallback
 function H(section, field, fallback){
   var ch = getCmsHome();
-  if(ch[section] && ch[section][currentLang] && ch[section][currentLang][field]) return ch[section][currentLang][field];
+  if(ch[section] && ch[section][currentLang] && ch[section][currentLang][field] != null) return ch[section][currentLang][field];
   return fallback;
 }
 window._homeField = H;
@@ -104,7 +104,11 @@ function setLang(lang){
   // Phase 1: Fade out current content BEFORE changing anything
   var app = document.getElementById('app');
   var navLinksEl = document.getElementById('navLinks');
+  var navCtaEl = document.querySelector('.nav-cta');
+  var navCtaMobileEl = document.querySelector('.nav-cta-mobile');
   if(navLinksEl) navLinksEl.classList.add('lang-switching');
+  if(navCtaEl) navCtaEl.classList.add('lang-switching');
+  if(navCtaMobileEl) navCtaMobileEl.classList.add('lang-switching');
   if(app) app.classList.add('lang-switching');
 
   // Save state before content change
@@ -127,7 +131,6 @@ function setLang(lang){
       : '';
 
     // Rebuild content with new language (invisible — still faded out)
-    if(typeof buildNav === 'function') buildNav();
     route();
 
     // Restore scroll position
@@ -154,6 +157,10 @@ function setLang(lang){
         if(app) app.classList.remove('lang-switching');
         var nl = document.getElementById('navLinks');
         if(nl) nl.classList.remove('lang-switching');
+        var nc = document.querySelector('.nav-cta');
+        if(nc) nc.classList.remove('lang-switching');
+        var ncm = document.querySelector('.nav-cta-mobile');
+        if(ncm) ncm.classList.remove('lang-switching');
       });
     });
   }, 180);
@@ -790,7 +797,7 @@ function pageView(slug){
   if(!pg){
     return '<section class="subpage"><div class="mw">'
       +'<div class="subpage-header"><h1>' + esc(L('Page Not Found', '找不到页面', '找不到頁面')) + '</h1></div>'
-      +'<div class="subpage-body"><p>' + esc(L('The requested page does not exist.', '您所請求的頁面不存在。', '您所請求的頁面不存在。')) + '</p>'
+      +'<div class="subpage-body"><p>' + esc(L('The requested page does not exist.', '您所请求的页面不存在。', '您所請求的頁面不存在。')) + '</p>'
       +'<p><a href="#/" data-spa style="color:var(--brand)">' + esc(T("home")) + '</a></p></div>'
       +'</div></section>';
   }
@@ -1021,6 +1028,7 @@ document.addEventListener('click', function(e){
   if(e.target.closest('#navHam')){
     var ham = document.getElementById('navHam');
     var mm = document.getElementById('mobileMenu');
+    if(!ham || !mm) return;
     ham.classList.toggle('open');
     mm.classList.toggle('open');
     document.body.style.overflow = mm.classList.contains('open') ? 'hidden' : '';

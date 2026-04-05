@@ -187,3 +187,13 @@ body.cms-active .cms-sidebar{top:var(--nav-h);height:calc(100vh - var(--nav-h))}
 .cms-home-sec-body{display:none;padding:0 18px 18px}
 .cms-home-sec.open .cms-home-sec-body{display:block}
 .cms-home-sec.open .cms-home-sec-hdr svg{transform:rotate(180deg)}
+
+/* Drag-and-drop reordering */
+.dnd-handle{cursor:grab;color:var(--text-muted);padding:0 6px;font-size:18px;flex-shrink:0;user-select:none;opacity:.45;transition:opacity .15s;line-height:1;align-self:center}
+.dnd-handle:hover{opacity:.9}
+.dnd-handle:active{cursor:grabbing}
+[draggable].dnd-dragging{opacity:.35!important;box-shadow:0 4px 16px rgba(0,0,0,.15)}
+[draggable].dnd-over{outline:2px solid var(--brand);outline-offset:2px}
+
+/* CKEditor integrated file bar */
+.cms-ck-filebar{padding:5px 8px;background:var(--bg-light);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--radius-sm) var(--radius-sm);display:flex;align-items:center;gap:8px}

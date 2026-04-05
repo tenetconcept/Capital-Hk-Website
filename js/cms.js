@@ -17,6 +17,82 @@ function _loadCKEditor(cb){
   document.head.appendChild(s);
 }
 
+// ————— Drag-and-drop list reordering —————
+// Attach native HTML5 DnD to a list container. Items must have class dnd-handle inside them.
+// onSwap(fromIdx, toIdx) is called when user drops one item onto another.
+function _cmsDndInit(listEl, onSwap){
+  if(!listEl) return;
+  var dragSrc = null;
+  function attach(el){
+    el.addEventListener('dragstart', function(e){
+      if(!e.target.closest('.dnd-handle')){ e.preventDefault(); return; }
+      dragSrc = el;
+      e.dataTransfer.effectAllowed = 'move';
+      setTimeout(function(){ el.classList.add('dnd-dragging'); }, 0);
+    });
+    el.addEventListener('dragend', function(){
+      el.classList.remove('dnd-dragging');
+      listEl.querySelectorAll('.dnd-over').forEach(function(x){ x.classList.remove('dnd-over'); });
+      dragSrc = null;
+    });
+    el.addEventListener('dragover', function(e){
+      if(!dragSrc || dragSrc === el) return;
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      listEl.querySelectorAll('.dnd-over').forEach(function(x){ x.classList.remove('dnd-over'); });
+      el.classList.add('dnd-over');
+    });
+    el.addEventListener('dragleave', function(e){
+      if(!el.contains(e.relatedTarget)) el.classList.remove('dnd-over');
+    });
+    el.addEventListener('drop', function(e){
+      e.preventDefault();
+      if(dragSrc && dragSrc !== el){
+        var items = Array.from(listEl.querySelectorAll(':scope > [draggable]'));
+        var from = items.indexOf(dragSrc), to = items.indexOf(el);
+        if(from !== -1 && to !== -1) onSwap(from, to);
+      }
+    });
+  }
+  listEl.querySelectorAll(':scope > [draggable]').forEach(attach);
+}
+
+// ————— CKEditor custom upload adapter plugin —————
+// Saves uploaded images to the CMS file library (localStorage) and returns the data URL.
+function _cmsCkUploadPlugin(editor){
+  try{
+    if(!editor.plugins || !editor.plugins.has('FileRepository')) return;
+    editor.plugins.get('FileRepository').createUploadAdapter = function(loader){
+      return {
+        upload: function(){
+          return loader.file.then(function(file){
+            return new Promise(function(resolve, reject){
+              var reader = new FileReader();
+              reader.onload = function(e){
+                var url = e.target.result;
+                var files = getCmsFiles();
+                files.push({
+                  id: 'f'+Date.now()+Math.random().toString(36).substr(2,4),
+                  name: file.name, desc: '', type: file.type, size: file.size,
+                  url: url, isLocal: true,
+                  uploadedAt: new Date().toISOString(),
+                  uploadedBy: sessionStorage.getItem('ecap_admin_user')||'admin'
+                });
+                saveCmsFiles(files);
+                showToast(CL('saved')+file.name);
+                resolve({ default: url });
+              };
+              reader.onerror = reject;
+              reader.readAsDataURL(file);
+            });
+          });
+        },
+        abort: function(){}
+      };
+    };
+  }catch(e){ console.warn('CKEditor upload adapter error:', e); }
+}
+
 // ————— CMS i18n —————
 var CMS_I18N = {
   // Login
@@ -1277,7 +1353,7 @@ window._cmsEditPage = function(slug){
       +'<label style="margin:0">'+CL('body_label')+'</label>'
       +'<div style="display:flex;gap:6px;align-items:center">'
       +(_canEditPages && hasCKEditor ? '<button type="button" class="cms-tb-btn" style="font-size:11px;padding:2px 8px" onclick="window._cmsToggleSource(\''+taId+'\')">&#60;/&#62; Source</button>' : '')
-      +(_canEditPages ? '<button type="button" class="cms-insert-file-btn" data-slug="'+slug+'" data-lang="'+lang+'" onclick="event.preventDefault();event.stopPropagation();window._cmsShowFilePicker(this)">'+CL('insert_dl')+'</button>' : '<span class="role-badge role-viewer">'+CL('read_only')+'</span>')
+      +(!_canEditPages ? '<span class="role-badge role-viewer">'+CL('read_only')+'</span>' : (!hasCKEditor ? '<button type="button" class="cms-insert-file-btn" data-slug="'+slug+'" data-lang="'+lang+'" onclick="event.preventDefault();event.stopPropagation();window._cmsShowFilePicker(this)">'+CL('insert_dl')+'</button>' : ''))
       +'</div></div>'
       +tbHtml
       +'<div id="'+taId+'_wrap">'
@@ -1306,7 +1382,8 @@ window._cmsEditPage = function(slug){
       var ta = document.getElementById(taId);
       if(!ta) return;
       ClassicEditor.create(ta, {
-        toolbar: ['heading','|','bold','italic','link','|','bulletedList','numberedList','|','blockQuote','insertTable','|','undo','redo'],
+        extraPlugins: [_cmsCkUploadPlugin],
+        toolbar: ['heading','|','bold','italic','link','imageUpload','|','bulletedList','numberedList','|','blockQuote','insertTable','|','undo','redo'],
         heading: { options: [
           { model:'paragraph', title:'Paragraph', class:'ck-heading_paragraph' },
           { model:'heading2', view:'h2', title:'Heading 2', class:'ck-heading_heading2' },
@@ -1320,6 +1397,14 @@ window._cmsEditPage = function(slug){
         editor.model.document.on('change:data', function(){
           window._cmsLivePreview(slug);
         });
+        // Inject "Insert from Library" file bar below CKEditor
+        var wrapDiv = document.getElementById(taId+'_wrap');
+        if(wrapDiv){
+          var bar = document.createElement('div');
+          bar.className = 'cms-ck-filebar';
+          bar.innerHTML = '<button type="button" class="cms-insert-file-btn" data-slug="'+escAttr(slug)+'" data-lang="'+escAttr(lang)+'" onclick="event.preventDefault();event.stopPropagation();window._cmsShowFilePicker(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg> '+CL('insert_dl')+'</button>';
+          wrapDiv.appendChild(bar);
+        }
       }).catch(function(err){
         console.warn('CKEditor init failed for '+taId+', falling back to textarea:', err);
       });
@@ -2543,18 +2628,17 @@ window._cmsBlogView = function(){
 
   var rows = articles.length ? articles.map(function(a,i){
     var title = a.title_hant || a.title_en || 'Untitled';
-    return '<div class="cms-item-card">'
+    return '<div class="cms-item-card" draggable="true">'
+      +'<span class="dnd-handle" title="Drag to reorder">&#x2807;</span>'
       +'<img class="cms-item-thumb" src="'+escAttr(a.img||'')+'" onerror="this.style.background=\'#eee\'"/>'
       +'<div class="cms-item-info">'
       +'<div class="cms-item-title">'+esc(title)+'</div>'
       +'<div class="cms-item-meta">'+esc(a.date||'')+' &middot; '+esc(a.tag_hant||a.tag_en||'')+'</div>'
       +'<div class="cms-item-meta">slug: '+esc(a.slug||'')+'</div>'
       +'</div>'
-      +'<div class="cms-item-actions" style="display:flex;gap:4px;align-items:center;min-width:220px;justify-content:flex-end">'
+      +'<div class="cms-item-actions" style="display:flex;gap:4px;align-items:center">'
       +'<button class="admin-btn secondary" title="'+CL('btn_preview')+'" style="font-size:11px;padding:4px 10px" onclick="window._cmsBlogPreview('+i+')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> '+CL('btn_preview')+'</button>'
       +(_canEdit?'<button class="admin-btn primary" style="font-size:11px;padding:4px 10px" onclick="window._cmsBlogEdit('+i+')">'+CL('edit')+'</button>':'')
-      +'<button class="admin-btn secondary" title="'+CL('btn_move_up')+'" style="font-size:11px;padding:4px 8px;'+(i<=0?'visibility:hidden':'') +'" onclick="window._cmsBlogMove('+i+',-1)">&uarr;</button>'
-      +'<button class="admin-btn secondary" title="'+CL('btn_move_down')+'" style="font-size:11px;padding:4px 8px;'+(i>=articles.length-1?'visibility:hidden':'')+'" onclick="window._cmsBlogMove('+i+',1)">&darr;</button>'
       +(_canEdit?'<button class="admin-btn danger" style="font-size:11px;padding:4px 8px" onclick="window._cmsBlogDelete('+i+')">'+CL('del_short')+'</button>':'')
       +'</div></div>';
   }).join("") : '<div class="cms-item-meta" style="padding:12px 0">'+CL('no_articles')+'</div>';
@@ -2566,6 +2650,8 @@ window._cmsBlogView = function(){
     +'<div id="cmsBlogList">' + rows + '</div>'
     +(_canEdit?'<button class="admin-btn primary" style="margin-top:12px" onclick="window._cmsBlogEdit(-1)">'+CL('new_article')+'</button>':'')
     +'</div>';
+  var listEl = document.getElementById('cmsBlogList');
+  if(listEl) _cmsDndInit(listEl, function(from, to){ window._cmsBlogMove(from, to); });
 };
 
 window._cmsBlogEdit = function(idx){
@@ -2711,13 +2797,11 @@ window._cmsBlogDelete = function(idx){
   window._cmsBlogView();
 };
 
-window._cmsBlogMove = function(idx, dir){
+window._cmsBlogMove = function(from, to){
   var articles = _getBlogArticles();
-  var newIdx = idx + dir;
-  if(newIdx < 0 || newIdx >= articles.length) return;
-  var tmp = articles[idx];
-  articles[idx] = articles[newIdx];
-  articles[newIdx] = tmp;
+  if(from < 0 || to < 0 || from >= articles.length || to >= articles.length || from === to) return;
+  var item = articles.splice(from, 1)[0];
+  articles.splice(to, 0, item);
   saveCmsBlog(articles);
   window._cmsBlogView();
 };
@@ -2847,10 +2931,9 @@ window._cmsHomeView = function(){
   var secNames = {hero:'section_hero',banners:'section_banners',marquee:'section_marquee',svc1:'section_svc1',svc2:'section_svc2',svc3:'section_svc3',stats:'section_stats',news:'section_news',cta:'section_cta'};
   var orderHtml = '<div id="cmsOrderList">';
   sectionOrder.forEach(function(sid, i){
-    orderHtml += '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg-light);border-radius:8px;margin-bottom:4px">'
+    orderHtml += '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg-light);border-radius:8px;margin-bottom:4px" draggable="true">'
+      +'<span class="dnd-handle" title="Drag to reorder">&#x2807;</span>'
       +'<span style="font-weight:600;font-size:13px;flex:1">'+CL(secNames[sid]||sid)+'</span>'
-      +(i>0?'<button class="admin-btn secondary" style="font-size:11px;padding:2px 8px" onclick="window._cmsOrderMove('+i+',-1)">&uarr;</button>':'')
-      +(i<sectionOrder.length-1?'<button class="admin-btn secondary" style="font-size:11px;padding:2px 8px" onclick="window._cmsOrderMove('+i+',1)">&darr;</button>':'')
       +'</div>';
   });
   orderHtml += '</div>';
@@ -3057,12 +3140,11 @@ window._cmsHomeView = function(){
     navBody += '<div class="cms-field-group"><h4>'+escHtml(langNames[lang])+' ('+lang+')</h4>';
     navBody += '<div id="cmsNavTree_'+lang+'">';
     navItems.forEach(function(item, i){
-      navBody += '<div class="cms-card-box" style="margin-bottom:6px;padding:10px 14px">'
+      navBody += '<div class="cms-card-box" style="margin-bottom:6px;padding:10px 14px" draggable="true">'
         +'<div class="cms-form-row" style="align-items:center;margin-bottom:0">'
+        +'<span class="dnd-handle" title="Drag to reorder">&#x2807;</span>'
         +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNL_'+lang+'_'+i+'" value="'+escAttr(item.label)+'" placeholder="'+CL('nav_item_label')+'"/></div>'
         +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNP_'+lang+'_'+i+'" value="'+escAttr(item.page||item.ext||'')+'" placeholder="'+CL('nav_item_page')+' / '+CL('nav_item_ext')+'"/></div>'
-        +(i>0?'<button class="admin-btn secondary" style="padding:4px 8px;font-size:11px" onclick="window._cmsNavMove('+i+',-1,\''+escQ(lang)+'\')">&uarr;</button>':'')
-        +(i<navItems.length-1?'<button class="admin-btn secondary" style="padding:4px 8px;font-size:11px" onclick="window._cmsNavMove('+i+',1,\''+escQ(lang)+'\')">&darr;</button>':'')
         +'<button class="admin-btn danger" style="padding:4px 8px;font-size:11px" onclick="window._cmsRemoveRepeater(\'nav\','+i+',\''+escQ(lang)+'\')">&#10005;</button>'
         +'</div>';
       if(item.children && item.children.length){
@@ -3106,11 +3188,19 @@ window._cmsHomeView = function(){
 
   document.getElementById("cmsEditor").innerHTML = html;
 
-  // Render full banner manager inside the accordion
+  // Render full banner manager and init drag-and-drop
   setTimeout(function(){
     var bannerSlot = document.getElementById('cmsHomeBanners');
     if(bannerSlot) _cmsRenderBannersFull(bannerSlot);
-  }, 30);
+    // Section order
+    var orderList = document.getElementById('cmsOrderList');
+    if(orderList) _cmsDndInit(orderList, function(from, to){ window._cmsOrderMove(from, to); });
+    // Nav trees (per language)
+    ['zh-Hant','zh-Hans','en'].forEach(function(lang){
+      var navTree = document.getElementById('cmsNavTree_'+lang);
+      if(navTree) _cmsDndInit(navTree, function(from, to){ window._cmsNavMove(from, to, lang); });
+    });
+  }, 40);
 
   // Auto-open first section
   var first = document.querySelector('.cms-home-sec');
@@ -3122,7 +3212,8 @@ window._cmsHomeView = function(){
       var ckLang = 'zh-cn';
       if(ta.id.indexOf('_en') === ta.id.length - 3) ckLang = 'en';
       ClassicEditor.create(ta, {
-        toolbar: ['heading','|','bold','italic','link','|','bulletedList','numberedList','|','blockQuote','insertTable','|','undo','redo'],
+        extraPlugins: [_cmsCkUploadPlugin],
+        toolbar: ['heading','|','bold','italic','link','imageUpload','|','bulletedList','numberedList','|','blockQuote','insertTable','|','undo','redo'],
         heading: { options: [
           { model:'paragraph', title:'Paragraph', class:'ck-heading_paragraph' },
           { model:'heading2', view:'h2', title:'Heading 2', class:'ck-heading_heading2' },
@@ -3270,7 +3361,8 @@ function _cmsRenderBannersFull(container){
   var _canUpload = _cmsHasPermission("upload");
   var _noImgSrc = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='68'%3E%3Crect width='120' height='68' fill='%23f3f4f6'/%3E%3Ctext x='60' y='38' text-anchor='middle' fill='%23bbb' font-size='11' font-family='sans-serif'%3ENo Image%3C/text%3E%3C/svg%3E";
   var rows = banners.length ? banners.map(function(b,i){
-    return '<div class="cms-item-card" id="cmsBC_'+i+'">'
+    return '<div class="cms-item-card" id="cmsBC_'+i+'" draggable="true">'
+      +'<span class="dnd-handle" title="Drag to reorder">&#x2807;</span>'
       +'<img class="cms-item-thumb" src="'+escAttr(b.img)+'" onerror="this.src=\''+_noImgSrc+'\';this.onerror=null" style="cursor:pointer;border-radius:6px" onclick="window._cmsBannerEdit('+i+')" title="'+CL('edit')+'"/>'
       +'<div class="cms-item-info">'
       +'<div class="cms-item-title">'+esc(b.alt||'Banner '+(i+1))+'</div>'
@@ -3278,8 +3370,6 @@ function _cmsRenderBannersFull(container){
       +'</div>'
       +'<div class="cms-item-actions">'
       +(_canUpload?'<button class="admin-btn secondary" title="'+CL('edit')+'" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerEdit('+i+')">'+CL('edit')+'</button>':'')
-      +'<button class="admin-btn secondary" title="'+CL('btn_move_up')+'" style="font-size:11px;padding:4px 8px;'+(i>0?'':'visibility:hidden')+'" onclick="window._cmsBannerMove('+i+',-1)">&uarr;</button>'
-      +'<button class="admin-btn secondary" title="'+CL('btn_move_down')+'" style="font-size:11px;padding:4px 8px;'+(i<banners.length-1?'':'visibility:hidden')+'" onclick="window._cmsBannerMove('+i+',1)">&darr;</button>'
       +(_canUpload?'<button class="admin-btn danger" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerDelete('+i+')">'+CL('delete')+'</button>':'')
       +'</div>'
       +'<div id="cmsBE_'+i+'" style="display:none;width:100%;margin-top:10px;padding-top:10px;border-top:1px solid var(--border-light)">'
@@ -3317,7 +3407,11 @@ function _cmsRenderBannersFull(container){
   }
 
   container.innerHTML = html;
-  setTimeout(function(){ window._cmsBannerInitDrop(); },50);
+  setTimeout(function(){
+    var listEl = container.querySelector('#cmsBannersList');
+    if(listEl) _cmsDndInit(listEl, function(from, to){ window._cmsBannerMove(from, to); });
+    window._cmsBannerInitDrop();
+  }, 50);
 }
 
 // Smart refresh: if homepage editor is open, refresh embedded banners; else reload standalone view
@@ -3337,7 +3431,8 @@ window._cmsBannersView = function(){
   var _canUpload = _cmsHasPermission("upload");
   var _noImgSrc2 = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='68'%3E%3Crect width='120' height='68' fill='%23f3f4f6'/%3E%3Ctext x='60' y='38' text-anchor='middle' fill='%23bbb' font-size='11' font-family='sans-serif'%3ENo Image%3C/text%3E%3C/svg%3E";
   var rows = banners.length ? banners.map(function(b,i){
-    return '<div class="cms-item-card" id="cmsBC_'+i+'">'
+    return '<div class="cms-item-card" id="cmsBC_'+i+'" draggable="true">'
+      +'<span class="dnd-handle" title="Drag to reorder">&#x2807;</span>'
       +'<img class="cms-item-thumb" src="'+escAttr(b.img)+'" onerror="this.src=\''+_noImgSrc2+'\';this.onerror=null" style="cursor:pointer;border-radius:6px" onclick="window._cmsBannerEdit('+i+')" title="'+CL('edit')+'"/>'
       +'<div class="cms-item-info">'
       +'<div class="cms-item-title">'+esc(b.alt||'Banner '+(i+1))+'</div>'
@@ -3345,8 +3440,6 @@ window._cmsBannersView = function(){
       +'</div>'
       +'<div class="cms-item-actions">'
       +(_canUpload?'<button class="admin-btn secondary" title="'+CL('edit')+'" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerEdit('+i+')">'+CL('edit')+'</button>':'')
-      +'<button class="admin-btn secondary" title="'+CL('btn_move_up')+'" style="font-size:11px;padding:4px 8px;'+(i>0?'':'visibility:hidden')+'" onclick="window._cmsBannerMove('+i+',-1)">&uarr;</button>'
-      +'<button class="admin-btn secondary" title="'+CL('btn_move_down')+'" style="font-size:11px;padding:4px 8px;'+(i<banners.length-1?'':'visibility:hidden')+'" onclick="window._cmsBannerMove('+i+',1)">&darr;</button>'
       +(_canUpload?'<button class="admin-btn danger" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerDelete('+i+')">'+CL('delete')+'</button>':'')
       +'</div>'
       +'<div id="cmsBE_'+i+'" style="display:none;width:100%;margin-top:10px;padding-top:10px;border-top:1px solid var(--border-light)">'
@@ -3386,7 +3479,11 @@ window._cmsBannersView = function(){
       +'</div>'
     : '<div style="background:#fef9c3;border:1px solid #fde68a;border-radius:6px;padding:10px 14px;font-size:13px;margin-top:12px">'+CL('view_only_msg')+'</div>')
     +'</div>';
-  setTimeout(function(){ window._cmsBannerInitDrop(); },50);
+  setTimeout(function(){
+    var listEl = document.getElementById('cmsBannersList');
+    if(listEl) _cmsDndInit(listEl, function(from, to){ window._cmsBannerMove(from, to); });
+    window._cmsBannerInitDrop();
+  }, 50);
 };
 
 window._cmsBannerInitDrop = function(){
@@ -3446,13 +3543,11 @@ window._cmsBannerDelete = function(idx){
   _cmsRefreshBanners();
 };
 
-window._cmsBannerMove = function(idx, dir){
+window._cmsBannerMove = function(from, to){
   var banners = getCmsBanners();
-  var newIdx = idx + dir;
-  if(newIdx < 0 || newIdx >= banners.length) return;
-  var tmp = banners[idx];
-  banners[idx] = banners[newIdx];
-  banners[newIdx] = tmp;
+  if(from < 0 || to < 0 || from >= banners.length || to >= banners.length || from === to) return;
+  var item = banners.splice(from, 1)[0];
+  banners.splice(to, 0, item);
   saveCmsBanners(banners);
   _cmsRefreshBanners();
 };
@@ -3651,15 +3746,13 @@ window._cmsRemoveRepeater = function(type, idx, lang){
 };
 
 // Section order move
-window._cmsOrderMove = function(idx, dir){
+window._cmsOrderMove = function(from, to){
   var ch = window.getCmsHome ? window.getCmsHome() : {};
   var defaultOrder = ['hero','banners','marquee','svc1','svc2','svc3','stats','news','cta'];
   var order = (ch.order && ch.order.length) ? ch.order : defaultOrder.slice();
-  var newIdx = idx + dir;
-  if(newIdx < 0 || newIdx >= order.length) return;
-  var tmp = order[idx];
-  order[idx] = order[newIdx];
-  order[newIdx] = tmp;
+  if(from < 0 || to < 0 || from >= order.length || to >= order.length || from === to) return;
+  var item = order.splice(from, 1)[0];
+  order.splice(to, 0, item);
   ch.order = order;
   window.saveCmsHome(ch);
   showToast(CL('order_saved'));
@@ -3667,16 +3760,15 @@ window._cmsOrderMove = function(idx, dir){
 };
 
 // Nav move
-window._cmsNavMove = function(idx, dir, lang){
+window._cmsNavMove = function(from, to, lang){
   window._cmsNavSave();
   var nd = getCmsNav();
   if(!lang) lang = window.currentLang || 'zh-Hant';
   if(!nd[lang]) return;
-  var newIdx = idx + dir;
-  if(newIdx < 0 || newIdx >= nd[lang].length) return;
-  var tmp = nd[lang][idx];
-  nd[lang][idx] = nd[lang][newIdx];
-  nd[lang][newIdx] = tmp;
+  var items = nd[lang];
+  if(from < 0 || to < 0 || from >= items.length || to >= items.length || from === to) return;
+  var item = items.splice(from, 1)[0];
+  items.splice(to, 0, item);
   saveCmsNav(nd);
   window._cmsHomeView();
 };

@@ -64,6 +64,20 @@ function H(section, field, fallback){
 }
 window._homeField = H;
 
+// ---------- CMS Footer Overrides ----------
+var CMS_FOOTER_KEY = "ecap_cms_footer";
+function getCmsFooter(){ try{ return JSON.parse(localStorage.getItem(CMS_FOOTER_KEY))||{}; }catch(e){ return {}; } }
+function saveCmsFooter(d){ localStorage.setItem(CMS_FOOTER_KEY, JSON.stringify(d)); }
+window.getCmsFooter = getCmsFooter;
+window.saveCmsFooter = saveCmsFooter;
+
+// ---------- CMS Nav Overrides ----------
+var CMS_NAV_KEY = "ecap_cms_nav";
+function getCmsNav(){ try{ return JSON.parse(localStorage.getItem(CMS_NAV_KEY))||{}; }catch(e){ return {}; } }
+function saveCmsNav(d){ localStorage.setItem(CMS_NAV_KEY, JSON.stringify(d)); }
+window.getCmsNav = getCmsNav;
+window.saveCmsNav = saveCmsNav;
+
 // ---------- i18n ----------
 function T(key){
   var u = SITE.ui[currentLang] || SITE.ui["zh-Hant"];
@@ -142,7 +156,8 @@ var ICONS = {
 
 // ---------- Navigation ----------
 function buildNav(){
-  var items = SITE.nav[currentLang] || SITE.nav["zh-Hant"];
+  var cmsNav = (typeof getCmsNav === 'function') ? getCmsNav() : {};
+  var items = (cmsNav[currentLang] && cmsNav[currentLang].length) ? cmsNav[currentLang] : (SITE.nav[currentLang] || SITE.nav["zh-Hant"]);
   var html = '';
   items.forEach(function(item){
     if(item.children){
@@ -283,22 +298,37 @@ window._mmClose = function(){
 // ---------- HOME VIEW ----------
 function homeView(){
   var u = SITE.ui[currentLang] || SITE.ui["zh-Hant"];
-  var html = '';
 
-  // Hero
-  html += heroSection(u);
-  // Banner Carousel
-  html += bannerSection(u);
-  // Group Marquee
-  html += marqueeSection(u);
-  // Feature: Securities
-  html += featureSection({
+  // Section renderers
+  var sectionMap = {
+    hero: function(){ return heroSection(u); },
+    banners: function(){ return bannerSection(u); },
+    marquee: function(){ return marqueeSection(u); },
+    svc1: function(){ return featureSection(/* svc1 rendered inline below */); },
+    svc2: function(){ return ''; },
+    svc3: function(){ return ''; },
+    stats: function(){ return statsSection(u); },
+    news: function(){ return newsSection(u); },
+    cta: function(){ return ctaSection(u); }
+  };
+
+  // Read section order from CMS
+  var ch = getCmsHome();
+  var defaultOrder = ['hero','banners','marquee','svc1','svc2','svc3','stats','news','cta'];
+  var order = (ch.order && ch.order.length) ? ch.order : defaultOrder;
+
+  // Pre-build feature sections since they need specific data
+  var featureHtml = {};
+  // Securities
+  var svc1Feats = null;
+  try{ svc1Feats = JSON.parse(H('svc1','features', null)); }catch(e){}
+  var html_svc1 = featureSection({
     id: 'svc-securities',
     label: H('svc1','label', u.svc1_label || L('Securities Trading', '股票交易', '股票交易')),
     title: H('svc1','title', u.svc1_title || L('Hong Kong & Global<br>Equities Trading', '港股及环球<br>股票交易服务', '港股及環球<br>股票交易服務')),
     desc: H('svc1','desc', u.svc1_desc || L('Trade stocks listed on Hong Kong, Shanghai, and other major global exchanges through our professional iTrader platform.', '透过专业 iTrader 交易平台，轻松买卖港股、A股及环球主要市场的股票。', '透過專業 iTrader 交易平台，輕鬆買賣港股、A股及環球主要市場的股票。')),
     img: H('svc1','img', 'images/ecap-svc-securities.png'),
-    features: [
+    features: svc1Feats && svc1Feats.length ? svc1Feats.map(function(f){ return {icon:ICONS.monitor, title:f.title, desc:f.desc}; }) : [
       { icon: ICONS.monitor, title: u.svc1_f1 || L('iTrader Platform', 'iTrader 交易平台', 'iTrader 交易平台'), desc: u.svc1_f1s || L('Award-winning online trading platform with real-time quotes.', '屡获殊荣的网上交易平台，提供即时报价。', '屢獲殊榮的網上交易平台，提供即時報價。') },
       { icon: ICONS.dollar, title: u.svc1_f2 || L('Competitive Commission', '具竞争力佣金', '具競爭力佣金'), desc: u.svc1_f2s || L('Industry-leading commission rates for all markets.', '全市场领先的佣金费率。', '全市場領先的佣金費率。') },
       { icon: ICONS.trending, title: u.svc1_f3 || L('IPO Subscription', 'IPO 新股认购', 'IPO 新股認購'), desc: u.svc1_f3s || L('Easy online IPO application via iTrader.', '透过 iTrader 轻松申请认购新股。', '透過 iTrader 輕鬆申請認購新股。') },
@@ -306,37 +336,52 @@ function homeView(){
     ]
   });
   // Feature: SH-HK Connect
-  html += featureSection({
+  var svc2Feats = null;
+  try{ svc2Feats = JSON.parse(H('svc2','features', null)); }catch(e){}
+  var html_svc2 = featureSection({
     id: 'svc-connect',
     label: H('svc2','label', u.svc2_label || L('SH-HK Stock Connect', '沪港通', '滬港通')),
     title: H('svc2','title', u.svc2_title || L('Shanghai-Hong Kong<br>Stock Connect', '沪港通<br>交易服务', '滬港通<br>交易服務')),
     desc: H('svc2','desc', u.svc2_desc || L('Access A-share market through our comprehensive Stock Connect service with professional research support.', '透过全面的沪港通服务进入A股市场，配合专业研究报告支援。', '透過全面的滬港通服務進入A股市場，配合專業研究報告支援。')),
     img: H('svc2','img', 'images/ecap-svc-connect.png'),
-    features: [
+    features: svc2Feats && svc2Feats.length ? svc2Feats.map(function(f){ return {icon:ICONS.zap, title:f.title, desc:f.desc}; }) : [
       { icon: ICONS.zap, title: u.svc2_f1 || L('Direct A-Share Access', '直接买卖A股', '直接買賣A股'), desc: u.svc2_f1s || L('Trade Shanghai and Shenzhen listed A-shares directly.', '直接交易沪深两市上市A股。', '直接交易滬深兩市上市A股。') },
       { icon: ICONS.chart, title: u.svc2_f2 || L('Research Reports', '研究报告', '研究報告'), desc: u.svc2_f2s || L('Regular A-share research and market insights.', '定期A股研究报告及市场分析。', '定期A股研究報告及市場分析。') },
       { icon: ICONS.award, title: u.svc2_f3 || L('Monthly Publication', '沪港通月刊', '滬港通月刊'), desc: u.svc2_f3s || L('Monthly updates on Stock Connect developments.', '每月沪港通最新动态。', '每月滬港通最新動態。') }
     ]
   });
   // Feature: Futures
-  html += featureSection({
+  var svc3Feats = null;
+  try{ svc3Feats = JSON.parse(H('svc3','features', null)); }catch(e){}
+  var html_svc3 = featureSection({
     id: 'svc-futures',
     label: H('svc3','label', u.svc3_label || L('Futures & Options', '期货及期权', '期貨及期權')),
     title: H('svc3','title', u.svc3_title || L('Futures &<br>Options Trading', '期货及<br>期权交易服务', '期貨及<br>期權交易服務')),
     desc: H('svc3','desc', u.svc3_desc || L('Trade futures and options on major exchanges with our professional Sharp Point platform.', '透过专业 Sharp Point 交易平台，交易主要交易所的期货及期权。', '透過專業 Sharp Point 交易平台，交易主要交易所的期貨及期權。')),
     img: H('svc3','img', 'images/ecap-svc-futures.png'),
-    features: [
+    features: svc3Feats && svc3Feats.length ? svc3Feats.map(function(f){ return {icon:ICONS.monitor, title:f.title, desc:f.desc}; }) : [
       { icon: ICONS.monitor, title: u.svc3_f1 || L('Sharp Point Platform', 'Sharp Point 平台', 'Sharp Point 平台'), desc: u.svc3_f1s || L('Professional futures trading platform with advanced tools.', '专业期货交易平台，配备先进工具。', '專業期貨交易平台，配備先進工具。') },
       { icon: ICONS.clock, title: u.svc3_f2 || L('Extended Hours', '延长交易时段', '延長交易時段'), desc: u.svc3_f2s || L('Trade during day and after-hours sessions.', '日间及夜间交易时段均可进行交易。', '日間及夜間交易時段均可進行交易。') },
       { icon: ICONS.shield, title: u.svc3_f3 || L('Risk Management', '风险管理', '風險管理'), desc: u.svc3_f3s || L('Comprehensive risk management tools and alerts.', '完善的风险管理工具及提示系统。', '完善的風險管理工具及提示系統。') }
     ]
   });
-  // Stats
-  html += statsSection(u);
-  // News
-  html += newsSection(u);
-  // CTA
-  html += ctaSection(u);
+  featureHtml.svc1 = html_svc1;
+  featureHtml.svc2 = html_svc2;
+  featureHtml.svc3 = html_svc3;
+
+  // Build page in order
+  var html = '';
+  order.forEach(function(secId){
+    if(secId === 'svc1') html += featureHtml.svc1 || '';
+    else if(secId === 'svc2') html += featureHtml.svc2 || '';
+    else if(secId === 'svc3') html += featureHtml.svc3 || '';
+    else if(secId === 'hero') html += heroSection(u);
+    else if(secId === 'banners') html += bannerSection(u);
+    else if(secId === 'marquee') html += marqueeSection(u);
+    else if(secId === 'stats') html += statsSection(u);
+    else if(secId === 'news') html += newsSection(u);
+    else if(secId === 'cta') html += ctaSection(u);
+  });
   return html;
 }
 
@@ -352,8 +397,8 @@ function heroSection(u){
   h += '<h1 class="hero-title">' + H('hero','title', currentLang==='en' ? 'Your Professional<br>Securities & Futures Partner' : (currentLang==='zh-Hans' ? '您的专业<br>证券及期货交易伙伴' : '您的專業<br>證券及期貨交易夥伴')) + '</h1>';
   h += '<p class="hero-subtitle">' + esc(H('hero','subtitle', currentLang==='en' ? 'Over 30 years of experience in Hong Kong financial markets. Trade equities, futures, options and access Shanghai-HK Stock Connect.' : (currentLang==='zh-Hans' ? '逾三十年香港金融市场经验，提供证券、期货、期权交易及沪港通服务。' : '逾三十年香港金融市場經驗，提供證券、期貨、期權交易及滬港通服務。'))) + '</p>';
   h += '<div class="hero-ctas">';
-  h += '<a class="btn btn-gradient" href="#/page/stock-account-opening" data-spa>' + esc(currentLang==='en' ? 'Open Account' : (currentLang==='zh-Hans' ? '开立帐户' : '開立帳戶')) + '</a>';
-  h += '<a class="btn btn-white" href="https://itrade.e-capital.com.hk:8888/" target="_blank">' + esc(currentLang==='en' ? 'Trade Now' : (currentLang==='zh-Hans' ? '立即交易' : '立即交易')) + '</a>';
+  h += '<a class="btn btn-gradient" href="' + escAttr(H('hero','cta1_link', '#/page/stock-account-opening')) + '"' + (H('hero','cta1_link','').indexOf('http') === 0 ? ' target="_blank" rel="noopener"' : ' data-spa') + '>' + esc(H('hero','cta1_text', currentLang==='en' ? 'Open Account' : (currentLang==='zh-Hans' ? '开立帐户' : '開立帳戶'))) + '</a>';
+  h += '<a class="btn btn-white" href="' + escAttr(H('hero','cta2_link', 'https://itrade.e-capital.com.hk:8888/')) + '"' + (H('hero','cta2_link','').indexOf('http') === 0 ? ' target="_blank" rel="noopener"' : ' data-spa') + '>' + esc(H('hero','cta2_text', currentLang==='en' ? 'Trade Now' : (currentLang==='zh-Hans' ? '立即交易' : '立即交易'))) + '</a>';
   h += '</div>';
   h += '</div>';
   h += '</section>';
@@ -392,13 +437,19 @@ function bannerSection(u){
 
 // ---------- MARQUEE ----------
 function marqueeSection(u){
-  var logos = [
+  var mqData = null;
+  try{ var _ch = getCmsHome(); if(_ch.marquee && _ch.marquee[currentLang]) mqData = _ch.marquee[currentLang]; }catch(e){}
+  var logos;
+  try{ logos = mqData && mqData.logos ? JSON.parse(mqData.logos) : null; }catch(e){ logos = null; }
+  if(!logos || !logos.length) logos = [
     {name: 'Capital Securities Corp.', img: 'https://www.e-capital.com.hk/images/fortisinvestments.png'},
     {name: 'Fidelity', img: 'https://www.e-capital.com.hk/images/fidelity.png'},
     {name: 'First State', img: 'https://www.e-capital.com.hk/images/Firststate.png'},
     {name: 'Man Investments', img: 'https://www.e-capital.com.hk/images/ManInvestments.png'}
   ];
-  var groups = [
+  var groups;
+  try{ groups = mqData && mqData.groups ? JSON.parse(mqData.groups) : null; }catch(e){ groups = null; }
+  if(!groups || !groups.length) groups = [
     {name: L('Capital Securities Corp.', '群益金鼎证券', '群益金鼎證券')},
     {name: L('Capital Securities (HK)', '群益证券(香港)', '群益證券(香港)')},
     {name: L('Capital Futures (HK)', '群益期货(香港)', '群益期貨(香港)')},
@@ -407,6 +458,7 @@ function marqueeSection(u){
     {name: L('Capital Securities Group', '群益金融集团', '群益金融集團')},
     {name: L('Capital Asset Management', '群益投顾', '群益投顧')}
   ];
+  var mqTitle = (mqData && mqData.title) ? mqData.title : L('Capital Group', '群益金融集团', '群益金融集團');
   var row1 = '', row2 = '';
   // Row 1: logo images
   for(var r = 0; r < 4; r++){
@@ -421,7 +473,7 @@ function marqueeSection(u){
     });
   }
   var h = '<section class="marquee-sec">';
-  h += '<div class="marquee-title">' + esc(L('Capital Group', '群益金融集团', '群益金融集團')) + '</div>';
+  h += '<div class="marquee-title">' + esc(mqTitle) + '</div>';
   h += '<div class="marquee-row marquee-row-1"><div class="marquee-track">' + row1 + '</div></div>';
   h += '<div class="marquee-row marquee-row-2"><div class="marquee-track">' + row2 + '</div></div>';
   h += '</section>';
@@ -457,7 +509,9 @@ function featureSection(opts){
 
 // ---------- STATS ----------
 function statsSection(u){
-  var stats = [
+  var stats = null;
+  try{ stats = JSON.parse(H('stats','items', null)); }catch(e){}
+  if(!stats || !stats.length) stats = [
     { num: '30+', label: L('Years of Experience', '年金融服务经验', '年金融服務經驗') },
     { num: 'SFC', label: L('Hong Kong SFC Regulated', '香港证监会持牌', '香港證監會持牌') },
     { num: '24/7', label: L('Customer Support', '全天候客户服务', '全天候客戶服務') },
@@ -517,7 +571,9 @@ function newsSection(u){
 
 // ---------- CTA ----------
 function ctaSection(u){
-  var steps = currentLang==='en'
+  var steps = null;
+  try{ steps = JSON.parse(H('cta','steps', null)); }catch(e){}
+  if(!steps || !steps.length) steps = currentLang==='en'
     ? ['Download\nAgreement','Submit\nDocuments','Account\nApproved','Start\nTrading']
     : (currentLang==='zh-Hans'
       ? ['下载\n开户合约','提交\n所需文件','帐户\n审批通过','开始\n交易']
@@ -533,8 +589,12 @@ function ctaSection(u){
   });
   h += '</div>';
   h += '<div class="cta-btns">';
-  h += '<a class="btn btn-white" href="#/page/stock-account-opening" data-spa>' + esc(L('Open Account', '开立帐户', '開立帳戶')) + '</a>';
-  h += '<a class="btn btn-outline" style="color:white;border-color:rgba(255,255,255,.4)" href="#/page/stock-fee" data-spa>' + esc(L('View Fees', '查看收费', '查看收費')) + '</a>';
+  var btn1Txt = H('cta','btn1_text', L('Open Account', '开立帐户', '開立帳戶'));
+  var btn1Lnk = H('cta','btn1_link', '#/page/stock-account-opening');
+  var btn2Txt = H('cta','btn2_text', L('View Fees', '查看收费', '查看收費'));
+  var btn2Lnk = H('cta','btn2_link', '#/page/stock-fee');
+  h += '<a class="btn btn-white" href="' + escAttr(btn1Lnk) + '"' + (btn1Lnk.indexOf('http') === 0 ? ' target="_blank" rel="noopener"' : ' data-spa') + '>' + esc(btn1Txt) + '</a>';
+  h += '<a class="btn btn-outline" style="color:white;border-color:rgba(255,255,255,.4)" href="' + escAttr(btn2Lnk) + '"' + (btn2Lnk.indexOf('http') === 0 ? ' target="_blank" rel="noopener"' : ' data-spa') + '>' + esc(btn2Txt) + '</a>';
   h += '</div>';
   h += '</div></div></section>';
   return h;
@@ -657,7 +717,8 @@ function blogArticleView(slug){
 
 // ---------- PAGE VIEW (rd.group-style) ----------
 function findSiblingPages(slug){
-  var items = SITE.nav[currentLang] || SITE.nav["zh-Hant"];
+  var cmsNav = (typeof getCmsNav === 'function') ? getCmsNav() : {};
+  var items = (cmsNav[currentLang] && cmsNav[currentLang].length) ? cmsNav[currentLang] : (SITE.nav[currentLang] || SITE.nav["zh-Hant"]);
   for(var i=0;i<items.length;i++){
     var top = items[i];
     if(top.children){
@@ -743,50 +804,57 @@ function pageView(slug){
 function footerView(){
   var isEn = currentLang === 'en';
   var isHans = currentLang === 'zh-Hans';
+  var ft = (typeof getCmsFooter === 'function') ? getCmsFooter() : {};
+  var ftL = ft[currentLang] || {};
   var h = '<footer class="footer">';
   h += '<div class="mw footer-main">';
   h += '<div class="footer-grid">';
 
   // Brand column
   h += '<div class="footer-brand">';
-  h += '<div class="footer-brand-name">' + esc(isEn ? 'Capital Securities (Hong Kong) Limited' : (isHans ? '群益证券(香港)有限公司' : '群益證券(香港)有限公司')) + '</div>';
+  h += '<div class="footer-brand-name">' + esc(ftL.brand_name || (isEn ? 'Capital Securities (Hong Kong) Limited' : (isHans ? '群益证券(香港)有限公司' : '群益證券(香港)有限公司'))) + '</div>';
   h += '<div class="footer-brand-addr">';
-  h += esc(isEn ? '21/F, Capital Centre, 151 Gloucester Road, Wan Chai, Hong Kong' : (isHans ? '香港湾仔告士打道151号资本中心21楼全层' : '香港灣仔告士打道151號資本中心21樓全層')) + '<br>';
-  h += esc(isEn ? 'Tel' : (isHans ? '电话' : '電話')) + ': (852) 2530-9966<br>';
-  h += esc(isEn ? 'Fax' : (isHans ? '传真' : '傳真')) + ': (852) 2530-9424';
+  h += esc(ftL.address || (isEn ? '21/F, Capital Centre, 151 Gloucester Road, Wan Chai, Hong Kong' : (isHans ? '香港湾仔告士打道151号资本中心21楼全层' : '香港灣仔告士打道151號資本中心21樓全層'))) + '<br>';
+  h += esc(isEn ? 'Tel' : (isHans ? '电话' : '電話')) + ': ' + esc(ftL.tel || '(852) 2530-9966') + '<br>';
+  h += esc(isEn ? 'Fax' : (isHans ? '传真' : '傳真')) + ': ' + esc(ftL.fax || '(852) 2530-9424');
   h += '</div></div>';
 
-  // Products column
-  h += '<div class="footer-col"><div class="footer-col-title">' + esc(isEn ? 'Products' : (isHans ? '产品服务' : '產品服務')) + '</div>';
-  h += '<a href="#/page/stock-ipo" data-spa>' + esc(isEn ? 'Securities' : (isHans ? '证券交易' : '證券交易')) + '</a>';
-  h += '<a href="#/page/shh-hk" data-spa>' + esc(isEn ? 'Stock Connect' : (isHans ? '沪港通' : '滬港通')) + '</a>';
-  h += '<a href="http://futures.e-capital.com.hk/" target="_blank">' + esc(isEn ? 'Futures & Options' : (isHans ? '期货及期权' : '期貨及期權')) + '</a>';
-  h += '<a href="#/page/fund" data-spa>' + esc(isEn ? 'Funds' : '基金') + '</a>';
-  h += '</div>';
-
-  // Discover column
-  h += '<div class="footer-col"><div class="footer-col-title">' + esc(isEn ? 'Discover' : (isHans ? '探索' : '探索')) + '</div>';
-  h += '<a href="#/page/news" data-spa>' + esc(isEn ? 'News' : (isHans ? '新闻' : '新聞')) + '</a>';
-  h += '<a href="#/page/report-daily" data-spa>' + esc(isEn ? 'Daily Commentary' : (isHans ? '每日评论' : '每日評論')) + '</a>';
-  h += '<a href="#/page/report-stock" data-spa>' + esc(isEn ? 'Stock Reports' : (isHans ? '个股推荐' : '個股推薦')) + '</a>';
-  h += '<a href="#/page/shh-hk-mag" data-spa>' + esc(isEn ? 'Monthly Magazine' : (isHans ? '沪港通月刊' : '滬港通月刊')) + '</a>';
-  h += '</div>';
-
-  // Account column
-  h += '<div class="footer-col"><div class="footer-col-title">' + esc(isEn ? 'Account' : (isHans ? '账户' : '帳戶')) + '</div>';
-  h += '<a href="#/page/stock-account-opening" data-spa>' + esc(isEn ? 'Open Account' : (isHans ? '开户程序' : '開戶程序')) + '</a>';
-  h += '<a href="#/page/stock-fee" data-spa>' + esc(isEn ? 'Fee Schedule' : (isHans ? '佣金及收费' : '佣金及收費')) + '</a>';
-  h += '<a href="#/page/fund-deposit" data-spa>' + esc(isEn ? 'Funds Deposit' : (isHans ? '款项提存' : '款項提存')) + '</a>';
-  h += '<a href="#/page/forms-download" data-spa>' + esc(isEn ? 'Forms' : (isHans ? '下载表格' : '下載表格')) + '</a>';
-  h += '</div>';
-
-  // Legal column
-  h += '<div class="footer-col"><div class="footer-col-title">' + esc(isEn ? 'Legal' : (isHans ? '法律信息' : '法律資訊')) + '</div>';
-  h += '<a href="#/page/trade-statement" data-spa>' + esc(isEn ? 'Trading Declaration' : (isHans ? '网上交易声明' : '網上交易聲明')) + '</a>';
-  h += '<a href="#/page/risk-disclosure" data-spa>' + esc(isEn ? 'Risk Disclosure' : (isHans ? '风险披露' : '風險披露')) + '</a>';
-  h += '<a href="#/page/privacy" data-spa>' + esc(isEn ? 'Privacy Policy' : (isHans ? '个人隐私政策' : '個人私隱政策')) + '</a>';
-  h += '<a href="#/page/contact" data-spa>' + esc(isEn ? 'Contact Us' : (isHans ? '联络我们' : '聯絡我們')) + '</a>';
-  h += '</div>';
+  // Dynamic columns from CMS or defaults
+  var defaultCols = [
+    {title: isEn ? 'Products' : (isHans ? '产品服务' : '產品服務'), links: [
+      {text: isEn ? 'Securities' : (isHans ? '证券交易' : '證券交易'), href: '#/page/stock-ipo'},
+      {text: isEn ? 'Stock Connect' : (isHans ? '沪港通' : '滬港通'), href: '#/page/shh-hk'},
+      {text: isEn ? 'Futures & Options' : (isHans ? '期货及期权' : '期貨及期權'), href: 'http://futures.e-capital.com.hk/'},
+      {text: isEn ? 'Funds' : '基金', href: '#/page/fund'}
+    ]},
+    {title: isEn ? 'Discover' : (isHans ? '探索' : '探索'), links: [
+      {text: isEn ? 'News' : (isHans ? '新闻' : '新聞'), href: '#/page/news'},
+      {text: isEn ? 'Daily Commentary' : (isHans ? '每日评论' : '每日評論'), href: '#/page/report-daily'},
+      {text: isEn ? 'Stock Reports' : (isHans ? '个股推荐' : '個股推薦'), href: '#/page/report-stock'},
+      {text: isEn ? 'Monthly Magazine' : (isHans ? '沪港通月刊' : '滬港通月刊'), href: '#/page/shh-hk-mag'}
+    ]},
+    {title: isEn ? 'Account' : (isHans ? '账户' : '帳戶'), links: [
+      {text: isEn ? 'Open Account' : (isHans ? '开户程序' : '開戶程序'), href: '#/page/stock-account-opening'},
+      {text: isEn ? 'Fee Schedule' : (isHans ? '佣金及收费' : '佣金及收費'), href: '#/page/stock-fee'},
+      {text: isEn ? 'Funds Deposit' : (isHans ? '款项提存' : '款項提存'), href: '#/page/fund-deposit'},
+      {text: isEn ? 'Forms' : (isHans ? '下载表格' : '下載表格'), href: '#/page/forms-download'}
+    ]},
+    {title: isEn ? 'Legal' : (isHans ? '法律信息' : '法律資訊'), links: [
+      {text: isEn ? 'Trading Declaration' : (isHans ? '网上交易声明' : '網上交易聲明'), href: '#/page/trade-statement'},
+      {text: isEn ? 'Risk Disclosure' : (isHans ? '风险披露' : '風險披露'), href: '#/page/risk-disclosure'},
+      {text: isEn ? 'Privacy Policy' : (isHans ? '个人隐私政策' : '個人私隱政策'), href: '#/page/privacy'},
+      {text: isEn ? 'Contact Us' : (isHans ? '联络我们' : '聯絡我們'), href: '#/page/contact'}
+    ]}
+  ];
+  var columns = (ftL.columns && ftL.columns.length) ? ftL.columns : defaultCols;
+  columns.forEach(function(col){
+    h += '<div class="footer-col"><div class="footer-col-title">' + esc(col.title) + '</div>';
+    (col.links||[]).forEach(function(lnk){
+      var isExternal = lnk.href && lnk.href.indexOf('http') === 0;
+      h += '<a href="' + escAttr(lnk.href||'#') + '"' + (isExternal ? ' target="_blank"' : ' data-spa') + '>' + esc(lnk.text) + '</a>';
+    });
+    h += '</div>';
+  });
 
   h += '</div>'; // footer-grid
 

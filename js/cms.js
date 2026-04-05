@@ -327,6 +327,61 @@ var CMS_I18N = {
   preview_mode:    {en:'PREVIEW MODE', hans:'预览模式', hant:'預覽模式'},
   unsaved_inc:     {en:'unsaved changes included', hans:'包含未保存的更改', hant:'包含未儲存的變更'},
   auto_gen_pwd:    {en:'Auto-generated password', hans:'自动生成密码', hant:'自動生成密碼'},
+  // Homepage extended — hero buttons, CTA steps, stats, marquee, footer, nav, order
+  home_cta1_text:  {en:'Button 1 Text', hans:'按钮1文字', hant:'按鈕1文字'},
+  home_cta1_link:  {en:'Button 1 Link', hans:'按钮1连结', hant:'按鈕1連結'},
+  home_cta2_text:  {en:'Button 2 Text', hans:'按钮2文字', hant:'按鈕2文字'},
+  home_cta2_link:  {en:'Button 2 Link', hans:'按钮2连结', hant:'按鈕2連結'},
+  home_steps:      {en:'Steps', hans:'步骤', hant:'步驟'},
+  home_step:       {en:'Step', hans:'步骤', hant:'步驟'},
+  home_stats:      {en:'Stats / Numbers', hans:'数据统计', hant:'數據統計'},
+  home_stat_num:   {en:'Number', hans:'数字', hant:'數字'},
+  home_stat_label: {en:'Label', hans:'标签', hant:'標籤'},
+  home_add_item:   {en:'+ Add Item', hans:'+ 新增项目', hant:'+ 新增項目'},
+  home_remove:     {en:'Remove', hans:'移除', hant:'移除'},
+  home_marquee:    {en:'Group Marquee', hans:'集团走马灯', hant:'集團走馬燈'},
+  home_marquee_title:{en:'Marquee Title', hans:'走马灯标题', hant:'走馬燈標題'},
+  home_logos:      {en:'Partner Logos', hans:'合作伙伴标志', hant:'合作夥伴標誌'},
+  home_logo_name:  {en:'Name', hans:'名称', hant:'名稱'},
+  home_logo_img:   {en:'Image URL', hans:'图片网址', hant:'圖片網址'},
+  home_groups:     {en:'Group Names', hans:'集团名称', hant:'集團名稱'},
+  home_group_name: {en:'Name', hans:'名称', hant:'名稱'},
+  home_features:   {en:'Sub-features', hans:'子功能', hant:'子功能'},
+  home_feat_title: {en:'Feature Title', hans:'功能标题', hant:'功能標題'},
+  home_feat_desc:  {en:'Feature Desc', hans:'功能描述', hant:'功能描述'},
+  home_footer:     {en:'Footer', hans:'页尾', hant:'頁尾'},
+  footer_brand:    {en:'Company Name', hans:'公司名称', hant:'公司名稱'},
+  footer_address:  {en:'Address', hans:'地址', hant:'地址'},
+  footer_tel:      {en:'Tel', hans:'电话', hant:'電話'},
+  footer_fax:      {en:'Fax', hans:'传真', hant:'傳真'},
+  footer_col_title:{en:'Column Title', hans:'栏目标题', hant:'欄目標題'},
+  footer_link_text:{en:'Link Text', hans:'连结文字', hant:'連結文字'},
+  footer_link_href:{en:'Link URL', hans:'连结网址', hant:'連結網址'},
+  footer_add_col:  {en:'+ Add Column', hans:'+ 新增栏目', hant:'+ 新增欄目'},
+  footer_add_link: {en:'+ Add Link', hans:'+ 新增连结', hant:'+ 新增連結'},
+  footer_copyright:{en:'Copyright', hans:'版权', hant:'版權'},
+  home_nav:        {en:'Navigation Menu', hans:'导航菜单', hant:'導航選單'},
+  nav_item_label:  {en:'Label', hans:'标签', hant:'標籤'},
+  nav_item_page:   {en:'Page Slug', hans:'页面Slug', hant:'頁面Slug'},
+  nav_item_ext:    {en:'External URL', hans:'外部连结', hant:'外部連結'},
+  nav_add_item:    {en:'+ Add Item', hans:'+ 新增项目', hant:'+ 新增項目'},
+  nav_add_child:   {en:'+ Add Sub-item', hans:'+ 新增子项', hant:'+ 新增子項'},
+  nav_add_group:   {en:'+ Add Group', hans:'+ 新增群组', hant:'+ 新增群組'},
+  nav_reset:       {en:'Reset to Default', hans:'重置为默认', hant:'重設為預設'},
+  nav_reset_q:     {en:'Reset navigation to default? This cannot be undone.', hans:'重置导航为默认？此操作无法撤销。', hant:'重設導航為預設？此操作無法撤銷。'},
+  nav_saved:       {en:'Navigation saved', hans:'导航已保存', hant:'導航已儲存'},
+  home_order:      {en:'Section Order', hans:'区块排序', hant:'區塊排序'},
+  section_hero:    {en:'Hero', hans:'主视觉', hant:'主視覺'},
+  section_banners: {en:'Banners', hans:'横幅轮播', hant:'橫幅輪播'},
+  section_marquee: {en:'Marquee', hans:'走马灯', hant:'走馬燈'},
+  section_svc1:    {en:'Securities', hans:'股票交易', hant:'股票交易'},
+  section_svc2:    {en:'Stock Connect', hans:'沪港通', hant:'滬港通'},
+  section_svc3:    {en:'Futures', hans:'期货', hant:'期貨'},
+  section_stats:   {en:'Stats', hans:'数据统计', hant:'數據統計'},
+  section_news:    {en:'News', hans:'新闻', hant:'新聞'},
+  section_cta:     {en:'CTA', hans:'行动呼吁', hant:'行動呼籲'},
+  order_saved:     {en:'Section order saved', hans:'区块排序已保存', hant:'區塊排序已儲存'},
+  footer_saved:    {en:'Footer saved', hans:'页尾已保存', hant:'頁尾已儲存'},
   copy_pwd:        {en:'Copy', hans:'复制', hant:'複製'},
   pwd_copied:      {en:'Password copied to clipboard', hans:'密码已复制到剪贴板', hant:'密碼已複製到剪貼簿'},
   must_change_pwd: {en:'Must change password on first login', hans:'首次登录必须更改密码', hant:'首次登入必須更改密碼'},
@@ -1342,7 +1397,10 @@ window._cmsExport = function(){
     pages: full,
     banners: getCmsBanners(),
     blog: getCmsBlog() || [],
-    files: getCmsFiles()
+    files: getCmsFiles(),
+    home: getCmsHome(),
+    footer: getCmsFooter(),
+    nav: getCmsNav()
   };
   var blob = new Blob([JSON.stringify(exportData, null, 2)], {type:"application/json"});
   var a = document.createElement("a");
@@ -1366,6 +1424,9 @@ window._cmsImport = function(e){
         if(data.banners) saveCmsBanners(data.banners);
         if(data.blog) saveCmsBlog(data.blog);
         if(data.files) saveCmsFiles(data.files);
+        if(data.home) saveCmsHome(data.home);
+        if(data.footer) saveCmsFooter(data.footer);
+        if(data.nav) saveCmsNav(data.nav);
       } else {
         // Legacy: entire object is pages
         saveCmsPages(data);
@@ -1381,6 +1442,10 @@ window._cmsImport = function(e){
 window._cmsReset = function(){
   if(confirm(CL('reset_confirm'))) {
     localStorage.removeItem(CMS_KEY);
+    localStorage.removeItem('ecap_cms_home');
+    localStorage.removeItem('ecap_cms_banners');
+    localStorage.removeItem('ecap_cms_footer');
+    localStorage.removeItem('ecap_cms_nav');
     showToast(CL('reset_done'));
     window.route();
   }
@@ -2656,6 +2721,17 @@ window._cmsBlogMove = function(idx, dir){
 };
 
 // ————————————————————— CMS HOMEPAGE EDITOR —————————————————————
+// Helper: get footer CMS data
+function getCmsFooter(){ try{ return JSON.parse(localStorage.getItem('ecap_cms_footer'))||{}; }catch(e){ return {}; } }
+function saveCmsFooter(d){ localStorage.setItem('ecap_cms_footer', JSON.stringify(d)); }
+window.getCmsFooter = getCmsFooter;
+window.saveCmsFooter = saveCmsFooter;
+// Helper: get nav CMS data
+function getCmsNav(){ try{ return JSON.parse(localStorage.getItem('ecap_cms_nav'))||{}; }catch(e){ return {}; } }
+function saveCmsNav(d){ localStorage.setItem('ecap_cms_nav', JSON.stringify(d)); }
+window.getCmsNav = getCmsNav;
+window.saveCmsNav = saveCmsNav;
+
 window._cmsHomeView = function(){
   // Destroy any existing CKEditor instances from previous render
   Object.keys(_cmsEditors).forEach(function(k){ try{ _cmsEditors[k].destroy(); }catch(e){} });
@@ -2675,12 +2751,22 @@ window._cmsHomeView = function(){
     hero: {
       badge: lang==='en'?'SFC Licensed':(lang==='zh-Hans'?'香港证监会持牌':'香港證監會持牌'),
       title: lang==='en'?'Your Professional<br>Securities & Futures Partner':(lang==='zh-Hans'?'您的专业<br>证券及期货交易伙伴':'您的專業<br>證券及期貨交易夥伴'),
-      subtitle: lang==='en'?'Over 30 years of experience in Hong Kong financial markets.':(lang==='zh-Hans'?'逾三十年香港金融市场经验，提供证券、期货、期权交易及沪港通服务。':'逾三十年香港金融市場經驗，提供證券、期貨、期權交易及滬港通服務。')
+      subtitle: lang==='en'?'Over 30 years of experience in Hong Kong financial markets.':(lang==='zh-Hans'?'逾三十年香港金融市场经验，提供证券、期货、期权交易及沪港通服务。':'逾三十年香港金融市場經驗，提供證券、期貨、期權交易及滬港通服務。'),
+      cta1_text: lang==='en'?'Open Account':(lang==='zh-Hans'?'开立帐户':'開立帳戶'),
+      cta1_link: '#/page/stock-account-opening',
+      cta2_text: lang==='en'?'Trade Now':(lang==='zh-Hans'?'立即交易':'立即交易'),
+      cta2_link: 'https://itrade.e-capital.com.hk:8888/'
     },
     svc1: { label: lang==='en'?'Securities Trading':(lang==='zh-Hans'?'股票交易':'股票交易'), title: lang==='en'?'Hong Kong & Global Equities Trading':(lang==='zh-Hans'?'港股及环球股票交易服务':'港股及環球股票交易服務'), desc: lang==='en'?'Trade stocks listed on Hong Kong, Shanghai, and other major global exchanges.':(lang==='zh-Hans'?'透过专业 iTrader 交易平台，轻松买卖港股、A股及环球主要市场的股票。':'透過專業 iTrader 交易平台，輕鬆買賣港股、A股及環球主要市場的股票。'), img: 'images/ecap-svc-securities.png' },
     svc2: { label: lang==='en'?'SH-HK Stock Connect':(lang==='zh-Hans'?'沪港通':'滬港通'), title: lang==='en'?'Shanghai-Hong Kong Stock Connect':(lang==='zh-Hans'?'沪港通交易服务':'滬港通交易服務'), desc: lang==='en'?'Access A-share market through our comprehensive Stock Connect service.':(lang==='zh-Hans'?'透过全面的沪港通服务进入A股市场。':'透過全面的滬港通服務進入A股市場。'), img: 'images/ecap-svc-connect.png' },
     svc3: { label: lang==='en'?'Futures & Options':(lang==='zh-Hans'?'期货及期权':'期貨及期權'), title: lang==='en'?'Futures & Options Trading':(lang==='zh-Hans'?'期货及期权交易服务':'期貨及期權交易服務'), desc: lang==='en'?'Trade futures and options on major exchanges.':(lang==='zh-Hans'?'透过专业 Sharp Point 交易平台，交易主要交易所的期货及期权。':'透過專業 Sharp Point 交易平台，交易主要交易所的期貨及期權。'), img: 'images/ecap-svc-futures.png' },
-    cta: { title: lang==='en'?'Open Your Account Today':(lang==='zh-Hans'?'立即开户 把握投资先机':'立即開戶 把握投資先機'), desc: lang==='en'?'Start trading in Hong Kong, Shanghai and global markets with Capital Securities.':(lang==='zh-Hans'?'群益证券为您提供港股、A股及环球市场交易服务。':'群益證券為您提供港股、A股及環球市場交易服務。') }
+    cta: { title: lang==='en'?'Open Your Account Today':(lang==='zh-Hans'?'立即开户 把握投资先机':'立即開戶 把握投資先機'), desc: lang==='en'?'Start trading in Hong Kong, Shanghai and global markets with Capital Securities.':(lang==='zh-Hans'?'群益证券为您提供港股、A股及环球市场交易服务。':'群益證券為您提供港股、A股及環球市場交易服務。'),
+      btn1_text: lang==='en'?'Open Account':(lang==='zh-Hans'?'开立帐户':'開立帳戶'),
+      btn1_link: '#/page/stock-account-opening',
+      btn2_text: lang==='en'?'View Fees':(lang==='zh-Hans'?'查看收费':'查看收費'),
+      btn2_link: '#/page/stock-fee',
+      steps: JSON.stringify(lang==='en'?['Download\nAgreement','Submit\nDocuments','Account\nApproved','Start\nTrading']:(lang==='zh-Hans'?['下载\n开户合约','提交\n所需文件','帐户\n审批通过','开始\n交易']:['下載\n開戶合約','提交\n所需文件','帳戶\n審批通過','開始\n交易']))
+    }
   };
 
   function gv(sec, field){ return (ch[sec] && ch[sec][lang] && ch[sec][lang][field]) || (defaults[sec] && defaults[sec][field]) || ''; }
@@ -2722,32 +2808,246 @@ window._cmsHomeView = function(){
     +'<button class="admin-btn primary" onclick="window._cmsHomeSave()">'+CL('save_changes')+'</button>'
     +'</div>';
 
-  // 1. Hero
+  // ========== Section Order ==========
+  var defaultOrder = ['hero','banners','marquee','svc1','svc2','svc3','stats','news','cta'];
+  var sectionOrder = (ch.order && ch.order.length) ? ch.order : defaultOrder;
+  var secNames = {hero:'section_hero',banners:'section_banners',marquee:'section_marquee',svc1:'section_svc1',svc2:'section_svc2',svc3:'section_svc3',stats:'section_stats',news:'section_news',cta:'section_cta'};
+  var orderHtml = '<div id="cmsOrderList">';
+  sectionOrder.forEach(function(sid, i){
+    orderHtml += '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg-light);border-radius:8px;margin-bottom:4px">'
+      +'<span style="font-weight:600;font-size:13px;flex:1">'+CL(secNames[sid]||sid)+'</span>'
+      +(i>0?'<button class="admin-btn secondary" style="font-size:11px;padding:2px 8px" onclick="window._cmsOrderMove('+i+',-1)">&uarr;</button>':'')
+      +(i<sectionOrder.length-1?'<button class="admin-btn secondary" style="font-size:11px;padding:2px 8px" onclick="window._cmsOrderMove('+i+',1)">&darr;</button>':'')
+      +'</div>';
+  });
+  orderHtml += '</div>';
+  html += sectionAccordion('order', 'home_order', orderHtml);
+
+  // ========== 1. Hero ==========
   html += sectionAccordion('hero', 'home_hero',
     plainField('cms_h_hero_badge','home_badge', gv('hero','badge'))
     +richField('cms_h_hero_title','home_title', gv('hero','title'))
     +richField('cms_h_hero_subtitle','home_subtitle', gv('hero','subtitle'))
+    +'<div class="cms-field-group" style="margin-top:12px"><h4>'+CL('home_cta1_text').replace('1','')+'</h4>'
+    +'<div class="cms-form-row">'
+    +plainField('cms_h_hero_cta1_text','home_cta1_text', gv('hero','cta1_text'))
+    +plainField('cms_h_hero_cta1_link','home_cta1_link', gv('hero','cta1_link'))
+    +'</div>'
+    +'<div class="cms-form-row">'
+    +plainField('cms_h_hero_cta2_text','home_cta2_text', gv('hero','cta2_text'))
+    +plainField('cms_h_hero_cta2_link','home_cta2_link', gv('hero','cta2_link'))
+    +'</div></div>'
   );
 
-  // 2. Banners (embed existing)
+  // ========== 2. Banners ==========
   html += sectionAccordion('banners', 'home_banners',
     '<div id="cmsHomeBanners"></div>');
 
-  // 3-5. Services
+  // ========== 3. Marquee ==========
+  var mq = (ch.marquee && ch.marquee[lang]) || {};
+  var mqTitle = mq.title || (lang==='en'?'Capital Group':(lang==='zh-Hans'?'群益金融集团':'群益金融集團'));
+  var mqLogos = [];
+  try{ mqLogos = JSON.parse(mq.logos||'[]'); }catch(e){}
+  if(!mqLogos.length) mqLogos = [
+    {name:'Capital Securities Corp.', img:'https://www.e-capital.com.hk/images/fortisinvestments.png'},
+    {name:'Fidelity', img:'https://www.e-capital.com.hk/images/fidelity.png'},
+    {name:'First State', img:'https://www.e-capital.com.hk/images/Firststate.png'},
+    {name:'Man Investments', img:'https://www.e-capital.com.hk/images/ManInvestments.png'}
+  ];
+  var mqGroups = [];
+  try{ mqGroups = JSON.parse(mq.groups||'[]'); }catch(e){}
+  if(!mqGroups.length) mqGroups = [
+    {name:lang==='en'?'Capital Securities Corp.':(lang==='zh-Hans'?'群益金鼎证券':'群益金鼎證券')},
+    {name:lang==='en'?'Capital Securities (HK)':(lang==='zh-Hans'?'群益证券(香港)':'群益證券(香港)')},
+    {name:lang==='en'?'Capital Futures (HK)':(lang==='zh-Hans'?'群益期货(香港)':'群益期貨(香港)')},
+    {name:lang==='en'?'Capital Investment Trust':(lang==='zh-Hans'?'群益投信':'群益投信')},
+    {name:lang==='en'?'Capital Futures Corp.':(lang==='zh-Hans'?'群益期货':'群益期貨')},
+    {name:lang==='en'?'Capital Securities Group':(lang==='zh-Hans'?'群益金融集团':'群益金融集團')},
+    {name:lang==='en'?'Capital Asset Management':(lang==='zh-Hans'?'群益投顾':'群益投顧')}
+  ];
+  var mqHtml = plainField('cms_h_mq_title','home_marquee_title', mqTitle);
+  mqHtml += '<label style="font-size:12px;font-weight:600;color:var(--text-sec);margin:12px 0 6px;display:block;text-transform:uppercase;letter-spacing:.5px">'+CL('home_logos')+'</label>';
+  mqHtml += '<div id="cmsLogoList">';
+  mqLogos.forEach(function(l,i){
+    mqHtml += '<div class="cms-form-row" style="align-items:end">'
+      +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsLN_'+i+'" value="'+escAttr(l.name)+'" placeholder="'+CL('home_logo_name')+'"/></div>'
+      +'<div class="admin-field" style="flex:2;margin:0"><input type="text" id="cmsLI_'+i+'" value="'+escAttr(l.img)+'" placeholder="'+CL('home_logo_img')+'"/></div>'
+      +'<button class="admin-btn danger" style="padding:6px 10px;font-size:11px;height:42px" onclick="window._cmsRemoveRepeater(\'logo\','+i+')">'+CL('home_remove')+'</button>'
+      +'</div>';
+  });
+  mqHtml += '</div>';
+  mqHtml += '<button class="admin-btn secondary" style="font-size:12px;margin-top:4px" onclick="window._cmsAddRepeater(\'logo\')">'+CL('home_add_item')+'</button>';
+  mqHtml += '<label style="font-size:12px;font-weight:600;color:var(--text-sec);margin:16px 0 6px;display:block;text-transform:uppercase;letter-spacing:.5px">'+CL('home_groups')+'</label>';
+  mqHtml += '<div id="cmsGroupList">';
+  mqGroups.forEach(function(g,i){
+    mqHtml += '<div class="cms-form-row" style="align-items:end">'
+      +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsGN_'+i+'" value="'+escAttr(g.name)+'" placeholder="'+CL('home_group_name')+'"/></div>'
+      +'<button class="admin-btn danger" style="padding:6px 10px;font-size:11px;height:42px" onclick="window._cmsRemoveRepeater(\'group\','+i+')">'+CL('home_remove')+'</button>'
+      +'</div>';
+  });
+  mqHtml += '</div>';
+  mqHtml += '<button class="admin-btn secondary" style="font-size:12px;margin-top:4px" onclick="window._cmsAddRepeater(\'group\')">'+CL('home_add_item')+'</button>';
+  html += sectionAccordion('marquee', 'home_marquee', mqHtml);
+
+  // ========== 3-5. Services (with sub-features) ==========
   ['svc1','svc2','svc3'].forEach(function(svc){
+    var feats = [];
+    try{ feats = JSON.parse(gv(svc,'features')||'[]'); }catch(e){}
+    var featHtml = '';
+    if(feats.length){
+      featHtml += '<label style="font-size:12px;font-weight:600;color:var(--text-sec);margin:12px 0 6px;display:block;text-transform:uppercase;letter-spacing:.5px">'+CL('home_features')+'</label>';
+      featHtml += '<div id="cmsFeat_'+svc+'">';
+      feats.forEach(function(f,i){
+        featHtml += '<div class="cms-form-row" style="align-items:end">'
+          +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsFT_'+svc+'_'+i+'" value="'+escAttr(f.title||'')+'" placeholder="'+CL('home_feat_title')+'"/></div>'
+          +'<div class="admin-field" style="flex:2;margin:0"><input type="text" id="cmsFD_'+svc+'_'+i+'" value="'+escAttr(f.desc||'')+'" placeholder="'+CL('home_feat_desc')+'"/></div>'
+          +'<button class="admin-btn danger" style="padding:6px 10px;font-size:11px;height:42px" onclick="window._cmsRemoveRepeater(\'feat_'+svc+'\','+i+')">'+CL('home_remove')+'</button>'
+          +'</div>';
+      });
+      featHtml += '</div>';
+    } else {
+      featHtml += '<label style="font-size:12px;font-weight:600;color:var(--text-sec);margin:12px 0 6px;display:block;text-transform:uppercase;letter-spacing:.5px">'+CL('home_features')+' <span style="font-weight:400;text-transform:none;letter-spacing:0">(using defaults)</span></label>';
+      featHtml += '<div id="cmsFeat_'+svc+'"></div>';
+    }
+    featHtml += '<button class="admin-btn secondary" style="font-size:12px;margin-top:4px" onclick="window._cmsAddRepeater(\'feat_'+svc+'\')">'+CL('home_add_item')+'</button>';
+
     html += sectionAccordion(svc, 'home_'+svc,
       plainField('cms_h_'+svc+'_label','home_label', gv(svc,'label'))
       +richField('cms_h_'+svc+'_title','home_title', gv(svc,'title'))
       +richField('cms_h_'+svc+'_desc','home_desc', gv(svc,'desc'))
       +plainField('cms_h_'+svc+'_img','home_img', gv(svc,'img'))
+      +featHtml
     );
   });
 
-  // 6. CTA
-  html += sectionAccordion('cta', 'home_cta',
-    richField('cms_h_cta_title','home_title', gv('cta','title'))
+  // ========== Stats ==========
+  var statsData = [];
+  try{ statsData = JSON.parse(gv('stats','items')||'[]'); }catch(e){}
+  if(!statsData.length) statsData = [
+    {num:'30+', label:lang==='en'?'Years of Experience':(lang==='zh-Hans'?'年金融服务经验':'年金融服務經驗')},
+    {num:'SFC', label:lang==='en'?'Hong Kong SFC Regulated':(lang==='zh-Hans'?'香港证监会持牌':'香港證監會持牌')},
+    {num:'24/7', label:lang==='en'?'Customer Support':(lang==='zh-Hans'?'全天候客户服务':'全天候客戶服務')},
+    {num:lang==='en'?'Multi':(lang==='zh-Hans'?'多元':'多元'), label:lang==='en'?'Market Access':(lang==='zh-Hans'?'市场覆盖':'市場覆蓋')}
+  ];
+  var statsHtml = '<div id="cmsStatsList">';
+  statsData.forEach(function(s,i){
+    statsHtml += '<div class="cms-form-row" style="align-items:end">'
+      +'<div class="admin-field" style="flex:1;margin:0"><label>'+CL('home_stat_num')+'</label><input type="text" id="cmsSN_'+i+'" value="'+escAttr(s.num)+'"/></div>'
+      +'<div class="admin-field" style="flex:2;margin:0"><label>'+CL('home_stat_label')+'</label><input type="text" id="cmsSL_'+i+'" value="'+escAttr(s.label)+'"/></div>'
+      +'<button class="admin-btn danger" style="padding:6px 10px;font-size:11px;height:42px" onclick="window._cmsRemoveRepeater(\'stat\','+i+')">'+CL('home_remove')+'</button>'
+      +'</div>';
+  });
+  statsHtml += '</div>';
+  statsHtml += '<button class="admin-btn secondary" style="font-size:12px;margin-top:4px" onclick="window._cmsAddRepeater(\'stat\')">'+CL('home_add_item')+'</button>';
+  html += sectionAccordion('stats', 'home_stats', statsHtml);
+
+  // ========== CTA ==========
+  var ctaSteps = [];
+  try{ ctaSteps = JSON.parse(gv('cta','steps')||'[]'); }catch(e){}
+  if(!ctaSteps.length) ctaSteps = lang==='en'?['Download\nAgreement','Submit\nDocuments','Account\nApproved','Start\nTrading']:(lang==='zh-Hans'?['下载\n开户合约','提交\n所需文件','帐户\n审批通过','开始\n交易']:['下載\n開戶合約','提交\n所需文件','帳戶\n審批通過','開始\n交易']);
+  var ctaHtml = richField('cms_h_cta_title','home_title', gv('cta','title'))
     +richField('cms_h_cta_desc','home_desc', gv('cta','desc'))
-  );
+    +'<label style="font-size:12px;font-weight:600;color:var(--text-sec);margin:12px 0 6px;display:block;text-transform:uppercase;letter-spacing:.5px">'+CL('home_steps')+'</label>'
+    +'<div id="cmsStepsList">';
+  ctaSteps.forEach(function(s,i){
+    ctaHtml += '<div class="cms-form-row" style="align-items:end">'
+      +'<div class="admin-field" style="flex:1;margin:0"><label>'+CL('home_step')+' '+(i+1)+'</label><input type="text" id="cmsStep_'+i+'" value="'+escAttr(s.replace(/\n/g,'\\n'))+'"/></div>'
+      +'<button class="admin-btn danger" style="padding:6px 10px;font-size:11px;height:42px" onclick="window._cmsRemoveRepeater(\'step\','+i+')">'+CL('home_remove')+'</button>'
+      +'</div>';
+  });
+  ctaHtml += '</div>';
+  ctaHtml += '<button class="admin-btn secondary" style="font-size:12px;margin-top:4px" onclick="window._cmsAddRepeater(\'step\')">'+CL('home_add_item')+'</button>';
+  ctaHtml += '<div class="cms-field-group" style="margin-top:12px"><h4>'+CL('home_cta1_text').replace('1','')+'</h4>'
+    +'<div class="cms-form-row">'
+    +plainField('cms_h_cta_btn1_text','home_cta1_text', gv('cta','btn1_text'))
+    +plainField('cms_h_cta_btn1_link','home_cta1_link', gv('cta','btn1_link'))
+    +'</div>'
+    +'<div class="cms-form-row">'
+    +plainField('cms_h_cta_btn2_text','home_cta2_text', gv('cta','btn2_text'))
+    +plainField('cms_h_cta_btn2_link','home_cta2_link', gv('cta','btn2_link'))
+    +'</div></div>';
+  html += sectionAccordion('cta', 'home_cta', ctaHtml);
+
+  // ========== Footer ==========
+  var ft = getCmsFooter();
+  var ftL = (ft[lang]) || {};
+  var ftDefBrand = lang==='en'?'Capital Securities (Hong Kong) Limited':(lang==='zh-Hans'?'群益证券(香港)有限公司':'群益證券(香港)有限公司');
+  var ftDefAddr = lang==='en'?'21/F, Capital Centre, 151 Gloucester Road, Wan Chai, Hong Kong':(lang==='zh-Hans'?'香港湾仔告士打道151号资本中心21楼全层':'香港灣仔告士打道151號資本中心21樓全層');
+  var ftHtml = plainField('cms_ft_brand','footer_brand', ftL.brand_name||ftDefBrand)
+    +plainField('cms_ft_addr','footer_address', ftL.address||ftDefAddr)
+    +'<div class="cms-form-row">'
+    +plainField('cms_ft_tel','footer_tel', ftL.tel||'(852) 2530-9966')
+    +plainField('cms_ft_fax','footer_fax', ftL.fax||'(852) 2530-9424')
+    +'</div>';
+  // Footer columns
+  var ftCols = ftL.columns || [
+    {title:lang==='en'?'Products':(lang==='zh-Hans'?'产品服务':'產品服務'), links:[{text:lang==='en'?'Securities':(lang==='zh-Hans'?'证券交易':'證券交易'),href:'#/page/stock-ipo'},{text:lang==='en'?'Stock Connect':(lang==='zh-Hans'?'沪港通':'滬港通'),href:'#/page/shh-hk'}]},
+    {title:lang==='en'?'Discover':(lang==='zh-Hans'?'探索':'探索'), links:[{text:lang==='en'?'News':(lang==='zh-Hans'?'新闻':'新聞'),href:'#/page/news'}]},
+    {title:lang==='en'?'Account':(lang==='zh-Hans'?'账户':'帳戶'), links:[{text:lang==='en'?'Open Account':(lang==='zh-Hans'?'开户程序':'開戶程序'),href:'#/page/stock-account-opening'}]},
+    {title:lang==='en'?'Legal':(lang==='zh-Hans'?'法律信息':'法律資訊'), links:[{text:lang==='en'?'Privacy Policy':(lang==='zh-Hans'?'个人隐私政策':'個人私隱政策'),href:'#/page/privacy'}]}
+  ];
+  ftHtml += '<div id="cmsFooterCols">';
+  ftCols.forEach(function(col,ci){
+    ftHtml += '<div class="cms-card-box" style="margin-bottom:8px;padding:14px">'
+      +'<div class="admin-field" style="margin-bottom:8px"><label>'+CL('footer_col_title')+'</label><input type="text" id="cmsFCT_'+ci+'" value="'+escAttr(col.title)+'"/></div>';
+    (col.links||[]).forEach(function(lnk,li){
+      ftHtml += '<div class="cms-form-row" style="align-items:end">'
+        +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsFCLT_'+ci+'_'+li+'" value="'+escAttr(lnk.text)+'" placeholder="'+CL('footer_link_text')+'"/></div>'
+        +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsFCLH_'+ci+'_'+li+'" value="'+escAttr(lnk.href)+'" placeholder="'+CL('footer_link_href')+'"/></div>'
+        +'<button class="admin-btn danger" style="padding:4px 8px;font-size:11px" onclick="window._cmsRemoveRepeater(\'flink_'+ci+'\','+li+')">✕</button>'
+        +'</div>';
+    });
+    ftHtml += '<button class="admin-btn secondary" style="font-size:11px;margin-top:4px" onclick="window._cmsAddRepeater(\'flink_'+ci+'\')">'+CL('footer_add_link')+'</button>'
+      +'<button class="admin-btn danger" style="font-size:11px;margin-top:4px;margin-left:4px" onclick="window._cmsRemoveRepeater(\'fcol\','+ci+')">'+CL('home_remove')+'</button>'
+      +'</div>';
+  });
+  ftHtml += '</div>';
+  ftHtml += '<button class="admin-btn secondary" style="font-size:12px;margin-top:8px" onclick="window._cmsAddRepeater(\'fcol\')">'+CL('footer_add_col')+'</button>';
+  ftHtml += '<div style="margin-top:12px"><button class="admin-btn primary" onclick="window._cmsFooterSave()">'+CL('save')+' '+CL('home_footer')+'</button></div>';
+  html += sectionAccordion('footer', 'home_footer', ftHtml);
+
+  // ========== Navigation ==========
+  var navData = getCmsNav();
+  var navItems = navData[lang] || (window.SITE && window.SITE.nav ? window.SITE.nav[lang] || window.SITE.nav['zh-Hant'] : []);
+  var navHtml = '<div id="cmsNavTree">';
+  navItems.forEach(function(item, i){
+    navHtml += '<div class="cms-card-box" style="margin-bottom:6px;padding:10px 14px">'
+      +'<div class="cms-form-row" style="align-items:center;margin-bottom:0">'
+      +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNL_'+i+'" value="'+escAttr(item.label)+'" placeholder="'+CL('nav_item_label')+'"/></div>'
+      +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNP_'+i+'" value="'+escAttr(item.page||item.ext||'')+'" placeholder="'+CL('nav_item_page')+' / '+CL('nav_item_ext')+'"/></div>'
+      +(i>0?'<button class="admin-btn secondary" style="padding:4px 8px;font-size:11px" onclick="window._cmsNavMove('+i+',-1)">&uarr;</button>':'')
+      +(i<navItems.length-1?'<button class="admin-btn secondary" style="padding:4px 8px;font-size:11px" onclick="window._cmsNavMove('+i+',1)">&darr;</button>':'')
+      +'<button class="admin-btn danger" style="padding:4px 8px;font-size:11px" onclick="window._cmsRemoveRepeater(\'nav\','+i+')">✕</button>'
+      +'</div>';
+    if(item.children && item.children.length){
+      item.children.forEach(function(ch2, j){
+        navHtml += '<div style="margin-left:24px;margin-top:4px" class="cms-form-row" style="align-items:center">'
+          +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNC_'+i+'_'+j+'" value="'+escAttr(ch2.label)+'" placeholder="'+CL('nav_item_label')+'"/></div>'
+          +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNCP_'+i+'_'+j+'" value="'+escAttr(ch2.page||ch2.ext||'')+'" placeholder="'+CL('nav_item_page')+'"/></div>'
+          +'<button class="admin-btn danger" style="padding:4px 6px;font-size:10px" onclick="window._cmsRemoveRepeater(\'navch_'+i+'\','+j+')">✕</button>'
+          +'</div>';
+        if(ch2.children && ch2.children.length){
+          ch2.children.forEach(function(ch3, k){
+            navHtml += '<div style="margin-left:48px;margin-top:2px" class="cms-form-row" style="align-items:center">'
+              +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNCC_'+i+'_'+j+'_'+k+'" value="'+escAttr(ch3.label)+'" placeholder="'+CL('nav_item_label')+'"/></div>'
+              +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNCCP_'+i+'_'+j+'_'+k+'" value="'+escAttr(ch3.page||ch3.ext||'')+'" placeholder="'+CL('nav_item_page')+'"/></div>'
+              +'<button class="admin-btn danger" style="padding:4px 6px;font-size:10px" onclick="window._cmsRemoveRepeater(\'navgch_'+i+'_'+j+'\','+k+')">✕</button>'
+              +'</div>';
+          });
+        }
+        navHtml += '<button class="admin-btn secondary" style="font-size:10px;margin-left:48px;margin-top:2px;padding:2px 8px" onclick="window._cmsAddRepeater(\'navgch_'+i+'_'+j+'\')">'+CL('nav_add_child')+'</button>';
+      });
+    }
+    navHtml += '<button class="admin-btn secondary" style="font-size:10px;margin-left:24px;margin-top:4px;padding:2px 8px" onclick="window._cmsAddRepeater(\'navch_'+i+'\')">'+CL('nav_add_child')+'</button>';
+    navHtml += '</div>';
+  });
+  navHtml += '</div>';
+  navHtml += '<div style="display:flex;gap:8px;margin-top:8px">'
+    +'<button class="admin-btn secondary" style="font-size:12px" onclick="window._cmsAddRepeater(\'nav\')">'+CL('nav_add_item')+'</button>'
+    +'<button class="admin-btn primary" onclick="window._cmsNavSave()">'+CL('save')+' '+CL('home_nav')+'</button>'
+    +'<button class="admin-btn danger" onclick="if(confirm(CL(\'nav_reset_q\'))){saveCmsNav({});window._cmsHomeView();}">'+CL('nav_reset')+'</button>'
+    +'</div>';
+  html += sectionAccordion('nav', 'home_nav', navHtml);
 
   html += '<div style="margin-top:16px;display:flex;gap:8px">'
     +'<button class="admin-btn primary" onclick="window._cmsHomeSave()">'+CL('save_changes')+'</button>'
@@ -2756,10 +3056,10 @@ window._cmsHomeView = function(){
 
   document.getElementById("cmsEditor").innerHTML = html;
 
-  // Render banners inside the accordion
+  // Render full banner manager inside the accordion
   setTimeout(function(){
     var bannerSlot = document.getElementById('cmsHomeBanners');
-    if(bannerSlot) _cmsRenderBannerCards(bannerSlot);
+    if(bannerSlot) _cmsRenderBannersFull(bannerSlot);
   }, 30);
 
   // Auto-open first section
@@ -2793,11 +3093,11 @@ window._cmsHomeSave = function(){
   var ch = window.getCmsHome ? window.getCmsHome() : {};
   var sections = ['hero','svc1','svc2','svc3','cta'];
   var fields = {
-    hero: ['badge','title','subtitle'],
+    hero: ['badge','title','subtitle','cta1_text','cta1_link','cta2_text','cta2_link'],
     svc1: ['label','title','desc','img'],
     svc2: ['label','title','desc','img'],
     svc3: ['label','title','desc','img'],
-    cta: ['title','desc']
+    cta: ['title','desc','btn1_text','btn1_link','btn2_text','btn2_link']
   };
   // Read from CKEditor if available, else from input/textarea
   function getVal(id){
@@ -2817,62 +3117,152 @@ window._cmsHomeSave = function(){
     if(Object.keys(ch[sec][lang]).length === 0) delete ch[sec][lang];
     if(Object.keys(ch[sec]).length === 0) delete ch[sec];
   });
+
+  // Save CTA steps
+  var steps = [];
+  var i = 0;
+  while(document.getElementById('cmsStep_'+i)){
+    var sv = document.getElementById('cmsStep_'+i).value.replace(/\\n/g,'\n').trim();
+    if(sv) steps.push(sv);
+    i++;
+  }
+  if(steps.length){
+    if(!ch.cta) ch.cta = {};
+    if(!ch.cta[lang]) ch.cta[lang] = {};
+    ch.cta[lang].steps = JSON.stringify(steps);
+  }
+
+  // Save stats
+  var stats = [];
+  i = 0;
+  while(document.getElementById('cmsSN_'+i)){
+    var sn = document.getElementById('cmsSN_'+i).value.trim();
+    var sl = document.getElementById('cmsSL_'+i).value.trim();
+    if(sn||sl) stats.push({num:sn, label:sl});
+    i++;
+  }
+  if(stats.length){
+    if(!ch.stats) ch.stats = {};
+    if(!ch.stats[lang]) ch.stats[lang] = {};
+    ch.stats[lang].items = JSON.stringify(stats);
+  }
+
+  // Save marquee
+  var mqTitle = (document.getElementById('cms_h_mq_title')||{}).value||'';
+  var logos = [], groups = [];
+  i = 0;
+  while(document.getElementById('cmsLN_'+i)){
+    var ln = document.getElementById('cmsLN_'+i).value.trim();
+    var li = document.getElementById('cmsLI_'+i).value.trim();
+    if(ln||li) logos.push({name:ln, img:li});
+    i++;
+  }
+  i = 0;
+  while(document.getElementById('cmsGN_'+i)){
+    var gn = document.getElementById('cmsGN_'+i).value.trim();
+    if(gn) groups.push({name:gn});
+    i++;
+  }
+  if(mqTitle||logos.length||groups.length){
+    if(!ch.marquee) ch.marquee = {};
+    if(!ch.marquee[lang]) ch.marquee[lang] = {};
+    if(mqTitle) ch.marquee[lang].title = mqTitle.trim();
+    if(logos.length) ch.marquee[lang].logos = JSON.stringify(logos);
+    if(groups.length) ch.marquee[lang].groups = JSON.stringify(groups);
+  }
+
+  // Save feature sub-items per service
+  ['svc1','svc2','svc3'].forEach(function(svc){
+    var feats = [];
+    var j = 0;
+    while(document.getElementById('cmsFT_'+svc+'_'+j)){
+      var ft = document.getElementById('cmsFT_'+svc+'_'+j).value.trim();
+      var fd = document.getElementById('cmsFD_'+svc+'_'+j).value.trim();
+      if(ft||fd) feats.push({title:ft, desc:fd});
+      j++;
+    }
+    if(feats.length){
+      if(!ch[svc]) ch[svc] = {};
+      if(!ch[svc][lang]) ch[svc][lang] = {};
+      ch[svc][lang].features = JSON.stringify(feats);
+    }
+  });
+
+  // Save section order
+  var orderEls = document.querySelectorAll('#cmsOrderList > div');
+  if(orderEls.length){
+    var defaultOrder = ['hero','banners','marquee','svc1','svc2','svc3','stats','news','cta'];
+    var secNames = {section_hero:'hero',section_banners:'banners',section_marquee:'marquee',section_svc1:'svc1',section_svc2:'svc2',section_svc3:'svc3',section_stats:'stats',section_news:'news',section_cta:'cta'};
+    // Read order from the current section order stored in data
+    var curOrder = (ch.order && ch.order.length) ? ch.order : defaultOrder;
+    ch.order = curOrder;
+  }
+
   window.saveCmsHome(ch);
   showToast(CL('home_saved'));
 };
 
-// Render banner cards into a container (reusable for homepage editor)
-function _cmsRenderBannerCards(container){
+// Render full banner manager into a container (for homepage editor accordion)
+function _cmsRenderBannersFull(container){
   var banners = getCmsBanners();
   var _canUpload = _cmsHasPermission("upload");
-  if(!banners.length){
-    container.innerHTML = '<p style="color:var(--text-muted);font-size:13px;padding:8px 0">'+CL('no_banners')+'</p>';
-  } else {
-    var rows = banners.map(function(b,i){
-      return '<div class="cms-item-card">'
-        +'<div class="cms-item-thumb" style="width:120px;height:60px;border-radius:8px;overflow:hidden;flex-shrink:0;background:#f3f4f6"><img src="'+esc(b.img)+'" alt="" style="width:100%;height:100%;object-fit:cover"></div>'
-        +'<div class="cms-item-info" style="flex:1;min-width:0"><div style="font-weight:600;font-size:13px">'+esc(b.alt||'Banner '+(i+1))+'</div>'
-        +'<div style="font-size:11px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(b.link||'—')+'</div></div>'
-        +'<div style="display:flex;gap:4px">'
-        +(_canUpload?'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerEdit('+i+')">Edit</button>':'')
-        +(_canUpload && i>0?'<button class="admin-btn secondary" style="font-size:11px;padding:2px 6px" onclick="window._cmsBannerMove('+i+',-1)">↑</button>':'')
-        +(_canUpload && i<banners.length-1?'<button class="admin-btn secondary" style="font-size:11px;padding:2px 6px" onclick="window._cmsBannerMove('+i+',1)">↓</button>':'')
-        +(_canUpload?'<button class="admin-btn danger" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerDel('+i+')">✕</button>':'')
-        +'</div></div>';
-    }).join('');
-    container.innerHTML = rows;
-  }
+  var rows = banners.length ? banners.map(function(b,i){
+    return '<div class="cms-item-card" id="cmsBC_'+i+'">'
+      +'<img class="cms-item-thumb" src="'+escAttr(b.img)+'" style="cursor:pointer;border-radius:6px" onclick="window._cmsBannerEdit('+i+')" title="Click to edit"/>'
+      +'<div class="cms-item-info">'
+      +'<div class="cms-item-title">'+esc(b.alt||'Banner '+(i+1))+'</div>'
+      +'<div class="cms-item-meta" style="word-break:break-all">'+esc(b.link||CL('no_link'))+'</div>'
+      +'</div>'
+      +'<div class="cms-item-actions">'
+      +(_canUpload?'<button class="admin-btn secondary" title="Edit" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerEdit('+i+')">&#9998; Edit</button>':'')
+      +(i>0?'<button class="admin-btn secondary" title="'+CL('btn_move_up')+'" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerMove('+i+',-1)">&uarr;</button>':'')
+      +(i<banners.length-1?'<button class="admin-btn secondary" title="'+CL('btn_move_down')+'" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerMove('+i+',1)">&darr;</button>':'')
+      +(_canUpload?'<button class="admin-btn danger" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerDelete('+i+')">'+CL('delete')+'</button>':'')
+      +'</div>'
+      +'<div id="cmsBE_'+i+'" style="display:none;width:100%;margin-top:10px;padding-top:10px;border-top:1px solid var(--border-light)">'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">'
+      +'<div><label style="font-size:11px;color:var(--text-muted);display:block;margin-bottom:2px">'+CL('alt_title')+'</label>'
+      +'<input id="cmsBEAlt_'+i+'" type="text" value="'+escAttr(b.alt||'')+'" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:13px"/></div>'
+      +'<div><label style="font-size:11px;color:var(--text-muted);display:block;margin-bottom:2px">'+CL('link_opt')+'</label>'
+      +'<input id="cmsBELink_'+i+'" type="text" value="'+escAttr(b.link||'')+'" placeholder="#/page/... or https://..." style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:13px"/></div>'
+      +'</div>'
+      +'<div style="display:flex;gap:6px">'
+      +'<button class="admin-btn primary" style="font-size:12px;padding:5px 14px" onclick="window._cmsBannerSave('+i+')">&#10003; '+CL('save')+'</button>'
+      +'<button class="admin-btn secondary" style="font-size:12px;padding:5px 14px" onclick="window._cmsBannerEditClose('+i+')">'+CL('cancel')+'</button>'
+      +'</div>'
+      +'</div>'
+      +'</div>';
+  }).join("") : '<div class="cms-item-meta" style="padding:12px 0">'+CL('no_banner')+'</div>';
+
+  var html = (banners.length ? '<button class="admin-btn secondary" style="margin-bottom:12px" onclick="window._cmsBannerPreview()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> '+CL('preview_carousel')+'</button>' : '')
+    +'<div class="cms-banners-list" id="cmsBannersList">' + rows + '</div>';
+
   if(_canUpload){
-    container.innerHTML += '<div style="margin-top:10px;display:flex;gap:8px;align-items:center">'
-      +'<button class="admin-btn primary" style="font-size:12px;padding:6px 12px" onclick="window._cmsBannerAdd()">+ '+CL('add_banner')+'</button>'
+    html += '<div class="cms-drop-zone" id="cmsBannerDropZone" style="margin-top:16px">'
+      +'<svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" style="margin-bottom:8px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>'
+      +'<p><strong>'+CL('drag_drop')+'</strong>'+CL('drag_img')+'</p>'
+      +'<p class="cms-item-meta">'+CL('or_browse_5')+'</p>'
+      +'<input type="file" id="cmsBannerInput" accept=".jpg,.jpeg,.png,.webp" style="display:none" onchange="window._cmsBannerUpload(event)" multiple/>'
+      +'<button class="admin-btn primary" onclick="document.getElementById(\'cmsBannerInput\').click()" style="margin-top:8px">'+CL('choose_img')+'</button>'
+      +'</div>'
+      +'<div class="cms-url-row">'
+      +'<div class="admin-field"><label>'+CL('paste_url')+'</label><input type="url" id="cmsBannerUrl" placeholder="https://..."/></div>'
+      +'<div class="admin-field"><label>'+CL('alt_title')+'</label><input type="text" id="cmsBannerAlt" placeholder="'+CL('banner_desc')+'"/></div>'
+      +'<div class="admin-field"><label>'+CL('link_opt')+'</label><input type="text" id="cmsBannerLink" placeholder="#/page/slug or https://..."/></div>'
+      +'<button class="admin-btn primary" onclick="window._cmsBannerAddUrl()" style="height:44px;white-space:nowrap;align-self:end">'+CL('add')+'</button>'
       +'</div>';
   }
+
+  container.innerHTML = html;
+  setTimeout(function(){ window._cmsBannerInitDrop(); },50);
 }
 
-// Smart refresh: if homepage editor is open, refresh embedded banner cards; else reload standalone view
+// Smart refresh: if homepage editor is open, refresh embedded banners; else reload standalone view
 function _cmsRefreshBanners(){
   var slot = document.getElementById('cmsHomeBanners');
-  if(slot){ _cmsRenderBannerCards(slot); return; }
+  if(slot){ _cmsRenderBannersFull(slot); return; }
   window._cmsBannersView();
 }
-
-// Aliases used by homepage editor banner cards
-window._cmsBannerDel = function(idx){
-  if(!confirm(CL('del_banner_q'))) return;
-  var banners = getCmsBanners();
-  banners.splice(idx,1);
-  saveCmsBanners(banners);
-  _cmsRefreshBanners();
-};
-window._cmsBannerAdd = function(){
-  var url = prompt(CL('paste_url')+':');
-  if(!url) return;
-  var banners = getCmsBanners();
-  banners.push({ img:url.trim(), alt:'Banner', link:'', isLocal:false });
-  saveCmsBanners(banners);
-  showToast(CL('added_banner_s'));
-  _cmsRefreshBanners();
-};
 
 // ————————————————————— CMS BANNERS MANAGER —————————————————————
 window._cmsBannersView = function(){
@@ -3005,20 +3395,7 @@ window._cmsBannerMove = function(idx, dir){
 
 window._cmsBannerEdit = function(idx){
   var el = document.getElementById('cmsBE_'+idx);
-  if(!el){
-    // Compact mode (homepage editor) — use prompt-based editing
-    var banners = getCmsBanners();
-    if(!banners[idx]) return;
-    var newAlt = prompt(CL('alt_title')+':', banners[idx].alt||'');
-    if(newAlt===null) return;
-    var newLink = prompt(CL('link_opt')+':', banners[idx].link||'');
-    if(newLink===null) return;
-    banners[idx].alt = newAlt.trim();
-    banners[idx].link = newLink.trim();
-    saveCmsBanners(banners);
-    _cmsRefreshBanners();
-    return;
-  }
+  if(!el) return;
   var isOpen = el.style.display !== 'none';
   // Close any other open edit forms first
   document.querySelectorAll('[id^="cmsBE_"]').forEach(function(e){ e.style.display='none'; });
@@ -3060,6 +3437,264 @@ window._cmsBannerPreview = function(){
     +'<script>new Swiper("#pvSwiper",{loop:true,autoplay:{delay:3000},pagination:{el:".swiper-pagination",clickable:true}});<\/script>'
     +'</body></html>');
   pw.document.close();
+};
+
+// ————— Repeater helpers (add/remove items, re-render) —————
+window._cmsAddRepeater = function(type){
+  // Save current state then add item and re-render
+  window._cmsHomeSave();
+  var ch = window.getCmsHome ? window.getCmsHome() : {};
+  var lang = window.currentLang || 'zh-Hant';
+  if(type === 'stat'){
+    if(!ch.stats) ch.stats = {};
+    if(!ch.stats[lang]) ch.stats[lang] = {};
+    var items = []; try{ items = JSON.parse(ch.stats[lang].items||'[]'); }catch(e){}
+    items.push({num:'', label:''});
+    ch.stats[lang].items = JSON.stringify(items);
+    window.saveCmsHome(ch);
+  } else if(type === 'logo'){
+    if(!ch.marquee) ch.marquee = {};
+    if(!ch.marquee[lang]) ch.marquee[lang] = {};
+    var logos = []; try{ logos = JSON.parse(ch.marquee[lang].logos||'[]'); }catch(e){}
+    logos.push({name:'', img:''});
+    ch.marquee[lang].logos = JSON.stringify(logos);
+    window.saveCmsHome(ch);
+  } else if(type === 'group'){
+    if(!ch.marquee) ch.marquee = {};
+    if(!ch.marquee[lang]) ch.marquee[lang] = {};
+    var groups = []; try{ groups = JSON.parse(ch.marquee[lang].groups||'[]'); }catch(e){}
+    groups.push({name:''});
+    ch.marquee[lang].groups = JSON.stringify(groups);
+    window.saveCmsHome(ch);
+  } else if(type === 'step'){
+    if(!ch.cta) ch.cta = {};
+    if(!ch.cta[lang]) ch.cta[lang] = {};
+    var steps = []; try{ steps = JSON.parse(ch.cta[lang].steps||'[]'); }catch(e){}
+    steps.push('');
+    ch.cta[lang].steps = JSON.stringify(steps);
+    window.saveCmsHome(ch);
+  } else if(type.indexOf('feat_') === 0){
+    var svc = type.replace('feat_','');
+    if(!ch[svc]) ch[svc] = {};
+    if(!ch[svc][lang]) ch[svc][lang] = {};
+    var feats = []; try{ feats = JSON.parse(ch[svc][lang].features||'[]'); }catch(e){}
+    feats.push({title:'', desc:''});
+    ch[svc][lang].features = JSON.stringify(feats);
+    window.saveCmsHome(ch);
+  } else if(type === 'fcol'){
+    var ft = getCmsFooter();
+    if(!ft[lang]) ft[lang] = {};
+    if(!ft[lang].columns) ft[lang].columns = [];
+    ft[lang].columns.push({title:'', links:[]});
+    saveCmsFooter(ft);
+  } else if(type.indexOf('flink_') === 0){
+    var ci = parseInt(type.replace('flink_',''));
+    var ft = getCmsFooter();
+    if(ft[lang] && ft[lang].columns && ft[lang].columns[ci]){
+      if(!ft[lang].columns[ci].links) ft[lang].columns[ci].links = [];
+      ft[lang].columns[ci].links.push({text:'', href:'#'});
+      saveCmsFooter(ft);
+    }
+  } else if(type === 'nav'){
+    var nd = getCmsNav();
+    if(!nd[lang]) nd[lang] = JSON.parse(JSON.stringify(window.SITE && window.SITE.nav ? window.SITE.nav[lang] || window.SITE.nav['zh-Hant'] : []));
+    nd[lang].push({label:'', page:''});
+    saveCmsNav(nd);
+  } else if(type.indexOf('navch_') === 0){
+    var ni = parseInt(type.replace('navch_',''));
+    var nd = getCmsNav();
+    if(!nd[lang]) nd[lang] = JSON.parse(JSON.stringify(window.SITE && window.SITE.nav ? window.SITE.nav[lang] || window.SITE.nav['zh-Hant'] : []));
+    if(nd[lang][ni]){
+      if(!nd[lang][ni].children) nd[lang][ni].children = [];
+      nd[lang][ni].children.push({label:'', page:''});
+      saveCmsNav(nd);
+    }
+  } else if(type.indexOf('navgch_') === 0){
+    var parts = type.replace('navgch_','').split('_');
+    var ni = parseInt(parts[0]), nj = parseInt(parts[1]);
+    var nd = getCmsNav();
+    if(!nd[lang]) nd[lang] = JSON.parse(JSON.stringify(window.SITE && window.SITE.nav ? window.SITE.nav[lang] || window.SITE.nav['zh-Hant'] : []));
+    if(nd[lang][ni] && nd[lang][ni].children && nd[lang][ni].children[nj]){
+      if(!nd[lang][ni].children[nj].children) nd[lang][ni].children[nj].children = [];
+      nd[lang][ni].children[nj].children.push({label:'', page:''});
+      saveCmsNav(nd);
+    }
+  }
+  window._cmsHomeView();
+};
+
+window._cmsRemoveRepeater = function(type, idx){
+  window._cmsHomeSave();
+  var ch = window.getCmsHome ? window.getCmsHome() : {};
+  var lang = window.currentLang || 'zh-Hant';
+  if(type === 'stat'){
+    var items = []; try{ items = JSON.parse(ch.stats[lang].items||'[]'); }catch(e){}
+    items.splice(idx,1);
+    ch.stats[lang].items = JSON.stringify(items);
+    window.saveCmsHome(ch);
+  } else if(type === 'logo'){
+    var logos = []; try{ logos = JSON.parse(ch.marquee[lang].logos||'[]'); }catch(e){}
+    logos.splice(idx,1);
+    ch.marquee[lang].logos = JSON.stringify(logos);
+    window.saveCmsHome(ch);
+  } else if(type === 'group'){
+    var groups = []; try{ groups = JSON.parse(ch.marquee[lang].groups||'[]'); }catch(e){}
+    groups.splice(idx,1);
+    ch.marquee[lang].groups = JSON.stringify(groups);
+    window.saveCmsHome(ch);
+  } else if(type === 'step'){
+    var steps = []; try{ steps = JSON.parse(ch.cta[lang].steps||'[]'); }catch(e){}
+    steps.splice(idx,1);
+    ch.cta[lang].steps = JSON.stringify(steps);
+    window.saveCmsHome(ch);
+  } else if(type.indexOf('feat_') === 0){
+    var svc = type.replace('feat_','');
+    var feats = []; try{ feats = JSON.parse(ch[svc][lang].features||'[]'); }catch(e){}
+    feats.splice(idx,1);
+    ch[svc][lang].features = JSON.stringify(feats);
+    window.saveCmsHome(ch);
+  } else if(type === 'fcol'){
+    var ft = getCmsFooter();
+    if(ft[lang] && ft[lang].columns) ft[lang].columns.splice(idx,1);
+    saveCmsFooter(ft);
+  } else if(type.indexOf('flink_') === 0){
+    var ci = parseInt(type.replace('flink_',''));
+    var ft = getCmsFooter();
+    if(ft[lang] && ft[lang].columns && ft[lang].columns[ci] && ft[lang].columns[ci].links){
+      ft[lang].columns[ci].links.splice(idx,1);
+      saveCmsFooter(ft);
+    }
+  } else if(type === 'nav'){
+    var nd = getCmsNav();
+    if(!nd[lang]) nd[lang] = JSON.parse(JSON.stringify(window.SITE && window.SITE.nav ? window.SITE.nav[lang] || window.SITE.nav['zh-Hant'] : []));
+    nd[lang].splice(idx,1);
+    saveCmsNav(nd);
+  } else if(type.indexOf('navch_') === 0){
+    var ni = parseInt(type.replace('navch_',''));
+    var nd = getCmsNav();
+    if(nd[lang] && nd[lang][ni] && nd[lang][ni].children) nd[lang][ni].children.splice(idx,1);
+    saveCmsNav(nd);
+  } else if(type.indexOf('navgch_') === 0){
+    var parts = type.replace('navgch_','').split('_');
+    var ni = parseInt(parts[0]), nj = parseInt(parts[1]);
+    var nd = getCmsNav();
+    if(nd[lang] && nd[lang][ni] && nd[lang][ni].children && nd[lang][ni].children[nj] && nd[lang][ni].children[nj].children){
+      nd[lang][ni].children[nj].children.splice(idx,1);
+      saveCmsNav(nd);
+    }
+  }
+  window._cmsHomeView();
+};
+
+// Section order move
+window._cmsOrderMove = function(idx, dir){
+  var ch = window.getCmsHome ? window.getCmsHome() : {};
+  var defaultOrder = ['hero','banners','marquee','svc1','svc2','svc3','stats','news','cta'];
+  var order = (ch.order && ch.order.length) ? ch.order : defaultOrder.slice();
+  var newIdx = idx + dir;
+  if(newIdx < 0 || newIdx >= order.length) return;
+  var tmp = order[idx];
+  order[idx] = order[newIdx];
+  order[newIdx] = tmp;
+  ch.order = order;
+  window.saveCmsHome(ch);
+  showToast(CL('order_saved'));
+  window._cmsHomeView();
+};
+
+// Nav move
+window._cmsNavMove = function(idx, dir){
+  window._cmsNavSave();
+  var nd = getCmsNav();
+  var lang = window.currentLang || 'zh-Hant';
+  if(!nd[lang]) return;
+  var newIdx = idx + dir;
+  if(newIdx < 0 || newIdx >= nd[lang].length) return;
+  var tmp = nd[lang][idx];
+  nd[lang][idx] = nd[lang][newIdx];
+  nd[lang][newIdx] = tmp;
+  saveCmsNav(nd);
+  window._cmsHomeView();
+};
+
+// Nav save — reads all nav inputs and saves to localStorage
+window._cmsNavSave = function(){
+  var lang = window.currentLang || 'zh-Hant';
+  var nd = getCmsNav();
+  var source = nd[lang] || (window.SITE && window.SITE.nav ? window.SITE.nav[lang] || window.SITE.nav['zh-Hant'] : []);
+  var result = [];
+  var i = 0;
+  while(document.getElementById('cmsNL_'+i)){
+    var label = document.getElementById('cmsNL_'+i).value.trim();
+    var pageOrExt = (document.getElementById('cmsNP_'+i)||{}).value||'';
+    pageOrExt = pageOrExt.trim();
+    var item = {label: label};
+    if(pageOrExt.indexOf('http') === 0) item.ext = pageOrExt;
+    else if(pageOrExt) item.page = pageOrExt;
+    // Read children
+    var children = [];
+    var j = 0;
+    while(document.getElementById('cmsNC_'+i+'_'+j)){
+      var clabel = document.getElementById('cmsNC_'+i+'_'+j).value.trim();
+      var cpage = (document.getElementById('cmsNCP_'+i+'_'+j)||{}).value||'';
+      cpage = cpage.trim();
+      var child = {label: clabel};
+      if(cpage.indexOf('http') === 0) child.ext = cpage;
+      else if(cpage) child.page = cpage;
+      // Read grandchildren
+      var gchildren = [];
+      var k = 0;
+      while(document.getElementById('cmsNCC_'+i+'_'+j+'_'+k)){
+        var glabel = document.getElementById('cmsNCC_'+i+'_'+j+'_'+k).value.trim();
+        var gpage = (document.getElementById('cmsNCCP_'+i+'_'+j+'_'+k)||{}).value||'';
+        gpage = gpage.trim();
+        var gchild = {label: glabel};
+        if(gpage.indexOf('http') === 0) gchild.ext = gpage;
+        else if(gpage) gchild.page = gpage;
+        gchildren.push(gchild);
+        k++;
+      }
+      if(gchildren.length) child.children = gchildren;
+      children.push(child);
+      j++;
+    }
+    if(children.length) item.children = children;
+    result.push(item);
+    i++;
+  }
+  nd[lang] = result;
+  saveCmsNav(nd);
+  showToast(CL('nav_saved'));
+};
+
+// Footer save — reads all footer inputs and saves to localStorage
+window._cmsFooterSave = function(){
+  var lang = window.currentLang || 'zh-Hant';
+  var ft = getCmsFooter();
+  if(!ft[lang]) ft[lang] = {};
+  ft[lang].brand_name = (document.getElementById('cms_ft_brand')||{}).value||'';
+  ft[lang].address = (document.getElementById('cms_ft_addr')||{}).value||'';
+  ft[lang].tel = (document.getElementById('cms_ft_tel')||{}).value||'';
+  ft[lang].fax = (document.getElementById('cms_ft_fax')||{}).value||'';
+  // Columns
+  var cols = [];
+  var ci = 0;
+  while(document.getElementById('cmsFCT_'+ci)){
+    var colTitle = document.getElementById('cmsFCT_'+ci).value.trim();
+    var links = [];
+    var li = 0;
+    while(document.getElementById('cmsFCLT_'+ci+'_'+li)){
+      var lt = document.getElementById('cmsFCLT_'+ci+'_'+li).value.trim();
+      var lh = document.getElementById('cmsFCLH_'+ci+'_'+li).value.trim();
+      links.push({text:lt, href:lh||'#'});
+      li++;
+    }
+    cols.push({title:colTitle, links:links});
+    ci++;
+  }
+  ft[lang].columns = cols;
+  saveCmsFooter(ft);
+  showToast(CL('footer_saved'));
 };
 
 // Blog article preview in popup

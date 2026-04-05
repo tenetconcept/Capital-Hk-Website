@@ -44,6 +44,13 @@ function getPage(slug, lang){
   }
   return null;
 }
+// Check if page content is a fallback from another language
+function isPageFallback(slug, lang){
+  var cms = getCmsPages();
+  if(cms[slug] && cms[slug][lang]) return false;
+  if(SITE.pages[slug] && SITE.pages[slug][lang]) return false;
+  return true; // content came from zh-Hant fallback
+}
 // Expose for CMS
 window.getCmsPages = getCmsPages;
 window.saveCmsPages = saveCmsPages;
@@ -791,6 +798,12 @@ function pageView(slug){
   } else if(slug === 'hk-news'){
     h += '<div class="' + bodyClass + '">' + blogContent() + '</div>';
   } else {
+    // Show fallback notice if content is from zh-Hant but user is viewing another language
+    if(currentLang !== 'zh-Hant' && isPageFallback(slug, currentLang)){
+      h += '<div style="background:#fef3cd;color:#856404;padding:8px 16px;border-radius:8px;font-size:13px;margin-bottom:12px">'
+        + esc(currentLang === 'en' ? 'This page is not yet available in English. Showing Traditional Chinese version.' : '此页面暂无简体中文版本，正显示繁体中文版。')
+        + '</div>';
+    }
     h += '<div class="' + bodyClass + '">' + pg.body + '</div>';
   }
   h += '</div>';

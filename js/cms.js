@@ -382,6 +382,8 @@ var CMS_I18N = {
   section_cta:     {en:'CTA', hans:'行动呼吁', hant:'行動呼籲'},
   order_saved:     {en:'Section order saved', hans:'区块排序已保存', hant:'區塊排序已儲存'},
   footer_saved:    {en:'Footer saved', hans:'页尾已保存', hant:'頁尾已儲存'},
+  expand_all:      {en:'Expand All', hans:'展开全部', hant:'展開全部'},
+  collapse_all:    {en:'Collapse All', hans:'收合全部', hant:'收合全部'},
   copy_pwd:        {en:'Copy', hans:'复制', hant:'複製'},
   pwd_copied:      {en:'Password copied to clipboard', hans:'密码已复制到剪贴板', hant:'密碼已複製到剪貼簿'},
   must_change_pwd: {en:'Must change password on first login', hans:'首次登录必须更改密码', hant:'首次登入必須更改密碼'},
@@ -2742,34 +2744,59 @@ window._cmsHomeView = function(){
   var homeItem = document.querySelector('.cms-page-home');
   if(homeItem) homeItem.classList.add('active');
 
-  var lang = window.currentLang || 'zh-Hant';
+  var langs = ["zh-Hant","zh-Hans","en"];
+  var langNames = {"zh-Hant":"繁體中文","zh-Hans":"简体中文","en":"English"};
   var ch = window.getCmsHome ? window.getCmsHome() : {};
   var hasCK = typeof ClassicEditor !== 'undefined';
 
-  // Default values — shown as initial content when no CMS override saved
+  // Default values per language
   var defaults = {
     hero: {
-      badge: lang==='en'?'SFC Licensed':(lang==='zh-Hans'?'香港证监会持牌':'香港證監會持牌'),
-      title: lang==='en'?'Your Professional<br>Securities & Futures Partner':(lang==='zh-Hans'?'您的专业<br>证券及期货交易伙伴':'您的專業<br>證券及期貨交易夥伴'),
-      subtitle: lang==='en'?'Over 30 years of experience in Hong Kong financial markets.':(lang==='zh-Hans'?'逾三十年香港金融市场经验，提供证券、期货、期权交易及沪港通服务。':'逾三十年香港金融市場經驗，提供證券、期貨、期權交易及滬港通服務。'),
-      cta1_text: lang==='en'?'Open Account':(lang==='zh-Hans'?'开立帐户':'開立帳戶'),
-      cta1_link: '#/page/stock-account-opening',
-      cta2_text: lang==='en'?'Trade Now':(lang==='zh-Hans'?'立即交易':'立即交易'),
-      cta2_link: 'https://itrade.e-capital.com.hk:8888/'
+      "zh-Hant": { badge:'香港證監會持牌', title:'您的專業<br>證券及期貨交易夥伴', subtitle:'逾三十年香港金融市場經驗，提供證券、期貨、期權交易及滬港通服務。', cta1_text:'開立帳戶', cta1_link:'#/page/stock-account-opening', cta2_text:'立即交易', cta2_link:'https://itrade.e-capital.com.hk:8888/' },
+      "zh-Hans": { badge:'香港证监会持牌', title:'您的专业<br>证券及期货交易伙伴', subtitle:'逾三十年香港金融市场经验，提供证券、期货、期权交易及沪港通服务。', cta1_text:'开立帐户', cta1_link:'#/page/stock-account-opening', cta2_text:'立即交易', cta2_link:'https://itrade.e-capital.com.hk:8888/' },
+      "en": { badge:'SFC Licensed', title:'Your Professional<br>Securities & Futures Partner', subtitle:'Over 30 years of experience in Hong Kong financial markets.', cta1_text:'Open Account', cta1_link:'#/page/stock-account-opening', cta2_text:'Trade Now', cta2_link:'https://itrade.e-capital.com.hk:8888/' }
     },
-    svc1: { label: lang==='en'?'Securities Trading':(lang==='zh-Hans'?'股票交易':'股票交易'), title: lang==='en'?'Hong Kong & Global Equities Trading':(lang==='zh-Hans'?'港股及环球股票交易服务':'港股及環球股票交易服務'), desc: lang==='en'?'Trade stocks listed on Hong Kong, Shanghai, and other major global exchanges.':(lang==='zh-Hans'?'透过专业 iTrader 交易平台，轻松买卖港股、A股及环球主要市场的股票。':'透過專業 iTrader 交易平台，輕鬆買賣港股、A股及環球主要市場的股票。'), img: 'images/ecap-svc-securities.png' },
-    svc2: { label: lang==='en'?'SH-HK Stock Connect':(lang==='zh-Hans'?'沪港通':'滬港通'), title: lang==='en'?'Shanghai-Hong Kong Stock Connect':(lang==='zh-Hans'?'沪港通交易服务':'滬港通交易服務'), desc: lang==='en'?'Access A-share market through our comprehensive Stock Connect service.':(lang==='zh-Hans'?'透过全面的沪港通服务进入A股市场。':'透過全面的滬港通服務進入A股市場。'), img: 'images/ecap-svc-connect.png' },
-    svc3: { label: lang==='en'?'Futures & Options':(lang==='zh-Hans'?'期货及期权':'期貨及期權'), title: lang==='en'?'Futures & Options Trading':(lang==='zh-Hans'?'期货及期权交易服务':'期貨及期權交易服務'), desc: lang==='en'?'Trade futures and options on major exchanges.':(lang==='zh-Hans'?'透过专业 Sharp Point 交易平台，交易主要交易所的期货及期权。':'透過專業 Sharp Point 交易平台，交易主要交易所的期貨及期權。'), img: 'images/ecap-svc-futures.png' },
-    cta: { title: lang==='en'?'Open Your Account Today':(lang==='zh-Hans'?'立即开户 把握投资先机':'立即開戶 把握投資先機'), desc: lang==='en'?'Start trading in Hong Kong, Shanghai and global markets with Capital Securities.':(lang==='zh-Hans'?'群益证券为您提供港股、A股及环球市场交易服务。':'群益證券為您提供港股、A股及環球市場交易服務。'),
-      btn1_text: lang==='en'?'Open Account':(lang==='zh-Hans'?'开立帐户':'開立帳戶'),
-      btn1_link: '#/page/stock-account-opening',
-      btn2_text: lang==='en'?'View Fees':(lang==='zh-Hans'?'查看收费':'查看收費'),
-      btn2_link: '#/page/stock-fee',
-      steps: JSON.stringify(lang==='en'?['Download\nAgreement','Submit\nDocuments','Account\nApproved','Start\nTrading']:(lang==='zh-Hans'?['下载\n开户合约','提交\n所需文件','帐户\n审批通过','开始\n交易']:['下載\n開戶合約','提交\n所需文件','帳戶\n審批通過','開始\n交易']))
+    svc1: {
+      "zh-Hant": { label:'股票交易', title:'港股及環球股票交易服務', desc:'透過專業 iTrader 交易平台，輕鬆買賣港股、A股及環球主要市場的股票。', img:'images/ecap-svc-securities.png' },
+      "zh-Hans": { label:'股票交易', title:'港股及环球股票交易服务', desc:'透过专业 iTrader 交易平台，轻松买卖港股、A股及环球主要市场的股票。', img:'images/ecap-svc-securities.png' },
+      "en": { label:'Securities Trading', title:'Hong Kong & Global Equities Trading', desc:'Trade stocks listed on Hong Kong, Shanghai, and other major global exchanges.', img:'images/ecap-svc-securities.png' }
+    },
+    svc2: {
+      "zh-Hant": { label:'滬港通', title:'滬港通交易服務', desc:'透過全面的滬港通服務進入A股市場。', img:'images/ecap-svc-connect.png' },
+      "zh-Hans": { label:'沪港通', title:'沪港通交易服务', desc:'透过全面的沪港通服务进入A股市场。', img:'images/ecap-svc-connect.png' },
+      "en": { label:'SH-HK Stock Connect', title:'Shanghai-Hong Kong Stock Connect', desc:'Access A-share market through our comprehensive Stock Connect service.', img:'images/ecap-svc-connect.png' }
+    },
+    svc3: {
+      "zh-Hant": { label:'期貨及期權', title:'期貨及期權交易服務', desc:'透過專業 Sharp Point 交易平台，交易主要交易所的期貨及期權。', img:'images/ecap-svc-futures.png' },
+      "zh-Hans": { label:'期货及期权', title:'期货及期权交易服务', desc:'透过专业 Sharp Point 交易平台，交易主要交易所的期货及期权。', img:'images/ecap-svc-futures.png' },
+      "en": { label:'Futures & Options', title:'Futures & Options Trading', desc:'Trade futures and options on major exchanges.', img:'images/ecap-svc-futures.png' }
+    },
+    cta: {
+      "zh-Hant": { title:'立即開戶 把握投資先機', desc:'群益證券為您提供港股、A股及環球市場交易服務。', btn1_text:'開立帳戶', btn1_link:'#/page/stock-account-opening', btn2_text:'查看收費', btn2_link:'#/page/stock-fee', steps:JSON.stringify(['下載\n開戶合約','提交\n所需文件','帳戶\n審批通過','開始\n交易']) },
+      "zh-Hans": { title:'立即开户 把握投资先机', desc:'群益证券为您提供港股、A股及环球市场交易服务。', btn1_text:'开立帐户', btn1_link:'#/page/stock-account-opening', btn2_text:'查看收费', btn2_link:'#/page/stock-fee', steps:JSON.stringify(['下载\n开户合约','提交\n所需文件','帐户\n审批通过','开始\n交易']) },
+      "en": { title:'Open Your Account Today', desc:'Start trading in Hong Kong, Shanghai and global markets with Capital Securities.', btn1_text:'Open Account', btn1_link:'#/page/stock-account-opening', btn2_text:'View Fees', btn2_link:'#/page/stock-fee', steps:JSON.stringify(['Download\nAgreement','Submit\nDocuments','Account\nApproved','Start\nTrading']) }
+    },
+    stats: {
+      "zh-Hant": { items:JSON.stringify([{num:'30+',label:'年金融服務經驗'},{num:'SFC',label:'香港證監會持牌'},{num:'24/7',label:'全天候客戶服務'},{num:'多元',label:'市場覆蓋'}]) },
+      "zh-Hans": { items:JSON.stringify([{num:'30+',label:'年金融服务经验'},{num:'SFC',label:'香港证监会持牌'},{num:'24/7',label:'全天候客户服务'},{num:'多元',label:'市场覆盖'}]) },
+      "en": { items:JSON.stringify([{num:'30+',label:'Years of Experience'},{num:'SFC',label:'Hong Kong SFC Regulated'},{num:'24/7',label:'Customer Support'},{num:'Multi',label:'Market Access'}]) }
+    },
+    marquee: {
+      "zh-Hant": { title:'群益金融集團', groups:JSON.stringify([{name:'群益金鼎證券'},{name:'群益證券(香港)'},{name:'群益期貨(香港)'},{name:'群益投信'},{name:'群益期貨'},{name:'群益金融集團'},{name:'群益投顧'}]) },
+      "zh-Hans": { title:'群益金融集团', groups:JSON.stringify([{name:'群益金鼎证券'},{name:'群益证券(香港)'},{name:'群益期货(香港)'},{name:'群益投信'},{name:'群益期货'},{name:'群益金融集团'},{name:'群益投顾'}]) },
+      "en": { title:'Capital Group', groups:JSON.stringify([{name:'Capital Securities Corp.'},{name:'Capital Securities (HK)'},{name:'Capital Futures (HK)'},{name:'Capital Investment Trust'},{name:'Capital Futures Corp.'},{name:'Capital Securities Group'},{name:'Capital Asset Management'}]) }
+    },
+    footer: {
+      "zh-Hant": { brand_name:'群益證券(香港)有限公司', address:'香港灣仔告士打道151號資本中心21樓全層', tel:'(852) 2530-9966', fax:'(852) 2530-9424',
+        columns:[{title:'產品服務',links:[{text:'證券交易',href:'#/page/stock-ipo'},{text:'滬港通',href:'#/page/shh-hk'}]},{title:'探索',links:[{text:'新聞',href:'#/page/news'}]},{title:'帳戶',links:[{text:'開戶程序',href:'#/page/stock-account-opening'}]},{title:'法律資訊',links:[{text:'個人私隱政策',href:'#/page/privacy'}]}] },
+      "zh-Hans": { brand_name:'群益证券(香港)有限公司', address:'香港湾仔告士打道151号资本中心21楼全层', tel:'(852) 2530-9966', fax:'(852) 2530-9424',
+        columns:[{title:'产品服务',links:[{text:'证券交易',href:'#/page/stock-ipo'},{text:'沪港通',href:'#/page/shh-hk'}]},{title:'探索',links:[{text:'新闻',href:'#/page/news'}]},{title:'账户',links:[{text:'开户程序',href:'#/page/stock-account-opening'}]},{title:'法律信息',links:[{text:'个人隐私政策',href:'#/page/privacy'}]}] },
+      "en": { brand_name:'Capital Securities (Hong Kong) Limited', address:'21/F, Capital Centre, 151 Gloucester Road, Wan Chai, Hong Kong', tel:'(852) 2530-9966', fax:'(852) 2530-9424',
+        columns:[{title:'Products',links:[{text:'Securities',href:'#/page/stock-ipo'},{text:'Stock Connect',href:'#/page/shh-hk'}]},{title:'Discover',links:[{text:'News',href:'#/page/news'}]},{title:'Account',links:[{text:'Open Account',href:'#/page/stock-account-opening'}]},{title:'Legal',links:[{text:'Privacy Policy',href:'#/page/privacy'}]}] }
     }
   };
 
-  function gv(sec, field){ return (ch[sec] && ch[sec][lang] && ch[sec][lang][field]) || (defaults[sec] && defaults[sec][field]) || ''; }
+  function gv(sec, field, lang){ return (ch[sec] && ch[sec][lang] && ch[sec][lang][field]) || (defaults[sec] && defaults[sec][lang] && defaults[sec][lang][field]) || ''; }
 
   function sectionAccordion(id, titleKey, bodyHtml){
     return '<div class="cms-home-sec">'
@@ -2801,14 +2828,23 @@ window._cmsHomeView = function(){
       +'</div></div>';
   }
 
+  // Escape for safe embedding in onclick attribute strings
+  function escQ(s){ return s.replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
+
   // Build HTML
   var html = '<div class="cms-panel" style="max-width:none">'
     +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">'
-    +'<h3 style="font-size:20px;font-weight:700;margin:0">'+CL('tab_home')+' <span style="font-size:13px;font-weight:400;color:var(--text-muted)">('+lang+')</span></h3>'
+    +'<h3 style="font-size:20px;font-weight:700;margin:0">'+CL('tab_home')+' <span style="font-size:13px;font-weight:400;color:var(--text-muted)">(all languages)</span></h3>'
     +'<button class="admin-btn primary" onclick="window._cmsHomeSave()">'+CL('save_changes')+'</button>'
     +'</div>';
 
-  // ========== Section Order ==========
+  // Expand All / Collapse All buttons
+  html += '<div style="display:flex;gap:8px;margin-bottom:12px">'
+    +'<button class="admin-btn secondary" style="font-size:12px" onclick="document.querySelectorAll(\'.cms-home-sec\').forEach(function(s){s.classList.add(\'open\')})">'+CL('expand_all')+'</button>'
+    +'<button class="admin-btn secondary" style="font-size:12px" onclick="document.querySelectorAll(\'.cms-home-sec\').forEach(function(s){s.classList.remove(\'open\')})">'+CL('collapse_all')+'</button>'
+    +'</div>';
+
+  // ========== Section Order (not language-dependent) ==========
   var defaultOrder = ['hero','banners','marquee','svc1','svc2','svc3','stats','news','cta'];
   var sectionOrder = (ch.order && ch.order.length) ? ch.order : defaultOrder;
   var secNames = {hero:'section_hero',banners:'section_banners',marquee:'section_marquee',svc1:'section_svc1',svc2:'section_svc2',svc3:'section_svc3',stats:'section_stats',news:'section_news',cta:'section_cta'};
@@ -2823,231 +2859,248 @@ window._cmsHomeView = function(){
   orderHtml += '</div>';
   html += sectionAccordion('order', 'home_order', orderHtml);
 
-  // ========== 1. Hero ==========
-  html += sectionAccordion('hero', 'home_hero',
-    plainField('cms_h_hero_badge','home_badge', gv('hero','badge'))
-    +richField('cms_h_hero_title','home_title', gv('hero','title'))
-    +richField('cms_h_hero_subtitle','home_subtitle', gv('hero','subtitle'))
-    +'<div class="cms-field-group" style="margin-top:12px"><h4>'+CL('home_cta1_text').replace('1','')+'</h4>'
-    +'<div class="cms-form-row">'
-    +plainField('cms_h_hero_cta1_text','home_cta1_text', gv('hero','cta1_text'))
-    +plainField('cms_h_hero_cta1_link','home_cta1_link', gv('hero','cta1_link'))
-    +'</div>'
-    +'<div class="cms-form-row">'
-    +plainField('cms_h_hero_cta2_text','home_cta2_text', gv('hero','cta2_text'))
-    +plainField('cms_h_hero_cta2_link','home_cta2_link', gv('hero','cta2_link'))
-    +'</div></div>'
-  );
+  // ========== 1. Hero (all 3 languages) ==========
+  var heroBody = '';
+  langs.forEach(function(lang){
+    heroBody += '<div class="cms-field-group"><h4>'+escHtml(langNames[lang])+' ('+lang+')</h4>'
+      +plainField('cms_h_hero_badge_'+lang,'home_badge', gv('hero','badge',lang))
+      +richField('cms_h_hero_title_'+lang,'home_title', gv('hero','title',lang))
+      +richField('cms_h_hero_subtitle_'+lang,'home_subtitle', gv('hero','subtitle',lang))
+      +'<div class="cms-form-row">'
+      +plainField('cms_h_hero_cta1_text_'+lang,'home_cta1_text', gv('hero','cta1_text',lang))
+      +plainField('cms_h_hero_cta1_link_'+lang,'home_cta1_link', gv('hero','cta1_link',lang))
+      +'</div>'
+      +'<div class="cms-form-row">'
+      +plainField('cms_h_hero_cta2_text_'+lang,'home_cta2_text', gv('hero','cta2_text',lang))
+      +plainField('cms_h_hero_cta2_link_'+lang,'home_cta2_link', gv('hero','cta2_link',lang))
+      +'</div></div>';
+  });
+  html += sectionAccordion('hero', 'home_hero', heroBody);
 
-  // ========== 2. Banners ==========
+  // ========== 2. Banners (not language-dependent) ==========
   html += sectionAccordion('banners', 'home_banners',
     '<div id="cmsHomeBanners"></div>');
 
-  // ========== 3. Marquee ==========
-  var mq = (ch.marquee && ch.marquee[lang]) || {};
-  var mqTitle = mq.title || (lang==='en'?'Capital Group':(lang==='zh-Hans'?'群益金融集团':'群益金融集團'));
-  var mqLogos = [];
-  try{ mqLogos = JSON.parse(mq.logos||'[]'); }catch(e){}
-  if(!mqLogos.length) mqLogos = [
-    {name:'Capital Securities Corp.', img:'https://www.e-capital.com.hk/images/fortisinvestments.png'},
-    {name:'Fidelity', img:'https://www.e-capital.com.hk/images/fidelity.png'},
-    {name:'First State', img:'https://www.e-capital.com.hk/images/Firststate.png'},
-    {name:'Man Investments', img:'https://www.e-capital.com.hk/images/ManInvestments.png'}
-  ];
-  var mqGroups = [];
-  try{ mqGroups = JSON.parse(mq.groups||'[]'); }catch(e){}
-  if(!mqGroups.length) mqGroups = [
-    {name:lang==='en'?'Capital Securities Corp.':(lang==='zh-Hans'?'群益金鼎证券':'群益金鼎證券')},
-    {name:lang==='en'?'Capital Securities (HK)':(lang==='zh-Hans'?'群益证券(香港)':'群益證券(香港)')},
-    {name:lang==='en'?'Capital Futures (HK)':(lang==='zh-Hans'?'群益期货(香港)':'群益期貨(香港)')},
-    {name:lang==='en'?'Capital Investment Trust':(lang==='zh-Hans'?'群益投信':'群益投信')},
-    {name:lang==='en'?'Capital Futures Corp.':(lang==='zh-Hans'?'群益期货':'群益期貨')},
-    {name:lang==='en'?'Capital Securities Group':(lang==='zh-Hans'?'群益金融集团':'群益金融集團')},
-    {name:lang==='en'?'Capital Asset Management':(lang==='zh-Hans'?'群益投顾':'群益投顧')}
-  ];
-  var mqHtml = plainField('cms_h_mq_title','home_marquee_title', mqTitle);
-  mqHtml += '<label style="font-size:12px;font-weight:600;color:var(--text-sec);margin:12px 0 6px;display:block;text-transform:uppercase;letter-spacing:.5px">'+CL('home_logos')+'</label>';
-  mqHtml += '<div id="cmsLogoList">';
-  mqLogos.forEach(function(l,i){
-    mqHtml += '<div class="cms-form-row" style="align-items:end">'
-      +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsLN_'+i+'" value="'+escAttr(l.name)+'" placeholder="'+CL('home_logo_name')+'"/></div>'
-      +'<div class="admin-field" style="flex:2;margin:0"><input type="text" id="cmsLI_'+i+'" value="'+escAttr(l.img)+'" placeholder="'+CL('home_logo_img')+'"/></div>'
-      +'<button class="admin-btn danger" style="padding:6px 10px;font-size:11px;height:42px" onclick="window._cmsRemoveRepeater(\'logo\','+i+')">'+CL('home_remove')+'</button>'
-      +'</div>';
-  });
-  mqHtml += '</div>';
-  mqHtml += '<button class="admin-btn secondary" style="font-size:12px;margin-top:4px" onclick="window._cmsAddRepeater(\'logo\')">'+CL('home_add_item')+'</button>';
-  mqHtml += '<label style="font-size:12px;font-weight:600;color:var(--text-sec);margin:16px 0 6px;display:block;text-transform:uppercase;letter-spacing:.5px">'+CL('home_groups')+'</label>';
-  mqHtml += '<div id="cmsGroupList">';
-  mqGroups.forEach(function(g,i){
-    mqHtml += '<div class="cms-form-row" style="align-items:end">'
-      +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsGN_'+i+'" value="'+escAttr(g.name)+'" placeholder="'+CL('home_group_name')+'"/></div>'
-      +'<button class="admin-btn danger" style="padding:6px 10px;font-size:11px;height:42px" onclick="window._cmsRemoveRepeater(\'group\','+i+')">'+CL('home_remove')+'</button>'
-      +'</div>';
-  });
-  mqHtml += '</div>';
-  mqHtml += '<button class="admin-btn secondary" style="font-size:12px;margin-top:4px" onclick="window._cmsAddRepeater(\'group\')">'+CL('home_add_item')+'</button>';
-  html += sectionAccordion('marquee', 'home_marquee', mqHtml);
+  // ========== 3. Marquee (all 3 languages) ==========
+  var mqBody = '';
+  langs.forEach(function(lang){
+    var mq = (ch.marquee && ch.marquee[lang]) || {};
+    var mqDef = (defaults.marquee && defaults.marquee[lang]) || {};
+    var mqTitle = mq.title || mqDef.title || '';
+    var mqLogos = [];
+    try{ mqLogos = JSON.parse(mq.logos||'[]'); }catch(e){}
+    if(!mqLogos.length) mqLogos = [
+      {name:'Capital Securities Corp.', img:'https://www.e-capital.com.hk/images/fortisinvestments.png'},
+      {name:'Fidelity', img:'https://www.e-capital.com.hk/images/fidelity.png'},
+      {name:'First State', img:'https://www.e-capital.com.hk/images/Firststate.png'},
+      {name:'Man Investments', img:'https://www.e-capital.com.hk/images/ManInvestments.png'}
+    ];
+    var mqGroups = [];
+    try{ mqGroups = JSON.parse(mq.groups || mqDef.groups || '[]'); }catch(e){}
 
-  // ========== 3-5. Services (with sub-features) ==========
-  ['svc1','svc2','svc3'].forEach(function(svc){
-    var feats = [];
-    try{ feats = JSON.parse(gv(svc,'features')||'[]'); }catch(e){}
-    var featHtml = '';
-    if(feats.length){
-      featHtml += '<label style="font-size:12px;font-weight:600;color:var(--text-sec);margin:12px 0 6px;display:block;text-transform:uppercase;letter-spacing:.5px">'+CL('home_features')+'</label>';
-      featHtml += '<div id="cmsFeat_'+svc+'">';
-      feats.forEach(function(f,i){
-        featHtml += '<div class="cms-form-row" style="align-items:end">'
-          +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsFT_'+svc+'_'+i+'" value="'+escAttr(f.title||'')+'" placeholder="'+CL('home_feat_title')+'"/></div>'
-          +'<div class="admin-field" style="flex:2;margin:0"><input type="text" id="cmsFD_'+svc+'_'+i+'" value="'+escAttr(f.desc||'')+'" placeholder="'+CL('home_feat_desc')+'"/></div>'
-          +'<button class="admin-btn danger" style="padding:6px 10px;font-size:11px;height:42px" onclick="window._cmsRemoveRepeater(\'feat_'+svc+'\','+i+')">'+CL('home_remove')+'</button>'
-          +'</div>';
-      });
-      featHtml += '</div>';
-    } else {
-      featHtml += '<label style="font-size:12px;font-weight:600;color:var(--text-sec);margin:12px 0 6px;display:block;text-transform:uppercase;letter-spacing:.5px">'+CL('home_features')+' <span style="font-weight:400;text-transform:none;letter-spacing:0">(using defaults)</span></label>';
-      featHtml += '<div id="cmsFeat_'+svc+'"></div>';
-    }
-    featHtml += '<button class="admin-btn secondary" style="font-size:12px;margin-top:4px" onclick="window._cmsAddRepeater(\'feat_'+svc+'\')">'+CL('home_add_item')+'</button>';
-
-    html += sectionAccordion(svc, 'home_'+svc,
-      plainField('cms_h_'+svc+'_label','home_label', gv(svc,'label'))
-      +richField('cms_h_'+svc+'_title','home_title', gv(svc,'title'))
-      +richField('cms_h_'+svc+'_desc','home_desc', gv(svc,'desc'))
-      +plainField('cms_h_'+svc+'_img','home_img', gv(svc,'img'))
-      +featHtml
-    );
-  });
-
-  // ========== Stats ==========
-  var statsData = [];
-  try{ statsData = JSON.parse(gv('stats','items')||'[]'); }catch(e){}
-  if(!statsData.length) statsData = [
-    {num:'30+', label:lang==='en'?'Years of Experience':(lang==='zh-Hans'?'年金融服务经验':'年金融服務經驗')},
-    {num:'SFC', label:lang==='en'?'Hong Kong SFC Regulated':(lang==='zh-Hans'?'香港证监会持牌':'香港證監會持牌')},
-    {num:'24/7', label:lang==='en'?'Customer Support':(lang==='zh-Hans'?'全天候客户服务':'全天候客戶服務')},
-    {num:lang==='en'?'Multi':(lang==='zh-Hans'?'多元':'多元'), label:lang==='en'?'Market Access':(lang==='zh-Hans'?'市场覆盖':'市場覆蓋')}
-  ];
-  var statsHtml = '<div id="cmsStatsList">';
-  statsData.forEach(function(s,i){
-    statsHtml += '<div class="cms-form-row" style="align-items:end">'
-      +'<div class="admin-field" style="flex:1;margin:0"><label>'+CL('home_stat_num')+'</label><input type="text" id="cmsSN_'+i+'" value="'+escAttr(s.num)+'"/></div>'
-      +'<div class="admin-field" style="flex:2;margin:0"><label>'+CL('home_stat_label')+'</label><input type="text" id="cmsSL_'+i+'" value="'+escAttr(s.label)+'"/></div>'
-      +'<button class="admin-btn danger" style="padding:6px 10px;font-size:11px;height:42px" onclick="window._cmsRemoveRepeater(\'stat\','+i+')">'+CL('home_remove')+'</button>'
-      +'</div>';
-  });
-  statsHtml += '</div>';
-  statsHtml += '<button class="admin-btn secondary" style="font-size:12px;margin-top:4px" onclick="window._cmsAddRepeater(\'stat\')">'+CL('home_add_item')+'</button>';
-  html += sectionAccordion('stats', 'home_stats', statsHtml);
-
-  // ========== CTA ==========
-  var ctaSteps = [];
-  try{ ctaSteps = JSON.parse(gv('cta','steps')||'[]'); }catch(e){}
-  if(!ctaSteps.length) ctaSteps = lang==='en'?['Download\nAgreement','Submit\nDocuments','Account\nApproved','Start\nTrading']:(lang==='zh-Hans'?['下载\n开户合约','提交\n所需文件','帐户\n审批通过','开始\n交易']:['下載\n開戶合約','提交\n所需文件','帳戶\n審批通過','開始\n交易']);
-  var ctaHtml = richField('cms_h_cta_title','home_title', gv('cta','title'))
-    +richField('cms_h_cta_desc','home_desc', gv('cta','desc'))
-    +'<label style="font-size:12px;font-weight:600;color:var(--text-sec);margin:12px 0 6px;display:block;text-transform:uppercase;letter-spacing:.5px">'+CL('home_steps')+'</label>'
-    +'<div id="cmsStepsList">';
-  ctaSteps.forEach(function(s,i){
-    ctaHtml += '<div class="cms-form-row" style="align-items:end">'
-      +'<div class="admin-field" style="flex:1;margin:0"><label>'+CL('home_step')+' '+(i+1)+'</label><input type="text" id="cmsStep_'+i+'" value="'+escAttr(s.replace(/\n/g,'\\n'))+'"/></div>'
-      +'<button class="admin-btn danger" style="padding:6px 10px;font-size:11px;height:42px" onclick="window._cmsRemoveRepeater(\'step\','+i+')">'+CL('home_remove')+'</button>'
-      +'</div>';
-  });
-  ctaHtml += '</div>';
-  ctaHtml += '<button class="admin-btn secondary" style="font-size:12px;margin-top:4px" onclick="window._cmsAddRepeater(\'step\')">'+CL('home_add_item')+'</button>';
-  ctaHtml += '<div class="cms-field-group" style="margin-top:12px"><h4>'+CL('home_cta1_text').replace('1','')+'</h4>'
-    +'<div class="cms-form-row">'
-    +plainField('cms_h_cta_btn1_text','home_cta1_text', gv('cta','btn1_text'))
-    +plainField('cms_h_cta_btn1_link','home_cta1_link', gv('cta','btn1_link'))
-    +'</div>'
-    +'<div class="cms-form-row">'
-    +plainField('cms_h_cta_btn2_text','home_cta2_text', gv('cta','btn2_text'))
-    +plainField('cms_h_cta_btn2_link','home_cta2_link', gv('cta','btn2_link'))
-    +'</div></div>';
-  html += sectionAccordion('cta', 'home_cta', ctaHtml);
-
-  // ========== Footer ==========
-  var ft = getCmsFooter();
-  var ftL = (ft[lang]) || {};
-  var ftDefBrand = lang==='en'?'Capital Securities (Hong Kong) Limited':(lang==='zh-Hans'?'群益证券(香港)有限公司':'群益證券(香港)有限公司');
-  var ftDefAddr = lang==='en'?'21/F, Capital Centre, 151 Gloucester Road, Wan Chai, Hong Kong':(lang==='zh-Hans'?'香港湾仔告士打道151号资本中心21楼全层':'香港灣仔告士打道151號資本中心21樓全層');
-  var ftHtml = plainField('cms_ft_brand','footer_brand', ftL.brand_name||ftDefBrand)
-    +plainField('cms_ft_addr','footer_address', ftL.address||ftDefAddr)
-    +'<div class="cms-form-row">'
-    +plainField('cms_ft_tel','footer_tel', ftL.tel||'(852) 2530-9966')
-    +plainField('cms_ft_fax','footer_fax', ftL.fax||'(852) 2530-9424')
-    +'</div>';
-  // Footer columns
-  var ftCols = ftL.columns || [
-    {title:lang==='en'?'Products':(lang==='zh-Hans'?'产品服务':'產品服務'), links:[{text:lang==='en'?'Securities':(lang==='zh-Hans'?'证券交易':'證券交易'),href:'#/page/stock-ipo'},{text:lang==='en'?'Stock Connect':(lang==='zh-Hans'?'沪港通':'滬港通'),href:'#/page/shh-hk'}]},
-    {title:lang==='en'?'Discover':(lang==='zh-Hans'?'探索':'探索'), links:[{text:lang==='en'?'News':(lang==='zh-Hans'?'新闻':'新聞'),href:'#/page/news'}]},
-    {title:lang==='en'?'Account':(lang==='zh-Hans'?'账户':'帳戶'), links:[{text:lang==='en'?'Open Account':(lang==='zh-Hans'?'开户程序':'開戶程序'),href:'#/page/stock-account-opening'}]},
-    {title:lang==='en'?'Legal':(lang==='zh-Hans'?'法律信息':'法律資訊'), links:[{text:lang==='en'?'Privacy Policy':(lang==='zh-Hans'?'个人隐私政策':'個人私隱政策'),href:'#/page/privacy'}]}
-  ];
-  ftHtml += '<div id="cmsFooterCols">';
-  ftCols.forEach(function(col,ci){
-    ftHtml += '<div class="cms-card-box" style="margin-bottom:8px;padding:14px">'
-      +'<div class="admin-field" style="margin-bottom:8px"><label>'+CL('footer_col_title')+'</label><input type="text" id="cmsFCT_'+ci+'" value="'+escAttr(col.title)+'"/></div>';
-    (col.links||[]).forEach(function(lnk,li){
-      ftHtml += '<div class="cms-form-row" style="align-items:end">'
-        +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsFCLT_'+ci+'_'+li+'" value="'+escAttr(lnk.text)+'" placeholder="'+CL('footer_link_text')+'"/></div>'
-        +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsFCLH_'+ci+'_'+li+'" value="'+escAttr(lnk.href)+'" placeholder="'+CL('footer_link_href')+'"/></div>'
-        +'<button class="admin-btn danger" style="padding:4px 8px;font-size:11px" onclick="window._cmsRemoveRepeater(\'flink_'+ci+'\','+li+')">✕</button>'
+    mqBody += '<div class="cms-field-group"><h4>'+escHtml(langNames[lang])+' ('+lang+')</h4>'
+      +plainField('cms_h_mq_title_'+lang,'home_marquee_title', mqTitle);
+    mqBody += '<label style="font-size:12px;font-weight:600;color:var(--text-sec);margin:12px 0 6px;display:block;text-transform:uppercase;letter-spacing:.5px">'+CL('home_logos')+'</label>';
+    mqBody += '<div id="cmsLogoList_'+lang+'">';
+    mqLogos.forEach(function(l,i){
+      mqBody += '<div class="cms-form-row" style="align-items:end">'
+        +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsLN_'+lang+'_'+i+'" value="'+escAttr(l.name)+'" placeholder="'+CL('home_logo_name')+'"/></div>'
+        +'<div class="admin-field" style="flex:2;margin:0"><input type="text" id="cmsLI_'+lang+'_'+i+'" value="'+escAttr(l.img)+'" placeholder="'+CL('home_logo_img')+'"/></div>'
+        +'<button class="admin-btn danger" style="padding:6px 10px;font-size:11px;height:42px" onclick="window._cmsRemoveRepeater(\'logo\','+i+',\''+escQ(lang)+'\')">'+CL('home_remove')+'</button>'
         +'</div>';
     });
-    ftHtml += '<button class="admin-btn secondary" style="font-size:11px;margin-top:4px" onclick="window._cmsAddRepeater(\'flink_'+ci+'\')">'+CL('footer_add_link')+'</button>'
-      +'<button class="admin-btn danger" style="font-size:11px;margin-top:4px;margin-left:4px" onclick="window._cmsRemoveRepeater(\'fcol\','+ci+')">'+CL('home_remove')+'</button>'
-      +'</div>';
+    mqBody += '</div>';
+    mqBody += '<button class="admin-btn secondary" style="font-size:12px;margin-top:4px" onclick="window._cmsAddRepeater(\'logo\',\''+escQ(lang)+'\')">'+CL('home_add_item')+'</button>';
+    mqBody += '<label style="font-size:12px;font-weight:600;color:var(--text-sec);margin:16px 0 6px;display:block;text-transform:uppercase;letter-spacing:.5px">'+CL('home_groups')+'</label>';
+    mqBody += '<div id="cmsGroupList_'+lang+'">';
+    mqGroups.forEach(function(g,i){
+      mqBody += '<div class="cms-form-row" style="align-items:end">'
+        +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsGN_'+lang+'_'+i+'" value="'+escAttr(g.name)+'" placeholder="'+CL('home_group_name')+'"/></div>'
+        +'<button class="admin-btn danger" style="padding:6px 10px;font-size:11px;height:42px" onclick="window._cmsRemoveRepeater(\'group\','+i+',\''+escQ(lang)+'\')">'+CL('home_remove')+'</button>'
+        +'</div>';
+    });
+    mqBody += '</div>';
+    mqBody += '<button class="admin-btn secondary" style="font-size:12px;margin-top:4px" onclick="window._cmsAddRepeater(\'group\',\''+escQ(lang)+'\')">'+CL('home_add_item')+'</button>';
+    mqBody += '</div>';
   });
-  ftHtml += '</div>';
-  ftHtml += '<button class="admin-btn secondary" style="font-size:12px;margin-top:8px" onclick="window._cmsAddRepeater(\'fcol\')">'+CL('footer_add_col')+'</button>';
-  ftHtml += '<div style="margin-top:12px"><button class="admin-btn primary" onclick="window._cmsFooterSave()">'+CL('save')+' '+CL('home_footer')+'</button></div>';
-  html += sectionAccordion('footer', 'home_footer', ftHtml);
+  html += sectionAccordion('marquee', 'home_marquee', mqBody);
 
-  // ========== Navigation ==========
-  var navData = getCmsNav();
-  var navItems = navData[lang] || (window.SITE && window.SITE.nav ? window.SITE.nav[lang] || window.SITE.nav['zh-Hant'] : []);
-  var navHtml = '<div id="cmsNavTree">';
-  navItems.forEach(function(item, i){
-    navHtml += '<div class="cms-card-box" style="margin-bottom:6px;padding:10px 14px">'
-      +'<div class="cms-form-row" style="align-items:center;margin-bottom:0">'
-      +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNL_'+i+'" value="'+escAttr(item.label)+'" placeholder="'+CL('nav_item_label')+'"/></div>'
-      +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNP_'+i+'" value="'+escAttr(item.page||item.ext||'')+'" placeholder="'+CL('nav_item_page')+' / '+CL('nav_item_ext')+'"/></div>'
-      +(i>0?'<button class="admin-btn secondary" style="padding:4px 8px;font-size:11px" onclick="window._cmsNavMove('+i+',-1)">&uarr;</button>':'')
-      +(i<navItems.length-1?'<button class="admin-btn secondary" style="padding:4px 8px;font-size:11px" onclick="window._cmsNavMove('+i+',1)">&darr;</button>':'')
-      +'<button class="admin-btn danger" style="padding:4px 8px;font-size:11px" onclick="window._cmsRemoveRepeater(\'nav\','+i+')">✕</button>'
-      +'</div>';
-    if(item.children && item.children.length){
-      item.children.forEach(function(ch2, j){
-        navHtml += '<div style="margin-left:24px;margin-top:4px" class="cms-form-row" style="align-items:center">'
-          +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNC_'+i+'_'+j+'" value="'+escAttr(ch2.label)+'" placeholder="'+CL('nav_item_label')+'"/></div>'
-          +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNCP_'+i+'_'+j+'" value="'+escAttr(ch2.page||ch2.ext||'')+'" placeholder="'+CL('nav_item_page')+'"/></div>'
-          +'<button class="admin-btn danger" style="padding:4px 6px;font-size:10px" onclick="window._cmsRemoveRepeater(\'navch_'+i+'\','+j+')">✕</button>'
-          +'</div>';
-        if(ch2.children && ch2.children.length){
-          ch2.children.forEach(function(ch3, k){
-            navHtml += '<div style="margin-left:48px;margin-top:2px" class="cms-form-row" style="align-items:center">'
-              +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNCC_'+i+'_'+j+'_'+k+'" value="'+escAttr(ch3.label)+'" placeholder="'+CL('nav_item_label')+'"/></div>'
-              +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNCCP_'+i+'_'+j+'_'+k+'" value="'+escAttr(ch3.page||ch3.ext||'')+'" placeholder="'+CL('nav_item_page')+'"/></div>'
-              +'<button class="admin-btn danger" style="padding:4px 6px;font-size:10px" onclick="window._cmsRemoveRepeater(\'navgch_'+i+'_'+j+'\','+k+')">✕</button>'
-              +'</div>';
-          });
-        }
-        navHtml += '<button class="admin-btn secondary" style="font-size:10px;margin-left:48px;margin-top:2px;padding:2px 8px" onclick="window._cmsAddRepeater(\'navgch_'+i+'_'+j+'\')">'+CL('nav_add_child')+'</button>';
-      });
-    }
-    navHtml += '<button class="admin-btn secondary" style="font-size:10px;margin-left:24px;margin-top:4px;padding:2px 8px" onclick="window._cmsAddRepeater(\'navch_'+i+'\')">'+CL('nav_add_child')+'</button>';
-    navHtml += '</div>';
+  // ========== 3-5. Services (with sub-features, all 3 languages) ==========
+  ['svc1','svc2','svc3'].forEach(function(svc){
+    var svcBody = '';
+    langs.forEach(function(lang){
+      var feats = [];
+      try{ feats = JSON.parse(gv(svc,'features',lang)||'[]'); }catch(e){}
+      var featHtml = '';
+      if(feats.length){
+        featHtml += '<label style="font-size:12px;font-weight:600;color:var(--text-sec);margin:12px 0 6px;display:block;text-transform:uppercase;letter-spacing:.5px">'+CL('home_features')+'</label>';
+        featHtml += '<div id="cmsFeat_'+svc+'_'+lang+'">';
+        feats.forEach(function(f,i){
+          featHtml += '<div class="cms-form-row" style="align-items:end">'
+            +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsFT_'+svc+'_'+lang+'_'+i+'" value="'+escAttr(f.title||'')+'" placeholder="'+CL('home_feat_title')+'"/></div>'
+            +'<div class="admin-field" style="flex:2;margin:0"><input type="text" id="cmsFD_'+svc+'_'+lang+'_'+i+'" value="'+escAttr(f.desc||'')+'" placeholder="'+CL('home_feat_desc')+'"/></div>'
+            +'<button class="admin-btn danger" style="padding:6px 10px;font-size:11px;height:42px" onclick="window._cmsRemoveRepeater(\'feat_'+svc+'\','+i+',\''+escQ(lang)+'\')">'+CL('home_remove')+'</button>'
+            +'</div>';
+        });
+        featHtml += '</div>';
+      } else {
+        featHtml += '<label style="font-size:12px;font-weight:600;color:var(--text-sec);margin:12px 0 6px;display:block;text-transform:uppercase;letter-spacing:.5px">'+CL('home_features')+' <span style="font-weight:400;text-transform:none;letter-spacing:0">(using defaults)</span></label>';
+        featHtml += '<div id="cmsFeat_'+svc+'_'+lang+'"></div>';
+      }
+      featHtml += '<button class="admin-btn secondary" style="font-size:12px;margin-top:4px" onclick="window._cmsAddRepeater(\'feat_'+svc+'\',\''+escQ(lang)+'\')">'+CL('home_add_item')+'</button>';
+
+      svcBody += '<div class="cms-field-group"><h4>'+escHtml(langNames[lang])+' ('+lang+')</h4>'
+        +plainField('cms_h_'+svc+'_label_'+lang,'home_label', gv(svc,'label',lang))
+        +richField('cms_h_'+svc+'_title_'+lang,'home_title', gv(svc,'title',lang))
+        +richField('cms_h_'+svc+'_desc_'+lang,'home_desc', gv(svc,'desc',lang))
+        +plainField('cms_h_'+svc+'_img_'+lang,'home_img', gv(svc,'img',lang))
+        +featHtml
+        +'</div>';
+    });
+    html += sectionAccordion(svc, 'home_'+svc, svcBody);
   });
-  navHtml += '</div>';
-  navHtml += '<div style="display:flex;gap:8px;margin-top:8px">'
-    +'<button class="admin-btn secondary" style="font-size:12px" onclick="window._cmsAddRepeater(\'nav\')">'+CL('nav_add_item')+'</button>'
+
+  // ========== Stats (all 3 languages) ==========
+  var statsBody = '';
+  langs.forEach(function(lang){
+    var statsData = [];
+    try{ statsData = JSON.parse(gv('stats','items',lang)||'[]'); }catch(e){}
+    if(!statsData.length){
+      try{ statsData = JSON.parse((defaults.stats[lang]||{}).items||'[]'); }catch(e){}
+    }
+    statsBody += '<div class="cms-field-group"><h4>'+escHtml(langNames[lang])+' ('+lang+')</h4>';
+    statsBody += '<div id="cmsStatsList_'+lang+'">';
+    statsData.forEach(function(s,i){
+      statsBody += '<div class="cms-form-row" style="align-items:end">'
+        +'<div class="admin-field" style="flex:1;margin:0"><label>'+CL('home_stat_num')+'</label><input type="text" id="cmsSN_'+lang+'_'+i+'" value="'+escAttr(s.num)+'"/></div>'
+        +'<div class="admin-field" style="flex:2;margin:0"><label>'+CL('home_stat_label')+'</label><input type="text" id="cmsSL_'+lang+'_'+i+'" value="'+escAttr(s.label)+'"/></div>'
+        +'<button class="admin-btn danger" style="padding:6px 10px;font-size:11px;height:42px" onclick="window._cmsRemoveRepeater(\'stat\','+i+',\''+escQ(lang)+'\')">'+CL('home_remove')+'</button>'
+        +'</div>';
+    });
+    statsBody += '</div>';
+    statsBody += '<button class="admin-btn secondary" style="font-size:12px;margin-top:4px" onclick="window._cmsAddRepeater(\'stat\',\''+escQ(lang)+'\')">'+CL('home_add_item')+'</button>';
+    statsBody += '</div>';
+  });
+  html += sectionAccordion('stats', 'home_stats', statsBody);
+
+  // ========== CTA (all 3 languages) ==========
+  var ctaBody = '';
+  langs.forEach(function(lang){
+    var ctaSteps = [];
+    try{ ctaSteps = JSON.parse(gv('cta','steps',lang)||'[]'); }catch(e){}
+    if(!ctaSteps.length){
+      try{ ctaSteps = JSON.parse((defaults.cta[lang]||{}).steps||'[]'); }catch(e){}
+    }
+    ctaBody += '<div class="cms-field-group"><h4>'+escHtml(langNames[lang])+' ('+lang+')</h4>'
+      +richField('cms_h_cta_title_'+lang,'home_title', gv('cta','title',lang))
+      +richField('cms_h_cta_desc_'+lang,'home_desc', gv('cta','desc',lang))
+      +'<label style="font-size:12px;font-weight:600;color:var(--text-sec);margin:12px 0 6px;display:block;text-transform:uppercase;letter-spacing:.5px">'+CL('home_steps')+'</label>'
+      +'<div id="cmsStepsList_'+lang+'">';
+    ctaSteps.forEach(function(s,i){
+      ctaBody += '<div class="cms-form-row" style="align-items:end">'
+        +'<div class="admin-field" style="flex:1;margin:0"><label>'+CL('home_step')+' '+(i+1)+'</label><input type="text" id="cmsStep_'+lang+'_'+i+'" value="'+escAttr(s.replace(/\n/g,'\\n'))+'"/></div>'
+        +'<button class="admin-btn danger" style="padding:6px 10px;font-size:11px;height:42px" onclick="window._cmsRemoveRepeater(\'step\','+i+',\''+escQ(lang)+'\')">'+CL('home_remove')+'</button>'
+        +'</div>';
+    });
+    ctaBody += '</div>';
+    ctaBody += '<button class="admin-btn secondary" style="font-size:12px;margin-top:4px" onclick="window._cmsAddRepeater(\'step\',\''+escQ(lang)+'\')">'+CL('home_add_item')+'</button>';
+    ctaBody += '<div class="cms-form-row">'
+      +plainField('cms_h_cta_btn1_text_'+lang,'home_cta1_text', gv('cta','btn1_text',lang))
+      +plainField('cms_h_cta_btn1_link_'+lang,'home_cta1_link', gv('cta','btn1_link',lang))
+      +'</div>'
+      +'<div class="cms-form-row">'
+      +plainField('cms_h_cta_btn2_text_'+lang,'home_cta2_text', gv('cta','btn2_text',lang))
+      +plainField('cms_h_cta_btn2_link_'+lang,'home_cta2_link', gv('cta','btn2_link',lang))
+      +'</div></div>';
+  });
+  html += sectionAccordion('cta', 'home_cta', ctaBody);
+
+  // ========== Footer (all 3 languages) ==========
+  var ft = getCmsFooter();
+  var ftBody = '';
+  langs.forEach(function(lang){
+    var ftL = (ft[lang]) || {};
+    var ftDef = (defaults.footer && defaults.footer[lang]) || {};
+    ftBody += '<div class="cms-field-group"><h4>'+escHtml(langNames[lang])+' ('+lang+')</h4>'
+      +plainField('cms_ft_brand_'+lang,'footer_brand', ftL.brand_name||ftDef.brand_name||'')
+      +plainField('cms_ft_addr_'+lang,'footer_address', ftL.address||ftDef.address||'')
+      +'<div class="cms-form-row">'
+      +plainField('cms_ft_tel_'+lang,'footer_tel', ftL.tel||ftDef.tel||'')
+      +plainField('cms_ft_fax_'+lang,'footer_fax', ftL.fax||ftDef.fax||'')
+      +'</div>';
+    // Footer columns
+    var ftCols = ftL.columns || ftDef.columns || [];
+    ftBody += '<div id="cmsFooterCols_'+lang+'">';
+    ftCols.forEach(function(col,ci){
+      ftBody += '<div class="cms-card-box" style="margin-bottom:8px;padding:14px">'
+        +'<div class="admin-field" style="margin-bottom:8px"><label>'+CL('footer_col_title')+'</label><input type="text" id="cmsFCT_'+lang+'_'+ci+'" value="'+escAttr(col.title)+'"/></div>';
+      (col.links||[]).forEach(function(lnk,li){
+        ftBody += '<div class="cms-form-row" style="align-items:end">'
+          +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsFCLT_'+lang+'_'+ci+'_'+li+'" value="'+escAttr(lnk.text)+'" placeholder="'+CL('footer_link_text')+'"/></div>'
+          +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsFCLH_'+lang+'_'+ci+'_'+li+'" value="'+escAttr(lnk.href)+'" placeholder="'+CL('footer_link_href')+'"/></div>'
+          +'<button class="admin-btn danger" style="padding:4px 8px;font-size:11px" onclick="window._cmsRemoveRepeater(\'flink_'+ci+'\','+li+',\''+escQ(lang)+'\')">&#10005;</button>'
+          +'</div>';
+      });
+      ftBody += '<button class="admin-btn secondary" style="font-size:11px;margin-top:4px" onclick="window._cmsAddRepeater(\'flink_'+ci+'\',\''+escQ(lang)+'\')">'+CL('footer_add_link')+'</button>'
+        +'<button class="admin-btn danger" style="font-size:11px;margin-top:4px;margin-left:4px" onclick="window._cmsRemoveRepeater(\'fcol\','+ci+',\''+escQ(lang)+'\')">'+CL('home_remove')+'</button>'
+        +'</div>';
+    });
+    ftBody += '</div>';
+    ftBody += '<button class="admin-btn secondary" style="font-size:12px;margin-top:8px" onclick="window._cmsAddRepeater(\'fcol\',\''+escQ(lang)+'\')">'+CL('footer_add_col')+'</button>';
+    ftBody += '</div>';
+  });
+  ftBody += '<div style="margin-top:12px"><button class="admin-btn primary" onclick="window._cmsFooterSave()">'+CL('save')+' '+CL('home_footer')+'</button></div>';
+  html += sectionAccordion('footer', 'home_footer', ftBody);
+
+  // ========== Navigation (all 3 languages) ==========
+  var navData = getCmsNav();
+  var navBody = '';
+  langs.forEach(function(lang){
+    var navItems = navData[lang] || (window.SITE && window.SITE.nav ? window.SITE.nav[lang] || window.SITE.nav['zh-Hant'] : []);
+    navBody += '<div class="cms-field-group"><h4>'+escHtml(langNames[lang])+' ('+lang+')</h4>';
+    navBody += '<div id="cmsNavTree_'+lang+'">';
+    navItems.forEach(function(item, i){
+      navBody += '<div class="cms-card-box" style="margin-bottom:6px;padding:10px 14px">'
+        +'<div class="cms-form-row" style="align-items:center;margin-bottom:0">'
+        +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNL_'+lang+'_'+i+'" value="'+escAttr(item.label)+'" placeholder="'+CL('nav_item_label')+'"/></div>'
+        +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNP_'+lang+'_'+i+'" value="'+escAttr(item.page||item.ext||'')+'" placeholder="'+CL('nav_item_page')+' / '+CL('nav_item_ext')+'"/></div>'
+        +(i>0?'<button class="admin-btn secondary" style="padding:4px 8px;font-size:11px" onclick="window._cmsNavMove('+i+',-1,\''+escQ(lang)+'\')">&uarr;</button>':'')
+        +(i<navItems.length-1?'<button class="admin-btn secondary" style="padding:4px 8px;font-size:11px" onclick="window._cmsNavMove('+i+',1,\''+escQ(lang)+'\')">&darr;</button>':'')
+        +'<button class="admin-btn danger" style="padding:4px 8px;font-size:11px" onclick="window._cmsRemoveRepeater(\'nav\','+i+',\''+escQ(lang)+'\')">&#10005;</button>'
+        +'</div>';
+      if(item.children && item.children.length){
+        item.children.forEach(function(ch2, j){
+          navBody += '<div style="margin-left:24px;margin-top:4px" class="cms-form-row">'
+            +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNC_'+lang+'_'+i+'_'+j+'" value="'+escAttr(ch2.label)+'" placeholder="'+CL('nav_item_label')+'"/></div>'
+            +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNCP_'+lang+'_'+i+'_'+j+'" value="'+escAttr(ch2.page||ch2.ext||'')+'" placeholder="'+CL('nav_item_page')+'"/></div>'
+            +'<button class="admin-btn danger" style="padding:4px 6px;font-size:10px" onclick="window._cmsRemoveRepeater(\'navch_'+i+'\','+j+',\''+escQ(lang)+'\')">&#10005;</button>'
+            +'</div>';
+          if(ch2.children && ch2.children.length){
+            ch2.children.forEach(function(ch3, k){
+              navBody += '<div style="margin-left:48px;margin-top:2px" class="cms-form-row">'
+                +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNCC_'+lang+'_'+i+'_'+j+'_'+k+'" value="'+escAttr(ch3.label)+'" placeholder="'+CL('nav_item_label')+'"/></div>'
+                +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNCCP_'+lang+'_'+i+'_'+j+'_'+k+'" value="'+escAttr(ch3.page||ch3.ext||'')+'" placeholder="'+CL('nav_item_page')+'"/></div>'
+                +'<button class="admin-btn danger" style="padding:4px 6px;font-size:10px" onclick="window._cmsRemoveRepeater(\'navgch_'+i+'_'+j+'\','+k+',\''+escQ(lang)+'\')">&#10005;</button>'
+                +'</div>';
+            });
+          }
+          navBody += '<button class="admin-btn secondary" style="font-size:10px;margin-left:48px;margin-top:2px;padding:2px 8px" onclick="window._cmsAddRepeater(\'navgch_'+i+'_'+j+'\',\''+escQ(lang)+'\')">'+CL('nav_add_child')+'</button>';
+        });
+      }
+      navBody += '<button class="admin-btn secondary" style="font-size:10px;margin-left:24px;margin-top:4px;padding:2px 8px" onclick="window._cmsAddRepeater(\'navch_'+i+'\',\''+escQ(lang)+'\')">'+CL('nav_add_child')+'</button>';
+      navBody += '</div>';
+    });
+    navBody += '</div>';
+    navBody += '<div style="display:flex;gap:8px;margin-top:8px">'
+      +'<button class="admin-btn secondary" style="font-size:12px" onclick="window._cmsAddRepeater(\'nav\',\''+escQ(lang)+'\')">'+CL('nav_add_item')+'</button>'
+      +'</div>';
+    navBody += '</div>';
+  });
+  navBody += '<div style="display:flex;gap:8px;margin-top:12px">'
     +'<button class="admin-btn primary" onclick="window._cmsNavSave()">'+CL('save')+' '+CL('home_nav')+'</button>'
     +'<button class="admin-btn danger" onclick="if(confirm(CL(\'nav_reset_q\'))){saveCmsNav({});window._cmsHomeView();}">'+CL('nav_reset')+'</button>'
     +'</div>';
-  html += sectionAccordion('nav', 'home_nav', navHtml);
+  html += sectionAccordion('nav', 'home_nav', navBody);
 
   html += '<div style="margin-top:16px;display:flex;gap:8px">'
     +'<button class="admin-btn primary" onclick="window._cmsHomeSave()">'+CL('save_changes')+'</button>'
@@ -3069,6 +3122,8 @@ window._cmsHomeView = function(){
   // Initialize CKEditor on rich text fields
   if(hasCK){
     document.querySelectorAll('.cms-home-ck').forEach(function(ta){
+      var ckLang = 'zh-cn';
+      if(ta.id.indexOf('_en') === ta.id.length - 3) ckLang = 'en';
       ClassicEditor.create(ta, {
         toolbar: ['heading','|','bold','italic','link','|','bulletedList','numberedList','|','blockQuote','insertTable','|','undo','redo'],
         heading: { options: [
@@ -3077,7 +3132,7 @@ window._cmsHomeView = function(){
           { model:'heading3', view:'h3', title:'Heading 3', class:'ck-heading_heading3' },
           { model:'heading4', view:'h4', title:'Heading 4', class:'ck-heading_heading4' }
         ]},
-        language: lang === 'en' ? 'en' : 'zh-cn'
+        language: ckLang
       }).then(function(editor){
         _cmsEditors[ta.id] = editor;
       }).catch(function(err){
@@ -3089,7 +3144,7 @@ window._cmsHomeView = function(){
 
 // Save all homepage fields
 window._cmsHomeSave = function(){
-  var lang = window.currentLang || 'zh-Hant';
+  var langs = ["zh-Hant","zh-Hans","en"];
   var ch = window.getCmsHome ? window.getCmsHome() : {};
   var sections = ['hero','svc1','svc2','svc3','cta'];
   var fields = {
@@ -3105,95 +3160,95 @@ window._cmsHomeSave = function(){
     var el = document.getElementById(id);
     return el ? (el.value||'').trim() : '';
   }
-  sections.forEach(function(sec){
-    if(!ch[sec]) ch[sec] = {};
-    if(!ch[sec][lang]) ch[sec][lang] = {};
-    fields[sec].forEach(function(f){
-      var val = getVal('cms_h_'+sec+'_'+f);
-      if(val) ch[sec][lang][f] = val;
-      else delete ch[sec][lang][f];
+  langs.forEach(function(lang){
+    sections.forEach(function(sec){
+      if(!ch[sec]) ch[sec] = {};
+      if(!ch[sec][lang]) ch[sec][lang] = {};
+      fields[sec].forEach(function(f){
+        var val = getVal('cms_h_'+sec+'_'+f+'_'+lang);
+        if(val) ch[sec][lang][f] = val;
+        else delete ch[sec][lang][f];
+      });
+      // Clean empty
+      if(Object.keys(ch[sec][lang]).length === 0) delete ch[sec][lang];
+      if(Object.keys(ch[sec]).length === 0) delete ch[sec];
     });
-    // Clean empty
-    if(Object.keys(ch[sec][lang]).length === 0) delete ch[sec][lang];
-    if(Object.keys(ch[sec]).length === 0) delete ch[sec];
+
+    // Save CTA steps
+    var steps = [];
+    var i = 0;
+    while(document.getElementById('cmsStep_'+lang+'_'+i)){
+      var sv = document.getElementById('cmsStep_'+lang+'_'+i).value.replace(/\\n/g,'\n').trim();
+      if(sv) steps.push(sv);
+      i++;
+    }
+    if(steps.length){
+      if(!ch.cta) ch.cta = {};
+      if(!ch.cta[lang]) ch.cta[lang] = {};
+      ch.cta[lang].steps = JSON.stringify(steps);
+    }
+
+    // Save stats
+    var stats = [];
+    i = 0;
+    while(document.getElementById('cmsSN_'+lang+'_'+i)){
+      var sn = document.getElementById('cmsSN_'+lang+'_'+i).value.trim();
+      var sl = document.getElementById('cmsSL_'+lang+'_'+i).value.trim();
+      if(sn||sl) stats.push({num:sn, label:sl});
+      i++;
+    }
+    if(stats.length){
+      if(!ch.stats) ch.stats = {};
+      if(!ch.stats[lang]) ch.stats[lang] = {};
+      ch.stats[lang].items = JSON.stringify(stats);
+    }
+
+    // Save marquee
+    var mqTitle = (document.getElementById('cms_h_mq_title_'+lang)||{}).value||'';
+    var logos = [], groups = [];
+    i = 0;
+    while(document.getElementById('cmsLN_'+lang+'_'+i)){
+      var ln = document.getElementById('cmsLN_'+lang+'_'+i).value.trim();
+      var li = document.getElementById('cmsLI_'+lang+'_'+i).value.trim();
+      if(ln||li) logos.push({name:ln, img:li});
+      i++;
+    }
+    i = 0;
+    while(document.getElementById('cmsGN_'+lang+'_'+i)){
+      var gn = document.getElementById('cmsGN_'+lang+'_'+i).value.trim();
+      if(gn) groups.push({name:gn});
+      i++;
+    }
+    if(mqTitle||logos.length||groups.length){
+      if(!ch.marquee) ch.marquee = {};
+      if(!ch.marquee[lang]) ch.marquee[lang] = {};
+      if(mqTitle) ch.marquee[lang].title = mqTitle.trim();
+      if(logos.length) ch.marquee[lang].logos = JSON.stringify(logos);
+      if(groups.length) ch.marquee[lang].groups = JSON.stringify(groups);
+    }
+
+    // Save feature sub-items per service
+    ['svc1','svc2','svc3'].forEach(function(svc){
+      var feats = [];
+      var j = 0;
+      while(document.getElementById('cmsFT_'+svc+'_'+lang+'_'+j)){
+        var ft = document.getElementById('cmsFT_'+svc+'_'+lang+'_'+j).value.trim();
+        var fd = document.getElementById('cmsFD_'+svc+'_'+lang+'_'+j).value.trim();
+        if(ft||fd) feats.push({title:ft, desc:fd});
+        j++;
+      }
+      if(feats.length){
+        if(!ch[svc]) ch[svc] = {};
+        if(!ch[svc][lang]) ch[svc][lang] = {};
+        ch[svc][lang].features = JSON.stringify(feats);
+      }
+    });
   });
 
-  // Save CTA steps
-  var steps = [];
-  var i = 0;
-  while(document.getElementById('cmsStep_'+i)){
-    var sv = document.getElementById('cmsStep_'+i).value.replace(/\\n/g,'\n').trim();
-    if(sv) steps.push(sv);
-    i++;
-  }
-  if(steps.length){
-    if(!ch.cta) ch.cta = {};
-    if(!ch.cta[lang]) ch.cta[lang] = {};
-    ch.cta[lang].steps = JSON.stringify(steps);
-  }
-
-  // Save stats
-  var stats = [];
-  i = 0;
-  while(document.getElementById('cmsSN_'+i)){
-    var sn = document.getElementById('cmsSN_'+i).value.trim();
-    var sl = document.getElementById('cmsSL_'+i).value.trim();
-    if(sn||sl) stats.push({num:sn, label:sl});
-    i++;
-  }
-  if(stats.length){
-    if(!ch.stats) ch.stats = {};
-    if(!ch.stats[lang]) ch.stats[lang] = {};
-    ch.stats[lang].items = JSON.stringify(stats);
-  }
-
-  // Save marquee
-  var mqTitle = (document.getElementById('cms_h_mq_title')||{}).value||'';
-  var logos = [], groups = [];
-  i = 0;
-  while(document.getElementById('cmsLN_'+i)){
-    var ln = document.getElementById('cmsLN_'+i).value.trim();
-    var li = document.getElementById('cmsLI_'+i).value.trim();
-    if(ln||li) logos.push({name:ln, img:li});
-    i++;
-  }
-  i = 0;
-  while(document.getElementById('cmsGN_'+i)){
-    var gn = document.getElementById('cmsGN_'+i).value.trim();
-    if(gn) groups.push({name:gn});
-    i++;
-  }
-  if(mqTitle||logos.length||groups.length){
-    if(!ch.marquee) ch.marquee = {};
-    if(!ch.marquee[lang]) ch.marquee[lang] = {};
-    if(mqTitle) ch.marquee[lang].title = mqTitle.trim();
-    if(logos.length) ch.marquee[lang].logos = JSON.stringify(logos);
-    if(groups.length) ch.marquee[lang].groups = JSON.stringify(groups);
-  }
-
-  // Save feature sub-items per service
-  ['svc1','svc2','svc3'].forEach(function(svc){
-    var feats = [];
-    var j = 0;
-    while(document.getElementById('cmsFT_'+svc+'_'+j)){
-      var ft = document.getElementById('cmsFT_'+svc+'_'+j).value.trim();
-      var fd = document.getElementById('cmsFD_'+svc+'_'+j).value.trim();
-      if(ft||fd) feats.push({title:ft, desc:fd});
-      j++;
-    }
-    if(feats.length){
-      if(!ch[svc]) ch[svc] = {};
-      if(!ch[svc][lang]) ch[svc][lang] = {};
-      ch[svc][lang].features = JSON.stringify(feats);
-    }
-  });
-
-  // Save section order
+  // Save section order (not language-dependent)
   var orderEls = document.querySelectorAll('#cmsOrderList > div');
   if(orderEls.length){
     var defaultOrder = ['hero','banners','marquee','svc1','svc2','svc3','stats','news','cta'];
-    var secNames = {section_hero:'hero',section_banners:'banners',section_marquee:'marquee',section_svc1:'svc1',section_svc2:'svc2',section_svc3:'svc3',section_stats:'stats',section_news:'news',section_cta:'cta'};
-    // Read order from the current section order stored in data
     var curOrder = (ch.order && ch.order.length) ? ch.order : defaultOrder;
     ch.order = curOrder;
   }
@@ -3205,6 +3260,16 @@ window._cmsHomeSave = function(){
 // Render full banner manager into a container (for homepage editor accordion)
 function _cmsRenderBannersFull(container){
   var banners = getCmsBanners();
+  // Show hardcoded defaults if no banners saved (matches public bannerSection fallback)
+  if(!banners.length){
+    var _cl = window.currentLang || 'zh-Hant';
+    var _L = function(en,hans,hant){ return _cl==='en'?en:(_cl==='zh-Hans'?hans:hant); };
+    banners = [
+      { img: 'images/ecap-banner-1.png', alt: _L('iTrader Platform', 'iTrader 交易平台', 'iTrader 交易平台'), link: '#/page/stock-ipo' },
+      { img: 'images/ecap-banner-2.png', alt: _L('Stock Connect', '沪港通服务', '滬港通服務'), link: '#/page/shh-hk' },
+      { img: 'images/ecap-banner-3.png', alt: _L('Open Account', '开立帐户', '開立帳戶'), link: '#/page/stock-account-opening' }
+    ];
+  }
   var _canUpload = _cmsHasPermission("upload");
   var rows = banners.length ? banners.map(function(b,i){
     return '<div class="cms-item-card" id="cmsBC_'+i+'">'
@@ -3440,11 +3505,11 @@ window._cmsBannerPreview = function(){
 };
 
 // ————— Repeater helpers (add/remove items, re-render) —————
-window._cmsAddRepeater = function(type){
+window._cmsAddRepeater = function(type, lang){
   // Save current state then add item and re-render
   window._cmsHomeSave();
   var ch = window.getCmsHome ? window.getCmsHome() : {};
-  var lang = window.currentLang || 'zh-Hant';
+  if(!lang) lang = window.currentLang || 'zh-Hant';
   if(type === 'stat'){
     if(!ch.stats) ch.stats = {};
     if(!ch.stats[lang]) ch.stats[lang] = {};
@@ -3523,10 +3588,10 @@ window._cmsAddRepeater = function(type){
   window._cmsHomeView();
 };
 
-window._cmsRemoveRepeater = function(type, idx){
+window._cmsRemoveRepeater = function(type, idx, lang){
   window._cmsHomeSave();
   var ch = window.getCmsHome ? window.getCmsHome() : {};
-  var lang = window.currentLang || 'zh-Hant';
+  if(!lang) lang = window.currentLang || 'zh-Hant';
   if(type === 'stat'){
     var items = []; try{ items = JSON.parse(ch.stats[lang].items||'[]'); }catch(e){}
     items.splice(idx,1);
@@ -3603,10 +3668,10 @@ window._cmsOrderMove = function(idx, dir){
 };
 
 // Nav move
-window._cmsNavMove = function(idx, dir){
+window._cmsNavMove = function(idx, dir, lang){
   window._cmsNavSave();
   var nd = getCmsNav();
-  var lang = window.currentLang || 'zh-Hant';
+  if(!lang) lang = window.currentLang || 'zh-Hant';
   if(!nd[lang]) return;
   var newIdx = idx + dir;
   if(newIdx < 0 || newIdx >= nd[lang].length) return;
@@ -3619,80 +3684,88 @@ window._cmsNavMove = function(idx, dir){
 
 // Nav save — reads all nav inputs and saves to localStorage
 window._cmsNavSave = function(){
-  var lang = window.currentLang || 'zh-Hant';
+  var langs = ["zh-Hant","zh-Hans","en"];
   var nd = getCmsNav();
-  var source = nd[lang] || (window.SITE && window.SITE.nav ? window.SITE.nav[lang] || window.SITE.nav['zh-Hant'] : []);
-  var result = [];
-  var i = 0;
-  while(document.getElementById('cmsNL_'+i)){
-    var label = document.getElementById('cmsNL_'+i).value.trim();
-    var pageOrExt = (document.getElementById('cmsNP_'+i)||{}).value||'';
-    pageOrExt = pageOrExt.trim();
-    var item = {label: label};
-    if(pageOrExt.indexOf('http') === 0) item.ext = pageOrExt;
-    else if(pageOrExt) item.page = pageOrExt;
-    // Read children
-    var children = [];
-    var j = 0;
-    while(document.getElementById('cmsNC_'+i+'_'+j)){
-      var clabel = document.getElementById('cmsNC_'+i+'_'+j).value.trim();
-      var cpage = (document.getElementById('cmsNCP_'+i+'_'+j)||{}).value||'';
-      cpage = cpage.trim();
-      var child = {label: clabel};
-      if(cpage.indexOf('http') === 0) child.ext = cpage;
-      else if(cpage) child.page = cpage;
-      // Read grandchildren
-      var gchildren = [];
-      var k = 0;
-      while(document.getElementById('cmsNCC_'+i+'_'+j+'_'+k)){
-        var glabel = document.getElementById('cmsNCC_'+i+'_'+j+'_'+k).value.trim();
-        var gpage = (document.getElementById('cmsNCCP_'+i+'_'+j+'_'+k)||{}).value||'';
-        gpage = gpage.trim();
-        var gchild = {label: glabel};
-        if(gpage.indexOf('http') === 0) gchild.ext = gpage;
-        else if(gpage) gchild.page = gpage;
-        gchildren.push(gchild);
-        k++;
+  langs.forEach(function(lang){
+    var source = nd[lang] || (window.SITE && window.SITE.nav ? window.SITE.nav[lang] || window.SITE.nav['zh-Hant'] : []);
+    var result = [];
+    var i = 0;
+    while(document.getElementById('cmsNL_'+lang+'_'+i)){
+      var label = document.getElementById('cmsNL_'+lang+'_'+i).value.trim();
+      var pageOrExt = (document.getElementById('cmsNP_'+lang+'_'+i)||{}).value||'';
+      pageOrExt = pageOrExt.trim();
+      var item = {label: label};
+      if(pageOrExt.indexOf('http') === 0) item.ext = pageOrExt;
+      else if(pageOrExt) item.page = pageOrExt;
+      // Read children
+      var children = [];
+      var j = 0;
+      while(document.getElementById('cmsNC_'+lang+'_'+i+'_'+j)){
+        var clabel = document.getElementById('cmsNC_'+lang+'_'+i+'_'+j).value.trim();
+        var cpage = (document.getElementById('cmsNCP_'+lang+'_'+i+'_'+j)||{}).value||'';
+        cpage = cpage.trim();
+        var child = {label: clabel};
+        if(cpage.indexOf('http') === 0) child.ext = cpage;
+        else if(cpage) child.page = cpage;
+        // Read grandchildren
+        var gchildren = [];
+        var k = 0;
+        while(document.getElementById('cmsNCC_'+lang+'_'+i+'_'+j+'_'+k)){
+          var glabel = document.getElementById('cmsNCC_'+lang+'_'+i+'_'+j+'_'+k).value.trim();
+          var gpage = (document.getElementById('cmsNCCP_'+lang+'_'+i+'_'+j+'_'+k)||{}).value||'';
+          gpage = gpage.trim();
+          var gchild = {label: glabel};
+          if(gpage.indexOf('http') === 0) gchild.ext = gpage;
+          else if(gpage) gchild.page = gpage;
+          gchildren.push(gchild);
+          k++;
+        }
+        if(gchildren.length) child.children = gchildren;
+        children.push(child);
+        j++;
       }
-      if(gchildren.length) child.children = gchildren;
-      children.push(child);
-      j++;
+      if(children.length) item.children = children;
+      result.push(item);
+      i++;
     }
-    if(children.length) item.children = children;
-    result.push(item);
-    i++;
-  }
-  nd[lang] = result;
+    if(result.length) nd[lang] = result;
+  });
   saveCmsNav(nd);
   showToast(CL('nav_saved'));
 };
 
 // Footer save — reads all footer inputs and saves to localStorage
 window._cmsFooterSave = function(){
-  var lang = window.currentLang || 'zh-Hant';
+  var langs = ["zh-Hant","zh-Hans","en"];
   var ft = getCmsFooter();
-  if(!ft[lang]) ft[lang] = {};
-  ft[lang].brand_name = (document.getElementById('cms_ft_brand')||{}).value||'';
-  ft[lang].address = (document.getElementById('cms_ft_addr')||{}).value||'';
-  ft[lang].tel = (document.getElementById('cms_ft_tel')||{}).value||'';
-  ft[lang].fax = (document.getElementById('cms_ft_fax')||{}).value||'';
-  // Columns
-  var cols = [];
-  var ci = 0;
-  while(document.getElementById('cmsFCT_'+ci)){
-    var colTitle = document.getElementById('cmsFCT_'+ci).value.trim();
-    var links = [];
-    var li = 0;
-    while(document.getElementById('cmsFCLT_'+ci+'_'+li)){
-      var lt = document.getElementById('cmsFCLT_'+ci+'_'+li).value.trim();
-      var lh = document.getElementById('cmsFCLH_'+ci+'_'+li).value.trim();
-      links.push({text:lt, href:lh||'#'});
-      li++;
+  langs.forEach(function(lang){
+    if(!ft[lang]) ft[lang] = {};
+    var brand = (document.getElementById('cms_ft_brand_'+lang)||{}).value;
+    var addr = (document.getElementById('cms_ft_addr_'+lang)||{}).value;
+    var tel = (document.getElementById('cms_ft_tel_'+lang)||{}).value;
+    var fax = (document.getElementById('cms_ft_fax_'+lang)||{}).value;
+    if(brand !== undefined) ft[lang].brand_name = brand || '';
+    if(addr !== undefined) ft[lang].address = addr || '';
+    if(tel !== undefined) ft[lang].tel = tel || '';
+    if(fax !== undefined) ft[lang].fax = fax || '';
+    // Columns
+    var cols = [];
+    var ci = 0;
+    while(document.getElementById('cmsFCT_'+lang+'_'+ci)){
+      var colTitle = document.getElementById('cmsFCT_'+lang+'_'+ci).value.trim();
+      var links = [];
+      var li = 0;
+      while(document.getElementById('cmsFCLT_'+lang+'_'+ci+'_'+li)){
+        var lt = document.getElementById('cmsFCLT_'+lang+'_'+ci+'_'+li).value.trim();
+        var lh = document.getElementById('cmsFCLH_'+lang+'_'+ci+'_'+li).value.trim();
+        links.push({text:lt, href:lh||'#'});
+        li++;
+      }
+      cols.push({title:colTitle, links:links});
+      ci++;
     }
-    cols.push({title:colTitle, links:links});
-    ci++;
-  }
-  ft[lang].columns = cols;
+    if(cols.length) ft[lang].columns = cols;
+  });
   saveCmsFooter(ft);
   showToast(CL('footer_saved'));
 };

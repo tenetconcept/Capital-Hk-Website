@@ -97,63 +97,66 @@ function L(en, hans, hant){
 window.T = T;
 
 function setLang(lang){
-  currentLang = lang;
-  window.currentLang = lang;
-  localStorage.setItem("ecap_lang", lang);
-  // Update html lang attribute for proper CJK rendering
-  var htmlLangs = {"zh-Hant":"zh-Hant","zh-Hans":"zh-Hans","en":"en"};
-  document.documentElement.lang = htmlLangs[lang] || "zh-Hant";
-  // Swap font priority: SC first for simplified, TC first for traditional
-  document.documentElement.style.fontFamily = lang === 'zh-Hans'
-    ? '"Be Vietnam Pro","Noto Sans SC","Noto Sans TC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif'
-    : '';
+  if(lang === currentLang) return;
   // Close mobile menu if open
   if(typeof window._mmClose === 'function') window._mmClose();
-  // Rebuild nav immediately so header updates at once (no perceived lag)
-  if(typeof buildNav === 'function') buildNav();
-  // Fade nav links during switch
+
+  // Phase 1: Fade out current content BEFORE changing anything
+  var app = document.getElementById('app');
   var navLinksEl = document.getElementById('navLinks');
   if(navLinksEl) navLinksEl.classList.add('lang-switching');
-  // Save CMS state before re-render, so we can restore after
+  if(app) app.classList.add('lang-switching');
+
+  // Save state before content change
+  var scrollY = window.pageYOffset;
   var _cmsState = null;
   if(location.hash === '#/admin'){
     _cmsState = { section: window._cmsSection || 'pages', slug: window._cmsCurrentSlug || null };
   }
-  // Re-render
-  var app = document.getElementById('app');
-  if(app){
-    app.classList.add('lang-switching');
-    // Remember scroll position so we don't jump
-    var scrollY = window.pageYOffset;
-    setTimeout(function(){
-      route();
-      // Force nav rebuild after route in case route replaced DOM
-      buildNav();
-      // Restore scroll position (route() calls scrollTo(0,0))
-      if(location.hash !== '#/admin') window.scrollTo(0, scrollY);
-      // Restore CMS state after DOM settles
-      if(_cmsState){
-        setTimeout(function(){
-          if(_cmsState.section === 'nav'){
-            if(typeof window._cmsSectionSwitch === 'function') window._cmsSectionSwitch('nav');
-          } else if(_cmsState.slug === '__home__' || _cmsState.section === 'home'){
-            if(typeof window._cmsHomeView === 'function') window._cmsHomeView();
-          } else if(_cmsState.slug && _cmsState.section === 'pages'){
-            if(typeof window._cmsEditPage === 'function') window._cmsEditPage(_cmsState.slug);
-          } else if(_cmsState.section && _cmsState.section !== 'pages'){
-            if(typeof window._cmsSectionSwitch === 'function') window._cmsSectionSwitch(_cmsState.section);
-          }
-        }, 50);
-      }
+
+  // Phase 2: After fade-out completes, swap content
+  setTimeout(function(){
+    // Now apply new language
+    currentLang = lang;
+    window.currentLang = lang;
+    localStorage.setItem("ecap_lang", lang);
+    var htmlLangs = {"zh-Hant":"zh-Hant","zh-Hans":"zh-Hans","en":"en"};
+    document.documentElement.lang = htmlLangs[lang] || "zh-Hant";
+    document.documentElement.style.fontFamily = lang === 'zh-Hans'
+      ? '"Be Vietnam Pro","Noto Sans SC","Noto Sans TC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif'
+      : '';
+
+    // Rebuild content with new language (invisible — still faded out)
+    if(typeof buildNav === 'function') buildNav();
+    route();
+
+    // Restore scroll position
+    if(location.hash !== '#/admin') window.scrollTo(0, scrollY);
+
+    // Restore CMS state
+    if(_cmsState){
+      setTimeout(function(){
+        if(_cmsState.section === 'nav'){
+          if(typeof window._cmsSectionSwitch === 'function') window._cmsSectionSwitch('nav');
+        } else if(_cmsState.slug === '__home__' || _cmsState.section === 'home'){
+          if(typeof window._cmsHomeView === 'function') window._cmsHomeView();
+        } else if(_cmsState.slug && _cmsState.section === 'pages'){
+          if(typeof window._cmsEditPage === 'function') window._cmsEditPage(_cmsState.slug);
+        } else if(_cmsState.section && _cmsState.section !== 'pages'){
+          if(typeof window._cmsSectionSwitch === 'function') window._cmsSectionSwitch(_cmsState.section);
+        }
+      }, 50);
+    }
+
+    // Phase 3: Fade in new content
+    requestAnimationFrame(function(){
       requestAnimationFrame(function(){
-        app.classList.remove('lang-switching');
+        if(app) app.classList.remove('lang-switching');
         var nl = document.getElementById('navLinks');
         if(nl) nl.classList.remove('lang-switching');
       });
-    }, 250);
-  } else {
-    route();
-  }
+    });
+  }, 180);
 }
 window.setLang = setLang;
 

@@ -425,6 +425,18 @@ var CMS_I18N = {
   session_fp:      {en:'Session Fingerprint', hans:'会话指纹', hant:'工作階段指紋'},
   active:          {en:'Active', hans:'活跃', hant:'活躍'},
   entries:         {en:' entries', hans:' 条记录', hant:' 條記錄'},
+  concurrent_login:{en:'Concurrent Login Limit', hans:'并发登录限制', hant:'並行登入限制'},
+  concurrent_desc: {en:'Maximum simultaneous sessions per user. 0 = unlimited.', hans:'每个用户最大同时会话数。0 = 不限制。', hant:'每個用戶最大同時工作階段數。0 = 不限制。'},
+  concurrent_max:  {en:'Max sessions per user', hans:'每用户最大会话数', hant:'每用戶最大工作階段數'},
+  concurrent_set:  {en:'Concurrent login limit set to ', hans:'并发登录限制已设置为 ', hant:'並行登入限制已設定為 '},
+  active_sessions: {en:'Active Sessions', hans:'活跃会话', hant:'活躍工作階段'},
+  sessions_desc:   {en:'Currently active login sessions. Admins can terminate sessions.', hans:'当前活跃的登录会话。管理员可终止会话。', hant:'目前活躍的登入工作階段。管理員可終止工作階段。'},
+  kick_session:    {en:'Terminate', hans:'终止', hant:'終止'},
+  kick_confirm:    {en:'Terminate this session?', hans:'终止此会话？', hant:'終止此工作階段？'},
+  kicked:          {en:'Session terminated', hans:'会话已终止', hant:'工作階段已終止'},
+  no_sessions:     {en:'No active sessions', hans:'无活跃会话', hant:'無活躍工作階段'},
+  session_kicked:  {en:'Your session was terminated by an administrator.', hans:'您的会话已被管理员终止。', hant:'您的工作階段已被管理員終止。'},
+  unlimited:       {en:'Unlimited', hans:'不限制', hant:'不限制'},
   ip_desc:         {en:'Only listed IPs can login to CMS. Leave empty to allow all IPs.', hans:'只有列出的IP才能登录CMS。留空允许所有IP。', hant:'只有列出的IP才能登入CMS。留空允許所有IP。'},
   your_ip:         {en:'Your current IP: ', hans:'您当前的IP：', hant:'您目前的IP：'},
   no_ip_restrict:  {en:'No IP restrictions. All IPs can access CMS.', hans:'无IP限制。所有IP均可访问CMS。', hant:'無IP限制。所有IP均可存取CMS。'},
@@ -801,6 +813,79 @@ function saveCmsGroups(d){ localStorage.setItem(CMS_GROUPS_KEY, JSON.stringify(d
 function getRateLimitConfig(){ try{ var d=JSON.parse(localStorage.getItem(CMS_RATELIMIT_KEY)); return d||{maxAttempts:5,lockoutMinutes:15}; }catch(e){ return {maxAttempts:5,lockoutMinutes:15}; } }
 function saveRateLimitConfig(d){ localStorage.setItem(CMS_RATELIMIT_KEY, JSON.stringify(d)); }
 
+// Concurrent login settings
+function getConcurrentLimit(){ return parseInt(localStorage.getItem('ecap_concurrent_limit')||'0',10); }
+function setConcurrentLimit(n){ localStorage.setItem('ecap_concurrent_limit', String(n)); }
+window.getConcurrentLimit = getConcurrentLimit;
+
+// Active sessions management
+var SESSION_TAB_ID = 'tab_'+Date.now()+'_'+Math.random().toString(36).substr(2,6);
+window._sessionTabId = SESSION_TAB_ID;
+
+function getActiveSessions(){ try{ return JSON.parse(localStorage.getItem('ecap_active_sessions')||'[]'); }catch(e){ return []; } }
+function saveActiveSessions(s){ localStorage.setItem('ecap_active_sessions', JSON.stringify(s)); }
+
+function registerSession(user){
+  var sessions = getActiveSessions();
+  // Remove stale entries (older than 2 hours)
+  var cutoff = Date.now() - 2*60*60*1000;
+  sessions = sessions.filter(function(s){ return s.lastActive > cutoff; });
+  // Remove existing entry for this tab
+  sessions = sessions.filter(function(s){ return s.tabId !== SESSION_TAB_ID; });
+  sessions.push({ tabId: SESSION_TAB_ID, user: user, loginTime: Date.now(), lastActive: Date.now(), ip: sessionStorage.getItem('ecap_client_ip')||'', ua: navigator.userAgent.substr(0,80) });
+  saveActiveSessions(sessions);
+}
+
+function unregisterSession(){
+  var sessions = getActiveSessions();
+  sessions = sessions.filter(function(s){ return s.tabId !== SESSION_TAB_ID; });
+  saveActiveSessions(sessions);
+}
+
+function isSessionKicked(){
+  var sessions = getActiveSessions();
+  var mine = sessions.find(function(s){ return s.tabId === SESSION_TAB_ID; });
+  return !mine && sessionStorage.getItem(ADMIN_SESSION_KEY) === '1';
+}
+
+// Heartbeat: update lastActive, check if kicked
+var _sessionHeartbeat = setInterval(function(){
+  if(sessionStorage.getItem(ADMIN_SESSION_KEY) !== '1') return;
+  var sessions = getActiveSessions();
+  var found = false;
+  sessions.forEach(function(s){
+    if(s.tabId === SESSION_TAB_ID){ s.lastActive = Date.now(); found = true; }
+  });
+  if(!found && sessionStorage.getItem(ADMIN_SESSION_KEY) === '1'){
+    // We were kicked
+    sessionStorage.removeItem(ADMIN_SESSION_KEY);
+    showToast(CL('session_kicked'));
+    setTimeout(function(){ location.hash = '#/'; location.reload(); }, 1500);
+    return;
+  }
+  saveActiveSessions(sessions);
+}, 15000);
+
+window.addEventListener('beforeunload', function(){
+  if(sessionStorage.getItem(ADMIN_SESSION_KEY)==='1') unregisterSession();
+});
+
+window._cmsKickSession = function(tabId){
+  if(!confirm(CL('kick_confirm'))) return;
+  var sessions = getActiveSessions();
+  sessions = sessions.filter(function(s){ return s.tabId !== tabId; });
+  saveActiveSessions(sessions);
+  showToast(CL('kicked'));
+  window._cmsSecurityView();
+};
+
+window._cmsSaveConcurrent = function(){
+  var val = parseInt(document.getElementById('concurrentLimit').value,10);
+  if(isNaN(val) || val < 0) val = 0;
+  setConcurrentLimit(val);
+  showToast(CL('concurrent_set')+val);
+};
+
 // Build a full-access permission object
 function _cmsFullPerms(){
   var p={};
@@ -1023,36 +1108,10 @@ function adminView(){
   var _homeEdited = (typeof getCmsHome === 'function' && getCmsHome() && Object.keys(getCmsHome()).length) ? ' edited' : '';
   var _navEdited = (typeof getCmsNav === 'function' && getCmsNav() && Object.keys(getCmsNav()).length) ? ' edited' : '';
 
-  return '<div class="cms-layout">'
-    // Sidebar
-    +'<aside class="cms-sidebar">'
-    +'<div class="cms-sidebar-hdr"><h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'+CL('sidebar_title')+'</h2><p>'+allPages.length+CL('sidebar_count')+'</p></div>'
-    +'<div class="cms-search"><input type="text" id="cmsSearch" placeholder="'+CL('search_pages')+'" oninput="window._cmsFilter(this.value)"/></div>'
-    +'<div class="cms-page-list" id="cmsPageList">'
-    // Homepage item at top of sidebar
-    +'<div class="cms-page-item cms-page-home'+_homeEdited+'" data-slug="__home__" onclick="window._cmsHomeView()">'
-    +'<span class="page-dot"></span>'
-    +'<div class="page-info"><span class="page-name" style="font-weight:700">'+CL('tab_home')+'</span>'
-    +'<span class="page-slug">'+CL('tab_home_desc')+'</span></div></div>'
-    +'<div class="cms-page-item cms-page-nav'+_navEdited+'" data-slug="__nav__" onclick="window._cmsSectionSwitch(\'nav\')">'
-    +'<span class="page-dot"></span>'
-    +'<div class="page-info"><span class="page-name" style="font-weight:700">'+CL('tab_nav')+'</span>'
-    +'<span class="page-slug">'+CL('tab_nav_desc')+'</span></div></div>'
-    +'<div style="border-bottom:1px solid var(--border-light);margin:4px 10px"></div>'
-    + allPages.map(function(slug){
-        var edited = cms[slug] ? ' edited' : '';
-        var title = _pageTitle(slug);
-        return '<div class="cms-page-item'+edited+'" data-slug="'+esc(slug)+'" onclick="window._cmsEditPage(\''+slug+'\')">'
-          +'<span class="page-dot"></span>'
-          +'<div class="page-info"><span class="page-name">'+esc(title)+'</span>'
-          +'<span class="page-slug">'+esc(slug)+'</span></div></div>';
-      }).join('')
-    +'</div></aside>'
-    // Main
-    +'<div class="cms-main">'
-    // Sticky wrapper for header + section bar
+  return ''
+    // Sticky top bar — full width above sidebar+main
     +'<div class="cms-sticky-top">'
-    // Compact header: logo text + dynamic action bar + user info
+    // Compact header
     +'<div class="cms-main-header"><h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>'+CL('cms_title')+'</h3>'
     +'<div class="cms-header-acts">'
     +'<div id="cmsHeaderActions" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"></div>'
@@ -1074,7 +1133,7 @@ function adminView(){
     +'<button onclick="window._adminLogout()" style="display:flex;align-items:center;gap:8px;width:100%;padding:10px 12px;border:none;background:transparent;font-size:13px;font-family:inherit;cursor:pointer;border-radius:6px;color:#dc2626;text-align:left" onmouseover="this.style.background=\'#fef2f2\'" onmouseout="this.style.background=\'transparent\'"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> '+CL('logout')+'</button>'
     +'</div></div></div>'
     +'</div></div>'
-    // Section bar with tabs + tools on the right
+    // Section bar with tabs + tools
     +'<div class="cms-section-bar">'
     +'<div class="cms-section-tabs">'
     +'<button class="cms-section-btn" id="stab_blog" onclick="window._cmsSectionSwitch(\'blog\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> '+CL('tab_blog')+'</button>'
@@ -1083,7 +1142,6 @@ function adminView(){
     +(_canViewUsers?'<button class="cms-section-btn" id="stab_users" onclick="window._cmsSectionSwitch(\'users\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg> '+CL('tab_users')+'</button>':'')
     +(_canViewSecurity?'<button class="cms-section-btn" id="stab_security" onclick="window._cmsSectionSwitch(\'security\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> '+CL('tab_security')+'</button>':'')
     +'</div>'
-    // Tools on right side of section bar
     +(_canExport ? '<div class="cms-section-tools">'
     +'<button class="cms-tool-btn" onclick="window._cmsExport()" title="'+CL('export_json')+'" style="width:auto;padding:0 8px;gap:4px;font-size:11px;font-weight:600"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> '+CL('export_json')+'</button>'
     +'<button class="cms-tool-btn" onclick="document.getElementById(\'cmsImportFile\').click()" title="'+CL('import_json')+'" style="width:auto;padding:0 8px;gap:4px;font-size:11px;font-weight:600"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> '+CL('import_json')+'</button>'
@@ -1092,6 +1150,35 @@ function adminView(){
     +'</div>' : '')
     +'</div>'
     +'</div>' // close cms-sticky-top
+    // Layout: sidebar + main
+    +'<div class="cms-layout">'
+    // Sidebar
+    +'<aside class="cms-sidebar">'
+    +'<div class="cms-sidebar-hdr"><h2><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>'+CL('sidebar_title')+'</h2><p>'+allPages.length+CL('sidebar_count')+'</p></div>'
+    +'<div class="cms-search"><input type="text" id="cmsSearch" placeholder="'+CL('search_pages')+'" oninput="window._cmsFilter(this.value)"/></div>'
+    +'<div class="cms-page-list" id="cmsPageList">'
+    // Homepage item
+    +'<div class="cms-page-item cms-page-home'+_homeEdited+'" data-slug="__home__" onclick="window._cmsHomeView()">'
+    +'<span class="page-dot"></span>'
+    +'<div class="page-info"><span class="page-name" style="font-weight:700">'+CL('tab_home')+'</span>'
+    +'<span class="page-slug">'+CL('tab_home_desc')+'</span></div></div>'
+    // Nav item
+    +'<div class="cms-page-item cms-page-nav'+_navEdited+'" data-slug="__nav__" onclick="window._cmsSectionSwitch(\'nav\')">'
+    +'<span class="page-dot"></span>'
+    +'<div class="page-info"><span class="page-name" style="font-weight:700">'+CL('tab_nav')+'</span>'
+    +'<span class="page-slug">'+CL('tab_nav_desc')+'</span></div></div>'
+    +'<div style="border-bottom:1px solid var(--border-light);margin:4px 10px"></div>'
+    + allPages.map(function(slug){
+        var edited = cms[slug] ? ' edited' : '';
+        var title = _pageTitle(slug);
+        return '<div class="cms-page-item'+edited+'" data-slug="'+esc(slug)+'" onclick="window._cmsEditPage(\''+slug+'\')">'
+          +'<span class="page-dot"></span>'
+          +'<div class="page-info"><span class="page-name">'+esc(title)+'</span>'
+          +'<span class="page-slug">'+esc(slug)+'</span></div></div>';
+      }).join('')
+    +'</div></aside>'
+    // Main content area
+    +'<div class="cms-main">'
     +'<div class="cms-editor-area" id="cmsEditor">'
     +'<div class="cms-empty"><div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><p>'+CL('select_page')+'</p></div>'
     +'</div></div></div>';
@@ -1116,6 +1203,7 @@ function isAdminLoggedIn(){
 window.isAdminLoggedIn = isAdminLoggedIn;
 
 window._adminLogout = function(){
+  unregisterSession();
   sessionStorage.removeItem(ADMIN_SESSION_KEY);
   location.hash = "#/";
 };
@@ -1169,10 +1257,10 @@ window._cmsForceChangePwdScreen = function(username){
   });
   document.getElementById('forcePwdSaveBtn').addEventListener('click', function(){
     var newPwd = document.getElementById('forcePwdNew').value;
-    var confirm = document.getElementById('forcePwdConfirm').value;
+    var confirmPwd = document.getElementById('forcePwdConfirm').value;
     var errEl = document.getElementById('forcePwdErr');
     if(newPwd.length<8){errEl.textContent=CL('pwd_min8');return;}
-    if(newPwd!==confirm){errEl.textContent=CL('pwd_mismatch');return;}
+    if(newPwd!==confirmPwd){errEl.textContent=CL('pwd_mismatch');return;}
     var str=checkPasswordStrength(newPwd);
     if(str.level==='weak'){errEl.textContent=CL('pwd_too_weak');return;}
     sha256hex(newPwd).then(function(hash){
@@ -1200,6 +1288,19 @@ window._cmsForceChangePwdScreen = function(username){
         sessionStorage.setItem('ecap_admin_login_time',Date.now().toString());
         sessionStorage.setItem('ecap_session_fp',getSessionFingerprint());
         _adminCurrentUser=username;
+        // Enforce concurrent login limit
+        var _concLimit = getConcurrentLimit();
+        if(_concLimit > 0){
+          var _allSessions = getActiveSessions().filter(function(s){ return s.lastActive > Date.now() - 2*60*60*1000; });
+          var _userSessions = _allSessions.filter(function(s){ return s.user === username; });
+          while(_userSessions.length >= _concLimit){
+            var oldest = _userSessions.sort(function(a,b){return a.loginTime-b.loginTime;})[0];
+            _allSessions = _allSessions.filter(function(s){return s.tabId!==oldest.tabId;});
+            _userSessions = _userSessions.filter(function(s){return s.tabId!==oldest.tabId;});
+            saveActiveSessions(_allSessions);
+          }
+        }
+        registerSession(username);
         _startSessionTimer();
         window.route();
       }
@@ -1261,6 +1362,19 @@ window._cmsForce2FAScreen = function(username){
         sessionStorage.setItem('ecap_admin_login_time',Date.now().toString());
         sessionStorage.setItem('ecap_session_fp',getSessionFingerprint());
         _adminCurrentUser=username;
+        // Enforce concurrent login limit
+        var _concLimit = getConcurrentLimit();
+        if(_concLimit > 0){
+          var _allSessions = getActiveSessions().filter(function(s){ return s.lastActive > Date.now() - 2*60*60*1000; });
+          var _userSessions = _allSessions.filter(function(s){ return s.user === username; });
+          while(_userSessions.length >= _concLimit){
+            var oldest = _userSessions.sort(function(a,b){return a.loginTime-b.loginTime;})[0];
+            _allSessions = _allSessions.filter(function(s){return s.tabId!==oldest.tabId;});
+            _userSessions = _userSessions.filter(function(s){return s.tabId!==oldest.tabId;});
+            saveActiveSessions(_allSessions);
+          }
+        }
+        registerSession(username);
         addAuditLog('force_2fa_complete','User: '+username);
         _startSessionTimer();
         showToast(CL('twofa_enabled').replace('{0}',username));
@@ -1357,6 +1471,19 @@ window._adminLogin = function(e){
             clearLoginAttempts(matched.username||user);
             recordLastLogin(matched.username||user);
             sessionStorage.setItem('ecap_session_fp', getSessionFingerprint());
+            // Enforce concurrent login limit
+            var _concLimit = getConcurrentLimit();
+            if(_concLimit > 0){
+              var _allSessions = getActiveSessions().filter(function(s){ return s.lastActive > Date.now() - 2*60*60*1000; });
+              var _userSessions = _allSessions.filter(function(s){ return s.user === (matched.username||matched); });
+              while(_userSessions.length >= _concLimit){
+                var oldest = _userSessions.sort(function(a,b){return a.loginTime-b.loginTime;})[0];
+                _allSessions = _allSessions.filter(function(s){return s.tabId!==oldest.tabId;});
+                _userSessions = _userSessions.filter(function(s){return s.tabId!==oldest.tabId;});
+                saveActiveSessions(_allSessions);
+              }
+            }
+            registerSession(matched.username||matched);
             addAuditLog('login_success', 'User: '+(matched.username||user)+', 2FA: yes');
             _startSessionTimer();
             window.route();
@@ -1407,6 +1534,19 @@ window._adminLogin = function(e){
       clearLoginAttempts(_loginUser);
       recordLastLogin(_loginUser);
       sessionStorage.setItem('ecap_session_fp', getSessionFingerprint());
+      // Enforce concurrent login limit
+      var _concLimit = getConcurrentLimit();
+      if(_concLimit > 0){
+        var _allSessions = getActiveSessions().filter(function(s){ return s.lastActive > Date.now() - 2*60*60*1000; });
+        var _userSessions = _allSessions.filter(function(s){ return s.user === _loginUser; });
+        while(_userSessions.length >= _concLimit){
+          var oldest = _userSessions.sort(function(a,b){return a.loginTime-b.loginTime;})[0];
+          _allSessions = _allSessions.filter(function(s){return s.tabId!==oldest.tabId;});
+          _userSessions = _userSessions.filter(function(s){return s.tabId!==oldest.tabId;});
+          saveActiveSessions(_allSessions);
+        }
+      }
+      registerSession(_loginUser);
       addAuditLog('login_success', 'User: '+_loginUser+', 2FA: no');
       _startSessionTimer();
       window.route();
@@ -1456,7 +1596,8 @@ window._cmsFilter = function(q){
   q = q.toLowerCase();
   document.querySelectorAll('.cms-page-item').forEach(function(el){
     var slug = el.getAttribute('data-slug') || '';
-    el.style.display = slug.toLowerCase().indexOf(q) >= 0 ? '' : 'none';
+    var name = (el.querySelector('.page-name') || {}).textContent || '';
+    el.style.display = (slug.toLowerCase().indexOf(q) >= 0 || name.toLowerCase().indexOf(q) >= 0) ? '' : 'none';
   });
 };
 
@@ -1546,7 +1687,7 @@ window._cmsEditPage = function(slug){
       if(!ta) return;
       ClassicEditor.create(ta, {
         extraPlugins: [_cmsCkUploadPlugin],
-        toolbar: ['heading','|','bold','italic','link','imageUpload','|','bulletedList','numberedList','|','blockQuote','insertTable','|','undo','redo'],
+        toolbar: {items:['heading','|','bold','italic','underline','strikethrough','|','link','imageUpload','blockQuote','insertTable','horizontalLine','|','bulletedList','numberedList','|','outdent','indent','|','fontColor','fontBackgroundColor','removeFormat','|','undo','redo'],shouldNotGroupWhenFull:false},
         heading: { options: [
           { model:'paragraph', title:'Paragraph', class:'ck-heading_paragraph' },
           { model:'heading2', view:'h2', title:'Heading 2', class:'ck-heading_heading2' },
@@ -2261,7 +2402,7 @@ function _cmsSecurityTab(){
     +'<div>&#9201; <strong>'+CL('session_timeout')+':</strong> '+timeout+CL('minutes_unit')+'</div>'
     +'<div>&#128272; <strong>2FA:</strong> '+(Object.keys(get2FAConfig()).length?'<span style="color:#059669">'+Object.keys(get2FAConfig()).length+CL('users_enabled')+'</span>':'<span style="color:#f59e0b">'+CL('no_users_2fa')+'</span>')+'</div>'
     +'<div>&#128737; <strong>'+CL('rate_limit')+':</strong> <span style="color:#059669">'+getRateLimitConfig().maxAttempts+' / '+getRateLimitConfig().lockoutMinutes+' min</span></div>'
-    +'<div>&#128270; <strong>'+CL('session_fp')+':</strong> <span style="color:#059669">'+CL('active')+'</span></div>'
+    +'<div>&#128270; <strong>'+CL('concurrent_login')+':</strong> <span style="color:#059669">'+(getConcurrentLimit()||CL('unlimited'))+'</span></div>'
     +'<div>&#128196; <strong>'+CL('audit_log')+':</strong> '+auditLog.length+CL('entries')+'</div>'
     +'</div>'
     +'</div>'
@@ -2286,6 +2427,16 @@ function _cmsSecurityTab(){
     +'</div>'
     +'<p style="font-size:12px;color:var(--text-muted);margin-top:8px">'+CL('timeout_auto')+timeout+CL('minutes_unit')+'</p>'
     +'</div>'
+    // Concurrent Login Limit
+    +'<div class="cms-card-box" style="margin-bottom:24px">'
+    +'<h4 style="font-size:16px;font-weight:700;margin-bottom:4px">'+CL('concurrent_login')+'</h4>'
+    +'<p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">'+CL('concurrent_desc')+'</p>'
+    +'<div style="display:flex;gap:12px;align-items:center">'
+    +'<div class="admin-field" style="margin:0;flex:0 0 200px"><label>'+CL('concurrent_max')+'</label><input type="number" id="concurrentLimit" value="'+getConcurrentLimit()+'" min="0" max="10" style="width:100%"/></div>'
+    +'<button class="admin-btn primary" onclick="window._cmsSaveConcurrent()" style="align-self:end;height:44px">'+CL('save')+'</button>'
+    +'</div>'
+    +'<p style="font-size:12px;color:var(--text-muted);margin-top:8px">0 = '+CL('unlimited')+'</p>'
+    +'</div>'
     // Rate Limiting Config
     +'<div class="cms-card-box" style="margin-bottom:24px">'
     +'<h4 style="font-size:16px;font-weight:700;margin-bottom:4px">'+CL('rate_limit')+'</h4>'
@@ -2295,6 +2446,27 @@ function _cmsSecurityTab(){
     +'<div class="admin-field" style="margin:0;flex:0 0 180px"><label>'+CL('lockout_min')+'</label><input type="number" id="rlLockoutMin" value="'+rlCfg.lockoutMinutes+'" min="1" max="1440" style="width:100%"/></div>'
     +'<button class="admin-btn primary" onclick="window._cmsSaveRateLimit()" style="height:44px">'+CL('save')+'</button>'
     +'</div>'
+    +'</div>'
+    // Active Sessions
+    +'<div class="cms-card-box" style="margin-bottom:24px">'
+    +'<h4 style="font-size:16px;font-weight:700;margin-bottom:4px">'+CL('active_sessions')+'</h4>'
+    +'<p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">'+CL('sessions_desc')+'</p>'
+    +(function(){
+      var sessions = getActiveSessions().filter(function(s){ return s.lastActive > Date.now() - 2*60*60*1000; });
+      if(!sessions.length) return '<div style="color:var(--text-muted);font-size:13px;padding:8px 0">'+CL('no_sessions')+'</div>';
+      return sessions.map(function(s){
+        var isMe = s.tabId === SESSION_TAB_ID;
+        var ago = Math.round((Date.now() - s.lastActive)/60000);
+        var agoStr = ago < 1 ? 'just now' : ago+'m ago';
+        return '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--border-light);border-radius:8px;margin-bottom:6px;background:var(--white)">'
+          +'<span style="width:8px;height:8px;border-radius:50%;background:'+(ago<2?'#22c55e':'#f59e0b')+';flex-shrink:0"></span>'
+          +'<span style="font-weight:600;flex:0 0 100px">'+esc(s.user)+'</span>'
+          +'<span style="font-size:12px;color:var(--text-muted);font-family:monospace;flex:0 0 120px">'+(s.ip||'—')+'</span>'
+          +'<span style="font-size:11px;color:var(--text-muted);flex:1">'+agoStr+(isMe?' <span style="color:var(--brand);font-weight:700">('+CL('you')+')</span>':'')+'</span>'
+          +(!isMe?'<button class="admin-btn danger" style="font-size:11px;padding:4px 10px" onclick="window._cmsKickSession(\''+s.tabId+'\')">'+CL('kick_session')+'</button>':'')
+          +'</div>';
+      }).join('');
+    })()
     +'</div>'
     // Audit Log
     +'<div class="cms-card-box">'
@@ -3431,7 +3603,7 @@ window._cmsHomeView = function(){
       if(ta.id.indexOf('_en') === ta.id.length - 3) ckLang = 'en';
       ClassicEditor.create(ta, {
         extraPlugins: [_cmsCkUploadPlugin],
-        toolbar: ['heading','|','bold','italic','link','imageUpload','|','bulletedList','numberedList','|','blockQuote','insertTable','|','undo','redo'],
+        toolbar: {items:['heading','|','bold','italic','underline','strikethrough','|','link','imageUpload','blockQuote','insertTable','horizontalLine','|','bulletedList','numberedList','|','outdent','indent','|','fontColor','fontBackgroundColor','removeFormat','|','undo','redo'],shouldNotGroupWhenFull:false},
         heading: { options: [
           { model:'paragraph', title:'Paragraph', class:'ck-heading_paragraph' },
           { model:'heading2', view:'h2', title:'Heading 2', class:'ck-heading_heading2' },
@@ -4307,7 +4479,7 @@ window._cmsNavStandaloneView = function(){
             +'</div>';
           if(ch2.children && ch2.children.length){
             ch2.children.forEach(function(ch3, k){
-              html += '<div style="margin-left:20px;margin-top:4px" class="cms-form-row" style="margin-bottom:0">'
+              html += '<div class="cms-form-row" style="margin-left:20px;margin-top:4px;margin-bottom:0">'
                 +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNCC_'+lang+'_'+i+'_'+j+'_'+k+'" value="'+escAttr(ch3.label)+'" placeholder="'+CL('nav_item_label')+'" style="font-size:11px;padding:5px 8px"/></div>'
                 +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNCCP_'+lang+'_'+i+'_'+j+'_'+k+'" value="'+escAttr(ch3.page||ch3.ext||'')+'" placeholder="'+CL('nav_item_page')+'" style="font-size:11px;padding:5px 8px"/></div>'
                 +'<button class="admin-btn danger" style="padding:2px 5px;font-size:9px" onclick="window._cmsRemoveRepeater(\'navgch_'+i+'_'+j+'\','+k+',\''+escQ(lang)+'\')">&#10005;</button>'

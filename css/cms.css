@@ -13,8 +13,8 @@ body.cms-active .nav{border-bottom:1px solid rgba(0,0,0,.06);background:var(--wh
 body.cms-active .nav.scrolled .nav-top{opacity:1!important;max-height:100px!important}
 body.cms-active .nav-top{opacity:1!important;max-height:100px!important;overflow:visible!important;transition:none!important}
 body.cms-active .cms-layout{min-height:calc(100vh - var(--nav-h))}
-body.cms-active .cms-sticky-top{position:sticky;top:var(--nav-h);z-index:10;background:var(--white)}
-body.cms-active .cms-sidebar{position:sticky;top:calc(var(--nav-h) + var(--cms-bar-h, 106px));height:calc(100vh - var(--nav-h) - var(--cms-bar-h, 106px));align-self:flex-start}
+body.cms-active .cms-sticky-top{position:sticky;top:var(--nav-h);z-index:10;background:var(--white);border-bottom:1px solid rgba(0,0,0,.06)}
+body.cms-active .cms-sidebar{position:sticky;top:calc(var(--nav-h) + var(--cms-bar-h, 106px));height:calc(100vh - var(--nav-h) - var(--cms-bar-h, 106px));align-self:flex-start;overflow-y:auto}
 
 .cms-layout{display:flex;gap:0;min-height:calc(100vh - var(--nav-h) - var(--nav-bar-h))}
 .cms-sidebar{width:280px;background:var(--white);border-right:1px solid rgba(0,0,0,.06);padding:24px 0;overflow-y:auto;flex-shrink:0;position:sticky;top:calc(var(--nav-h) + var(--nav-bar-h));height:calc(100vh - var(--nav-h) - var(--nav-bar-h));align-self:flex-start}
@@ -55,7 +55,7 @@ body.cms-active .cms-sidebar{position:sticky;top:calc(var(--nav-h) + var(--cms-b
 .cms-preview-toggle.active{background:var(--brand);color:var(--white);border-color:var(--brand)}
 .cms-preview-panel{background:var(--white);border:2px dashed var(--border);border-radius:var(--radius);padding:32px;margin-top:20px;min-height:200px}
 .cms-preview-panel .subpage-body{all:unset}
-.cms-section-bar{display:flex;gap:4px;padding:10px 20px;border-bottom:1px solid rgba(0,0,0,.06);background:var(--white);flex-wrap:wrap;align-items:center;justify-content:space-between}
+.cms-section-bar{display:flex;gap:4px;padding:10px 20px;border-bottom:1px solid rgba(0,0,0,.06);background:var(--bg-light);flex-wrap:wrap;align-items:center;justify-content:space-between}
 .cms-section-tabs{display:flex;gap:4px;flex-wrap:wrap;flex:1}
 .cms-section-tools{display:flex;gap:4px;flex-shrink:0;margin-left:8px}
 .cms-tool-btn{width:32px;height:32px;border-radius:8px;border:none;background:transparent;color:var(--text-muted);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .18s ease}

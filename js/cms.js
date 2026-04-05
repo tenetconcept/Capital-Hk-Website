@@ -1379,10 +1379,21 @@ window._cmsEditPage = function(slug){
 
   var langs = ["zh-Hant","zh-Hans","en"];
   var langNames = {"zh-Hant":"繁體中文","zh-Hans":"简体中文","en":"English"};
-  var html = '<h3 style="font-size:20px;font-weight:700;margin-bottom:16px">'+esc(slug)+'</h3>';
-
-    var _canEditPages = _cmsHasPermission('editPage');
+  var _canEditPages = _cmsHasPermission('editPage');
   var hasCKEditor = typeof ClassicEditor !== 'undefined';
+
+  // Resolve translated page title for display
+  var _pgDisplay = getPage(slug, currentLang);
+  var _pageTitle = (_pgDisplay && _pgDisplay.title) ? _pgDisplay.title : slug;
+
+  // Sticky toolbar (matches homepage editor pattern)
+  var html = '<div style="position:sticky;top:0;z-index:5;background:var(--bg-body);padding:12px 0 10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;border-bottom:1px solid rgba(0,0,0,.06);margin-bottom:16px">'
+    +'<div><h3 style="font-size:20px;font-weight:700;margin:0">'+esc(_pageTitle)+'</h3>'
+    +'<span style="font-size:11px;color:var(--text-muted);font-family:monospace">/'+esc(slug)+'</span></div>'
+    +'<div style="display:flex;gap:8px;align-items:center">'
+    +(_canEditPages ? '<button class="admin-btn primary" onclick="window._cmsSavePage(\''+slug+'\')">'+CL('save_changes')+'</button>' : '<span style="font-size:12px;color:var(--text-muted)">'+CL('viewer_nosave')+'</span>')
+    +'<a href="#/page/'+esc(slug)+'" target="_blank" class="admin-btn secondary" style="text-decoration:none;display:inline-flex;align-items:center">'+CL('view_page')+'</a>'
+    +'</div></div>';
 
   langs.forEach(function(lang){
     var pg = getPage(slug, lang);
@@ -1407,9 +1418,7 @@ window._cmsEditPage = function(slug){
       +'</div></div>';
   });
 
-  html += '<div style="display:flex;gap:8px;margin-top:8px">'
-    +(_canEditPages ? '<button class="admin-btn primary" onclick="window._cmsSavePage(\''+slug+'\')">'+CL('save_changes')+'</button>' : '<span style="font-size:12px;color:var(--text-muted);align-self:center">'+CL('viewer_nosave')+'</span>')
-    +'<a href="#/page/'+esc(slug)+'" target="_blank" class="admin-btn secondary" style="text-decoration:none;display:inline-flex;align-items:center">'+CL('view_page')+'</a></div>';
+  // Bottom save button removed — now in sticky toolbar above
 
   if(_cmsPreviewOn){
     var previewPg = getPage(slug, currentLang);
@@ -2514,12 +2523,18 @@ window._cmsShowFilePicker = function(btn){
     if(e.target.closest('.cfp-close')){ div.remove(); return; }
   });
 
-  // Position picker below the button
+  // Position picker below the button (position:fixed uses viewport coords, no scrollY)
   var rect = btn.getBoundingClientRect();
   document.body.appendChild(div);
   var pw = div.offsetWidth;
+  var ph = div.offsetHeight;
   var left = Math.max(8, Math.min(rect.right - pw, window.innerWidth - pw - 8));
-  div.style.top = (rect.bottom + window.scrollY + 6)+'px';
+  var top = rect.bottom + 6;
+  // If picker would overflow below viewport, flip above button
+  if(top + ph > window.innerHeight - 8){
+    top = Math.max(8, rect.top - ph - 6);
+  }
+  div.style.top = top+'px';
   div.style.left = left+'px';
 
   // Close on outside click

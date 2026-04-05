@@ -599,6 +599,7 @@ var CMS_I18N = {
   go_home:         {en:'Go to Homepage', hans:'返回首页', hant:'返回首頁'},
   export_json:     {en:'Export', hans:'导出', hant:'匯出'},
   import_json:     {en:'Import', hans:'导入', hant:'匯入'},
+  export_csv:      {en:'Export CSV', hans:'导出 CSV', hant:'匯出 CSV'},
   reset_data:      {en:'Reset', hans:'重置', hant:'重設'},
   nav_menu_desc:   {en:'Manage website menu items — drag to reorder, click edit to change labels & links', hans:'管理网站菜单项目 — 拖动排序，点击编辑更改标签及链接', hant:'管理網站選單項目 — 拖動排序，點擊編輯更改標籤及連結'}
 };
@@ -903,6 +904,15 @@ window.addEventListener('beforeunload', function(){
   if(sessionStorage.getItem(ADMIN_SESSION_KEY)==='1') unregisterSession();
 });
 
+// Cross-tab sync: refresh security view when other tabs change audit/session data
+window.addEventListener('storage', function(e){
+  if(!e.key) return;
+  if((e.key === 'ecap_active_sessions' || e.key === CMS_AUDIT_KEY) && _cmsSection === 'security'){
+    var ed = document.getElementById('cmsEditor');
+    if(ed) ed.innerHTML = '<div class="cms-panel">' + _cmsSecurityTab() + '</div>';
+  }
+});
+
 window._cmsKickSession = function(tabId){
   if(!confirm(CL('kick_confirm'))) return;
   var sessions = getActiveSessions();
@@ -1167,12 +1177,6 @@ function adminView(){
     +(_canViewUsers?'<button class="cms-section-btn" id="stab_users" onclick="window._cmsSectionSwitch(\'users\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg> '+CL('tab_users')+'</button>':'')
     +(_canViewSecurity?'<button class="cms-section-btn" id="stab_security" onclick="window._cmsSectionSwitch(\'security\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> '+CL('tab_security')+'</button>':'')
     +'</div>'
-    +(_canExport ? '<div class="cms-section-tools">'
-    +'<button class="cms-tool-btn" onclick="window._cmsExport()" title="'+CL('export_json')+'" style="width:auto;padding:0 8px;gap:4px;font-size:11px;font-weight:600"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> '+CL('export_json')+'</button>'
-    +'<button class="cms-tool-btn" onclick="document.getElementById(\'cmsImportFile\').click()" title="'+CL('import_json')+'" style="width:auto;padding:0 8px;gap:4px;font-size:11px;font-weight:600"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> '+CL('import_json')+'</button>'
-    +'<input type="file" id="cmsImportFile" accept=".json" style="display:none" onchange="window._cmsImport(event)"/>'
-    +'<button class="cms-tool-btn" onclick="window._cmsReset()" title="'+CL('reset_data')+'" style="width:auto;padding:0 8px;gap:4px;font-size:11px;font-weight:600">&#x21BA; '+CL('reset_data')+'</button>'
-    +'</div>' : '')
     +'</div>'
     +'</div>' // close cms-sticky-top
     // Layout: sidebar + main
@@ -1647,8 +1651,12 @@ function _startSessionTimer(){
     }
   }, 30000); // check every 30 seconds
 }
-// Start timer if already logged in
-if(typeof sessionStorage !== 'undefined' && sessionStorage.getItem(ADMIN_SESSION_KEY)==='1') _startSessionTimer();
+// Start timer if already logged in; also re-register session (F5 generates new tab ID)
+if(typeof sessionStorage !== 'undefined' && sessionStorage.getItem(ADMIN_SESSION_KEY)==='1'){
+  var _resumeUser = sessionStorage.getItem('ecap_admin_user')||'admin';
+  registerSession(_resumeUser);
+  _startSessionTimer();
+}
 
 // ————————————————————— CMS FUNCTIONS —————————————————————
 var _cmsCurrentSlug = null;
@@ -1694,17 +1702,19 @@ window._cmsEditPage = function(slug){
   var _pgDisplay = getPage(slug, currentLang);
   var _pageTitle = (_pgDisplay && _pgDisplay.title) ? _pgDisplay.title : slug;
 
-  // Update header bar actions
+  // Update header bar actions — only editor help
   window._cmsUpdateHeaderActions(
     '<button class="admin-btn secondary" style="font-size:12px;padding:5px 10px" onclick="window._cmsCkHelp()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> '+CL('ck_help')+'</button>'
-    +(_canEditPages ? '<button class="admin-btn primary" onclick="window._cmsSavePage(\''+slug+'\')">'+CL('save_changes')+'</button>' : '')
-    +'<a href="#/page/'+esc(slug)+'" target="_blank" class="admin-btn secondary" style="text-decoration:none;display:inline-flex;align-items:center">'+CL('view_page')+'</a>'
   );
 
-  // Page title heading (not sticky — actions are in the header bar now)
+  // Page title heading with action buttons
   var html = '<div style="padding:12px 0 10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;border-bottom:1px solid rgba(0,0,0,.06);margin-bottom:16px">'
     +'<div><h3 style="font-size:20px;font-weight:700;margin:0">'+esc(_pageTitle)+'</h3>'
     +'<span style="font-size:11px;color:var(--text-muted);font-family:monospace">/'+esc(slug)+'</span></div>'
+    +'<div style="display:flex;gap:6px;align-items:center">'
+    +(_canEditPages ? '<button class="admin-btn primary" onclick="window._cmsSavePage(\''+slug+'\')">'+CL('save_changes')+'</button>' : '')
+    +'<a href="#/page/'+esc(slug)+'" target="_blank" class="admin-btn secondary" style="text-decoration:none;display:inline-flex;align-items:center">'+CL('view_page')+'</a>'
+    +'</div>'
     +'</div>';
 
   langs.forEach(function(lang){
@@ -1956,7 +1966,16 @@ window._cmsSectionSwitch = function(sec){
   // Clear header actions (each view will set its own)
   window._cmsUpdateHeaderActions('');
   if(sec==="pages") {
-    document.getElementById("cmsEditor").innerHTML = '<div class="cms-empty"><div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><p>'+CL('select_page')+'</p></div>';
+    window._cmsUpdateHeaderActions(
+      '<button class="admin-btn secondary" style="font-size:12px;padding:5px 10px" onclick="window._cmsCkHelp()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> '+CL('ck_help')+'</button>'
+    );
+    document.getElementById("cmsEditor").innerHTML = '<div class="cms-empty"><div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><p>'+CL('select_page')+'</p>'
+    +(_cmsHasPermission('pages.write') ? '<div style="display:flex;gap:8px;justify-content:center;margin-top:16px">'
+    +'<button class="admin-btn secondary" style="font-size:12px;padding:6px 12px" onclick="window._cmsExport()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> '+CL('export_json')+'</button>'
+    +'<button class="admin-btn secondary" style="font-size:12px;padding:6px 12px" onclick="document.getElementById(\'cmsImportFile2\').click()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> '+CL('import_json')+'</button>'
+    +'<input type="file" id="cmsImportFile2" accept=".json" style="display:none" onchange="window._cmsImport(event)"/>'
+    +'</div>' : '')
+    +'</div>';
   } else if(sec==="files") {
     window._cmsFilesView();
   } else if(sec==="account") {
@@ -2122,10 +2141,8 @@ var _cmsUserSubTab = 'users';
 window._cmsUserMgmtView = function(subTab){
   if(subTab) _cmsUserSubTab = subTab;
 
-  // Update header bar actions
-  window._cmsUpdateHeaderActions(
-    '<button class="admin-btn secondary" style="font-size:12px;padding:5px 10px" onclick="window._cmsCkHelp()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> '+CL('ck_help')+'</button>'
-  );
+  // Clear header actions — no CKEditor in user mgmt
+  window._cmsUpdateHeaderActions('');
   var currentUser = sessionStorage.getItem("ecap_admin_user") || "admin";
   var users = getCmsUsers();
   var cfg2fa = get2FAConfig();
@@ -2143,8 +2160,15 @@ window._cmsUserMgmtView = function(subTab){
 };
 
 // Security view (standalone tab, admin only)
+var _securityRefreshTimer = null;
 window._cmsSecurityView = function(){
   document.getElementById("cmsEditor").innerHTML = '<div class="cms-panel">' + _cmsSecurityTab() + '</div>';
+  // Auto-refresh sessions + audit every 10s while on security tab
+  if(_securityRefreshTimer) clearInterval(_securityRefreshTimer);
+  _securityRefreshTimer = setInterval(function(){
+    if(_cmsSection !== 'security'){ clearInterval(_securityRefreshTimer); _securityRefreshTimer=null; return; }
+    document.getElementById("cmsEditor").innerHTML = '<div class="cms-panel">' + _cmsSecurityTab() + '</div>';
+  }, 10000);
 };
 
 // Legacy function kept for compatibility
@@ -2537,7 +2561,10 @@ function _cmsSecurityTab(){
     +'<div class="cms-card-box">'
     +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
     +'<h4 style="font-size:16px;font-weight:700;margin:0">'+CL('audit_log')+'</h4>'
+    +'<div style="display:flex;gap:6px">'
+    +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="window._cmsExportAuditCsv()">'+CL('export_csv')+'</button>'
     +'<button class="admin-btn secondary" style="font-size:11px;padding:4px 10px" onclick="if(confirm(CL(\'clear_log_q\'))){localStorage.removeItem(\''+CMS_AUDIT_KEY+'\');window._cmsSecurityView();}">'+CL('clear_log')+'</button>'
+    +'</div>'
     +'</div>'
     +'<p style="font-size:12px;color:var(--text-muted);margin-bottom:12px">'+CL('audit_log_desc')+'</p>'
     +'<div style="display:grid;grid-template-columns:24px 1fr 80px 120px 130px;gap:10px;padding:6px 0;border-bottom:2px solid var(--border);font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px">'
@@ -2547,6 +2574,32 @@ function _cmsSecurityTab(){
     +'</div>'
     +'</div>';
 }
+
+// Export audit log as CSV
+window._cmsExportAuditCsv = function(){
+  var log = getAuditLog();
+  if(!log.length){ showToast(CL('no_log')); return; }
+  var csvRows = ['Time,User,Action,Detail,IP'];
+  log.forEach(function(e){
+    var row = [
+      '"'+(e.time||'').replace(/"/g,'""')+'"',
+      '"'+(e.user||'').replace(/"/g,'""')+'"',
+      '"'+(e.action||'').replace(/"/g,'""')+'"',
+      '"'+(e.detail||'').replace(/"/g,'""')+'"',
+      '"'+(e.ip||'').replace(/"/g,'""')+'"'
+    ];
+    csvRows.push(row.join(','));
+  });
+  var blob = new Blob(['\ufeff'+csvRows.join('\r\n')], {type:'text/csv;charset=utf-8'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'audit_log_'+new Date().toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
 
 // IP Whitelist management
 window._cmsAddIp = function(){
@@ -3450,11 +3503,9 @@ window._cmsHomeView = function(){
   // Escape for safe embedding in onclick attribute strings
   function escQ(s){ return s.replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
 
-  // Build HTML — update header bar actions
+  // Build HTML — only editor help in header
   window._cmsUpdateHeaderActions(
     '<button class="admin-btn secondary" style="font-size:12px;padding:5px 10px" onclick="window._cmsCkHelp()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> '+CL('ck_help')+'</button>'
-    +'<button class="admin-btn primary" style="font-size:13px" onclick="window._cmsHomeSave()">'+CL('save_changes')+'</button>'
-    +'<a href="#/" target="_blank" class="admin-btn secondary" style="text-decoration:none;display:inline-flex;align-items:center;font-size:13px">'+CL('view_page')+'</a>'
   );
 
   var html = '<div class="cms-panel" style="max-width:none">'
@@ -3463,6 +3514,8 @@ window._cmsHomeView = function(){
     +'<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">'
     +'<button class="admin-btn secondary" style="font-size:12px;padding:5px 12px" onclick="document.querySelectorAll(\'.cms-home-sec\').forEach(function(s){s.classList.add(\'open\')})">'+CL('expand_all')+'</button>'
     +'<button class="admin-btn secondary" style="font-size:12px;padding:5px 12px" onclick="document.querySelectorAll(\'.cms-home-sec\').forEach(function(s){s.classList.remove(\'open\')})">'+CL('collapse_all')+'</button>'
+    +'<button class="admin-btn primary" style="font-size:13px" onclick="window._cmsHomeSave()">'+CL('save_changes')+'</button>'
+    +'<a href="#/" target="_blank" class="admin-btn secondary" style="text-decoration:none;display:inline-flex;align-items:center;font-size:13px">'+CL('view_page')+'</a>'
     +'</div></div>';
 
   // ========== Section Order (not language-dependent) ==========
@@ -4616,16 +4669,17 @@ window._cmsNavStandaloneView = function(){
 
   function escQ(s){ return s.replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
 
-  // Update header bar actions
-  window._cmsUpdateHeaderActions(
-    '<button class="admin-btn primary" onclick="window._cmsNavSave();showToast(CL(\'saved\')+\' \'+CL(\'home_nav\'))">'+CL('save_changes')+'</button>'
-    +'<button class="admin-btn danger" style="font-size:12px" onclick="if(confirm(CL(\'nav_reset_q\'))){saveCmsNav({});window._cmsNavStandaloneView();}">'+CL('nav_reset')+'</button>'
-  );
+  // Clear header actions
+  window._cmsUpdateHeaderActions('');
 
   var html = '<div class="cms-panel" style="max-width:none">'
-    +'<div style="padding:8px 0 10px;border-bottom:1px solid rgba(0,0,0,.06);margin-bottom:16px">'
-    +'<h3 style="font-size:20px;font-weight:700;margin:0">'+CL('home_nav')+'</h3>'
-    +'<span style="font-size:12px;color:var(--text-muted)">'+CL('nav_menu_desc')+'</span></div>';
+    +'<div style="padding:8px 0 10px;display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid rgba(0,0,0,.06);margin-bottom:16px">'
+    +'<div><h3 style="font-size:20px;font-weight:700;margin:0">'+CL('home_nav')+'</h3>'
+    +'<span style="font-size:12px;color:var(--text-muted)">'+CL('nav_menu_desc')+'</span></div>'
+    +'<div style="display:flex;gap:6px;align-items:center">'
+    +'<button class="admin-btn primary" onclick="window._cmsNavSave();showToast(CL(\'saved\')+\' \'+CL(\'home_nav\'))">'+CL('save_changes')+'</button>'
+    +'<button class="admin-btn danger" style="font-size:12px" onclick="if(confirm(CL(\'nav_reset_q\'))){saveCmsNav({});window._cmsNavStandaloneView();}">'+CL('nav_reset')+'</button>'
+    +'</div></div>';
 
   langs.forEach(function(lang){
     var navItems = navData[lang] || (window.SITE && window.SITE.nav ? window.SITE.nav[lang] || window.SITE.nav['zh-Hant'] : []);

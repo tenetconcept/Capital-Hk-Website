@@ -50,7 +50,20 @@ var CMS_I18N = {
   tab_blog:        {en:'News', hans:'新闻文章', hant:'新聞文章'},
   tab_files:       {en:'File Manager', hans:'档案管理', hant:'檔案管理'},
   tab_home:        {en:'Homepage', hans:'首页', hant:'首頁'},
-  tab_home_desc:   {en:'banners & hero', hans:'横幅轮播', hant:'橫幅輪播'},
+  tab_home_desc:   {en:'banners & content', hans:'横幅及内容', hant:'橫幅及內容'},
+  home_hero:       {en:'Hero Section', hans:'主视觉', hant:'主視覺'},
+  home_banners:    {en:'Banner Carousel', hans:'横幅轮播', hant:'橫幅輪播'},
+  home_svc1:       {en:'Securities Trading', hans:'股票交易', hant:'股票交易'},
+  home_svc2:       {en:'SH-HK Stock Connect', hans:'沪港通', hant:'滬港通'},
+  home_svc3:       {en:'Futures & Options', hans:'期货及期权', hant:'期貨及期權'},
+  home_cta:        {en:'CTA Section', hans:'行动呼吁', hant:'行動呼籲'},
+  home_label:      {en:'Label', hans:'标签', hant:'標籤'},
+  home_title:      {en:'Title (HTML OK)', hans:'标题（可用HTML）', hant:'標題（可用HTML）'},
+  home_subtitle:   {en:'Subtitle', hans:'副标题', hant:'副標題'},
+  home_desc:       {en:'Description', hans:'描述', hant:'描述'},
+  home_img:        {en:'Image URL', hans:'图片网址', hant:'圖片網址'},
+  home_badge:      {en:'Badge Text', hans:'徽章文字', hant:'徽章文字'},
+  home_saved:      {en:'Homepage saved', hans:'首页已保存', hant:'首頁已儲存'},
   tab_account:     {en:'My Account', hans:'我的帐户', hant:'我的帳戶'},
   tab_users:       {en:'Users', hans:'用户管理', hant:'用戶管理'},
   tab_security:    {en:'Security', hans:'安全设定', hant:'安全設定'},
@@ -114,6 +127,8 @@ var CMS_I18N = {
   no_banner:       {en:'No custom banners. Using default banner images.', hans:'暂无自定义横幅。使用默认横幅图片。', hant:'暫無自訂橫幅。使用預設橫幅圖片。'},
   no_link:         {en:'No link', hans:'无链接', hant:'無連結'},
   del_banner_q:    {en:'Delete this banner?', hans:'删除此横幅？', hant:'刪除此橫幅？'},
+  no_banners:      {en:'No banners yet.', hans:'暂无横幅。', hant:'暫無橫幅。'},
+  add_banner:      {en:'Add Banner', hans:'新增横幅', hant:'新增橫幅'},
   // Blog
   blog_title:      {en:'Blog / News Articles', hans:'新闻文章', hant:'新聞文章'},
   blog_desc:       {en:'Manage articles shown on the <strong>Hong Kong News</strong> page.', hans:'管理<strong>香港新闻</strong>页面上显示的文章。', hant:'管理<strong>香港新聞</strong>頁面上顯示的文章。'},
@@ -751,7 +766,7 @@ function adminView(){
     +'<div class="cms-search"><input type="text" id="cmsSearch" placeholder="'+CL('search_pages')+'" oninput="window._cmsFilter(this.value)"/></div>'
     +'<div class="cms-page-list" id="cmsPageList">'
     // Homepage item at top of sidebar
-    +'<div class="cms-page-item cms-page-home" data-slug="__home__" onclick="window._cmsBannersView()">'
+    +'<div class="cms-page-item cms-page-home" data-slug="__home__" onclick="window._cmsHomeView()">'
     +'<span class="page-dot" style="background:var(--brand)"></span>'
     +'<div class="page-info"><span class="page-name" style="font-weight:700">'+CL('tab_home')+'</span>'
     +'<span class="page-slug">'+CL('tab_home_desc')+'</span></div></div>'
@@ -2640,6 +2655,186 @@ window._cmsBlogMove = function(idx, dir){
   window._cmsBlogView();
 };
 
+// ————————————————————— CMS HOMEPAGE EDITOR —————————————————————
+window._cmsHomeView = function(){
+  // Highlight homepage item in sidebar
+  document.querySelectorAll('.cms-page-item').forEach(function(el){ el.classList.remove('active'); });
+  var homeItem = document.querySelector('.cms-page-home');
+  if(homeItem) homeItem.classList.add('active');
+
+  var lang = window.currentLang || 'zh-Hant';
+  var ch = window.getCmsHome ? window.getCmsHome() : {};
+
+  function gv(sec, field){ return (ch[sec] && ch[sec][lang] && ch[sec][lang][field]) || ''; }
+
+  // Default values for placeholders
+  var defaults = {
+    hero: {
+      badge: lang==='en'?'SFC Licensed':(lang==='zh-Hans'?'香港证监会持牌':'香港證監會持牌'),
+      title: lang==='en'?'Your Professional<br>Securities & Futures Partner':(lang==='zh-Hans'?'您的专业<br>证券及期货交易伙伴':'您的專業<br>證券及期貨交易夥伴'),
+      subtitle: lang==='en'?'Over 30 years of experience in Hong Kong financial markets.':(lang==='zh-Hans'?'逾三十年香港金融市场经验，提供证券、期货、期权交易及沪港通服务。':'逾三十年香港金融市場經驗，提供證券、期貨、期權交易及滬港通服務。')
+    },
+    svc1: { label: lang==='en'?'Securities Trading':(lang==='zh-Hans'?'股票交易':'股票交易'), title: lang==='en'?'Hong Kong & Global Equities Trading':(lang==='zh-Hans'?'港股及环球股票交易服务':'港股及環球股票交易服務'), desc: lang==='en'?'Trade stocks listed on Hong Kong, Shanghai, and other major global exchanges.':(lang==='zh-Hans'?'透过专业 iTrader 交易平台，轻松买卖港股、A股及环球主要市场的股票。':'透過專業 iTrader 交易平台，輕鬆買賣港股、A股及環球主要市場的股票。'), img: 'images/ecap-svc-securities.png' },
+    svc2: { label: lang==='en'?'SH-HK Stock Connect':(lang==='zh-Hans'?'沪港通':'滬港通'), title: lang==='en'?'Shanghai-Hong Kong Stock Connect':(lang==='zh-Hans'?'沪港通交易服务':'滬港通交易服務'), desc: lang==='en'?'Access A-share market through our comprehensive Stock Connect service.':(lang==='zh-Hans'?'透过全面的沪港通服务进入A股市场。':'透過全面的滬港通服務進入A股市場。'), img: 'images/ecap-svc-connect.png' },
+    svc3: { label: lang==='en'?'Futures & Options':(lang==='zh-Hans'?'期货及期权':'期貨及期權'), title: lang==='en'?'Futures & Options Trading':(lang==='zh-Hans'?'期货及期权交易服务':'期貨及期權交易服務'), desc: lang==='en'?'Trade futures and options on major exchanges.':(lang==='zh-Hans'?'透过专业 Sharp Point 交易平台，交易主要交易所的期货及期权。':'透過專業 Sharp Point 交易平台，交易主要交易所的期貨及期權。'), img: 'images/ecap-svc-futures.png' },
+    cta: { title: lang==='en'?'Open Your Account Today':(lang==='zh-Hans'?'立即开户 把握投资先机':'立即開戶 把握投資先機'), desc: lang==='en'?'Start trading in Hong Kong, Shanghai and global markets with Capital Securities.':(lang==='zh-Hans'?'群益证券为您提供港股、A股及环球市场交易服务。':'群益證券為您提供港股、A股及環球市場交易服務。') }
+  };
+
+  function sectionAccordion(id, titleKey, bodyHtml){
+    return '<div class="cms-home-sec">'
+      +'<div class="cms-home-sec-hdr" onclick="this.parentNode.classList.toggle(\'open\')">'
+      +'<span>'+CL(titleKey)+'</span>'
+      +'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>'
+      +'</div>'
+      +'<div class="cms-home-sec-body">'+bodyHtml+'</div>'
+      +'</div>';
+  }
+
+  function fieldRow(id, labelKey, val, placeholder, isTextarea){
+    var esc_v = (val||'').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+    var esc_p = (placeholder||'').replace(/"/g,'&quot;').replace(/</g,'&lt;').substring(0,80);
+    if(isTextarea){
+      return '<div class="admin-field"><label>'+CL(labelKey)+'</label>'
+        +'<textarea id="'+id+'" rows="2" style="font-size:13px" placeholder="'+esc_p+'">'+esc_v+'</textarea></div>';
+    }
+    return '<div class="admin-field"><label>'+CL(labelKey)+'</label>'
+      +'<input type="text" id="'+id+'" value="'+esc_v+'" placeholder="'+esc_p+'"/></div>';
+  }
+
+  // Build HTML
+  var html = '<div class="cms-panel" style="max-width:none">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">'
+    +'<h3 style="font-size:20px;font-weight:700;margin:0">'+CL('tab_home')+' <span style="font-size:13px;font-weight:400;color:var(--text-muted)">('+lang+')</span></h3>'
+    +'<button class="admin-btn primary" onclick="window._cmsHomeSave()">'+CL('save_changes')+'</button>'
+    +'</div>';
+
+  // 1. Hero
+  html += sectionAccordion('hero', 'home_hero',
+    fieldRow('cms_h_hero_badge','home_badge', gv('hero','badge'), defaults.hero.badge)
+    +fieldRow('cms_h_hero_title','home_title', gv('hero','title'), defaults.hero.title)
+    +fieldRow('cms_h_hero_subtitle','home_subtitle', gv('hero','subtitle'), defaults.hero.subtitle, true)
+  );
+
+  // 2. Banners (embed existing)
+  html += sectionAccordion('banners', 'home_banners',
+    '<div id="cmsHomeBanners"></div>');
+
+  // 3-5. Services
+  ['svc1','svc2','svc3'].forEach(function(svc, i){
+    html += sectionAccordion(svc, 'home_'+svc,
+      fieldRow('cms_h_'+svc+'_label','home_label', gv(svc,'label'), defaults[svc].label)
+      +fieldRow('cms_h_'+svc+'_title','home_title', gv(svc,'title'), defaults[svc].title)
+      +fieldRow('cms_h_'+svc+'_desc','home_desc', gv(svc,'desc'), defaults[svc].desc, true)
+      +fieldRow('cms_h_'+svc+'_img','home_img', gv(svc,'img'), defaults[svc].img)
+    );
+  });
+
+  // 6. CTA
+  html += sectionAccordion('cta', 'home_cta',
+    fieldRow('cms_h_cta_title','home_title', gv('cta','title'), defaults.cta.title)
+    +fieldRow('cms_h_cta_desc','home_desc', gv('cta','desc'), defaults.cta.desc, true)
+  );
+
+  html += '<div style="margin-top:16px;display:flex;gap:8px">'
+    +'<button class="admin-btn primary" onclick="window._cmsHomeSave()">'+CL('save_changes')+'</button>'
+    +'<a href="#/" target="_blank" class="admin-btn secondary" style="text-decoration:none;display:inline-flex;align-items:center">'+CL('view_page')+'</a>'
+    +'</div></div>';
+
+  document.getElementById("cmsEditor").innerHTML = html;
+
+  // Render banners inside the accordion
+  setTimeout(function(){
+    var bannerSlot = document.getElementById('cmsHomeBanners');
+    if(bannerSlot) _cmsRenderBannerCards(bannerSlot);
+  }, 30);
+
+  // Auto-open first section
+  var first = document.querySelector('.cms-home-sec');
+  if(first) first.classList.add('open');
+};
+
+// Save all homepage fields
+window._cmsHomeSave = function(){
+  var lang = window.currentLang || 'zh-Hant';
+  var ch = window.getCmsHome ? window.getCmsHome() : {};
+  var sections = ['hero','svc1','svc2','svc3','cta'];
+  var fields = {
+    hero: ['badge','title','subtitle'],
+    svc1: ['label','title','desc','img'],
+    svc2: ['label','title','desc','img'],
+    svc3: ['label','title','desc','img'],
+    cta: ['title','desc']
+  };
+  sections.forEach(function(sec){
+    if(!ch[sec]) ch[sec] = {};
+    if(!ch[sec][lang]) ch[sec][lang] = {};
+    fields[sec].forEach(function(f){
+      var el = document.getElementById('cms_h_'+sec+'_'+f);
+      var val = el ? (el.value||'').trim() : '';
+      if(val) ch[sec][lang][f] = val;
+      else delete ch[sec][lang][f];
+    });
+    // Clean empty
+    if(Object.keys(ch[sec][lang]).length === 0) delete ch[sec][lang];
+    if(Object.keys(ch[sec]).length === 0) delete ch[sec];
+  });
+  window.saveCmsHome(ch);
+  showToast(CL('home_saved'));
+};
+
+// Render banner cards into a container (reusable for homepage editor)
+function _cmsRenderBannerCards(container){
+  var banners = getCmsBanners();
+  var _canUpload = _cmsHasPermission("upload");
+  if(!banners.length){
+    container.innerHTML = '<p style="color:var(--text-muted);font-size:13px;padding:8px 0">'+CL('no_banners')+'</p>';
+  } else {
+    var rows = banners.map(function(b,i){
+      return '<div class="cms-item-card">'
+        +'<div class="cms-item-thumb" style="width:120px;height:60px;border-radius:8px;overflow:hidden;flex-shrink:0;background:#f3f4f6"><img src="'+esc(b.img)+'" alt="" style="width:100%;height:100%;object-fit:cover"></div>'
+        +'<div class="cms-item-info" style="flex:1;min-width:0"><div style="font-weight:600;font-size:13px">'+esc(b.alt||'Banner '+(i+1))+'</div>'
+        +'<div style="font-size:11px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(b.link||'—')+'</div></div>'
+        +'<div style="display:flex;gap:4px">'
+        +(_canUpload?'<button class="admin-btn secondary" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerEdit('+i+')">Edit</button>':'')
+        +(_canUpload && i>0?'<button class="admin-btn secondary" style="font-size:11px;padding:2px 6px" onclick="window._cmsBannerMove('+i+',-1)">↑</button>':'')
+        +(_canUpload && i<banners.length-1?'<button class="admin-btn secondary" style="font-size:11px;padding:2px 6px" onclick="window._cmsBannerMove('+i+',1)">↓</button>':'')
+        +(_canUpload?'<button class="admin-btn danger" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerDel('+i+')">✕</button>':'')
+        +'</div></div>';
+    }).join('');
+    container.innerHTML = rows;
+  }
+  if(_canUpload){
+    container.innerHTML += '<div style="margin-top:10px;display:flex;gap:8px;align-items:center">'
+      +'<button class="admin-btn primary" style="font-size:12px;padding:6px 12px" onclick="window._cmsBannerAdd()">+ '+CL('add_banner')+'</button>'
+      +'</div>';
+  }
+}
+
+// Smart refresh: if homepage editor is open, refresh embedded banner cards; else reload standalone view
+function _cmsRefreshBanners(){
+  var slot = document.getElementById('cmsHomeBanners');
+  if(slot){ _cmsRenderBannerCards(slot); return; }
+  window._cmsBannersView();
+}
+
+// Aliases used by homepage editor banner cards
+window._cmsBannerDel = function(idx){
+  if(!confirm(CL('del_banner_q'))) return;
+  var banners = getCmsBanners();
+  banners.splice(idx,1);
+  saveCmsBanners(banners);
+  _cmsRefreshBanners();
+};
+window._cmsBannerAdd = function(){
+  var url = prompt(CL('paste_url')+':');
+  if(!url) return;
+  var banners = getCmsBanners();
+  banners.push({ img:url.trim(), alt:'Banner', link:'', isLocal:false });
+  saveCmsBanners(banners);
+  showToast(CL('added_banner_s'));
+  _cmsRefreshBanners();
+};
+
 // ————————————————————— CMS BANNERS MANAGER —————————————————————
 window._cmsBannersView = function(){
   // Highlight homepage item in sidebar
@@ -2726,7 +2921,7 @@ window._cmsBannerProcessFile = function(file){
     banners.push({ img:ev.target.result, alt:file.name.replace(/\.[^.]+$/,''), link:'', isLocal:true });
     saveCmsBanners(banners);
     showToast(CL('added_banner')+file.name);
-    window._cmsBannersView();
+    _cmsRefreshBanners();
   };
   reader.readAsDataURL(file);
 };
@@ -2747,7 +2942,7 @@ window._cmsBannerAddUrl = function(){
   banners.push({ img:url, alt:alt||'Banner', link:link, isLocal:false });
   saveCmsBanners(banners);
   showToast(CL('added_banner_s'));
-  window._cmsBannersView();
+  _cmsRefreshBanners();
 };
 
 window._cmsBannerDelete = function(idx){
@@ -2755,7 +2950,7 @@ window._cmsBannerDelete = function(idx){
   var banners = getCmsBanners();
   banners.splice(idx,1);
   saveCmsBanners(banners);
-  window._cmsBannersView();
+  _cmsRefreshBanners();
 };
 
 window._cmsBannerMove = function(idx, dir){
@@ -2766,12 +2961,25 @@ window._cmsBannerMove = function(idx, dir){
   banners[idx] = banners[newIdx];
   banners[newIdx] = tmp;
   saveCmsBanners(banners);
-  window._cmsBannersView();
+  _cmsRefreshBanners();
 };
 
 window._cmsBannerEdit = function(idx){
   var el = document.getElementById('cmsBE_'+idx);
-  if(!el) return;
+  if(!el){
+    // Compact mode (homepage editor) — use prompt-based editing
+    var banners = getCmsBanners();
+    if(!banners[idx]) return;
+    var newAlt = prompt(CL('alt_title')+':', banners[idx].alt||'');
+    if(newAlt===null) return;
+    var newLink = prompt(CL('link_opt')+':', banners[idx].link||'');
+    if(newLink===null) return;
+    banners[idx].alt = newAlt.trim();
+    banners[idx].link = newLink.trim();
+    saveCmsBanners(banners);
+    _cmsRefreshBanners();
+    return;
+  }
   var isOpen = el.style.display !== 'none';
   // Close any other open edit forms first
   document.querySelectorAll('[id^="cmsBE_"]').forEach(function(e){ e.style.display='none'; });
@@ -2791,7 +2999,7 @@ window._cmsBannerSave = function(idx){
   banners[idx].link = linkEl ? linkEl.value.trim() : '';
   saveCmsBanners(banners);
   showToast('已儲存');
-  window._cmsBannersView();
+  _cmsRefreshBanners();
 };
 window._cmsBannerPreview = function(){
   var banners = getCmsBanners();

@@ -50,6 +50,20 @@ window.saveCmsPages = saveCmsPages;
 window.getPage = getPage;
 window.SITE = SITE;
 
+// ---------- CMS Home Overrides ----------
+var CMS_HOME_KEY = "ecap_cms_home";
+function getCmsHome(){ try{ return JSON.parse(localStorage.getItem(CMS_HOME_KEY))||{}; }catch(e){ return {}; } }
+function saveCmsHome(d){ localStorage.setItem(CMS_HOME_KEY, JSON.stringify(d)); }
+window.getCmsHome = getCmsHome;
+window.saveCmsHome = saveCmsHome;
+// Helper: get a CMS home field with fallback
+function H(section, field, fallback){
+  var ch = getCmsHome();
+  if(ch[section] && ch[section][currentLang] && ch[section][currentLang][field]) return ch[section][currentLang][field];
+  return fallback;
+}
+window._homeField = H;
+
 // ---------- i18n ----------
 function T(key){
   var u = SITE.ui[currentLang] || SITE.ui["zh-Hant"];
@@ -280,10 +294,10 @@ function homeView(){
   // Feature: Securities
   html += featureSection({
     id: 'svc-securities',
-    label: u.svc1_label || L('Securities Trading', '股票交易', '股票交易'),
-    title: u.svc1_title || L('Hong Kong & Global<br>Equities Trading', '港股及环球<br>股票交易服务', '港股及環球<br>股票交易服務'),
-    desc: u.svc1_desc || L('Trade stocks listed on Hong Kong, Shanghai, and other major global exchanges through our professional iTrader platform.', '透过专业 iTrader 交易平台，轻松买卖港股、A股及环球主要市场的股票。', '透過專業 iTrader 交易平台，輕鬆買賣港股、A股及環球主要市場的股票。'),
-    img: 'images/ecap-svc-securities.png',
+    label: H('svc1','label', u.svc1_label || L('Securities Trading', '股票交易', '股票交易')),
+    title: H('svc1','title', u.svc1_title || L('Hong Kong & Global<br>Equities Trading', '港股及环球<br>股票交易服务', '港股及環球<br>股票交易服務')),
+    desc: H('svc1','desc', u.svc1_desc || L('Trade stocks listed on Hong Kong, Shanghai, and other major global exchanges through our professional iTrader platform.', '透过专业 iTrader 交易平台，轻松买卖港股、A股及环球主要市场的股票。', '透過專業 iTrader 交易平台，輕鬆買賣港股、A股及環球主要市場的股票。')),
+    img: H('svc1','img', 'images/ecap-svc-securities.png'),
     features: [
       { icon: ICONS.monitor, title: u.svc1_f1 || L('iTrader Platform', 'iTrader 交易平台', 'iTrader 交易平台'), desc: u.svc1_f1s || L('Award-winning online trading platform with real-time quotes.', '屡获殊荣的网上交易平台，提供即时报价。', '屢獲殊榮的網上交易平台，提供即時報價。') },
       { icon: ICONS.dollar, title: u.svc1_f2 || L('Competitive Commission', '具竞争力佣金', '具競爭力佣金'), desc: u.svc1_f2s || L('Industry-leading commission rates for all markets.', '全市场领先的佣金费率。', '全市場領先的佣金費率。') },
@@ -294,10 +308,10 @@ function homeView(){
   // Feature: SH-HK Connect
   html += featureSection({
     id: 'svc-connect',
-    label: u.svc2_label || L('SH-HK Stock Connect', '沪港通', '滬港通'),
-    title: u.svc2_title || L('Shanghai-Hong Kong<br>Stock Connect', '沪港通<br>交易服务', '滬港通<br>交易服務'),
-    desc: u.svc2_desc || L('Access A-share market through our comprehensive Stock Connect service with professional research support.', '透过全面的沪港通服务进入A股市场，配合专业研究报告支援。', '透過全面的滬港通服務進入A股市場，配合專業研究報告支援。'),
-    img: 'images/ecap-svc-connect.png',
+    label: H('svc2','label', u.svc2_label || L('SH-HK Stock Connect', '沪港通', '滬港通')),
+    title: H('svc2','title', u.svc2_title || L('Shanghai-Hong Kong<br>Stock Connect', '沪港通<br>交易服务', '滬港通<br>交易服務')),
+    desc: H('svc2','desc', u.svc2_desc || L('Access A-share market through our comprehensive Stock Connect service with professional research support.', '透过全面的沪港通服务进入A股市场，配合专业研究报告支援。', '透過全面的滬港通服務進入A股市場，配合專業研究報告支援。')),
+    img: H('svc2','img', 'images/ecap-svc-connect.png'),
     features: [
       { icon: ICONS.zap, title: u.svc2_f1 || L('Direct A-Share Access', '直接买卖A股', '直接買賣A股'), desc: u.svc2_f1s || L('Trade Shanghai and Shenzhen listed A-shares directly.', '直接交易沪深两市上市A股。', '直接交易滬深兩市上市A股。') },
       { icon: ICONS.chart, title: u.svc2_f2 || L('Research Reports', '研究报告', '研究報告'), desc: u.svc2_f2s || L('Regular A-share research and market insights.', '定期A股研究报告及市场分析。', '定期A股研究報告及市場分析。') },
@@ -307,10 +321,10 @@ function homeView(){
   // Feature: Futures
   html += featureSection({
     id: 'svc-futures',
-    label: u.svc3_label || L('Futures & Options', '期货及期权', '期貨及期權'),
-    title: u.svc3_title || L('Futures &<br>Options Trading', '期货及<br>期权交易服务', '期貨及<br>期權交易服務'),
-    desc: u.svc3_desc || L('Trade futures and options on major exchanges with our professional Sharp Point platform.', '透过专业 Sharp Point 交易平台，交易主要交易所的期货及期权。', '透過專業 Sharp Point 交易平台，交易主要交易所的期貨及期權。'),
-    img: 'images/ecap-svc-futures.png',
+    label: H('svc3','label', u.svc3_label || L('Futures & Options', '期货及期权', '期貨及期權')),
+    title: H('svc3','title', u.svc3_title || L('Futures &<br>Options Trading', '期货及<br>期权交易服务', '期貨及<br>期權交易服務')),
+    desc: H('svc3','desc', u.svc3_desc || L('Trade futures and options on major exchanges with our professional Sharp Point platform.', '透过专业 Sharp Point 交易平台，交易主要交易所的期货及期权。', '透過專業 Sharp Point 交易平台，交易主要交易所的期貨及期權。')),
+    img: H('svc3','img', 'images/ecap-svc-futures.png'),
     features: [
       { icon: ICONS.monitor, title: u.svc3_f1 || L('Sharp Point Platform', 'Sharp Point 平台', 'Sharp Point 平台'), desc: u.svc3_f1s || L('Professional futures trading platform with advanced tools.', '专业期货交易平台，配备先进工具。', '專業期貨交易平台，配備先進工具。') },
       { icon: ICONS.clock, title: u.svc3_f2 || L('Extended Hours', '延长交易时段', '延長交易時段'), desc: u.svc3_f2s || L('Trade during day and after-hours sessions.', '日间及夜间交易时段均可进行交易。', '日間及夜間交易時段均可進行交易。') },
@@ -334,9 +348,9 @@ function heroSection(u){
   h += '<div class="hero-deco hero-deco-circle-2"></div>';
   h += '<div class="hero-deco hero-deco-circle-3"></div>';
   h += '<div class="hero-content anim-fade-up">';
-  h += '<div class="hero-badge">' + ICONS.shield + ' ' + esc(currentLang==='en' ? 'SFC Licensed' : (currentLang==='zh-Hans' ? '香港证监会持牌' : '香港證監會持牌')) + '</div>';
-  h += '<h1 class="hero-title">' + (currentLang==='en' ? 'Your Professional<br>Securities & Futures Partner' : (currentLang==='zh-Hans' ? '您的专业<br>证券及期货交易伙伴' : '您的專業<br>證券及期貨交易夥伴')) + '</h1>';
-  h += '<p class="hero-subtitle">' + esc(currentLang==='en' ? 'Over 30 years of experience in Hong Kong financial markets. Trade equities, futures, options and access Shanghai-HK Stock Connect.' : (currentLang==='zh-Hans' ? '逾三十年香港金融市场经验，提供证券、期货、期权交易及沪港通服务。' : '逾三十年香港金融市場經驗，提供證券、期貨、期權交易及滬港通服務。')) + '</p>';
+  h += '<div class="hero-badge">' + ICONS.shield + ' ' + esc(H('hero','badge', currentLang==='en' ? 'SFC Licensed' : (currentLang==='zh-Hans' ? '香港证监会持牌' : '香港證監會持牌'))) + '</div>';
+  h += '<h1 class="hero-title">' + H('hero','title', currentLang==='en' ? 'Your Professional<br>Securities & Futures Partner' : (currentLang==='zh-Hans' ? '您的专业<br>证券及期货交易伙伴' : '您的專業<br>證券及期貨交易夥伴')) + '</h1>';
+  h += '<p class="hero-subtitle">' + esc(H('hero','subtitle', currentLang==='en' ? 'Over 30 years of experience in Hong Kong financial markets. Trade equities, futures, options and access Shanghai-HK Stock Connect.' : (currentLang==='zh-Hans' ? '逾三十年香港金融市场经验，提供证券、期货、期权交易及沪港通服务。' : '逾三十年香港金融市場經驗，提供證券、期貨、期權交易及滬港通服務。'))) + '</p>';
   h += '<div class="hero-ctas">';
   h += '<a class="btn btn-gradient" href="#/page/stock-account-opening" data-spa>' + esc(currentLang==='en' ? 'Open Account' : (currentLang==='zh-Hans' ? '开立帐户' : '開立帳戶')) + '</a>';
   h += '<a class="btn btn-white" href="https://itrade.e-capital.com.hk:8888/" target="_blank">' + esc(currentLang==='en' ? 'Trade Now' : (currentLang==='zh-Hans' ? '立即交易' : '立即交易')) + '</a>';
@@ -510,8 +524,8 @@ function ctaSection(u){
       : ['下載\n開戶合約','提交\n所需文件','帳戶\n審批通過','開始\n交易']);
   var h = '<section class="cta-sec">';
   h += '<div class="mw"><div class="cta-card anim-fade-up">';
-  h += '<h2 class="cta-title">' + esc(L('Open Your Account Today', '立即开户 把握投资先机', '立即開戶 把握投資先機')) + '</h2>';
-  h += '<p class="cta-desc">' + esc(L('Start trading in Hong Kong, Shanghai and global markets with Capital Securities. Simple account opening process.', '群益证券为您提供港股、A股及环球市场交易服务。简单开户流程，快速开始投资。', '群益證券為您提供港股、A股及環球市場交易服務。簡單開戶流程，快速開始投資。')) + '</p>';
+  h += '<h2 class="cta-title">' + esc(H('cta','title', L('Open Your Account Today', '立即开户 把握投资先机', '立即開戶 把握投資先機'))) + '</h2>';
+  h += '<p class="cta-desc">' + esc(H('cta','desc', L('Start trading in Hong Kong, Shanghai and global markets with Capital Securities. Simple account opening process.', '群益证券为您提供港股、A股及环球市场交易服务。简单开户流程，快速开始投资。', '群益證券為您提供港股、A股及環球市場交易服務。簡單開戶流程，快速開始投資。'))) + '</p>';
   h += '<div class="cta-steps">';
   steps.forEach(function(s, i){
     h += '<div class="cta-step"><div class="cta-step-num">' + (i+1) + '</div>';

@@ -178,3 +178,12 @@ body.cms-active .cms-sidebar{top:var(--nav-h);height:calc(100vh - var(--nav-h))}
 .cms-drop-zone:hover{border-color:var(--brand);background:rgba(180,21,64,.02)}
 .cms-url-row{display:flex;gap:8px;align-items:end;margin-top:16px}
 .cms-url-row .admin-field{flex:1;margin:0}
+
+/* Homepage Editor Accordion */
+.cms-home-sec{border:1px solid rgba(0,0,0,.06);border-radius:var(--radius-sm);margin-bottom:8px;background:var(--white);overflow:hidden}
+.cms-home-sec-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;cursor:pointer;font-size:14px;font-weight:600;color:var(--text);user-select:none;transition:background .15s}
+.cms-home-sec-hdr:hover{background:var(--bg-light)}
+.cms-home-sec-hdr svg{transition:transform .2s}
+.cms-home-sec-body{display:none;padding:0 18px 18px}
+.cms-home-sec.open .cms-home-sec-body{display:block}
+.cms-home-sec.open .cms-home-sec-hdr svg{transform:rotate(180deg)}

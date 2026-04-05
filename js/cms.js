@@ -71,18 +71,38 @@ function _cmsCkUploadPlugin(editor){
             return new Promise(function(resolve, reject){
               var reader = new FileReader();
               reader.onload = function(e){
-                var url = e.target.result;
-                var files = getCmsFiles();
-                files.push({
-                  id: 'f'+Date.now()+Math.random().toString(36).substr(2,4),
-                  name: file.name, desc: '', type: file.type, size: file.size,
-                  url: url, isLocal: true,
-                  uploadedAt: new Date().toISOString(),
-                  uploadedBy: sessionStorage.getItem('ecap_admin_user')||'admin'
-                });
-                saveCmsFiles(files);
-                showToast(CL('saved')+file.name);
-                resolve({ default: url });
+                var rawUrl = e.target.result;
+                var isImg = file.type && file.type.indexOf('image/') === 0;
+                function finish(url){
+                  var files = getCmsFiles();
+                  files.push({
+                    id: 'f'+Date.now()+Math.random().toString(36).substr(2,4),
+                    name: file.name, desc: '', type: file.type, size: file.size,
+                    url: url, isLocal: true,
+                    uploadedAt: new Date().toISOString(),
+                    uploadedBy: sessionStorage.getItem('ecap_admin_user')||'admin'
+                  });
+                  saveCmsFiles(files);
+                  showToast(CL('saved')+file.name);
+                  resolve({ default: url });
+                }
+                if(isImg){
+                  // Resize image to max 1200px for localStorage savings
+                  var img = new Image();
+                  img.onload = function(){
+                    var MAX_W = 1200;
+                    var w = img.width, h = img.height;
+                    if(w > MAX_W){ h = Math.round(h * MAX_W / w); w = MAX_W; }
+                    var canvas = document.createElement('canvas');
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    finish(canvas.toDataURL('image/jpeg', 0.82));
+                  };
+                  img.onerror = function(){ finish(rawUrl); };
+                  img.src = rawUrl;
+                } else {
+                  finish(rawUrl);
+                }
               };
               reader.onerror = reject;
               reader.readAsDataURL(file);
@@ -102,37 +122,57 @@ window._cmsCkFileUpload = function(input, taId){
   if(file.size > 2*1024*1024){ showToast('Max 2 MB'); input.value=''; return; }
   var reader = new FileReader();
   reader.onload = function(e){
-    var url = e.target.result;
-    // Save to CMS file library
-    var files = getCmsFiles();
-    files.push({
-      id: 'f'+Date.now()+Math.random().toString(36).substr(2,4),
-      name: file.name, desc: '', type: file.type||'application/octet-stream', size: file.size,
-      url: url, isLocal: true,
-      uploadedAt: new Date().toISOString(),
-      uploadedBy: sessionStorage.getItem('ecap_admin_user')||'admin'
-    });
-    saveCmsFiles(files);
-    // Insert into CKEditor
-    var editor = _cmsEditors[taId];
-    if(!editor){ showToast('Editor not ready'); input.value=''; return; }
+    var rawUrl = e.target.result;
     var isImg = /\.(jpe?g|png|gif|webp|svg)$/i.test(file.name) || (file.type && file.type.indexOf('image/') === 0);
-    var snippet;
+
+    function finish(url){
+      // Save to CMS file library
+      var files = getCmsFiles();
+      files.push({
+        id: 'f'+Date.now()+Math.random().toString(36).substr(2,4),
+        name: file.name, desc: '', type: file.type||'application/octet-stream', size: file.size,
+        url: url, isLocal: true,
+        uploadedAt: new Date().toISOString(),
+        uploadedBy: sessionStorage.getItem('ecap_admin_user')||'admin'
+      });
+      saveCmsFiles(files);
+      // Insert into CKEditor
+      var editor = _cmsEditors[taId];
+      if(!editor){ showToast('Editor not ready'); input.value=''; return; }
+      var snippet;
+      if(isImg){
+        snippet = '<img src="'+url+'" alt="'+file.name.replace(/"/g,'&quot;')+'" style="max-width:100%;height:auto"/>';
+      } else {
+        snippet = '<a href="'+url+'" download="'+file.name.replace(/"/g,'&quot;')+'">'+file.name.replace(/</g,'&lt;')+'</a>';
+      }
+      try{
+        var viewFragment = editor.data.processor.toView(snippet);
+        var modelFragment = editor.data.toModel(viewFragment);
+        editor.model.insertContent(modelFragment);
+      }catch(err){
+        editor.setData(editor.getData() + snippet);
+      }
+      showToast(CL('saved') + file.name);
+      input.value = '';
+    }
+
     if(isImg){
-      snippet = '<img src="'+url+'" alt="'+file.name.replace(/"/g,'&quot;')+'" style="max-width:100%;height:auto"/>';
+      // Resize image to max 1200px
+      var img = new Image();
+      img.onload = function(){
+        var MAX_W = 1200;
+        var w = img.width, h = img.height;
+        if(w > MAX_W){ h = Math.round(h * MAX_W / w); w = MAX_W; }
+        var canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        finish(canvas.toDataURL('image/jpeg', 0.82));
+      };
+      img.onerror = function(){ finish(rawUrl); };
+      img.src = rawUrl;
     } else {
-      snippet = '<a href="'+url+'" download="'+file.name.replace(/"/g,'&quot;')+'">'+file.name.replace(/</g,'&lt;')+'</a>';
+      finish(rawUrl);
     }
-    try{
-      var viewFragment = editor.data.processor.toView(snippet);
-      var modelFragment = editor.data.toModel(viewFragment);
-      editor.model.insertContent(modelFragment);
-    }catch(err){
-      // Fallback: set full data
-      editor.setData(editor.getData() + snippet);
-    }
-    showToast(CL('saved') + file.name);
-    input.value = '';
   };
   reader.readAsDataURL(file);
 };
@@ -965,6 +1005,8 @@ function adminView(){
     +'</div></aside>'
     // Main
     +'<div class="cms-main">'
+    // Sticky wrapper for header + section bar
+    +'<div class="cms-sticky-top">'
     // Compact header: logo text + user info only
     +'<div class="cms-main-header"><h3><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>'+CL('cms_title')+'</h3>'
     +'<div class="cms-header-acts">'
@@ -1009,6 +1051,7 @@ function adminView(){
     +'<button class="cms-tool-btn" onclick="window._cmsReset()" title="重設">&#x21BA;</button>'
     +'</div>' : '')
     +'</div>'
+    +'</div>' // close cms-sticky-top
     +'<div class="cms-editor-area" id="cmsEditor">'
     +'<div class="cms-empty"><div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><p>'+CL('select_page')+'</p></div>'
     +'</div></div></div>';
@@ -3607,11 +3650,36 @@ window._cmsBannerProcessFile = function(file){
   if(file.size > 5*1024*1024){ showToast(CL('img_too_large')+': '+file.name); return; }
   var reader = new FileReader();
   reader.onload = function(ev){
-    var banners = getCmsBanners();
-    banners.push({ img:ev.target.result, alt:file.name.replace(/\.[^.]+$/,''), link:'', isLocal:true });
-    saveCmsBanners(banners);
-    showToast(CL('added_banner')+file.name);
-    _cmsRefreshBanners();
+    // Resize banner to max 1200px wide via canvas to keep localStorage small
+    var img = new Image();
+    img.onload = function(){
+      var MAX_W = 1200, MAX_H = 500;
+      var w = img.width, h = img.height;
+      if(w > MAX_W){ h = Math.round(h * MAX_W / w); w = MAX_W; }
+      if(h > MAX_H){ w = Math.round(w * MAX_H / h); h = MAX_H; }
+      var canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      var dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+      // Ensure existing banners are persisted (fix: defaults not saved = lost on first upload)
+      var banners = getCmsBanners();
+      if(!banners.length){
+        // Persist the hardcoded defaults first so they're not lost
+        var _cl = window.currentLang || 'zh-Hant';
+        var _L = function(en,hans,hant){ return _cl==='en'?en:(_cl==='zh-Hans'?hans:hant); };
+        banners = [
+          { img:'images/ecap-banner-1.png', alt:_L('iTrader Platform','iTrader 交易平台','iTrader 交易平台'), link:'#/page/stock-ipo' },
+          { img:'images/ecap-banner-2.png', alt:_L('Stock Connect','沪港通服务','滬港通服務'), link:'#/page/shh-hk' },
+          { img:'images/ecap-banner-3.png', alt:_L('Open Account','开立帐户','開立帳戶'), link:'#/page/stock-account-opening' }
+        ];
+      }
+      banners.push({ img:dataUrl, alt:file.name.replace(/\.[^.]+$/,''), link:'', isLocal:true });
+      saveCmsBanners(banners);
+      showToast(CL('added_banner')+file.name);
+      _cmsRefreshBanners();
+    };
+    img.src = ev.target.result;
   };
   reader.readAsDataURL(file);
 };
@@ -3629,6 +3697,15 @@ window._cmsBannerAddUrl = function(){
   var link = document.getElementById('cmsBannerLink').value.trim();
   if(!url){ showToast(CL('enter_img_url')); return; }
   var banners = getCmsBanners();
+  if(!banners.length){
+    var _cl = window.currentLang || 'zh-Hant';
+    var _L = function(en,hans,hant){ return _cl==='en'?en:(_cl==='zh-Hans'?hans:hant); };
+    banners = [
+      { img:'images/ecap-banner-1.png', alt:_L('iTrader Platform','iTrader 交易平台','iTrader 交易平台'), link:'#/page/stock-ipo' },
+      { img:'images/ecap-banner-2.png', alt:_L('Stock Connect','沪港通服务','滬港通服務'), link:'#/page/shh-hk' },
+      { img:'images/ecap-banner-3.png', alt:_L('Open Account','开立帐户','開立帳戶'), link:'#/page/stock-account-opening' }
+    ];
+  }
   banners.push({ img:url, alt:alt||'Banner', link:link, isLocal:false });
   saveCmsBanners(banners);
   showToast(CL('added_banner_s'));

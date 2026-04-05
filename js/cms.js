@@ -2831,18 +2831,15 @@ window._cmsHomeView = function(){
   // Escape for safe embedding in onclick attribute strings
   function escQ(s){ return s.replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
 
-  // Build HTML
+  // Build HTML — sticky title bar with inline expand/collapse + save
   var html = '<div class="cms-panel" style="max-width:none">'
-    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">'
-    +'<h3 style="font-size:20px;font-weight:700;margin:0">'+CL('tab_home')+' <span style="font-size:13px;font-weight:400;color:var(--text-muted)">(all languages)</span></h3>'
-    +'<button class="admin-btn primary" onclick="window._cmsHomeSave()">'+CL('save_changes')+'</button>'
-    +'</div>';
-
-  // Expand All / Collapse All buttons
-  html += '<div style="display:flex;gap:8px;margin-bottom:12px">'
-    +'<button class="admin-btn secondary" style="font-size:12px" onclick="document.querySelectorAll(\'.cms-home-sec\').forEach(function(s){s.classList.add(\'open\')})">'+CL('expand_all')+'</button>'
-    +'<button class="admin-btn secondary" style="font-size:12px" onclick="document.querySelectorAll(\'.cms-home-sec\').forEach(function(s){s.classList.remove(\'open\')})">'+CL('collapse_all')+'</button>'
-    +'</div>';
+    +'<div style="position:sticky;top:0;z-index:5;background:var(--bg-body);padding:12px 0 10px;margin:-4px 0 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--border-light)">'
+    +'<h3 style="font-size:17px;font-weight:700;margin:0;white-space:nowrap">'+CL('tab_home')+'</h3>'
+    +'<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">'
+    +'<button class="admin-btn secondary" style="font-size:12px;padding:5px 12px" onclick="document.querySelectorAll(\'.cms-home-sec\').forEach(function(s){s.classList.add(\'open\')})">'+CL('expand_all')+'</button>'
+    +'<button class="admin-btn secondary" style="font-size:12px;padding:5px 12px" onclick="document.querySelectorAll(\'.cms-home-sec\').forEach(function(s){s.classList.remove(\'open\')})">'+CL('collapse_all')+'</button>'
+    +'<button class="admin-btn primary" style="font-size:13px" onclick="window._cmsHomeSave()">'+CL('save_changes')+'</button>'
+    +'</div></div>';
 
   // ========== Section Order (not language-dependent) ==========
   var defaultOrder = ['hero','banners','marquee','svc1','svc2','svc3','stats','news','cta'];
@@ -3271,17 +3268,18 @@ function _cmsRenderBannersFull(container){
     ];
   }
   var _canUpload = _cmsHasPermission("upload");
+  var _noImgSrc = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='68'%3E%3Crect width='120' height='68' fill='%23f3f4f6'/%3E%3Ctext x='60' y='38' text-anchor='middle' fill='%23bbb' font-size='11' font-family='sans-serif'%3ENo Image%3C/text%3E%3C/svg%3E";
   var rows = banners.length ? banners.map(function(b,i){
     return '<div class="cms-item-card" id="cmsBC_'+i+'">'
-      +'<img class="cms-item-thumb" src="'+escAttr(b.img)+'" style="cursor:pointer;border-radius:6px" onclick="window._cmsBannerEdit('+i+')" title="Click to edit"/>'
+      +'<img class="cms-item-thumb" src="'+escAttr(b.img)+'" onerror="this.src=\''+_noImgSrc+'\';this.onerror=null" style="cursor:pointer;border-radius:6px" onclick="window._cmsBannerEdit('+i+')" title="'+CL('edit')+'"/>'
       +'<div class="cms-item-info">'
       +'<div class="cms-item-title">'+esc(b.alt||'Banner '+(i+1))+'</div>'
       +'<div class="cms-item-meta" style="word-break:break-all">'+esc(b.link||CL('no_link'))+'</div>'
       +'</div>'
       +'<div class="cms-item-actions">'
-      +(_canUpload?'<button class="admin-btn secondary" title="Edit" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerEdit('+i+')">&#9998; Edit</button>':'')
-      +(i>0?'<button class="admin-btn secondary" title="'+CL('btn_move_up')+'" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerMove('+i+',-1)">&uarr;</button>':'')
-      +(i<banners.length-1?'<button class="admin-btn secondary" title="'+CL('btn_move_down')+'" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerMove('+i+',1)">&darr;</button>':'')
+      +(_canUpload?'<button class="admin-btn secondary" title="'+CL('edit')+'" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerEdit('+i+')">'+CL('edit')+'</button>':'')
+      +'<button class="admin-btn secondary" title="'+CL('btn_move_up')+'" style="font-size:11px;padding:4px 8px;'+(i>0?'':'visibility:hidden')+'" onclick="window._cmsBannerMove('+i+',-1)">&uarr;</button>'
+      +'<button class="admin-btn secondary" title="'+CL('btn_move_down')+'" style="font-size:11px;padding:4px 8px;'+(i<banners.length-1?'':'visibility:hidden')+'" onclick="window._cmsBannerMove('+i+',1)">&darr;</button>'
       +(_canUpload?'<button class="admin-btn danger" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerDelete('+i+')">'+CL('delete')+'</button>':'')
       +'</div>'
       +'<div id="cmsBE_'+i+'" style="display:none;width:100%;margin-top:10px;padding-top:10px;border-top:1px solid var(--border-light)">'
@@ -3337,29 +3335,30 @@ window._cmsBannersView = function(){
   if(homeItem) homeItem.classList.add('active');
   var banners = getCmsBanners();
   var _canUpload = _cmsHasPermission("upload");
+  var _noImgSrc2 = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='68'%3E%3Crect width='120' height='68' fill='%23f3f4f6'/%3E%3Ctext x='60' y='38' text-anchor='middle' fill='%23bbb' font-size='11' font-family='sans-serif'%3ENo Image%3C/text%3E%3C/svg%3E";
   var rows = banners.length ? banners.map(function(b,i){
     return '<div class="cms-item-card" id="cmsBC_'+i+'">'
-      +'<img class="cms-item-thumb" src="'+escAttr(b.img)+'" style="cursor:pointer;border-radius:6px" onclick="window._cmsBannerEdit('+i+')" title="Click to edit"/>'
+      +'<img class="cms-item-thumb" src="'+escAttr(b.img)+'" onerror="this.src=\''+_noImgSrc2+'\';this.onerror=null" style="cursor:pointer;border-radius:6px" onclick="window._cmsBannerEdit('+i+')" title="'+CL('edit')+'"/>'
       +'<div class="cms-item-info">'
       +'<div class="cms-item-title">'+esc(b.alt||'Banner '+(i+1))+'</div>'
       +'<div class="cms-item-meta" style="word-break:break-all">'+esc(b.link||CL('no_link'))+'</div>'
       +'</div>'
       +'<div class="cms-item-actions">'
-      +(_canUpload?'<button class="admin-btn secondary" title="Edit" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerEdit('+i+')">&#9998; Edit</button>':'')
-      +(i>0?'<button class="admin-btn secondary" title="'+CL('btn_move_up')+'" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerMove('+i+',-1)">&uarr;</button>':'')
-      +(i<banners.length-1?'<button class="admin-btn secondary" title="'+CL('btn_move_down')+'" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerMove('+i+',1)">&darr;</button>':'')
+      +(_canUpload?'<button class="admin-btn secondary" title="'+CL('edit')+'" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerEdit('+i+')">'+CL('edit')+'</button>':'')
+      +'<button class="admin-btn secondary" title="'+CL('btn_move_up')+'" style="font-size:11px;padding:4px 8px;'+(i>0?'':'visibility:hidden')+'" onclick="window._cmsBannerMove('+i+',-1)">&uarr;</button>'
+      +'<button class="admin-btn secondary" title="'+CL('btn_move_down')+'" style="font-size:11px;padding:4px 8px;'+(i<banners.length-1?'':'visibility:hidden')+'" onclick="window._cmsBannerMove('+i+',1)">&darr;</button>'
       +(_canUpload?'<button class="admin-btn danger" style="font-size:11px;padding:4px 8px" onclick="window._cmsBannerDelete('+i+')">'+CL('delete')+'</button>':'')
       +'</div>'
       +'<div id="cmsBE_'+i+'" style="display:none;width:100%;margin-top:10px;padding-top:10px;border-top:1px solid var(--border-light)">'
       +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">'
-      +'<div><label style="font-size:11px;color:var(--text-muted);display:block;margin-bottom:2px">標題 / Alt Text</label>'
+      +'<div><label style="font-size:11px;color:var(--text-muted);display:block;margin-bottom:2px">'+CL('alt_title')+'</label>'
       +'<input id="cmsBEAlt_'+i+'" type="text" value="'+escAttr(b.alt||'')+'" style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:13px"/></div>'
-      +'<div><label style="font-size:11px;color:var(--text-muted);display:block;margin-bottom:2px">連結 URL (選填)</label>'
+      +'<div><label style="font-size:11px;color:var(--text-muted);display:block;margin-bottom:2px">'+CL('link_opt')+'</label>'
       +'<input id="cmsBELink_'+i+'" type="text" value="'+escAttr(b.link||'')+'" placeholder="#/page/... or https://..." style="width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:13px"/></div>'
       +'</div>'
       +'<div style="display:flex;gap:6px">'
-      +'<button class="admin-btn primary" style="font-size:12px;padding:5px 14px" onclick="window._cmsBannerSave('+i+')">&#10003; 儲存</button>'
-      +'<button class="admin-btn secondary" style="font-size:12px;padding:5px 14px" onclick="window._cmsBannerEditClose('+i+')">取消</button>'
+      +'<button class="admin-btn primary" style="font-size:12px;padding:5px 14px" onclick="window._cmsBannerSave('+i+')">&#10003; '+CL('save')+'</button>'
+      +'<button class="admin-btn secondary" style="font-size:12px;padding:5px 14px" onclick="window._cmsBannerEditClose('+i+')">'+CL('cancel')+'</button>'
       +'</div>'
       +'</div>'
       +'</div>';

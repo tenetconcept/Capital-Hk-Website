@@ -109,6 +109,8 @@ function setLang(lang){
     : '';
   // Close mobile menu if open
   if(typeof window._mmClose === 'function') window._mmClose();
+  // Rebuild nav immediately so header updates at once (no perceived lag)
+  if(typeof buildNav === 'function') buildNav();
   // Animate page transition on language switch
   var app = document.getElementById('app');
   if(app){

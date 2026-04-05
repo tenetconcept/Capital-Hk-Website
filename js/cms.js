@@ -382,6 +382,7 @@ var CMS_I18N = {
   delete_group:    {en:'Delete Group', hans:'删除群组', hant:'刪除群組'},
   del_group_q:     {en:'Delete this group? Users in this group will lose permissions.', hans:'删除此群组？该群组中的用户将失去权限。', hant:'刪除此群組？該群組中的用戶將失去權限。'},
   perm_section:    {en:'Section', hans:'区域', hant:'區域'},
+  perm_none:       {en:'No Access', hans:'禁止存取', hant:'禁止存取'},
   perm_read:       {en:'Read', hans:'读取', hant:'讀取'},
   perm_write:      {en:'Write', hans:'写入', hant:'寫入'},
   perm_pages:      {en:'Pages', hans:'页面内容', hant:'頁面內容'},
@@ -403,6 +404,8 @@ var CMS_I18N = {
   rate_limit:      {en:'Rate Limiting', hans:'登录限制', hant:'登入限制'},
   max_attempts:    {en:'Max login attempts', hans:'最大尝试次数', hant:'最大嘗試次數'},
   lockout_min:     {en:'Lockout duration (minutes)', hans:'锁定时间（分钟）', hant:'鎖定時間（分鐘）'},
+  clear_lockouts:  {en:'Clear all lockouts', hans:'清除所有锁定', hant:'清除所有鎖定'},
+  lockout_cleared: {en:'All lockouts cleared', hans:'已清除所有锁定', hant:'已清除所有鎖定'},
   rate_limit_desc: {en:'Lock out users after too many failed login attempts.', hans:'登录失败次数过多后锁定用户。', hant:'登入失敗次數過多後鎖定用戶。'},
   // Timezone
   timezone:        {en:'Timezone', hans:'时区', hant:'時區'},
@@ -706,14 +709,16 @@ function checkAdminLogin(username, pass){
     if(users.length > 0){
       var userByName = users.find(function(u){ return u.username===username; });
       if(userByName){
-        console.log('[CMS Login] found user:', userByName.username, 'stored hash:', (userByName.hash||'').slice(0,8)+'...', 'enabled:', userByName.enabled);
+        console.log('[CMS Login] found user:', userByName.username, 'enabled:', userByName.enabled);
+        console.log('[CMS Login] stored hash:', userByName.hash);
+        console.log('[CMS Login] login hash: ', hash);
         if(userByName.enabled===false) return {error:"disabled"};
         if(userByName.hash===hash) return {username:userByName.username, role:userByName.role||"admin"};
         // Hash mismatch — also try trimmed password (in case whitespace)
         return sha256hex(pass.trim()).then(function(h2){
-          console.log('[CMS Login] trim hash:', h2.slice(0,8)+'...');
+          console.log('[CMS Login] trim hash: ', h2);
           if(userByName.hash===h2) return {username:userByName.username, role:userByName.role||"admin"};
-          console.warn('[CMS Login] hash mismatch for', username);
+          console.warn('[CMS Login] HASH MISMATCH for', username, '— stored:', userByName.hash, 'got:', hash);
           return null;
         });
       }
@@ -1098,7 +1103,7 @@ function adminView(){
       +'<p class="login-sub">'+CL('login_sub')+'</p>'
       +'<form onsubmit="return window._adminLogin(event)">'
       +'<div class="login-field"><label>'+CL('username')+'</label><input type="text" id="adminUser" value="admin" autocomplete="username" oninput="var t=document.getElementById(\x27totpField\x27);if(t)t.style.display=get2FAConfig()[this.value.trim()]?\x27\x27:\x27none\x27"/></div>'
-      +'<div class="login-field"><label>'+CL('password')+'</label><input type="password" id="adminPass" placeholder="'+CL('enter_pwd')+'" autocomplete="current-password"/></div>'
+      +'<div class="login-field"><label>'+CL('password')+'</label><div style="position:relative"><input type="password" id="adminPass" placeholder="'+CL('enter_pwd')+'" autocomplete="current-password" style="padding-right:40px"/><button type="button" onclick="var p=document.getElementById(\x27adminPass\x27);p.type=p.type===\x27password\x27?\x27text\x27:\x27password\x27;this.innerHTML=p.type===\x27password\x27?\x27&#128065;\x27:\x27&#128064;\x27" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;padding:4px;opacity:.5">&#128065;</button></div></div>'
       +'<div class="login-field" id="totpField" style="display:none"><label>'+CL('twofa_code')+'</label><input type="text" id="adminTOTP" placeholder="'+CL('six_digit')+'" maxlength="6" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*" style="letter-spacing:4px;font-size:18px;text-align:center"/></div>'
       +'<button type="submit" class="login-btn" id="loginBtn">'+CL('login')+'</button>'
       +'<div class="login-err" id="loginErr"></div>'
@@ -1460,6 +1465,7 @@ window._adminLogin = function(e){
     }
 
     checkAdminLogin(user, pass).then(function(matched){
+    console.log('[CMS Login] matched:', matched);
     if(matched && matched.error==='disabled'){
       addAuditLog('login_disabled', '', user);
       errEl.textContent = CL('acct_disabled');
@@ -1531,6 +1537,7 @@ window._adminLogin = function(e){
       var _userObj = getCmsUsers().find(function(u){return u.username===_loginUser;});
       var _needChangePwd = !_isDefaultAdmin && _userObj && _userObj.mustChangePassword;
       var _needForce2FA = !_isDefaultAdmin && _userObj && _userObj.force2FA;
+      console.log('[CMS Login] loginUser:', _loginUser, 'isDefaultAdmin:', _isDefaultAdmin, 'needChangePwd:', _needChangePwd, 'needForce2FA:', _needForce2FA);
       if(_needChangePwd){
         // Must change password first (will chain to force-2FA if needed)
         sessionStorage.setItem('ecap_forcepwd_user', _loginUser);
@@ -1586,7 +1593,19 @@ window._adminLogin = function(e){
       btn.disabled = false;
       btn.textContent = CL('login');
     }
+  })['catch'](function(err){
+    console.error('[CMS Login] checkAdminLogin error:', err);
+    errEl.textContent = CL('wrong_pwd');
+    errEl.style.color='';
+    btn.disabled = false;
+    btn.textContent = CL('login');
   });
+  })['catch'](function(err){
+    console.error('[CMS Login] IP/whitelist error:', err);
+    errEl.textContent = CL('wrong_pwd');
+    errEl.style.color='';
+    btn.disabled = false;
+    btn.textContent = CL('login');
   }); // end IP+whitelist chain
   return false;
 };
@@ -2230,11 +2249,11 @@ function _cmsUserMgmtTab(users, currentUser, cfg2fa){
     +'<button class="admin-btn secondary" style="padding:8px 12px;white-space:nowrap" onclick="navigator.clipboard.writeText(document.getElementById(\'newUserGenPwd\').value);showToast(CL(\'pwd_copied\'))">'+CL('copy_pwd')+'</button>'
     +'</div></div>'
     +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
-    +'<input type="checkbox" id="newUserForce2FA" checked/>'
+    +'<input type="checkbox" id="newUserForce2FA"/>'
     +'<label for="newUserForce2FA" style="font-size:13px;font-weight:500;cursor:pointer">'+CL('force_2fa')+'</label>'
     +'</div>'
     +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">'
-    +'<input type="checkbox" id="newUserMustChangePwd" checked/>'
+    +'<input type="checkbox" id="newUserMustChangePwd"/>'
     +'<label for="newUserMustChangePwd" style="font-size:13px;font-weight:500;cursor:pointer">'+CL('must_change_pwd')+'</label>'
     +'</div>'
     +'<button class="admin-btn primary" onclick="window._cmsUserAdd()">'+CL('add_user')+'</button>'
@@ -2256,15 +2275,17 @@ function _cmsGroupsSubView(){
     var memberCount = users.filter(function(u){return u.groupId===g.id;}).length;
     // Summarize permissions
     var writeCount = CMS_SECTIONS.filter(function(s){return g.perms[s+'.write'];}).length;
-    var readCount = CMS_SECTIONS.filter(function(s){return g.perms[s+'.read'];}).length;
+    var readCount = CMS_SECTIONS.filter(function(s){return g.perms[s+'.read'] && !g.perms[s+'.write'];}).length;
+    var noneCount = CMS_SECTIONS.length - writeCount - readCount;
     return '<div class="cms-user-row">'
       +'<div class="u-avatar" style="background:var(--brand-gradient);font-size:12px">G</div>'
       +'<div style="flex:1;min-width:0">'
       +'<div class="u-name">'+esc(g.name)+'</div>'
       +'<div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap">'
       +'<span style="font-size:11px;color:var(--text-muted)">'+memberCount+' '+CL('tab_users')+'</span>'
-      +'<span style="font-size:11px;color:var(--text-muted)">'+CL('perm_read')+': '+readCount+'/'+CMS_SECTIONS.length+'</span>'
-      +'<span style="font-size:11px;color:var(--text-muted)">'+CL('perm_write')+': '+writeCount+'/'+CMS_SECTIONS.length+'</span>'
+      +'<span style="font-size:11px;color:'+(noneCount>0?'#dc2626':'var(--text-muted)')+'">'+CL('perm_none')+': '+noneCount+'</span>'
+      +'<span style="font-size:11px;color:var(--text-muted)">'+CL('perm_read')+': '+readCount+'</span>'
+      +'<span style="font-size:11px;color:var(--text-muted)">'+CL('perm_write')+': '+writeCount+'</span>'
       +'</div></div>'
       +'<div style="display:flex;gap:6px;flex-shrink:0">'
       +(_canWrite?'<button class="admin-btn secondary" style="font-size:12px;padding:5px 12px" onclick="window._cmsGroupEdit(\''+g.id+'\')">'+CL('edit')+'</button>':'')
@@ -2292,40 +2313,29 @@ function _cmsGroupsSubView(){
 // Build permission grid HTML for a perms object
 function _cmsPermGrid(permsObj, idPrefix){
   var h = '<table class="cms-files-table" style="margin-top:0">'
-    +'<thead><tr><th>'+CL('perm_section')+'</th><th style="text-align:center;width:80px">'+CL('perm_read')+'</th><th style="text-align:center;width:80px">'+CL('perm_write')+'</th></tr></thead><tbody>';
+    +'<thead><tr><th>'+CL('perm_section')+'</th><th style="text-align:center;width:80px">'+CL('perm_none')+'</th><th style="text-align:center;width:80px">'+CL('perm_read')+'</th><th style="text-align:center;width:80px">'+CL('perm_write')+'</th></tr></thead><tbody>';
   CMS_SECTIONS.forEach(function(s){
-    var rChecked = permsObj[s+'.read'] ? ' checked' : '';
-    var wChecked = permsObj[s+'.write'] ? ' checked' : '';
-    var rDisabled = permsObj[s+'.write'] ? ' disabled' : '';
+    var level = permsObj[s+'.write'] ? 'write' : (permsObj[s+'.read'] ? 'read' : 'none');
     h += '<tr><td>'+CL(CMS_PERM_LABELS[s])+'</td>'
-      +'<td style="text-align:center"><input type="checkbox" id="'+idPrefix+'_'+s+'_read"'+rChecked+rDisabled+' onchange="window._cmsPermGridSync(\''+idPrefix+'\',\''+s+'\')"/></td>'
-      +'<td style="text-align:center"><input type="checkbox" id="'+idPrefix+'_'+s+'_write"'+wChecked+' onchange="window._cmsPermGridSync(\''+idPrefix+'\',\''+s+'\')"/></td>'
+      +'<td style="text-align:center"><input type="radio" name="'+idPrefix+'_'+s+'" value="none"'+(level==='none'?' checked':'')+'/></td>'
+      +'<td style="text-align:center"><input type="radio" name="'+idPrefix+'_'+s+'" value="read"'+(level==='read'?' checked':'')+'/></td>'
+      +'<td style="text-align:center"><input type="radio" name="'+idPrefix+'_'+s+'" value="write"'+(level==='write'?' checked':'')+'/></td>'
       +'</tr>';
   });
   h += '</tbody></table>';
   return h;
 }
 
-// Sync permission grid: write implies read
-window._cmsPermGridSync = function(prefix, section){
-  var wCb = document.getElementById(prefix+'_'+section+'_write');
-  var rCb = document.getElementById(prefix+'_'+section+'_read');
-  if(wCb && rCb){
-    if(wCb.checked){ rCb.checked=true; rCb.disabled=true; }
-    else { rCb.disabled=false; }
-  }
-};
-
-// Read perms from a grid
+// Read perms from a grid (radio buttons: none/read/write)
 function _cmsReadPermGrid(idPrefix){
   var p = _cmsEmptyPerms();
   CMS_SECTIONS.forEach(function(s){
-    var rCb = document.getElementById(idPrefix+'_'+s+'_read');
-    var wCb = document.getElementById(idPrefix+'_'+s+'_write');
-    if(wCb && wCb.checked) p[s+'.write']=true;
-    if(rCb && rCb.checked) p[s+'.read']=true;
-    // Enforce write implies read
-    if(p[s+'.write']) p[s+'.read']=true;
+    var radios = document.querySelectorAll('input[name="'+idPrefix+'_'+s+'"]');
+    var val = 'none';
+    radios.forEach(function(r){ if(r.checked) val = r.value; });
+    if(val === 'write'){ p[s+'.read']=true; p[s+'.write']=true; }
+    else if(val === 'read'){ p[s+'.read']=true; p[s+'.write']=false; }
+    else { p[s+'.read']=false; p[s+'.write']=false; }
   });
   return p;
 }
@@ -2481,6 +2491,7 @@ function _cmsSecurityTab(){
     +'<div class="admin-field" style="margin:0;flex:0 0 180px"><label>'+CL('max_attempts')+'</label><input type="number" id="rlMaxAttempts" value="'+rlCfg.maxAttempts+'" min="1" max="50" style="width:100%"/></div>'
     +'<div class="admin-field" style="margin:0;flex:0 0 180px"><label>'+CL('lockout_min')+'</label><input type="number" id="rlLockoutMin" value="'+rlCfg.lockoutMinutes+'" min="1" max="1440" style="width:100%"/></div>'
     +'<button class="admin-btn primary" onclick="window._cmsSaveRateLimit()" style="height:44px">'+CL('save')+'</button>'
+    +'<button class="admin-btn secondary" onclick="localStorage.removeItem(\''+CMS_LOCKOUT_KEY+'\');showToast(CL(\'lockout_cleared\'));window._cmsSecurityView()" style="height:44px">'+CL('clear_lockouts')+'</button>'
     +'</div>'
     +'</div>'
     // Active Sessions
@@ -2744,8 +2755,8 @@ window._cmsUserAdd = function(){
   if(users.some(function(u){return u.username===uname;})){ msg.style.color="#dc3545"; msg.textContent=CL('username_exists'); return; }
   var grpEl = document.getElementById("newUserGroup");
   var groupId = grpEl ? grpEl.value : (getCmsGroups()[0]||{}).id||null;
-  var force2FA = document.getElementById("newUserForce2FA") ? document.getElementById("newUserForce2FA").checked : true;
-  var mustChangePwd = document.getElementById("newUserMustChangePwd") ? document.getElementById("newUserMustChangePwd").checked : true;
+  var force2FA = document.getElementById("newUserForce2FA") ? document.getElementById("newUserForce2FA").checked : false;
+  var mustChangePwd = document.getElementById("newUserMustChangePwd") ? document.getElementById("newUserMustChangePwd").checked : false;
   sha256hex(pass).then(function(hash){
     var grp = groupId ? getCmsGroups().find(function(g){return g.id===groupId;}) : null;
     var role = grp ? (grp.role||'editor') : 'editor';

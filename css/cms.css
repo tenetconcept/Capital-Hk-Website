@@ -30,7 +30,7 @@ body.cms-active .cms-sidebar{top:var(--nav-h);height:calc(100vh - var(--nav-h))}
 .cms-page-item .page-name{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
 .cms-page-item .page-slug{font-size:10px;color:var(--text-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:monospace;letter-spacing:-.3px}
 .cms-page-item.active .page-name{color:var(--brand)}
-.cms-main{flex:1;background:var(--bg-body);min-width:0;overflow-y:auto}
+.cms-main{flex:1;background:var(--bg-body);min-width:0}
 .cms-main-header{background:var(--white);border-bottom:1px solid rgba(0,0,0,.06);padding:16px 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;position:sticky;top:0;z-index:10}
 .cms-main-header h3{font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px}
 .cms-main-header .cms-header-acts{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -98,6 +98,9 @@ body.cms-active .cms-sidebar{top:var(--nav-h);height:calc(100vh - var(--nav-h))}
 .ck.ck-editor{border-radius:var(--radius-sm) !important;overflow:hidden}
 .ck.ck-editor__editable_inline{min-height:250px;font-size:14px;line-height:1.7;font-family:inherit}
 .ck.ck-editor__editable_inline:focus{border-color:var(--brand) !important;box-shadow:0 0 0 2px rgba(180,21,64,.12) !important}
+.cms-ck-tb-btn{display:inline-flex!important;align-items:center;gap:3px;padding:4px 8px!important;font-size:11px!important;font-weight:500;border:none!important;background:transparent!important;color:var(--text-sec)!important;cursor:pointer!important;border-radius:4px!important;transition:all .15s;white-space:nowrap}
+.cms-ck-tb-btn:hover{background:rgba(180,21,64,.08)!important;color:var(--brand)!important}
+.cms-ck-tb-label{font-size:11px;font-family:inherit}
 .role-badge{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:2px 8px;border-radius:100px}
 .role-admin{background:#fee2e2;color:#dc2626}
 .role-editor{background:#dbeafe;color:#1d4ed8}

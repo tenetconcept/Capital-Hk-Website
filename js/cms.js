@@ -213,6 +213,11 @@ var CMS_I18N = {
   files_title:     {en:'File Manager', hans:'档案管理', hant:'檔案管理'},
   files_desc:      {en:'Upload files or add external links. Copy the HTML snippet to paste into any page body.', hans:'上传文件或添加外部链接。复制HTML代码片段可粘贴到任何页面中。', hant:'上傳檔案或添加外部連結。複製HTML程式碼可貼到任何頁面中。'},
   drag_drop:       {en:'Drag & drop', hans:'拖放', hant:'拖放'},
+  dnd_hint:        {en:'Drag cards to reorder', hans:'拖动卡片以重新排序', hant:'拖動卡片以重新排序'},
+  ck_help:         {en:'Editor Help', hans:'编辑器帮助', hant:'編輯器説明'},
+  ck_help_title:   {en:'CKEditor Usage Guide', hans:'CKEditor 使用指南', hant:'CKEditor 使用指南'},
+  tab_nav:         {en:'Navigation', hans:'导航', hant:'導航'},
+  tab_nav_desc:    {en:'Manage website navigation menu', hans:'管理网站导航菜单', hant:'管理網站導航選單'},
   files_here:      {en:' PDF, DOC, DOCX, JPG or PNG files here', hans:' PDF、DOC、DOCX、JPG 或 PNG 文件到此处', hant:' PDF、DOC、DOCX、JPG 或 PNG 檔案到此處'},
   or_browse:       {en:'or click to browse (max 2MB each)', hans:'或点击浏览（每个最大2MB）', hant:'或點擊瀏覽（每個最大2MB）'},
   choose_file:     {en:'Choose File', hans:'选择文件', hant:'選擇檔案'},
@@ -992,6 +997,7 @@ function adminView(){
     +'<button class="cms-section-btn active" id="stab_pages" onclick="window._cmsSectionSwitch(\'pages\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> '+CL('tab_pages')+'</button>'
     +'<button class="cms-section-btn" id="stab_blog" onclick="window._cmsSectionSwitch(\'blog\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg> '+CL('tab_blog')+'</button>'
     +'<button class="cms-section-btn" id="stab_files" onclick="window._cmsSectionSwitch(\'files\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> '+CL('tab_files')+'</button>'
+    +'<button class="cms-section-btn" id="stab_nav" onclick="window._cmsSectionSwitch(\'nav\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg> '+CL('tab_nav')+'</button>'
     +(_canViewUsers?'<button class="cms-section-btn" id="stab_users" onclick="window._cmsSectionSwitch(\'users\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg> '+CL('tab_users')+'</button>':'')
     +(_canViewSecurity?'<button class="cms-section-btn" id="stab_security" onclick="window._cmsSectionSwitch(\'security\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> '+CL('tab_security')+'</button>':'')
     +'</div>'
@@ -1391,6 +1397,7 @@ window._cmsEditPage = function(slug){
     +'<div><h3 style="font-size:20px;font-weight:700;margin:0">'+esc(_pageTitle)+'</h3>'
     +'<span style="font-size:11px;color:var(--text-muted);font-family:monospace">/'+esc(slug)+'</span></div>'
     +'<div style="display:flex;gap:8px;align-items:center">'
+    +'<button class="admin-btn secondary" style="font-size:12px;padding:5px 10px" onclick="window._cmsCkHelp()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> '+CL('ck_help')+'</button>'
     +(_canEditPages ? '<button class="admin-btn primary" onclick="window._cmsSavePage(\''+slug+'\')">'+CL('save_changes')+'</button>' : '<span style="font-size:12px;color:var(--text-muted)">'+CL('viewer_nosave')+'</span>')
     +'<a href="#/page/'+esc(slug)+'" target="_blank" class="admin-btn secondary" style="text-decoration:none;display:inline-flex;align-items:center">'+CL('view_page')+'</a>'
     +'</div></div>';
@@ -1451,16 +1458,43 @@ window._cmsEditPage = function(slug){
         editor.model.document.on('change:data', function(){
           window._cmsLivePreview(slug);
         });
-        // Inject file bar below CKEditor: "Insert from Library" + "Upload & Insert"
+        // Inject file buttons into CKEditor toolbar
         var wrapDiv = document.getElementById(taId+'_wrap');
         if(wrapDiv){
-          var bar = document.createElement('div');
-          bar.className = 'cms-ck-filebar';
-          var _fid = 'cmsCkFile_'+taId.replace(/[^a-zA-Z0-9_]/g,'');
-          bar.innerHTML = '<button type="button" class="cms-insert-file-btn" data-slug="'+escAttr(slug)+'" data-lang="'+escAttr(lang)+'" onclick="event.preventDefault();event.stopPropagation();window._cmsShowFilePicker(this)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg> '+CL('insert_dl')+'</button>'
-            +'<button type="button" class="cms-insert-file-btn" onclick="document.getElementById(\''+_fid+'\').click()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> '+CL('upload_insert')+'</button>'
-            +'<input type="file" id="'+_fid+'" accept=".jpg,.jpeg,.png,.webp,.gif,.svg,.pdf,.doc,.docx,.ppt,.pptx" style="display:none" onchange="window._cmsCkFileUpload(this,\''+escAttr(taId)+'\')">';
-          wrapDiv.appendChild(bar);
+          var ckToolbar = wrapDiv.querySelector('.ck-toolbar__items');
+          if(ckToolbar){
+            var _fid = 'cmsCkFile_'+taId.replace(/[^a-zA-Z0-9_]/g,'');
+            // Separator
+            var sep = document.createElement('span');
+            sep.className = 'ck ck-toolbar__separator';
+            ckToolbar.appendChild(sep);
+            // Insert from Library button
+            var libBtn = document.createElement('button');
+            libBtn.type = 'button';
+            libBtn.className = 'ck ck-button cms-ck-tb-btn';
+            libBtn.setAttribute('data-slug', slug);
+            libBtn.setAttribute('data-lang', lang);
+            libBtn.title = CL('insert_dl');
+            libBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg><span class="cms-ck-tb-label"> '+CL('insert_dl')+'</span>';
+            libBtn.onclick = function(e){ e.preventDefault(); e.stopPropagation(); window._cmsShowFilePicker(this); };
+            ckToolbar.appendChild(libBtn);
+            // Upload & Insert button
+            var upBtn = document.createElement('button');
+            upBtn.type = 'button';
+            upBtn.className = 'ck ck-button cms-ck-tb-btn';
+            upBtn.title = CL('upload_insert');
+            upBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span class="cms-ck-tb-label"> '+CL('upload_insert')+'</span>';
+            upBtn.onclick = function(e){ e.preventDefault(); document.getElementById(_fid).click(); };
+            ckToolbar.appendChild(upBtn);
+            // Hidden file input
+            var finput = document.createElement('input');
+            finput.type = 'file';
+            finput.id = _fid;
+            finput.accept = '.jpg,.jpeg,.png,.webp,.gif,.svg,.pdf,.doc,.docx,.ppt,.pptx';
+            finput.style.display = 'none';
+            finput.onchange = function(){ window._cmsCkFileUpload(this, taId); };
+            wrapDiv.appendChild(finput);
+          }
         }
       }).catch(function(err){
         console.warn('CKEditor init failed for '+taId+', falling back to textarea:', err);
@@ -1603,7 +1637,7 @@ window._cmsSectionSwitch = function(sec){
     sec = secs[sec] || "pages";
   }
   _cmsSection = sec;
-  ["pages","blog","files","account","users","security"].forEach(function(s){
+  ["pages","blog","files","nav","account","users","security"].forEach(function(s){
     var b = document.getElementById("stab_"+s);
     if(b) b.classList.toggle("active", s===sec);
   });
@@ -1621,6 +1655,8 @@ window._cmsSectionSwitch = function(sec){
     window._cmsSecurityView();
   } else if(sec==="blog") {
     window._cmsBlogView();
+  } else if(sec==="nav") {
+    window._cmsNavStandaloneView();
   }
 };
 
@@ -2710,6 +2746,7 @@ window._cmsBlogView = function(){
     '<div class="cms-panel">'
     +'<div class="cms-panel-header"><h3>'+CL('blog_title')+'</h3>'
     +'<p>'+CL('blog_desc')+'<br>'+CL('blog_img_hint')+'</p></div>'
+    +(articles.length > 1 ? '<p style="font-size:11px;color:var(--text-muted);margin:0 0 8px;display:flex;align-items:center;gap:4px"><span class="dnd-handle" style="font-size:14px;padding:0">&#x2807;</span>'+CL('dnd_hint')+'</p>' : '')
     +'<div id="cmsBlogList">' + rows + '</div>'
     +(_canEdit?'<button class="admin-btn primary" style="margin-top:12px" onclick="window._cmsBlogEdit(-1)">'+CL('new_article')+'</button>':'')
     +'</div>';
@@ -2985,14 +3022,16 @@ window._cmsHomeView = function(){
     +'<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">'
     +'<button class="admin-btn secondary" style="font-size:12px;padding:5px 12px" onclick="document.querySelectorAll(\'.cms-home-sec\').forEach(function(s){s.classList.add(\'open\')})">'+CL('expand_all')+'</button>'
     +'<button class="admin-btn secondary" style="font-size:12px;padding:5px 12px" onclick="document.querySelectorAll(\'.cms-home-sec\').forEach(function(s){s.classList.remove(\'open\')})">'+CL('collapse_all')+'</button>'
+    +'<button class="admin-btn secondary" style="font-size:12px;padding:5px 10px" onclick="window._cmsCkHelp()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> '+CL('ck_help')+'</button>'
     +'<button class="admin-btn primary" style="font-size:13px" onclick="window._cmsHomeSave()">'+CL('save_changes')+'</button>'
+    +'<a href="#/" target="_blank" class="admin-btn secondary" style="text-decoration:none;display:inline-flex;align-items:center;font-size:13px">'+CL('view_page')+'</a>'
     +'</div></div>';
 
   // ========== Section Order (not language-dependent) ==========
   var defaultOrder = ['hero','banners','marquee','svc1','svc2','svc3','stats','news','cta'];
   var sectionOrder = (ch.order && ch.order.length) ? ch.order : defaultOrder;
   var secNames = {hero:'section_hero',banners:'section_banners',marquee:'section_marquee',svc1:'section_svc1',svc2:'section_svc2',svc3:'section_svc3',stats:'section_stats',news:'section_news',cta:'section_cta'};
-  var orderHtml = '<div id="cmsOrderList">';
+  var orderHtml = '<p style="font-size:11px;color:var(--text-muted);margin:0 0 8px;display:flex;align-items:center;gap:4px"><span class="dnd-handle" style="font-size:14px;padding:0">&#x2807;</span>'+CL('dnd_hint')+'</p><div id="cmsOrderList">';
   sectionOrder.forEach(function(sid, i){
     orderHtml += '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg-light);border-radius:8px;margin-bottom:4px" draggable="true">'
       +'<span class="dnd-handle" title="Drag to reorder">&#x2807;</span>'
@@ -3244,10 +3283,7 @@ window._cmsHomeView = function(){
     +'</div>';
   html += sectionAccordion('nav', 'home_nav', navBody);
 
-  html += '<div style="margin-top:16px;display:flex;gap:8px">'
-    +'<button class="admin-btn primary" onclick="window._cmsHomeSave()">'+CL('save_changes')+'</button>'
-    +'<a href="#/" target="_blank" class="admin-btn secondary" style="text-decoration:none;display:inline-flex;align-items:center">'+CL('view_page')+'</a>'
-    +'</div></div>';
+  html += '</div>'; // close cms-panel
 
   document.getElementById("cmsEditor").innerHTML = html;
 
@@ -3451,6 +3487,7 @@ function _cmsRenderBannersFull(container){
   }).join("") : '<div class="cms-item-meta" style="padding:12px 0">'+CL('no_banner')+'</div>';
 
   var html = (banners.length ? '<button class="admin-btn secondary" style="margin-bottom:12px" onclick="window._cmsBannerPreview()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> '+CL('preview_carousel')+'</button>' : '')
+    +(banners.length > 1 ? '<p style="font-size:11px;color:var(--text-muted);margin:0 0 8px;display:flex;align-items:center;gap:4px"><span class="dnd-handle" style="font-size:14px;padding:0">&#x2807;</span>'+CL('dnd_hint')+'</p>' : '')
     +'<div class="cms-banners-list" id="cmsBannersList">' + rows + '</div>';
 
   if(_canUpload){
@@ -3664,7 +3701,8 @@ window._cmsBannerPreview = function(){
 // ————— Repeater helpers (add/remove items, re-render) —————
 window._cmsAddRepeater = function(type, lang){
   // Save current state then add item and re-render
-  window._cmsHomeSave();
+  // Only save home fields if we're in the homepage editor (not standalone nav)
+  if(_cmsSection !== 'nav') window._cmsHomeSave();
   var ch = window.getCmsHome ? window.getCmsHome() : {};
   if(!lang) lang = window.currentLang || 'zh-Hant';
   if(type === 'stat'){
@@ -3718,6 +3756,7 @@ window._cmsAddRepeater = function(type, lang){
       saveCmsFooter(ft);
     }
   } else if(type === 'nav'){
+    if(_cmsSection === 'nav') window._cmsNavSave();
     var nd = getCmsNav();
     if(!nd[lang]) nd[lang] = JSON.parse(JSON.stringify(window.SITE && window.SITE.nav ? window.SITE.nav[lang] || window.SITE.nav['zh-Hant'] : []));
     nd[lang].push({label:'', page:''});
@@ -3742,11 +3781,14 @@ window._cmsAddRepeater = function(type, lang){
       saveCmsNav(nd);
     }
   }
-  window._cmsHomeView();
+  // Refresh correct view
+  if(_cmsSection === 'nav') window._cmsNavStandaloneView();
+  else window._cmsHomeView();
 };
 
 window._cmsRemoveRepeater = function(type, idx, lang){
-  window._cmsHomeSave();
+  // Only save home fields if we're in the homepage editor (not standalone nav)
+  if(_cmsSection !== 'nav') window._cmsHomeSave();
   var ch = window.getCmsHome ? window.getCmsHome() : {};
   if(!lang) lang = window.currentLang || 'zh-Hant';
   if(type === 'stat'){
@@ -3787,6 +3829,7 @@ window._cmsRemoveRepeater = function(type, idx, lang){
       saveCmsFooter(ft);
     }
   } else if(type === 'nav'){
+    if(_cmsSection === 'nav') window._cmsNavSave();
     var nd = getCmsNav();
     if(!nd[lang]) nd[lang] = JSON.parse(JSON.stringify(window.SITE && window.SITE.nav ? window.SITE.nav[lang] || window.SITE.nav['zh-Hant'] : []));
     nd[lang].splice(idx,1);
@@ -3805,7 +3848,9 @@ window._cmsRemoveRepeater = function(type, idx, lang){
       saveCmsNav(nd);
     }
   }
-  window._cmsHomeView();
+  // Refresh correct view
+  if(_cmsSection === 'nav') window._cmsNavStandaloneView();
+  else window._cmsHomeView();
 };
 
 // Section order move
@@ -3833,7 +3878,9 @@ window._cmsNavMove = function(from, to, lang){
   var item = items.splice(from, 1)[0];
   items.splice(to, 0, item);
   saveCmsNav(nd);
-  window._cmsHomeView();
+  // Refresh whichever view is active
+  if(_cmsSection === 'nav') window._cmsNavStandaloneView();
+  else window._cmsHomeView();
 };
 
 // Nav save — reads all nav inputs and saves to localStorage
@@ -3959,6 +4006,151 @@ window._cmsBlogPreview = function(idx){
     +'<div class="body">'+body+'</div>'
     +'</div></body></html>');
   pw.document.close();
+};
+
+// ————————————————————— CKEDITOR HELP MODAL —————————————————————
+window._cmsCkHelp = function(){
+  var existing = document.getElementById('cmsCkHelpModal');
+  if(existing){ existing.remove(); return; }
+  var lang = window.currentLang || 'zh-Hant';
+  var content = {
+    'zh-Hant': {
+      title: 'CKEditor 使用指南',
+      sections: [
+        {h:'基本格式',items:['<b>粗體</b> — 選取文字後點擊 <b>B</b> 或按 Ctrl+B','<i>斜體</i> — 選取文字後點擊 <i>I</i> 或按 Ctrl+I','標題 — 使用工具列「Heading」下拉選單選擇 H2 / H3 / H4']},
+        {h:'插入連結',items:['選取文字 → 點擊工具列 🔗 連結圖示','輸入網址（如 https://... 或 #/page/slug）','按 Enter 確認']},
+        {h:'插入圖片',items:['方法一：點擊工具列「圖片上傳」圖示，選擇圖片檔案','方法二：直接將圖片拖放到編輯區域','方法三：複製圖片後在編輯區按 Ctrl+V 貼上','圖片會自動上傳並保存到檔案庫']},
+        {h:'插入文件（PDF / DOC / PPT）',items:['點擊工具列「上傳並插入」按鈕','選擇文件（支援 PDF、DOC、DOCX、PPT、PPTX）','文件會以下載連結形式插入到內容中']},
+        {h:'從檔案庫插入',items:['點擊工具列「從檔案庫插入」按鈕','從已上傳的檔案中選擇','圖片會以 &lt;img&gt; 標籤插入，文件會以下載連結插入']},
+        {h:'清單與表格',items:['項目符號清單 — 點擊工具列清單圖示','編號清單 — 點擊工具列編號清單圖示','表格 — 點擊「插入表格」選擇行列數']},
+        {h:'原始碼模式',items:['點擊編輯區上方的「&lt;/&gt; Source」按鈕可切換原始碼模式','可直接編輯 HTML 原始碼','再次點擊切換回視覺編輯模式']},
+        {h:'快捷鍵',items:['Ctrl+B — 粗體','Ctrl+I — 斜體','Ctrl+Z — 復原','Ctrl+Y — 重做','Ctrl+K — 插入連結']}
+      ]
+    },
+    'zh-Hans': {
+      title: 'CKEditor 使用指南',
+      sections: [
+        {h:'基本格式',items:['<b>粗体</b> — 选取文字后点击 <b>B</b> 或按 Ctrl+B','<i>斜体</i> — 选取文字后点击 <i>I</i> 或按 Ctrl+I','标题 — 使用工具栏「Heading」下拉菜单选择 H2 / H3 / H4']},
+        {h:'插入链接',items:['选取文字 → 点击工具栏 🔗 链接图标','输入网址（如 https://... 或 #/page/slug）','按 Enter 确认']},
+        {h:'插入图片',items:['方法一：点击工具栏「图片上传」图标，选择图片文件','方法二：直接将图片拖放到编辑区域','方法三：复制图片后在编辑区按 Ctrl+V 粘贴','图片会自动上传并保存到文件库']},
+        {h:'插入文件（PDF / DOC / PPT）',items:['点击工具栏「上传并插入」按钮','选择文件（支持 PDF、DOC、DOCX、PPT、PPTX）','文件会以下载链接形式插入到内容中']},
+        {h:'从文件库插入',items:['点击工具栏「从文件库插入」按钮','从已上传的文件中选择','图片会以 &lt;img&gt; 标签插入，文件会以下载链接插入']},
+        {h:'列表与表格',items:['项目符号列表 — 点击工具栏列表图标','编号列表 — 点击工具栏编号列表图标','表格 — 点击「插入表格」选择行列数']},
+        {h:'源代码模式',items:['点击编辑区上方的「&lt;/&gt; Source」按钮可切换源代码模式','可直接编辑 HTML 源代码','再次点击切换回视觉编辑模式']},
+        {h:'快捷键',items:['Ctrl+B — 粗体','Ctrl+I — 斜体','Ctrl+Z — 撤销','Ctrl+Y — 重做','Ctrl+K — 插入链接']}
+      ]
+    },
+    'en': {
+      title: 'CKEditor Usage Guide',
+      sections: [
+        {h:'Basic Formatting',items:['<b>Bold</b> — Select text and click <b>B</b> or press Ctrl+B','<i>Italic</i> — Select text and click <i>I</i> or press Ctrl+I','Headings — Use the "Heading" dropdown in the toolbar to select H2 / H3 / H4']},
+        {h:'Insert Links',items:['Select text → Click the 🔗 link icon in the toolbar','Enter URL (e.g. https://... or #/page/slug)','Press Enter to confirm']},
+        {h:'Insert Images',items:['Method 1: Click the "Image Upload" icon in the toolbar, select an image file','Method 2: Drag and drop an image directly into the editor','Method 3: Copy an image and press Ctrl+V to paste','Images are automatically uploaded and saved to the file library']},
+        {h:'Insert Documents (PDF / DOC / PPT)',items:['Click the "Upload & Insert" button in the toolbar','Select a file (supports PDF, DOC, DOCX, PPT, PPTX)','The file will be inserted as a download link']},
+        {h:'Insert from Library',items:['Click the "Insert from Library" button in the toolbar','Choose from previously uploaded files','Images are inserted as &lt;img&gt; tags, documents as download links']},
+        {h:'Lists & Tables',items:['Bullet list — Click the list icon in the toolbar','Numbered list — Click the numbered list icon','Table — Click "Insert Table" and choose rows/columns']},
+        {h:'Source Code Mode',items:['Click the "&lt;/&gt; Source" button above the editor to toggle source mode','You can edit HTML source code directly','Click again to switch back to visual editing mode']},
+        {h:'Keyboard Shortcuts',items:['Ctrl+B — Bold','Ctrl+I — Italic','Ctrl+Z — Undo','Ctrl+Y — Redo','Ctrl+K — Insert link']}
+      ]
+    }
+  };
+  var c = content[lang] || content['en'];
+  var bodyHtml = '';
+  c.sections.forEach(function(s){
+    bodyHtml += '<h3 style="font-size:15px;font-weight:700;margin:18px 0 8px;color:var(--brand)">'+s.h+'</h3><ul style="margin:0 0 8px;padding-left:20px">';
+    s.items.forEach(function(item){ bodyHtml += '<li style="margin-bottom:5px;font-size:13px;line-height:1.6">'+item+'</li>'; });
+    bodyHtml += '</ul>';
+  });
+  var overlay = document.createElement('div');
+  overlay.id = 'cmsCkHelpModal';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:20px';
+  overlay.innerHTML = '<div style="background:var(--white);border-radius:12px;max-width:640px;width:100%;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)">'
+    +'<div style="position:sticky;top:0;background:var(--white);padding:20px 24px 12px;border-bottom:1px solid var(--border-light);display:flex;justify-content:space-between;align-items:center;border-radius:12px 12px 0 0">'
+    +'<h2 style="font-size:18px;font-weight:700;margin:0">'+c.title+'</h2>'
+    +'<button onclick="document.getElementById(\'cmsCkHelpModal\').remove()" style="border:none;background:none;font-size:22px;cursor:pointer;color:var(--text-muted);padding:0 4px">&times;</button>'
+    +'</div>'
+    +'<div style="padding:8px 24px 24px">'+bodyHtml+'</div>'
+    +'</div>';
+  overlay.addEventListener('click', function(e){ if(e.target === overlay) overlay.remove(); });
+  document.body.appendChild(overlay);
+};
+
+// ————————————————————— STANDALONE NAV VIEW —————————————————————
+window._cmsNavStandaloneView = function(){
+  Object.keys(_cmsEditors).forEach(function(k){ try{ _cmsEditors[k].destroy(); }catch(e){} });
+  _cmsEditors = {};
+
+  var langs = ["zh-Hant","zh-Hans","en"];
+  var langNames = {"zh-Hant":"繁體中文","zh-Hans":"简体中文","en":"English"};
+  var navData = getCmsNav();
+
+  function escQ(s){ return s.replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
+
+  var html = '<div class="cms-panel" style="max-width:none">'
+    +'<div style="position:sticky;top:0;z-index:5;background:var(--bg-body);padding:12px 0 10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;border-bottom:1px solid rgba(0,0,0,.06);margin-bottom:16px">'
+    +'<div><h3 style="font-size:20px;font-weight:700;margin:0">'+CL('home_nav')+'</h3>'
+    +'<span style="font-size:11px;color:var(--text-muted)">'+CL('tab_nav_desc')+'</span></div>'
+    +'<div style="display:flex;gap:8px;align-items:center">'
+    +'<button class="admin-btn primary" onclick="window._cmsNavSave();showToast(CL(\'saved\')+ CL(\'home_nav\'))">'+CL('save_changes')+'</button>'
+    +'<button class="admin-btn danger" style="font-size:12px" onclick="if(confirm(CL(\'nav_reset_q\'))){saveCmsNav({});window._cmsNavStandaloneView();}">'+CL('nav_reset')+'</button>'
+    +'</div></div>';
+
+  html += '<p style="font-size:11px;color:var(--text-muted);margin:0 0 12px;display:flex;align-items:center;gap:4px"><span class="dnd-handle" style="font-size:14px;padding:0">&#x2807;</span>'+CL('dnd_hint')+'</p>';
+
+  langs.forEach(function(lang){
+    var navItems = navData[lang] || (window.SITE && window.SITE.nav ? window.SITE.nav[lang] || window.SITE.nav['zh-Hant'] : []);
+    html += '<div class="cms-field-group"><h4>'+escHtml(langNames[lang])+' ('+lang+')</h4>';
+    html += '<div id="cmsNavTree_'+lang+'">';
+    navItems.forEach(function(item, i){
+      html += '<div class="cms-card-box" style="margin-bottom:6px;padding:10px 14px" draggable="true">'
+        +'<div class="cms-form-row" style="align-items:center;margin-bottom:0">'
+        +'<span class="dnd-handle" title="Drag to reorder">&#x2807;</span>'
+        +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNL_'+lang+'_'+i+'" value="'+escAttr(item.label)+'" placeholder="'+CL('nav_item_label')+'"/></div>'
+        +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNP_'+lang+'_'+i+'" value="'+escAttr(item.page||item.ext||'')+'" placeholder="'+CL('nav_item_page')+' / '+CL('nav_item_ext')+'"/></div>'
+        +'<button class="admin-btn danger" style="padding:4px 8px;font-size:11px" onclick="window._cmsRemoveRepeater(\'nav\','+i+',\''+escQ(lang)+'\')">&#10005;</button>'
+        +'</div>';
+      if(item.children && item.children.length){
+        item.children.forEach(function(ch2, j){
+          html += '<div style="margin-left:24px;margin-top:4px" class="cms-form-row">'
+            +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNC_'+lang+'_'+i+'_'+j+'" value="'+escAttr(ch2.label)+'" placeholder="'+CL('nav_item_label')+'"/></div>'
+            +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNCP_'+lang+'_'+i+'_'+j+'" value="'+escAttr(ch2.page||ch2.ext||'')+'" placeholder="'+CL('nav_item_page')+'"/></div>'
+            +'<button class="admin-btn danger" style="padding:4px 6px;font-size:10px" onclick="window._cmsRemoveRepeater(\'navch_'+i+'\','+j+',\''+escQ(lang)+'\')">&#10005;</button>'
+            +'</div>';
+          if(ch2.children && ch2.children.length){
+            ch2.children.forEach(function(ch3, k){
+              html += '<div style="margin-left:48px;margin-top:2px" class="cms-form-row">'
+                +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNCC_'+lang+'_'+i+'_'+j+'_'+k+'" value="'+escAttr(ch3.label)+'" placeholder="'+CL('nav_item_label')+'"/></div>'
+                +'<div class="admin-field" style="flex:1;margin:0"><input type="text" id="cmsNCCP_'+lang+'_'+i+'_'+j+'_'+k+'" value="'+escAttr(ch3.page||ch3.ext||'')+'" placeholder="'+CL('nav_item_page')+'"/></div>'
+                +'<button class="admin-btn danger" style="padding:4px 6px;font-size:10px" onclick="window._cmsRemoveRepeater(\'navgch_'+i+'_'+j+'\','+k+',\''+escQ(lang)+'\')">&#10005;</button>'
+                +'</div>';
+            });
+          }
+          html += '<button class="admin-btn secondary" style="font-size:10px;margin-left:48px;margin-top:2px;padding:2px 8px" onclick="window._cmsAddRepeater(\'navgch_'+i+'_'+j+'\',\''+escQ(lang)+'\')">'+CL('nav_add_child')+'</button>';
+        });
+      }
+      html += '<button class="admin-btn secondary" style="font-size:10px;margin-left:24px;margin-top:4px;padding:2px 8px" onclick="window._cmsAddRepeater(\'navch_'+i+'\',\''+escQ(lang)+'\')">'+CL('nav_add_child')+'</button>';
+      html += '</div>';
+    });
+    html += '</div>';
+    html += '<div style="display:flex;gap:8px;margin-top:8px">'
+      +'<button class="admin-btn secondary" style="font-size:12px" onclick="window._cmsAddRepeater(\'nav\',\''+escQ(lang)+'\')">'+CL('nav_add_item')+'</button>'
+      +'</div>';
+    html += '</div>';
+  });
+
+  html += '</div>';
+  document.getElementById("cmsEditor").innerHTML = html;
+
+  // Init DnD for nav trees
+  setTimeout(function(){
+    ['zh-Hant','zh-Hans','en'].forEach(function(lang){
+      var navTree = document.getElementById('cmsNavTree_'+lang);
+      if(navTree) _cmsDndInit(navTree, function(from, to){ window._cmsNavMove(from, to, lang); });
+    });
+  }, 40);
+
+  // Deselect sidebar items
+  document.querySelectorAll('.cms-page-item').forEach(function(el){ el.classList.remove('active'); });
 };
 
 // CMS initialization

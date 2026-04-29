@@ -662,7 +662,7 @@ function addAuditLog(action, detail, overrideUser){
 }
 function getSessionTimeout(){ return parseInt(localStorage.getItem(CMS_SESSION_TIMEOUT_KEY))||30; }
 function saveSessionTimeout(m){ localStorage.setItem(CMS_SESSION_TIMEOUT_KEY, String(m)); }
-function sha256hex(s){ return crypto.subtle.digest("SHA-256",new TextEncoder().encode(s)).then(function(b){return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,"0");}).join("");}); }
+function sha256hex(s){ try{ return crypto.subtle.digest("SHA-256",new TextEncoder().encode(s)).then(function(b){return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,"0");}).join("");}); }catch(e){ return Promise.reject(e); } }
 var CMS_2FA_KEY = "ecap_cms_2fa";
 function get2FAConfig(){ try{ return JSON.parse(localStorage.getItem(CMS_2FA_KEY))||{}; }catch(e){ return {}; } }
 function save2FAConfig(d){ localStorage.setItem(CMS_2FA_KEY, JSON.stringify(d)); }
@@ -1221,8 +1221,8 @@ function adminView(){
 window.adminView = adminView;
 
 // ————————————————————— ADMIN AUTH —————————————————————
-// Default password: "admin" — SHA-256 hash below
-var ADMIN_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
+// Default password: "Abc123***!" — SHA-256 hash below
+var ADMIN_HASH = "38254421368e6fa5bad4a73896e0b4fc6b77b51255a4351022ba55ab805c3e59";
 var ADMIN_SESSION_KEY = "ecap_admin_auth";
 
 function isAdminLoggedIn(){
@@ -1340,9 +1340,13 @@ window._cmsForceChangePwdScreen = function(username){
           }
         }
         registerSession(username);
+        addAuditLog('login_success', 'User: '+username+', force-pwd-change completed');
         _startSessionTimer();
         window.route();
       }
+    }).catch(function(err){
+      console.error('[CMS ForcePwd] sha256 error:', err);
+      errEl.textContent = 'Error saving password: '+(err&&err.message||String(err));
     });
   });
 };
@@ -1447,15 +1451,23 @@ window._adminLogin = function(e){
     return false;
   }
 
-  // Always fetch client IP for audit logging, then check whitelist
+  // Fetch client IP only if an IP whitelist is configured (avoid blocking login on external service)
   (function(){
     var stored = sessionStorage.getItem('ecap_client_ip');
     if(stored) return Promise.resolve();
-    return fetch('https://api.ipify.org?format=json').then(function(r){return r.json();}).then(function(d){
+    // Skip IP fetch entirely if no whitelist is active — don't block login
+    if(!getIpWhitelist().length) { sessionStorage.setItem('ecap_client_ip', 'unavailable'); return Promise.resolve(); }
+    // Fetch with a 5-second timeout
+    function fetchWithTimeout(url, ms){
+      return Promise.race([
+        fetch(url).then(function(r){return r.json();}),
+        new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},ms);})
+      ]);
+    }
+    return fetchWithTimeout('https://api.ipify.org?format=json', 5000).then(function(d){
       sessionStorage.setItem('ecap_client_ip', d.ip);
     }).catch(function(){
-      // Fallback: try alternative IP service
-      return fetch('https://api.seeip.org/jsonip?').then(function(r){return r.json();}).then(function(d){
+      return fetchWithTimeout('https://api.seeip.org/jsonip?', 5000).then(function(d){
         sessionStorage.setItem('ecap_client_ip', d.ip);
       }).catch(function(){
         sessionStorage.setItem('ecap_client_ip', 'unavailable');
@@ -1473,7 +1485,7 @@ window._adminLogin = function(e){
       return;
     }
 
-    checkAdminLogin(user, pass).then(function(matched){
+    Promise.resolve().then(function(){ return checkAdminLogin(user, pass); }).then(function(matched){
     console.log('[CMS Login] matched:', matched);
     if(matched && matched.error==='disabled'){
       addAuditLog('login_disabled', '', user);
@@ -1622,6 +1634,8 @@ window._adminLogin = function(e){
     }
   })['catch'](function(err){
     console.error('[CMS Login] checkAdminLogin error:', err);
+    recordFailedLogin(user);
+    addAuditLog('login_error', 'IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown')+', error: '+(err&&err.message||String(err)), user);
     errEl.textContent = CL('wrong_pwd');
     errEl.style.color='';
     btn.disabled = false;
@@ -1629,6 +1643,8 @@ window._adminLogin = function(e){
   });
   })['catch'](function(err){
     console.error('[CMS Login] IP/whitelist error:', err);
+    recordFailedLogin(user);
+    addAuditLog('login_error', 'IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown')+', error: '+(err&&err.message||String(err)), user);
     errEl.textContent = CL('wrong_pwd');
     errEl.style.color='';
     btn.disabled = false;
@@ -2279,9 +2295,9 @@ function _cmsUserMgmtTab(users, currentUser, cfg2fa){
     +'</div>'
     +'<div class="admin-field"><label>'+CL('auto_gen_pwd')+'</label>'
     +'<div style="display:flex;gap:8px;align-items:center">'
-    +'<input type="text" id="newUserGenPwd" readonly style="font-family:monospace;font-size:13px;flex:1;background:#f9fafb"/>'
-    +'<button class="admin-btn secondary" style="padding:8px 12px;white-space:nowrap" onclick="document.getElementById(\'newUserGenPwd\').value=generatePassword(16)">&#10227;</button>'
-    +'<button class="admin-btn secondary" style="padding:8px 12px;white-space:nowrap" onclick="navigator.clipboard.writeText(document.getElementById(\'newUserGenPwd\').value);showToast(CL(\'pwd_copied\'))">'+CL('copy_pwd')+'</button>'
+    +'<input type="text" id="newUserGenPwd" placeholder="Click \u21BB to generate or type a password" style="font-family:monospace;font-size:13px;flex:1;background:#f9fafb"/>'
+    +'<button type="button" class="admin-btn secondary" style="padding:8px 12px;white-space:nowrap" onclick="document.getElementById(\'newUserGenPwd\').value=generatePassword(16);document.getElementById(\'newUserGenPwd\').focus();document.getElementById(\'newUserGenPwd\').select()" title="Generate random password">&#10227;</button>'
+    +'<button type="button" class="admin-btn secondary" style="padding:8px 12px;white-space:nowrap" onclick="(function(){var v=document.getElementById(\'newUserGenPwd\').value;if(!v){showToast(\'Field is empty\');return;}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(v).then(function(){showToast(CL(\'pwd_copied\'))}).catch(function(){var i=document.getElementById(\'newUserGenPwd\');i.select();document.execCommand(\'copy\');showToast(CL(\'pwd_copied\'))})}else{var i=document.getElementById(\'newUserGenPwd\');i.select();document.execCommand(\'copy\');showToast(CL(\'pwd_copied\'))}})()">'+CL('copy_pwd')+'</button>'
     +'</div></div>'
     +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
     +'<input type="checkbox" id="newUserForce2FA"/>'
@@ -2816,6 +2832,8 @@ window._cmsEditUser = function(idx){
     usr[idx].sessionTimeout = parseInt(document.getElementById('editUserTimeout').value)||0;
     function _finish(){
       saveCmsUsers(usr);
+      // BUGFIX: Clear lockout when password is reset so user can log in immediately
+      if(newPass){ try{ clearLoginAttempts(u.username); }catch(e){} }
       addAuditLog('user_edited', u.username+(newPass?', password reset':''));
       showToast(CL('user_updated')+u.username);
       div.remove();
@@ -2838,7 +2856,8 @@ window._cmsChangePassword = function(){
   if(nw !== cf){ msg.style.color="#dc3545"; msg.textContent=CL('pwd_mismatch'); return; }
   var currentUser = sessionStorage.getItem("ecap_admin_user") || "admin";
   checkAdminLogin(currentUser, cur).then(function(ok){
-    if(!ok){ msg.style.color="#dc3545"; msg.textContent=CL('pwd_incorrect'); return; }
+    // BUGFIX: checkAdminLogin returns {error:'...'} on failure (truthy), so check for error explicitly
+    if(!ok || ok.error){ msg.style.color="#dc3545"; msg.textContent=CL('pwd_incorrect'); return; }
     sha256hex(nw).then(function(hash){
       var users = getCmsUsers();
       if(users.length === 0){
@@ -2876,6 +2895,7 @@ window._cmsUserAdd = function(){
   var msg = document.getElementById("addUserMsg");
   if(!uname){ msg.style.color="#dc3545"; msg.textContent=CL('enter_username'); return; }
   if(!pass){ msg.style.color="#dc3545"; msg.textContent=CL('auto_gen_pwd'); return; }
+  if(pass.length<6){ msg.style.color="#dc3545"; msg.textContent='Password must be at least 6 characters'; return; }
   if(getCmsUsers().some(function(u){return u.username===uname;})){ msg.style.color="#dc3545"; msg.textContent=CL('username_exists'); return; }
   var grpEl = document.getElementById("newUserGroup");
   var groupId = grpEl ? grpEl.value : (getCmsGroups()[0]||{}).id||null;
@@ -2889,14 +2909,59 @@ window._cmsUserAdd = function(){
     var role = grp ? (grp.role||'editor') : 'editor';
     users.push({username:uname, hash:hash, role:role, groupId:groupId, perms:null, enabled:true, force2FA:force2FA, mustChangePassword:mustChangePwd, sessionTimeout:0, ipWhitelist:[], timezone:'Asia/Hong_Kong', lastLogin:null});
     saveCmsUsers(users);
+    // BUGFIX: Clear any prior failed-login lockout for this username so the new user can log in immediately
+    try{ clearLoginAttempts(uname); }catch(e){}
     console.log('[CMS] User created:', uname, 'hash:', hash, 'users now:', users.length);
     var grpName = groupId ? (getCmsGroups().find(function(g){return g.id===groupId;})||{}).name||groupId : CL('custom_perms');
+    addAuditLog('user_added', 'User: '+uname+', group: '+grpName);
     msg.style.color="#28a745"; msg.textContent=CL('user_added')+uname+CL('user_as')+grpName;
+    // Show credentials confirmation modal so admin can record/share the password
+    try{ _cmsShowNewUserCredentials(uname, pass, force2FA, mustChangePwd); }catch(e){ console.error(e); }
     document.getElementById("newUsername").value="";
     document.getElementById("newUserGenPwd").value="";
     window._cmsUserMgmtView('users');
+  }).catch(function(err){
+    console.error('[CMS] User creation error:', err);
+    msg.style.color="#dc3545"; msg.textContent='Error creating user: '+(err&&err.message||String(err));
   });
 };
+
+// Display new-user credentials in a modal so admin sees the exact password to share
+function _cmsShowNewUserCredentials(uname, pass, force2FA, mustChangePwd){
+  var div = document.createElement('div');
+  div.style.cssText='position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center';
+  var notes='';
+  if(mustChangePwd) notes += '<li>User will be required to change password on first login.</li>';
+  if(force2FA) notes += '<li>User will be required to set up 2FA (Google Authenticator) on first login.</li>';
+  if(!notes) notes = '<li>User can log in directly with these credentials.</li>';
+  div.innerHTML = '<div style="background:#fff;border-radius:12px;padding:28px;max-width:460px;width:90%;box-shadow:0 12px 40px rgba(0,0,0,.25)">'
+    +'<h3 style="margin:0 0 12px;font-size:18px;font-weight:700;color:#16a34a">&#10004; User Created</h3>'
+    +'<p style="font-size:13px;color:#374151;margin-bottom:16px">Share these credentials with the user. <b>This password will not be shown again.</b></p>'
+    +'<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:14px;margin-bottom:14px">'
+    +'<div style="font-size:12px;color:#6b7280;margin-bottom:4px">Username</div>'
+    +'<div style="font-family:monospace;font-size:15px;font-weight:600;margin-bottom:10px;word-break:break-all">'+esc(uname)+'</div>'
+    +'<div style="font-size:12px;color:#6b7280;margin-bottom:4px">Password</div>'
+    +'<div style="font-family:monospace;font-size:15px;font-weight:600;word-break:break-all">'+esc(pass)+'</div>'
+    +'</div>'
+    +'<ul style="font-size:12px;color:#374151;padding-left:18px;margin:0 0 16px">'+notes+'</ul>'
+    +'<div style="display:flex;gap:8px;justify-content:flex-end">'
+    +'<button id="_newCredCopy" class="admin-btn secondary" style="padding:8px 16px">Copy Password</button>'
+    +'<button id="_newCredClose" class="admin-btn primary" style="padding:8px 16px">Close</button>'
+    +'</div></div>';
+  document.body.appendChild(div);
+  document.getElementById('_newCredClose').addEventListener('click', function(){ div.remove(); });
+  document.getElementById('_newCredCopy').addEventListener('click', function(){
+    var txt = 'Username: '+uname+'\nPassword: '+pass;
+    function _ok(){ showToast('Credentials copied'); }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(_ok).catch(function(){
+        var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');_ok();}catch(e){}ta.remove();
+      });
+    } else {
+      var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');_ok();}catch(e){}ta.remove();
+    }
+  });
+}
 // ————————— 2FA Management —————————
 window._cmsReset2FA = function(username){
   if(!confirm(CL('reset_2fa_q').replace('{0}',username))) return;

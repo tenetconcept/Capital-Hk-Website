@@ -1151,8 +1151,9 @@ function adminView(){
       +'<div class="login-field" id="totpField" style="display:none"><label>'+CL('twofa_code')+'</label><input type="text" id="adminTOTP" placeholder="\u00B7\u00B7\u00B7\u00B7\u00B7\u00B7" maxlength="6" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*" style="letter-spacing:4px;font-size:18px;text-align:center"/></div>'
       +'<button type="button" class="login-btn" id="loginBtn" onclick="window._adminLogin(event)">'+CL('login')+'</button>'
       +'<div class="login-err" id="loginErr"></div>'
-      +'<div style="font-size:10px;color:var(--text-muted);margin-top:8px;text-align:center;opacity:.6;line-height:1.5">v20260501c · '+(function(){try{sessionStorage.setItem('_t','1');sessionStorage.removeItem('_t');return 'storage:OK';}catch(e){return 'storage:BLOCKED';}})()+' · '+(window.crypto&&window.crypto.subtle?'crypto:OK':'crypto:NO')+'</div>'
+      +'<div style="font-size:10px;color:var(--text-muted);margin-top:8px;text-align:center;opacity:.6;line-height:1.5">v20260501d · '+(function(){try{sessionStorage.setItem('_t','1');sessionStorage.removeItem('_t');return 'storage:OK';}catch(e){return 'storage:BLOCKED';}})()+' · '+(window.crypto&&window.crypto.subtle?'crypto:OK':'crypto:NO')+'</div>'
       +'</form>'
+      +'<img src="x" alt="" style="display:none" onerror="(function(){try{var b=document.getElementById(\'loginBtn\');if(b&&!b._bound){b._bound=1;b.addEventListener(\'click\',function(ev){try{window._adminLogin(ev);}catch(e){var el=document.getElementById(\'loginErr\');if(el){el.textContent=\'Listener err: \'+e.message;el.style.color=\'\';}}});}var f=document.querySelector(\'.admin-login form\');if(f&&!f._bound){f._bound=1;f.addEventListener(\'submit\',function(ev){ev.preventDefault();try{window._adminLogin(ev);}catch(e){}return false;});}var p=document.getElementById(\'adminPass\');if(p&&!p._bound){p._bound=1;p.addEventListener(\'keydown\',function(ev){if(ev.key===\'Enter\'){ev.preventDefault();try{window._adminLogin(ev);}catch(e){}}});}var d=document.getElementById(\'loginErr\');if(d){d.textContent=\'\u2705 Ready (bound). Click LOGIN to sign in.\';d.style.color=\'#16a34a\';}}catch(e){alert(\'Bind error: \'+e.message);}})();this.remove();"/>'
       +'</div></section>';
   }
 
@@ -1479,9 +1480,17 @@ window._cmsForce2FAScreen = function(username){
 };
 
 window._adminLogin = function(e){
+  // IMMEDIATE click feedback — visible BEFORE any other code runs
+  try {
+    var _fb = document.getElementById('loginErr');
+    if(_fb){ _fb.textContent = '⏳ 處理中... (Processing click...)'; _fb.style.color = '#ff9800'; }
+    var _fbBtn = document.getElementById('loginBtn');
+    if(_fbBtn) _fbBtn.style.background = '#ff9800';
+  } catch(_clickFbErr){ try{ alert('Click registered but UI failed: ' + _clickFbErr.message); }catch(_){} }
   // Top-level safety wrapper — any uncaught error must surface to the user
   try {
   if(e && typeof e.preventDefault === 'function') e.preventDefault();
+  if(e && typeof e.stopPropagation === 'function') e.stopPropagation();
   var user = (document.getElementById("adminUser")||{}).value;
   user = user ? user.trim() : '';
   var pass = (document.getElementById("adminPass")||{}).value || '';
@@ -1491,9 +1500,12 @@ window._adminLogin = function(e){
     alert('登入元件遺失，請重新整理頁面 (Ctrl+Shift+R)。Login UI missing — please hard-reload.');
     return false;
   }
+  if(!user){ errEl.textContent='請輸入用戶名 (Username required)'; errEl.style.color=''; btn.style.background=''; return false; }
+  if(!pass){ errEl.textContent='請輸入密碼 (Password required)'; errEl.style.color=''; btn.style.background=''; return false; }
   btn.disabled = true;
-  btn.textContent = CL('verifying');
-  errEl.textContent = '';
+  btn.textContent = CL('verifying') || '驗證中...';
+  errEl.textContent = '⏳ 驗證中... (Verifying ' + user + ')';
+  errEl.style.color = '#ff9800';
 
   // Helper: safe sessionStorage access (some browsers block storage — must never throw here)
   function _ss(key, val){

@@ -657,14 +657,10 @@ function getCmsUsers(){
   return result;
 }
 function saveCmsUsers(d){
-  // Strip the builtin flag before saving to localStorage.
-  // A saved user with the same username as a CMS_BUILTIN_USERS entry overrides the code-defined one (see getCmsUsers).
-  var toSave = d.map(function(u){
-    if(!u.builtin) return u;
-    var copy = Object.assign({}, u);
-    delete copy.builtin;
-    return copy;
-  });
+  // Only persist users WITHOUT the builtin:true flag.
+  // Unmodified builtins (builtin:true) live only in CMS_BUILTIN_USERS and are never written to localStorage.
+  // When a builtin is intentionally modified, the calling code must 'delete user.builtin' first.
+  var toSave = d.filter(function(u){ return !u.builtin; });
   localStorage.setItem(CMS_USERS_KEY,JSON.stringify(toSave));
 }
 function getCmsBanners(){ try{var d=JSON.parse(localStorage.getItem(CMS_BANNERS_KEY));return d||[];}catch(e){return[];} }
@@ -839,7 +835,7 @@ function validatePasswordComplexity(pass){
 function recordLastLogin(username){
   var users = getCmsUsers();
   users.forEach(function(u){
-    if(u.username === username) u.lastLogin = new Date().toISOString();
+    if(u.username === username){ delete u.builtin; u.lastLogin = new Date().toISOString(); }
   });
   if(users.length) saveCmsUsers(users);
 }
@@ -1333,7 +1329,7 @@ window._cmsForceChangePwdScreen = function(username){
     if(_cpxErrs.length){errEl.innerHTML=CL('pwd_complexity')+'<br>'+_cpxErrs.join('<br>');return;}
     sha256hex(newPwd).then(function(hash){
       var users=getCmsUsers();
-      users.forEach(function(u){if(u.username===username){u.hash=hash;u.mustChangePassword=false;}});
+      users.forEach(function(u){if(u.username===username){delete u.builtin;u.hash=hash;u.mustChangePassword=false;}});
       saveCmsUsers(users);
       addAuditLog('password_changed_first_login','User: '+username);
       // Check if force-2FA is still needed
@@ -1422,7 +1418,7 @@ window._cmsForce2FAScreen = function(username){
         save2FAConfig(c);
         // Clear force2FA flag
         var users=getCmsUsers();
-        users.forEach(function(u){ if(u.username===username) u.force2FA=false; });
+        users.forEach(function(u){ if(u.username===username){ delete u.builtin; u.force2FA=false; } });
         saveCmsUsers(users);
         // Complete login
         var role=sessionStorage.getItem('ecap_force2fa_role')||'admin';
@@ -2277,6 +2273,7 @@ function _cmsAccountTab(currentUser, cfg2fa){
 
 function _cmsUserMgmtTab(users, currentUser, cfg2fa){
   var groups = getCmsGroups();
+  var _canWrite = _cmsHasPermission('users.write');
   function _grpName(gid){
     var g=groups.find(function(x){return x.id===gid;});
     return g?g.name:(gid||'—');
@@ -2298,10 +2295,10 @@ function _cmsUserMgmtTab(users, currentUser, cfg2fa){
       +'</div>'
       +'</div>'
       +'<div style="display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0">'
-      +(!isMe?'<button class="admin-btn secondary" style="font-size:12px;padding:5px 12px" onclick="window._cmsEditUser('+i+')">'+CL('edit')+'</button>':'')
-      +(!isMe&&cfg2fa[u.username]?'<button class="admin-btn secondary" style="font-size:12px;padding:5px 12px" onclick="window._cmsReset2FA(\''+u.username+'\')">'+CL('reset_2fa')+'</button>':'')
-      +(!isMe&&!isBuiltin?'<button class="admin-btn '+(disabled?'primary':'secondary')+'" style="font-size:12px;padding:5px 12px" onclick="window._cmsToggleUser('+i+')">'+(disabled?CL('enable'):CL('disable'))+'</button>':'')
-      +(!isMe&&!isBuiltin?'<button class="admin-btn danger" style="font-size:12px;padding:5px 14px" onclick="window._cmsUserDelete('+i+')">'+CL('remove')+'</button>':'')
+      +(_canWrite&&!isMe?'<button class="admin-btn secondary" style="font-size:12px;padding:5px 12px" onclick="window._cmsEditUser('+i+')">'+CL('edit')+'</button>':'')
+      +(_canWrite&&!isMe&&cfg2fa[u.username]?'<button class="admin-btn secondary" style="font-size:12px;padding:5px 12px" onclick="window._cmsReset2FA(\''+u.username+'\')">'+CL('reset_2fa')+'</button>':'')
+      +(_canWrite&&!isMe&&!isBuiltin?'<button class="admin-btn '+(disabled?'primary':'secondary')+'" style="font-size:12px;padding:5px 12px" onclick="window._cmsToggleUser('+i+')">'+(disabled?CL('enable'):CL('disable'))+'</button>':'')
+      +(_canWrite&&!isMe&&!isBuiltin?'<button class="admin-btn danger" style="font-size:12px;padding:5px 14px" onclick="window._cmsUserDelete('+i+')">'+CL('remove')+'</button>':'')
       +'</div></div>';
   }).join("") : '<div style="color:var(--text-muted);font-size:14px;padding:8px 0">'+CL('default_admin_hint')+'</div>';
 
@@ -2314,32 +2311,34 @@ function _cmsUserMgmtTab(users, currentUser, cfg2fa){
     +'<h3 style="font-size:20px;font-weight:700;margin-bottom:4px">'+CL('user_mgmt')+'</h3>'
     +'<p style="color:var(--text-muted);font-size:13px;margin-bottom:20px">'+(users.length||1)+CL('users_total')+'</p>'
     +'<div class="cms-users-list" style="margin-bottom:24px">'+userRows+'</div>'
-    // Add new user
-    +'<div class="cms-card-box">'
-    +'<h4 style="font-size:16px;font-weight:700;margin-bottom:16px">'+CL('add_new_user')+'</h4>'
-    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
-    +'<div class="admin-field"><label>'+CL('username')+'</label><input type="text" id="newUsername" placeholder="e.g. editor1"/></div>'
-    +'<div class="admin-field"><label>'+CL('group_label')+'</label><select id="newUserGroup" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--white)">'
-    +grpOpts
-    +'</select></div>'
-    +'</div>'
-    +'<div class="admin-field"><label>'+CL('auto_gen_pwd')+'</label>'
-    +'<div style="display:flex;gap:8px;align-items:center">'
-    +'<input type="text" id="newUserGenPwd" placeholder="Click \u21BB to generate or type a password" style="font-family:monospace;font-size:13px;flex:1;background:#f9fafb"/>'
-    +'<button type="button" class="admin-btn secondary" style="padding:8px 12px;white-space:nowrap" onclick="document.getElementById(\'newUserGenPwd\').value=generatePassword(16);document.getElementById(\'newUserGenPwd\').focus();document.getElementById(\'newUserGenPwd\').select()" title="Generate random password">&#10227;</button>'
-    +'<button type="button" class="admin-btn secondary" style="padding:8px 12px;white-space:nowrap" onclick="(function(){var v=document.getElementById(\'newUserGenPwd\').value;if(!v){showToast(\'Field is empty\');return;}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(v).then(function(){showToast(CL(\'pwd_copied\'))}).catch(function(){var i=document.getElementById(\'newUserGenPwd\');i.select();document.execCommand(\'copy\');showToast(CL(\'pwd_copied\'))})}else{var i=document.getElementById(\'newUserGenPwd\');i.select();document.execCommand(\'copy\');showToast(CL(\'pwd_copied\'))}})()">'+CL('copy_pwd')+'</button>'
-    +'</div></div>'
-    +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
-    +'<input type="checkbox" id="newUserForce2FA"/>'
-    +'<label for="newUserForce2FA" style="font-size:13px;font-weight:500;cursor:pointer">'+CL('force_2fa')+'</label>'
-    +'</div>'
-    +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">'
-    +'<input type="checkbox" id="newUserMustChangePwd"/>'
-    +'<label for="newUserMustChangePwd" style="font-size:13px;font-weight:500;cursor:pointer">'+CL('must_change_pwd')+'</label>'
-    +'</div>'
-    +'<button class="admin-btn primary" onclick="window._cmsUserAdd()">'+CL('add_user')+'</button>'
-    +'<div id="addUserMsg" style="font-size:13px;margin-top:8px;min-height:20px"></div>'
-    +'</div>'
+    // Add new user — only shown when current user has users.write permission
+    +(_canWrite
+      ? '<div class="cms-card-box">'
+        +'<h4 style="font-size:16px;font-weight:700;margin-bottom:16px">'+CL('add_new_user')+'</h4>'
+        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
+        +'<div class="admin-field"><label>'+CL('username')+'</label><input type="text" id="newUsername" placeholder="e.g. editor1"/></div>'
+        +'<div class="admin-field"><label>'+CL('group_label')+'</label><select id="newUserGroup" style="width:100%;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-size:14px;font-family:inherit;background:var(--white)">'
+        +grpOpts
+        +'</select></div>'
+        +'</div>'
+        +'<div class="admin-field"><label>'+CL('auto_gen_pwd')+'</label>'
+        +'<div style="display:flex;gap:8px;align-items:center">'
+        +'<input type="text" id="newUserGenPwd" placeholder="Click \u21BB to generate or type a password" style="font-family:monospace;font-size:13px;flex:1;background:#f9fafb"/>'
+        +'<button type="button" class="admin-btn secondary" style="padding:8px 12px;white-space:nowrap" onclick="document.getElementById(\'newUserGenPwd\').value=generatePassword(16);document.getElementById(\'newUserGenPwd\').focus();document.getElementById(\'newUserGenPwd\').select()" title="Generate random password">&#10227;</button>'
+        +'<button type="button" class="admin-btn secondary" style="padding:8px 12px;white-space:nowrap" onclick="(function(){var v=document.getElementById(\'newUserGenPwd\').value;if(!v){showToast(\'Field is empty\');return;}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(v).then(function(){showToast(CL(\'pwd_copied\'))}).catch(function(){var i=document.getElementById(\'newUserGenPwd\');i.select();document.execCommand(\'copy\');showToast(CL(\'pwd_copied\'))})}else{var i=document.getElementById(\'newUserGenPwd\');i.select();document.execCommand(\'copy\');showToast(CL(\'pwd_copied\'))}})()">'+CL('copy_pwd')+'</button>'
+        +'</div></div>'
+        +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
+        +'<input type="checkbox" id="newUserForce2FA"/>'
+        +'<label for="newUserForce2FA" style="font-size:13px;font-weight:500;cursor:pointer">'+CL('force_2fa')+'</label>'
+        +'</div>'
+        +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">'
+        +'<input type="checkbox" id="newUserMustChangePwd"/>'
+        +'<label for="newUserMustChangePwd" style="font-size:13px;font-weight:500;cursor:pointer">'+CL('must_change_pwd')+'</label>'
+        +'</div>'
+        +'<button class="admin-btn primary" onclick="window._cmsUserAdd()">'+CL('add_user')+'</button>'
+        +'<div id="addUserMsg" style="font-size:13px;margin-top:8px;min-height:20px"></div>'
+        +'</div>'
+      : '')
     +'</div>';
 }
 
@@ -2447,7 +2446,7 @@ window._cmsGroupDelete = function(gid){
   // Clear groupId from users in this group
   var users = getCmsUsers();
   var changed = false;
-  users.forEach(function(u){ if(u.groupId===gid){ u.groupId=null; u.perms=_cmsEmptyPerms(); changed=true; } });
+  users.forEach(function(u){ if(u.groupId===gid){ delete u.builtin; u.groupId=null; u.perms=_cmsEmptyPerms(); changed=true; } });
   if(changed) saveCmsUsers(users);
   addAuditLog('group_deleted', grp?grp.name:gid);
   window._cmsUserMgmtView('groups');
@@ -2766,8 +2765,10 @@ window._cmsSaveRateLimit = function(){
 
 // Toggle user enable/disable
 window._cmsToggleUser = function(idx){
+  if(!_cmsHasPermission('users.write')){ showToast('Permission denied'); return; }
   var users = getCmsUsers();
   if(!users[idx]) return;
+  delete users[idx].builtin;
   users[idx].enabled = users[idx].enabled===false ? true : false;
   saveCmsUsers(users);
   addAuditLog('user_toggled', users[idx].username+' '+(users[idx].enabled!==false?'enabled':'disabled'));
@@ -2777,6 +2778,7 @@ window._cmsToggleUser = function(idx){
 
 // Edit user modal — group, permissions, password, timezone, force2FA
 window._cmsEditUser = function(idx){
+  if(!_cmsHasPermission('users.write')){ showToast('Permission denied'); return; }
   var users = getCmsUsers();
   var u = users[idx];
   if(!u) return;
@@ -2860,6 +2862,7 @@ window._cmsEditUser = function(idx){
     usr[idx].timezone = document.getElementById('editUserTz').value;
     usr[idx].force2FA = document.getElementById('editUserForce2FA').checked;
     usr[idx].sessionTimeout = parseInt(document.getElementById('editUserTimeout').value)||0;
+    delete usr[idx].builtin; // mark as explicitly modified so it persists over the builtin
     function _finish(){
       saveCmsUsers(usr);
       // BUGFIX: Clear lockout when password is reset so user can log in immediately
@@ -2895,7 +2898,7 @@ window._cmsChangePassword = function(){
         users = [{username:"admin", hash:hash, role:"admin", enabled:true}];
       } else {
         var found = false;
-        users.forEach(function(u){ if(u.username===currentUser){ u.hash=hash; found=true; } });
+        users.forEach(function(u){ if(u.username===currentUser){ delete u.builtin; u.hash=hash; found=true; } });
         if(!found) users.push({username:currentUser, hash:hash, role:"admin", enabled:true});
       }
       saveCmsUsers(users);
@@ -2914,12 +2917,13 @@ window._cmsSaveMyTimezone = function(){
   var currentUser = sessionStorage.getItem('ecap_admin_user')||'admin';
   var users = getCmsUsers();
   var found = false;
-  users.forEach(function(u){ if(u.username===currentUser){ u.timezone=tz; found=true; } });
+  users.forEach(function(u){ if(u.username===currentUser){ delete u.builtin; u.timezone=tz; found=true; } });
   if(found){ saveCmsUsers(users); showToast(CL('timezone')+': '+tzLabel); }
   else { showToast(CL('timezone')+': '+tzLabel); }
 };
 
 window._cmsUserAdd = function(){
+  if(!_cmsHasPermission('users.write')){ showToast('Permission denied'); return; }
   var uname = document.getElementById("newUsername").value.trim();
   var pass = document.getElementById("newUserGenPwd").value;
   var msg = document.getElementById("addUserMsg");
@@ -3054,6 +3058,7 @@ window._cms2FASetup = function(username){
 
 
 window._cmsUserDelete = function(idx){
+  if(!_cmsHasPermission('users.write')){ showToast('Permission denied'); return; }
   var users = getCmsUsers();
   var username = (users[idx]||{}).username;
   if(!username) return;
@@ -3633,7 +3638,7 @@ window._cmsHomeView = function(){
   function plainField(id, labelKey, val){
     var esc_v = (val||'').replace(/"/g,'&quot;').replace(/</g,'&lt;');
     return '<div class="admin-field"><label>'+CL(labelKey)+'</label>'
-      +'<input type="text" id="'+id+'" value="'+esc_v+'"/></div>';
+      +'<input type="text" id="'+id+'" value="'+esc_v+'"'+(!_canEditHome?' readonly style="background:#f3f4f6;color:var(--text-muted)"':'')+'/></div>';
   }
 
   // Rich text field — CKEditor will attach to the textarea
@@ -3642,10 +3647,10 @@ window._cmsHomeView = function(){
     return '<div class="admin-field">'
       +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
       +'<label style="margin:0">'+CL(labelKey)+'</label>'
-      +(hasCK ? '<button type="button" class="cms-tb-btn" style="font-size:11px;padding:2px 8px" onclick="window._cmsToggleSource(\''+id+'\')">&#60;/&#62; Source</button>' : '')
+      +(hasCK && _canEditHome ? '<button type="button" class="cms-tb-btn" style="font-size:11px;padding:2px 8px" onclick="window._cmsToggleSource(\''+id+'\')">&#60;/&#62; Source</button>' : '')
       +'</div>'
       +'<div id="'+id+'_wrap">'
-      +'<textarea id="'+id+'" class="cms-home-ck" style="min-height:120px;font-size:13px">'+esc_v+'</textarea>'
+      +'<textarea id="'+id+'" class="cms-home-ck" style="min-height:120px;font-size:13px"'+(!_canEditHome?' readonly':'')+'>'+esc_v+'</textarea>'
       +'</div></div>';
   }
 
@@ -3657,13 +3662,14 @@ window._cmsHomeView = function(){
     '<button class="admin-btn secondary" style="font-size:12px;padding:5px 10px" onclick="window._cmsCkHelp()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> '+CL('ck_help')+'</button>'
   );
 
+  var _canEditHome = _cmsHasPermission('editPage');
   var html = '<div class="cms-panel" style="max-width:none">'
     +'<div style="padding:8px 0 10px;display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--border-light);margin-bottom:12px">'
     +'<h3 style="font-size:17px;font-weight:700;margin:0;white-space:nowrap">'+CL('tab_home')+'</h3>'
     +'<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">'
     +'<button class="admin-btn secondary" style="font-size:12px;padding:5px 12px" onclick="document.querySelectorAll(\'.cms-home-sec\').forEach(function(s){s.classList.add(\'open\')})">'+CL('expand_all')+'</button>'
     +'<button class="admin-btn secondary" style="font-size:12px;padding:5px 12px" onclick="document.querySelectorAll(\'.cms-home-sec\').forEach(function(s){s.classList.remove(\'open\')})">'+CL('collapse_all')+'</button>'
-    +'<button class="admin-btn primary" style="font-size:13px" onclick="window._cmsHomeSave()">'+CL('save_changes')+'</button>'
+    +(_canEditHome ? '<button class="admin-btn primary" style="font-size:13px" onclick="window._cmsHomeSave()">'+CL('save_changes')+'</button>' : '<span class="role-badge role-viewer">'+CL('read_only')+'</span>')
     +'<a href="#/" target="_blank" class="admin-btn secondary" style="text-decoration:none;display:inline-flex;align-items:center;font-size:13px">'+CL('view_page')+'</a>'
     +'</div></div>';
 
@@ -3946,7 +3952,7 @@ window._cmsHomeView = function(){
   if(first) first.classList.add('open');
 
   // Initialize CKEditor on rich text fields
-  if(hasCK){
+  if(hasCK && _canEditHome){
     document.querySelectorAll('.cms-home-ck').forEach(function(ta){
       var ckLang = 'zh-cn';
       if(ta.id.indexOf('_en') === ta.id.length - 3) ckLang = 'en';
@@ -4004,6 +4010,7 @@ window._cmsHomeView = function(){
 
 // Save all homepage fields
 window._cmsHomeSave = function(){
+  if(!_cmsHasPermission('editPage')){ showToast('Permission denied'); return; }
   var langs = ["zh-Hant","zh-Hans","en"];
   var ch = window.getCmsHome ? window.getCmsHome() : {};
   var sections = ['hero','svc1','svc2','svc3','cta'];
@@ -4601,6 +4608,7 @@ window._cmsNavMove = function(from, to, lang){
 
 // Nav save — reads all nav inputs and saves to localStorage
 window._cmsNavSave = function(){
+  if(!_cmsHasPermission('editPage')){ showToast('Permission denied'); return; }
   var langs = ["zh-Hant","zh-Hans","en"];
   var nd = getCmsNav();
   langs.forEach(function(lang){
@@ -4826,8 +4834,8 @@ window._cmsNavStandaloneView = function(){
     +'<div><h3 style="font-size:20px;font-weight:700;margin:0">'+CL('home_nav')+'</h3>'
     +'<span style="font-size:12px;color:var(--text-muted)">'+CL('nav_menu_desc')+'</span></div>'
     +'<div style="display:flex;gap:6px;align-items:center">'
-    +'<button class="admin-btn primary" onclick="window._cmsNavSave();showToast(CL(\'saved\')+\' \'+CL(\'home_nav\'))">'+CL('save_changes')+'</button>'
-    +'<button class="admin-btn danger" style="font-size:12px" onclick="if(confirm(CL(\'nav_reset_q\'))){saveCmsNav({});window._cmsNavStandaloneView();}">'+CL('nav_reset')+'</button>'
+    +(_cmsHasPermission('editPage') ? '<button class="admin-btn primary" onclick="window._cmsNavSave();showToast(CL(\'saved\')+\' \'+CL(\'home_nav\'))">'+CL('save_changes')+'</button>' : '')
+    +(_cmsHasPermission('editPage') ? '<button class="admin-btn danger" style="font-size:12px" onclick="if(confirm(CL(\'nav_reset_q\'))){saveCmsNav({});window._cmsNavStandaloneView();}">'+CL('nav_reset')+'</button>' : '')
     +'</div></div>';
 
   langs.forEach(function(lang){

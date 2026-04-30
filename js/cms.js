@@ -643,8 +643,30 @@ var CMS_SESSION_TIMEOUT_KEY = "ecap_cms_session_timeout";
 var _adminCurrentUser = null;
 function getCmsFiles(){ try{var d=JSON.parse(localStorage.getItem(CMS_FILES_KEY));return d||[];}catch(e){return[];} }
 function saveCmsFiles(d){ localStorage.setItem(CMS_FILES_KEY,JSON.stringify(d)); }
-function getCmsUsers(){ try{var d=JSON.parse(localStorage.getItem(CMS_USERS_KEY));return d||[];}catch(e){return[];} }
-function saveCmsUsers(d){ localStorage.setItem(CMS_USERS_KEY,JSON.stringify(d)); }
+function _getCmsUsersRaw(){ try{var d=JSON.parse(localStorage.getItem(CMS_USERS_KEY));return d||[];}catch(e){return[];} }
+// getCmsUsers returns builtin users merged with localStorage users.
+// A localStorage user with the same username overrides the builtin (e.g. after password reset).
+function getCmsUsers(){
+  var stored = _getCmsUsersRaw();
+  var result = CMS_BUILTIN_USERS.slice(); // start with builtins
+  stored.forEach(function(u){
+    var idx = result.findIndex(function(b){ return b.username===u.username; });
+    if(idx>=0) result[idx]=u; // override builtin with stored version
+    else result.push(u);
+  });
+  return result;
+}
+function saveCmsUsers(d){
+  // Strip the builtin flag before saving to localStorage.
+  // A saved user with the same username as a CMS_BUILTIN_USERS entry overrides the code-defined one (see getCmsUsers).
+  var toSave = d.map(function(u){
+    if(!u.builtin) return u;
+    var copy = Object.assign({}, u);
+    delete copy.builtin;
+    return copy;
+  });
+  localStorage.setItem(CMS_USERS_KEY,JSON.stringify(toSave));
+}
 function getCmsBanners(){ try{var d=JSON.parse(localStorage.getItem(CMS_BANNERS_KEY));return d||[];}catch(e){return[];} }
 function saveCmsBanners(d){ localStorage.setItem(CMS_BANNERS_KEY,JSON.stringify(d)); }
 function getCmsBlog(){ try{var d=JSON.parse(localStorage.getItem(CMS_BLOG_KEY));return d||null;}catch(e){return null;} }
@@ -710,30 +732,24 @@ function generateSecret(){
 }
 function checkAdminLogin(username, pass){
   return sha256hex(pass).then(function(hash){
+    // getAllUsers merges builtins + localStorage (localStorage overrides builtins)
     var users = getCmsUsers();
-    console.log('[CMS Login] user:', username, 'hash:', hash.slice(0,8)+'...', 'users:', users.length);
-    if(users.length > 0){
-      var userByName = users.find(function(u){ return u.username===username; });
-      if(userByName){
-        console.log('[CMS Login] found user:', userByName.username, 'enabled:', userByName.enabled);
-        console.log('[CMS Login] stored hash:', userByName.hash);
-        console.log('[CMS Login] login hash: ', hash);
-        if(userByName.enabled===false) return {error:"disabled"};
-        if(userByName.hash===hash) return {username:userByName.username, role:userByName.role||"admin"};
-        // Hash mismatch — also try trimmed password (in case whitespace)
-        return sha256hex(pass.trim()).then(function(h2){
-          console.log('[CMS Login] trim hash: ', h2);
-          if(userByName.hash===h2) return {username:userByName.username, role:userByName.role||"admin"};
-          console.warn('[CMS Login] HASH MISMATCH for', username, '— stored:', userByName.hash, 'got:', hash);
-          return {error:"wrong_password"};
-        });
-      }
-      // Fallback: always allow default admin even when custom users exist
-      if(username==="admin" && hash===ADMIN_HASH) return {username:"admin", role:"admin"};
-      console.warn('[CMS Login] user not found:', username);
-      return {error:"not_found"};
+    console.log('[CMS Login] user:', username, 'hash:', hash.slice(0,8)+'...', 'total users:', users.length);
+    var userByName = users.find(function(u){ return u.username===username; });
+    if(userByName){
+      console.log('[CMS Login] found user:', userByName.username, 'enabled:', userByName.enabled, 'builtin:', !!userByName.builtin);
+      if(userByName.enabled===false) return {error:"disabled"};
+      if(userByName.hash===hash) return {username:userByName.username, role:userByName.role||"admin"};
+      // Hash mismatch — also try trimmed password (in case whitespace)
+      return sha256hex(pass.trim()).then(function(h2){
+        if(userByName.hash===h2) return {username:userByName.username, role:userByName.role||"admin"};
+        console.warn('[CMS Login] HASH MISMATCH for', username);
+        return {error:"wrong_password"};
+      });
     }
+    // Fallback: hardcoded default admin
     if(username==="admin" && hash===ADMIN_HASH) return {username:"admin", role:"admin"};
+    console.warn('[CMS Login] user not found:', username);
     return {error:"not_found"};
   });
 }
@@ -1224,6 +1240,19 @@ window.adminView = adminView;
 // Default password: "Abc123***!" — SHA-256 hash below
 var ADMIN_HASH = "38254421368e6fa5bad4a73896e0b4fc6b77b51255a4351022ba55ab805c3e59";
 var ADMIN_SESSION_KEY = "ecap_admin_auth";
+
+// ————— Built-in users (defined in code — available on every device) —————
+// These are pre-seeded accounts that exist regardless of browser/device.
+// Password hashes are SHA-256. Add or edit accounts here for demo/presentation use.
+// localStorage-added users with the same username take priority over these.
+var CMS_BUILTIN_USERS = [
+  // username: admin2    password: Admin2026!
+  {username:'admin2',  hash:'04445e6487736590d1ef50186b414e737e0164683cbbec64e00e73c000fd3bef', role:'admin',  groupId:'g_admin',  enabled:true, builtin:true, force2FA:false, mustChangePassword:false, sessionTimeout:0, ipWhitelist:[], timezone:'Asia/Hong_Kong', lastLogin:null},
+  // username: editor1   password: Editor2026!
+  {username:'editor1', hash:'eb4956a674e3111f274bec2f1e234d76015986c3c374790275b1e3a389570ab2', role:'editor', groupId:'g_editor', enabled:true, builtin:true, force2FA:false, mustChangePassword:false, sessionTimeout:0, ipWhitelist:[], timezone:'Asia/Hong_Kong', lastLogin:null},
+  // username: viewer1   password: Viewer2026!
+  {username:'viewer1', hash:'4d0b5173e73f59585bee6931a1bcb0e8af65125a523f1cfcff8021c0519d6fc1', role:'viewer', groupId:'g_viewer', enabled:true, builtin:true, force2FA:false, mustChangePassword:false, sessionTimeout:0, ipWhitelist:[], timezone:'Asia/Hong_Kong', lastLogin:null}
+];
 
 function isAdminLoggedIn(){
   if(sessionStorage.getItem(ADMIN_SESSION_KEY) !== "1") return false;
@@ -2255,11 +2284,12 @@ function _cmsUserMgmtTab(users, currentUser, cfg2fa){
   var userRows = users.length ? users.map(function(u,i){
     var isMe = u.username===currentUser;
     var disabled = u.enabled===false;
+    var isBuiltin = !!u.builtin;
     var grpLabel = u.groupId ? _grpName(u.groupId) : CL('custom_perms');
     return '<div class="cms-user-row'+(disabled?' user-disabled':'')+'">'
       +'<div class="u-avatar'+(disabled?' disabled':'')+'">'+esc(u.username[0].toUpperCase())+'</div>'
       +'<div style="flex:1;min-width:0">'
-      +'<div class="u-name">'+esc(u.username)+(isMe?' <span class="u-tag">'+CL('you')+'</span>':'')+(disabled?' <span style="color:#dc2626;font-size:12px;font-weight:600">'+CL('disabled_label')+'</span>':'')+'</div>'
+      +'<div class="u-name">'+esc(u.username)+(isMe?' <span class="u-tag">'+CL('you')+'</span>':'')+(isBuiltin?' <span style="background:#dbeafe;color:#1d4ed8;font-size:11px;font-weight:600;padding:2px 7px;border-radius:100px">Built-in</span>':'')+(disabled?' <span style="color:#dc2626;font-size:12px;font-weight:600">'+CL('disabled_label')+'</span>':'')+'</div>'
       +'<div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap">'
       +'<span class="role-badge role-admin" style="font-size:10px">'+esc(grpLabel)+'</span>'
       +'<span style="font-size:11px;padding:2px 8px;border-radius:100px;font-weight:600;'+(cfg2fa[u.username]?'background:#d1fae5;color:#059669':'background:#fee2e2;color:#dc2626')+'">'+(cfg2fa[u.username]?'2FA ON':'2FA OFF')+'</span>'
@@ -2270,8 +2300,8 @@ function _cmsUserMgmtTab(users, currentUser, cfg2fa){
       +'<div style="display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0">'
       +(!isMe?'<button class="admin-btn secondary" style="font-size:12px;padding:5px 12px" onclick="window._cmsEditUser('+i+')">'+CL('edit')+'</button>':'')
       +(!isMe&&cfg2fa[u.username]?'<button class="admin-btn secondary" style="font-size:12px;padding:5px 12px" onclick="window._cmsReset2FA(\''+u.username+'\')">'+CL('reset_2fa')+'</button>':'')
-      +(!isMe?'<button class="admin-btn '+(disabled?'primary':'secondary')+'" style="font-size:12px;padding:5px 12px" onclick="window._cmsToggleUser('+i+')">'+(disabled?CL('enable'):CL('disable'))+'</button>':'')
-      +(!isMe?'<button class="admin-btn danger" style="font-size:12px;padding:5px 14px" onclick="window._cmsUserDelete('+i+')">'+CL('remove')+'</button>':'')
+      +(!isMe&&!isBuiltin?'<button class="admin-btn '+(disabled?'primary':'secondary')+'" style="font-size:12px;padding:5px 12px" onclick="window._cmsToggleUser('+i+')">'+(disabled?CL('enable'):CL('disable'))+'</button>':'')
+      +(!isMe&&!isBuiltin?'<button class="admin-btn danger" style="font-size:12px;padding:5px 14px" onclick="window._cmsUserDelete('+i+')">'+CL('remove')+'</button>':'')
       +'</div></div>';
   }).join("") : '<div style="color:var(--text-muted);font-size:14px;padding:8px 0">'+CL('default_admin_hint')+'</div>';
 

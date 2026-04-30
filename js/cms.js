@@ -648,7 +648,8 @@ function _getCmsUsersRaw(){ try{var d=JSON.parse(localStorage.getItem(CMS_USERS_
 // A localStorage user with the same username overrides the builtin (e.g. after password reset).
 function getCmsUsers(){
   var stored = _getCmsUsersRaw();
-  var result = CMS_BUILTIN_USERS.slice(); // start with builtins
+  var builtins = (typeof CMS_BUILTIN_USERS !== 'undefined' && CMS_BUILTIN_USERS) ? CMS_BUILTIN_USERS : [];
+  var result = builtins.slice(); // start with builtins (may be empty pre-init)
   stored.forEach(function(u){
     var idx = result.findIndex(function(b){ return b.username===u.username; });
     if(idx>=0) result[idx]=u; // override builtin with stored version
@@ -1097,8 +1098,7 @@ function _cmsMigrateData(){
   }
   localStorage.setItem(CMS_MIGRATED_KEY,'1');
 }
-// Run migration on load
-_cmsMigrateData();
+// Migration call moved further below — must run AFTER CMS_BUILTIN_USERS is defined.
 
 // ————— Effective Session Timeout & IP Whitelist —————
 // Resolution chain: user → group → global
@@ -1151,7 +1151,7 @@ function adminView(){
       +'<div class="login-field" id="totpField" style="display:none"><label>'+CL('twofa_code')+'</label><input type="text" id="adminTOTP" placeholder="\u00B7\u00B7\u00B7\u00B7\u00B7\u00B7" maxlength="6" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*" style="letter-spacing:4px;font-size:18px;text-align:center"/></div>'
       +'<button type="button" class="login-btn" id="loginBtn" onclick="window._adminLogin(event)">'+CL('login')+'</button>'
       +'<div class="login-err" id="loginErr"></div>'
-      +'<div style="font-size:10px;color:var(--text-muted);margin-top:8px;text-align:center;opacity:.6;line-height:1.5">v20260501d · '+(function(){try{sessionStorage.setItem('_t','1');sessionStorage.removeItem('_t');return 'storage:OK';}catch(e){return 'storage:BLOCKED';}})()+' · '+(window.crypto&&window.crypto.subtle?'crypto:OK':'crypto:NO')+'</div>'
+      +'<div style="font-size:10px;color:var(--text-muted);margin-top:8px;text-align:center;opacity:.6;line-height:1.5">v20260501e · '+(function(){try{sessionStorage.setItem('_t','1');sessionStorage.removeItem('_t');return 'storage:OK';}catch(e){return 'storage:BLOCKED';}})()+' · '+(window.crypto&&window.crypto.subtle?'crypto:OK':'crypto:NO')+'</div>'
       +'</form>'
       +'<img src="x" alt="" style="display:none" onerror="(function(){try{var b=document.getElementById(\'loginBtn\');if(b&&!b._bound){b._bound=1;b.addEventListener(\'click\',function(ev){try{window._adminLogin(ev);}catch(e){var el=document.getElementById(\'loginErr\');if(el){el.textContent=\'Listener err: \'+e.message;el.style.color=\'\';}}});}var f=document.querySelector(\'.admin-login form\');if(f&&!f._bound){f._bound=1;f.addEventListener(\'submit\',function(ev){ev.preventDefault();try{window._adminLogin(ev);}catch(e){}return false;});}var p=document.getElementById(\'adminPass\');if(p&&!p._bound){p._bound=1;p.addEventListener(\'keydown\',function(ev){if(ev.key===\'Enter\'){ev.preventDefault();try{window._adminLogin(ev);}catch(e){}}});}var d=document.getElementById(\'loginErr\');if(d){d.textContent=\'\u2705 Ready (bound). Click LOGIN to sign in.\';d.style.color=\'#16a34a\';}}catch(e){alert(\'Bind error: \'+e.message);}})();this.remove();"/>'
       +'</div></section>';
@@ -1268,6 +1268,10 @@ var CMS_BUILTIN_USERS = [
   // username: viewer1   password: Viewer2026!
   {username:'viewer1', hash:'4d0b5173e73f59585bee6931a1bcb0e8af65125a523f1cfcff8021c0519d6fc1', role:'viewer', groupId:'g_viewer', enabled:true, builtin:true, force2FA:false, mustChangePassword:false, sessionTimeout:0, ipWhitelist:[], timezone:'Asia/Hong_Kong', lastLogin:null}
 ];
+
+// Run migration NOW that CMS_BUILTIN_USERS is defined. Wrap in try-catch so a migration
+// failure can never block the rest of the script (including window._adminLogin assignment).
+try { _cmsMigrateData(); } catch(_migrateErr) { try{ console.error('[CMS] Migration failed (non-fatal):', _migrateErr); }catch(_){} }
 
 function isAdminLoggedIn(){
   try {

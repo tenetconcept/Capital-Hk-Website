@@ -1,0 +1,62 @@
+Section,Topic,Point,Details / Notes
+1. Project Overview,Client,Capital Securities (Hong Kong) Limited,群益證券(香港)有限公司 — SFC Licensed Financial Services
+1. Project Overview,Website URL,https://www.e-capital.com.hk,Corporate website for securities and futures trading services
+1. Project Overview,Languages Supported,Traditional Chinese / Simplified Chinese / English,Full trilingual support with language switcher
+1. Project Overview,Purpose,Public-facing corporate website + internal CMS,Single codebase serves both the website and content management
+
+2. Website Features,Navigation,Multi-level dropdown navigation menu,3-language nav with Products / About / Explore / Contact sections
+2. Website Features,Hero Banner,Animated hero section with call-to-action buttons,Customisable headline + subtitle + CTA links via CMS
+2. Website Features,Marquee Ticker,Scrolling announcement bar at top of page,Text managed via CMS — ideal for promotions / urgent notices
+2. Website Features,Image Carousel,Auto-play swiper carousel (Swiper.js),Banner images & captions fully managed in CMS
+2. Website Features,Services Sections,Product service cards with icons and descriptions,Securities / Futures / Options / Shanghai-HK Connect / Funds
+2. Website Features,CTA Section,Call-to-action banner with two buttons,Open Account & Trade Now links — editable in CMS
+2. Website Features,Footer,Full footer with links / contact / disclaimer,Company group info and legal notices
+2. Website Features,Sub-pages (Content Pages),30+ static content pages rendered dynamically,FAQ / Forms / Fee Schedule / Account Opening / Privacy Policy
+2. Website Features,SEO & Social Meta,Open Graph + Twitter Card + JSON-LD structured data,Schema.org FinancialService markup — good for Google ranking
+2. Website Features,Robots & Sitemap,robots.txt + sitemap.xml included,Helps search engine indexing out of the box
+2. Website Features,Responsive Design,Mobile-first responsive layout,Works on desktop / tablet / mobile — CSS media queries
+2. Website Features,Animations,Scroll-triggered entrance animations,Smooth fade-in/slide effects using Intersection Observer
+2. Website Features,SFC Compliance Badge,SFC licensed badge displayed in hero section,Builds trust and meets regulatory display requirements
+
+3. CMS Features,Access,Password-protected admin panel,Accessible at /#cms — no separate URL needed
+3. CMS Features,Authentication,SHA-256 hashed password + rate limiting + account lockout,Brute-force protection — locks after 5 failed attempts (15 min)
+3. CMS Features,Two-Factor Authentication (2FA),TOTP-based 2FA (compatible with Google Authenticator),Admin can enforce 2FA for all users — QR code setup included
+3. CMS Features,User Management,Role-based access: Admin / Editor / Viewer,Admin: full access | Editor: edit content | Viewer: read-only
+3. CMS Features,Multiple User Accounts,Add / edit / disable / delete user accounts,Each user has own password and role — admin can manage all
+3. CMS Features,Session Management,Auto session timeout (configurable minutes),Active session list — admin can terminate any session remotely
+3. CMS Features,Audit Log,Full audit trail of all CMS actions,Records who did what and when — last 100 entries kept
+3. CMS Features,Hero Banner Editor,Edit headline / subtitle / badge / CTA buttons per language,Supports all 3 languages independently
+3. CMS Features,Marquee/Ticker Editor,Edit scrolling announcement text per language,Instant update — no code change needed
+3. CMS Features,Image Carousel Manager,Upload / reorder / caption carousel slides,Drag-and-drop reordering + image upload
+3. CMS Features,CTA Section Editor,Edit CTA title / description / button text & links per language,Fully localised
+3. CMS Features,Blog / News Posts,Create / edit / delete blog/news articles,Rich text editor (CKEditor 5) with image upload support
+3. CMS Features,File / Image Library,Upload and manage media files,Images stored in browser — accessible for content embedding
+3. CMS Features,IP Whitelist,Restrict CMS access to specific IP addresses,Optional security layer for office-only access
+3. CMS Features,Data Backup & Restore,Export all CMS data as JSON / Import from JSON,One-click backup and full restore capability
+3. CMS Features,Password Change,Users can change own password from profile,Admin can reset any user password
+3. CMS Features,Force Password Change,Admin can require user to change password on next login,Useful for onboarding new staff securely
+
+4. Technical Build,Architecture,100% Static HTML + CSS + Vanilla JavaScript,No backend server required — runs on any static file host
+4. Technical Build,No Framework / No Build Step,Plain HTML/CSS/JS — no React / Vue / Node.js needed,Simple to maintain — no npm install or compilation
+4. Technical Build,Single Page Application (SPA),Hash-based routing (#/page/slug),All pages load in index.html — fast navigation
+4. Technical Build,Data Storage,Browser localStorage for CMS data,All content saved client-side — no database needed
+4. Technical Build,Carousel Library,Swiper.js (bundled locally),Self-hosted library — no CDN dependency for carousel
+4. Technical Build,Rich Text Editor,CKEditor 5 (loaded on demand),Loaded only when CMS is open — no performance impact on public site
+4. Technical Build,Security,Content Security Policy + X-Content-Type-Options headers,OWASP-aware implementation — no inline script injection
+4. Technical Build,Deployment,Any static web host (Nginx / Apache / GitHub Pages / CDN),Zero server-side maintenance
+4. Technical Build,File Structure,Modular CSS (11 files) + Modular JS (5 files),Easy to locate and update individual sections
+4. Technical Build,CSS Architecture,CSS variables for theme colours + typography,Easy brand colour / font changes in one file (variables.css)
+4. Technical Build,Multilingual System,Language toggle stored in localStorage,Remembers user language preference across visits
+4. Technical Build,Performance,No heavy frameworks — fast initial load,Lightweight page with deferred JS loading
+4. Technical Build,SEO,Canonical tags + hreflang + structured data,Proper setup for multilingual SEO
+
+5. Suggested Talking Points,Opening,30+ years of Hong Kong financial market experience,Establish credibility of the client brand
+5. Suggested Talking Points,Problem Solved,Old website was hard to update — needed developer for every change,CMS empowers the marketing team to update content themselves
+5. Suggested Talking Points,Key Benefit 1,No recurring hosting cost beyond a simple static host,Compare to WordPress / CMS platforms with server & plugin costs
+5. Suggested Talking Points,Key Benefit 2,Update hero / announcements / news in minutes — no code needed,Live demo recommended: show CMS panel during presentation
+5. Suggested Talking Points,Key Benefit 3,Enterprise-grade security: 2FA / RBAC / audit log / IP whitelist,Suitable for regulated financial institution requirements
+5. Suggested Talking Points,Key Benefit 4,Trilingual content — maintain Chinese and English independently,Critical for HK financial clients serving local & global audience
+5. Suggested Talking Points,Key Benefit 5,Fully responsive — works on all devices,Mobile traffic is dominant — SFC also checks mobile compliance
+5. Suggested Talking Points,Key Benefit 6,SEO-ready out of the box,Structured data + hreflang helps Google ranking for HK financial searches
+5. Suggested Talking Points,Handover,Full source code delivered + CMS training included,Client team can manage content immediately after handover
+5. Suggested Talking Points,Next Steps,Suggested: connect to real data API / add online chat widget,Optional future enhancements for discussion

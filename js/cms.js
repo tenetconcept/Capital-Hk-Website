@@ -680,7 +680,12 @@ function addAuditLog(action, detail, overrideUser){
 }
 function getSessionTimeout(){ return parseInt(localStorage.getItem(CMS_SESSION_TIMEOUT_KEY))||30; }
 function saveSessionTimeout(m){ localStorage.setItem(CMS_SESSION_TIMEOUT_KEY, String(m)); }
-function sha256hex(s){ try{ return crypto.subtle.digest("SHA-256",new TextEncoder().encode(s)).then(function(b){return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,"0");}).join("");}); }catch(e){ return Promise.reject(e); } }
+function sha256hex(s){
+  if(!window.crypto || !window.crypto.subtle){
+    return Promise.reject(new Error('Web Crypto API not available. Please use HTTPS (not file://).')); 
+  }
+  try{ return crypto.subtle.digest("SHA-256",new TextEncoder().encode(s)).then(function(b){return Array.from(new Uint8Array(b)).map(function(x){return x.toString(16).padStart(2,"0");}).join("");}); }catch(e){ return Promise.reject(e); }
+}
 var CMS_2FA_KEY = "ecap_cms_2fa";
 function get2FAConfig(){ try{ return JSON.parse(localStorage.getItem(CMS_2FA_KEY))||{}; }catch(e){ return {}; } }
 function save2FAConfig(d){ localStorage.setItem(CMS_2FA_KEY, JSON.stringify(d)); }
@@ -799,8 +804,9 @@ function generatePassword(len){
 }
 
 // ————— Session Fingerprint —————
+// Note: screen dimensions deliberately omitted — privacy extensions may randomize them, causing false mismatches.
 function getSessionFingerprint(){
-  return navigator.userAgent + '|' + screen.width + 'x' + screen.height + '|' + (new Date().getTimezoneOffset());
+  return navigator.userAgent + '|' + (new Date().getTimezoneOffset());
 }
 function validateSessionFingerprint(){
   var stored = sessionStorage.getItem('ecap_session_fp');
@@ -870,8 +876,13 @@ function setConcurrentLimit(n){ localStorage.setItem('ecap_concurrent_limit', St
 window.getConcurrentLimit = getConcurrentLimit;
 
 // Active sessions management
-var SESSION_TAB_ID = sessionStorage.getItem('ecap_tab_id') || ('tab_'+Date.now()+'_'+Math.random().toString(36).substr(2,6));
-sessionStorage.setItem('ecap_tab_id', SESSION_TAB_ID);
+var SESSION_TAB_ID;
+try{
+  SESSION_TAB_ID = sessionStorage.getItem('ecap_tab_id') || ('tab_'+Date.now()+'_'+Math.random().toString(36).substr(2,6));
+  sessionStorage.setItem('ecap_tab_id', SESSION_TAB_ID);
+}catch(e){
+  SESSION_TAB_ID = 'tab_'+Date.now()+'_'+Math.random().toString(36).substr(2,6);
+}
 window._sessionTabId = SESSION_TAB_ID;
 
 function getActiveSessions(){ try{ return JSON.parse(localStorage.getItem('ecap_active_sessions')||'[]'); }catch(e){ return []; } }
@@ -1659,17 +1670,19 @@ window._adminLogin = function(e){
     }
   })['catch'](function(err){
     console.error('[CMS Login] checkAdminLogin error:', err);
-    recordFailedLogin(user);
-    addAuditLog('login_error', 'IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown')+', error: '+(err&&err.message||String(err)), user);
-    errEl.textContent = CL('wrong_pwd');
+    try{ recordFailedLogin(user); }catch(e){}
+    try{ addAuditLog('login_error', 'IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown')+', error: '+(err&&err.message||String(err)), user); }catch(e){}
+    // Show a specific message if Web Crypto API is unavailable (file:// or non-HTTPS)
+    var _cryptoErr = err && err.message && err.message.indexOf('Web Crypto') !== -1;
+    errEl.textContent = _cryptoErr ? '\u6b64\u700f\u89bd\u5668\u4e0d\u652f\u6301\u52a0\u5bc6\u767b\u5165\uff0c\u8acb\u901a\u904e HTTPS \u8a2a\u554f\u672c\u7ad9\u3002' : CL('wrong_pwd');
     errEl.style.color='';
     btn.disabled = false;
     btn.textContent = CL('login');
   });
   })['catch'](function(err){
     console.error('[CMS Login] IP/whitelist error:', err);
-    recordFailedLogin(user);
-    addAuditLog('login_error', 'IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown')+', error: '+(err&&err.message||String(err)), user);
+    try{ recordFailedLogin(user); }catch(e){}
+    try{ addAuditLog('login_error', 'IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown')+', error: '+(err&&err.message||String(err)), user); }catch(e){}
     errEl.textContent = CL('wrong_pwd');
     errEl.style.color='';
     btn.disabled = false;

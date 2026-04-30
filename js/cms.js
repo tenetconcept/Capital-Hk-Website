@@ -673,10 +673,14 @@ function getIpWhitelist(){ try{var d=JSON.parse(localStorage.getItem(CMS_IP_KEY)
 function saveIpWhitelist(d){ localStorage.setItem(CMS_IP_KEY,JSON.stringify(d)); }
 function getAuditLog(){ try{var d=JSON.parse(localStorage.getItem(CMS_AUDIT_KEY));return d||[];}catch(e){return[];} }
 function addAuditLog(action, detail, overrideUser){
-  var log = getAuditLog();
-  log.unshift({time:new Date().toISOString(), user:overrideUser||sessionStorage.getItem('ecap_admin_user')||'unknown', action:action, detail:detail||'', ip:sessionStorage.getItem('ecap_client_ip')||''});
-  if(log.length > 100) log = log.slice(0,100);
-  localStorage.setItem(CMS_AUDIT_KEY, JSON.stringify(log));
+  try {
+    var _auditUser = overrideUser; try{ _auditUser = _auditUser || sessionStorage.getItem('ecap_admin_user') || 'unknown'; }catch(e){ _auditUser = _auditUser || 'unknown'; }
+    var _auditIp; try{ _auditIp = sessionStorage.getItem('ecap_client_ip') || ''; }catch(e){ _auditIp = ''; }
+    var log = getAuditLog();
+    log.unshift({time:new Date().toISOString(), user:_auditUser, action:action, detail:detail||'', ip:_auditIp});
+    if(log.length > 100) log = log.slice(0,100);
+    localStorage.setItem(CMS_AUDIT_KEY, JSON.stringify(log));
+  } catch(e){ /* audit log write failed silently */ }
 }
 function getSessionTimeout(){ return parseInt(localStorage.getItem(CMS_SESSION_TIMEOUT_KEY))||30; }
 function saveSessionTimeout(m){ localStorage.setItem(CMS_SESSION_TIMEOUT_KEY, String(m)); }
@@ -1145,8 +1149,9 @@ function adminView(){
       +'<div class="login-field"><label>'+CL('username')+'</label><input type="text" id="adminUser" value="admin" autocomplete="username" oninput="var t=document.getElementById(\x27totpField\x27);if(t)t.style.display=get2FAConfig()[this.value.trim()]?\x27\x27:\x27none\x27"/></div>'
       +'<div class="login-field"><label>'+CL('password')+'</label><div style="position:relative"><input type="password" id="adminPass" placeholder="'+CL('enter_pwd')+'" autocomplete="current-password" style="padding-right:40px"/><button type="button" onclick="var p=document.getElementById(\x27adminPass\x27);p.type=p.type===\x27password\x27?\x27text\x27:\x27password\x27;this.innerHTML=p.type===\x27password\x27?\x27&#128065;\x27:\x27&#128064;\x27" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:16px;padding:4px;opacity:.5">&#128065;</button></div></div>'
       +'<div class="login-field" id="totpField" style="display:none"><label>'+CL('twofa_code')+'</label><input type="text" id="adminTOTP" placeholder="\u00B7\u00B7\u00B7\u00B7\u00B7\u00B7" maxlength="6" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*" style="letter-spacing:4px;font-size:18px;text-align:center"/></div>'
-      +'<button type="submit" class="login-btn" id="loginBtn">'+CL('login')+'</button>'
+      +'<button type="button" class="login-btn" id="loginBtn" onclick="window._adminLogin(event)">'+CL('login')+'</button>'
       +'<div class="login-err" id="loginErr"></div>'
+      +'<div style="font-size:10px;color:var(--text-muted);margin-top:8px;text-align:center;opacity:.5">v20260501</div>'
       +'</form>'
       +'</div></section>';
   }
@@ -1680,8 +1685,8 @@ window._adminLogin = function(e){
       window.route();
     } else if(matched && matched.error==='not_found'){
       console.error('[CMS Login] User not found:', user);
-      recordFailedLogin(user);
-      addAuditLog('login_user_not_found', 'IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown')+', user: '+user, user);
+      try{ recordFailedLogin(user); }catch(e){}
+      try{ addAuditLog('login_user_not_found', 'user: '+user, user); }catch(e){}
       errEl.textContent = CL('wrong_pwd');
       errEl.style.color='';
       btn.disabled = false;
@@ -1689,10 +1694,10 @@ window._adminLogin = function(e){
     } else if(matched && matched.error==='wrong_password'){
       console.error('[CMS Login] Wrong password for user:', user);
       console.error('[CMS Login] All stored users:', JSON.stringify(getCmsUsers().map(function(u){return{username:u.username,hash:u.hash&&u.hash.slice(0,8)+'...',enabled:u.enabled};})));
-      recordFailedLogin(user);
-      addAuditLog('login_fail_password', 'IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown'), user);
-      var attempts = getLoginAttempts();
-      var rlCfg = getRateLimitConfig();
+      try{ recordFailedLogin(user); }catch(e){}
+      try{ addAuditLog('login_fail_password', 'user: '+user, user); }catch(e){}
+      var attempts; try{ attempts = getLoginAttempts(); }catch(e){ attempts = {}; }
+      var rlCfg; try{ rlCfg = getRateLimitConfig(); }catch(e){ rlCfg = {}; }
       var remaining = (rlCfg.maxAttempts||5) - ((attempts[user]||{}).count||0);
       errEl.textContent = CL('wrong_pwd') + (remaining <= 2 && remaining > 0 ? " "+remaining+CL('attempts_left') : "");
       errEl.style.color='';
@@ -1700,8 +1705,8 @@ window._adminLogin = function(e){
       btn.textContent = CL('login');
     } else {
       console.error('[CMS Login] FAILED for user:', user, 'result:', matched);
-      recordFailedLogin(user);
-      addAuditLog('login_fail', 'IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown'), user);
+      try{ recordFailedLogin(user); }catch(e){}
+      try{ addAuditLog('login_fail', 'user: '+user, user); }catch(e){}
       errEl.textContent = CL('wrong_pwd');
       errEl.style.color='';
       btn.disabled = false;
@@ -1710,7 +1715,7 @@ window._adminLogin = function(e){
   })['catch'](function(err){
     console.error('[CMS Login] checkAdminLogin error:', err);
     try{ recordFailedLogin(user); }catch(e){}
-    try{ addAuditLog('login_error', 'IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown')+', error: '+(err&&err.message||String(err)), user); }catch(e){}
+    try{ addAuditLog('login_error', 'error: '+(err&&err.message||String(err)), user); }catch(e){}
     // Show a specific message if Web Crypto API is unavailable (file:// or non-HTTPS)
     var _cryptoErr = err && err.message && err.message.indexOf('Web Crypto') !== -1;
     errEl.textContent = _cryptoErr ? '\u6b64\u700f\u89bd\u5668\u4e0d\u652f\u6301\u52a0\u5bc6\u767b\u5165\uff0c\u8acb\u901a\u904e HTTPS \u8a2a\u554f\u672c\u7ad9\u3002' : CL('wrong_pwd');
@@ -1721,7 +1726,7 @@ window._adminLogin = function(e){
   })['catch'](function(err){
     console.error('[CMS Login] IP/whitelist error:', err);
     try{ recordFailedLogin(user); }catch(e){}
-    try{ addAuditLog('login_error', 'IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown')+', error: '+(err&&err.message||String(err)), user); }catch(e){}
+    try{ addAuditLog('login_error', 'error: '+(err&&err.message||String(err)), user); }catch(e){}
     errEl.textContent = CL('wrong_pwd');
     errEl.style.color='';
     btn.disabled = false;

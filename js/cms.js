@@ -913,20 +913,22 @@ function isSessionKicked(){
 
 // Heartbeat: update lastActive, check if kicked
 var _sessionHeartbeat = setInterval(function(){
-  if(sessionStorage.getItem(ADMIN_SESSION_KEY) !== '1') return;
-  var sessions = getActiveSessions();
-  var found = false;
-  sessions.forEach(function(s){
-    if(s.tabId === SESSION_TAB_ID){ s.lastActive = Date.now(); found = true; }
-  });
-  if(!found && sessionStorage.getItem(ADMIN_SESSION_KEY) === '1'){
-    // We were kicked
-    sessionStorage.removeItem(ADMIN_SESSION_KEY);
-    showToast(CL('session_kicked'));
-    setTimeout(function(){ location.hash = '#/'; location.reload(); }, 1500);
-    return;
-  }
-  saveActiveSessions(sessions);
+  try {
+    if(sessionStorage.getItem(ADMIN_SESSION_KEY) !== '1') return;
+    var sessions = getActiveSessions();
+    var found = false;
+    sessions.forEach(function(s){
+      if(s.tabId === SESSION_TAB_ID){ s.lastActive = Date.now(); found = true; }
+    });
+    if(!found && sessionStorage.getItem(ADMIN_SESSION_KEY) === '1'){
+      // We were kicked
+      sessionStorage.removeItem(ADMIN_SESSION_KEY);
+      showToast(CL('session_kicked'));
+      setTimeout(function(){ location.hash = '#/'; location.reload(); }, 1500);
+      return;
+    }
+    saveActiveSessions(sessions);
+  } catch(e) { /* storage unavailable — skip heartbeat */ }
 }, 15000);
 
 window.addEventListener('beforeunload', function(){
@@ -1262,13 +1264,17 @@ var CMS_BUILTIN_USERS = [
 ];
 
 function isAdminLoggedIn(){
-  if(sessionStorage.getItem(ADMIN_SESSION_KEY) !== "1") return false;
-  // Validate session fingerprint
-  if(!validateSessionFingerprint()){
-    sessionStorage.removeItem(ADMIN_SESSION_KEY);
-    return false;
+  try {
+    if(sessionStorage.getItem(ADMIN_SESSION_KEY) !== "1") return false;
+    // Validate session fingerprint
+    if(!validateSessionFingerprint()){
+      sessionStorage.removeItem(ADMIN_SESSION_KEY);
+      return false;
+    }
+    return true;
+  } catch(e) {
+    return false; // storage blocked
   }
-  return true;
 }
 window.isAdminLoggedIn = isAdminLoggedIn;
 
@@ -1476,10 +1482,15 @@ window._adminLogin = function(e){
   btn.disabled = true;
   btn.textContent = CL('verifying');
 
+  // Helper: safe sessionStorage access (some browsers block storage — must never throw here)
+  function _ss(key, val){
+    try { return val===undefined ? sessionStorage.getItem(key) : sessionStorage.setItem(key, val); } catch(e){ return null; }
+  }
+
   // Check rate limiting
   var lockMins = isLockedOut(user);
   if(lockMins){
-    addAuditLog('login_locked', 'IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown')+', locked for '+lockMins+' min', user);
+    try{ addAuditLog('login_locked', 'IP: '+(_ss('ecap_client_ip')||'unknown')+', locked for '+lockMins+' min', user); }catch(e){}
     errEl.textContent = CL('too_many')+lockMins+CL('minutes');
     errEl.style.color='';
     btn.disabled = false;
@@ -1488,32 +1499,40 @@ window._adminLogin = function(e){
   }
 
   // Fetch client IP only if an IP whitelist is configured (avoid blocking login on external service)
-  (function(){
-    var stored = sessionStorage.getItem('ecap_client_ip');
-    if(stored) return Promise.resolve();
-    // Skip IP fetch entirely if no whitelist is active — don't block login
-    if(!getIpWhitelist().length) { sessionStorage.setItem('ecap_client_ip', 'unavailable'); return Promise.resolve(); }
-    // Fetch with a 5-second timeout
-    function fetchWithTimeout(url, ms){
-      return Promise.race([
-        fetch(url).then(function(r){return r.json();}),
-        new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},ms);})
-      ]);
-    }
-    return fetchWithTimeout('https://api.ipify.org?format=json', 5000).then(function(d){
-      sessionStorage.setItem('ecap_client_ip', d.ip);
-    }).catch(function(){
-      return fetchWithTimeout('https://api.seeip.org/jsonip?', 5000).then(function(d){
-        sessionStorage.setItem('ecap_client_ip', d.ip);
+  var _ipFetchResult;
+  try {
+    _ipFetchResult = (function(){
+      var stored = _ss('ecap_client_ip');
+      if(stored) return Promise.resolve();
+      // Skip IP fetch entirely if no whitelist is active — don't block login
+      var _wl; try{ _wl=getIpWhitelist(); }catch(e){ _wl=[]; }
+      if(!_wl.length) { _ss('ecap_client_ip', 'unavailable'); return Promise.resolve(); }
+      // Fetch with a 5-second timeout
+      function fetchWithTimeout(url, ms){
+        return Promise.race([
+          fetch(url).then(function(r){return r.json();}),
+          new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},ms);})
+        ]);
+      }
+      return fetchWithTimeout('https://api.ipify.org?format=json', 5000).then(function(d){
+        _ss('ecap_client_ip', d.ip);
       }).catch(function(){
-        sessionStorage.setItem('ecap_client_ip', 'unavailable');
+        return fetchWithTimeout('https://api.seeip.org/jsonip?', 5000).then(function(d){
+          _ss('ecap_client_ip', d.ip);
+        }).catch(function(){
+          _ss('ecap_client_ip', 'unavailable');
+        });
       });
-    });
-  })().then(function(){
+    })();
+    if(!_ipFetchResult || typeof _ipFetchResult.then !== 'function') _ipFetchResult = Promise.resolve();
+  } catch(e) {
+    _ipFetchResult = Promise.resolve();
+  }
+  _ipFetchResult.then(function(){
   return checkIpWhitelist();
   }).then(function(ipOk){
     if(!ipOk){
-      addAuditLog('login_blocked_ip', 'IP: '+(sessionStorage.getItem('ecap_client_ip')||'unknown'), user);
+      try{ addAuditLog('login_blocked_ip', 'IP: '+(_ss('ecap_client_ip')||'unknown'), user); }catch(e){}
       errEl.textContent = CL('ip_denied');
       errEl.style.color='';
       btn.disabled = false;
@@ -1551,28 +1570,37 @@ window._adminLogin = function(e){
         if(code.length!==6){errEl.textContent=CL('enter_6digit');errEl.style.color='';btn.disabled=false;btn.textContent=CL('verify_2fa');return;}
         verifyTOTP(userSecret, code).then(function(valid){
           if(valid){
-            sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
-            sessionStorage.setItem('ecap_admin_user', matched.username||matched);
-            sessionStorage.setItem('ecap_admin_role', matched.role||'admin');
-            sessionStorage.setItem('ecap_admin_login_time', Date.now().toString());
-            _adminCurrentUser = matched.username||matched;
-            clearLoginAttempts(matched.username||user);
-            recordLastLogin(matched.username||user);
-            sessionStorage.setItem('ecap_session_fp', getSessionFingerprint());
-            // Enforce concurrent login limit
-            var _concLimit = getConcurrentLimit();
-            if(_concLimit > 0){
-              var _allSessions = getActiveSessions().filter(function(s){ return s.lastActive > Date.now() - 2*60*60*1000; });
-              var _userSessions = _allSessions.filter(function(s){ return s.user === (matched.username||matched); });
-              while(_userSessions.length >= _concLimit){
-                var oldest = _userSessions.sort(function(a,b){return a.loginTime-b.loginTime;})[0];
-                _allSessions = _allSessions.filter(function(s){return s.tabId!==oldest.tabId;});
-                _userSessions = _userSessions.filter(function(s){return s.tabId!==oldest.tabId;});
-                saveActiveSessions(_allSessions);
-              }
+            var _2faUser = matched.username||matched;
+            try {
+              sessionStorage.setItem(ADMIN_SESSION_KEY, '1');
+              sessionStorage.setItem('ecap_admin_user', _2faUser);
+              sessionStorage.setItem('ecap_admin_role', matched.role||'admin');
+              sessionStorage.setItem('ecap_admin_login_time', Date.now().toString());
+            } catch(storageErr) {
+              errEl.textContent = '\u700f\u89bd\u5668\u5c01\u9396\u4e86\u672c\u7ad9\u7684\u5132\u5b58\u7a7a\u9593\uff0c\u8acb\u5728\u700f\u89bd\u5668\u8a2d\u5b9a\u4e2d\u5141\u8a31\u672c\u7ad9\u4f7f\u7528 Cookies/Storage \u5f8c\u91cd\u8a66\u3002';
+              errEl.style.color=''; btn.disabled=false; btn.textContent=CL('verify_2fa');
+              return;
             }
-            registerSession(matched.username||matched);
-            addAuditLog('login_success', 'User: '+(matched.username||user)+', 2FA: yes');
+            _adminCurrentUser = _2faUser;
+            try{ clearLoginAttempts(_2faUser||user); }catch(e){}
+            try{ recordLastLogin(_2faUser||user); }catch(e){}
+            try{ sessionStorage.setItem('ecap_session_fp', getSessionFingerprint()); }catch(e){}
+            // Enforce concurrent login limit
+            try {
+              var _concLimit = getConcurrentLimit();
+              if(_concLimit > 0){
+                var _allSessions = getActiveSessions().filter(function(s){ return s.lastActive > Date.now() - 2*60*60*1000; });
+                var _userSessions = _allSessions.filter(function(s){ return s.user === _2faUser; });
+                while(_userSessions.length >= _concLimit){
+                  var oldest = _userSessions.sort(function(a,b){return a.loginTime-b.loginTime;})[0];
+                  _allSessions = _allSessions.filter(function(s){return s.tabId!==oldest.tabId;});
+                  _userSessions = _userSessions.filter(function(s){return s.tabId!==oldest.tabId;});
+                  saveActiveSessions(_allSessions);
+                }
+              }
+            } catch(e){}
+            try{ registerSession(_2faUser); }catch(e){}
+            try{ addAuditLog('login_success', 'User: '+(_2faUser||user)+', 2FA: yes'); }catch(e){}
             _startSessionTimer();
             window.route();
           } else {
@@ -1615,28 +1643,39 @@ window._adminLogin = function(e){
         window._cmsForce2FAScreen(_loginUser);
         return;
       }
-      sessionStorage.setItem(ADMIN_SESSION_KEY, "1");
-      sessionStorage.setItem("ecap_admin_user", _loginUser);
-      sessionStorage.setItem("ecap_admin_role", matched.role||"admin");
-      sessionStorage.setItem('ecap_admin_login_time', Date.now().toString());
-      _adminCurrentUser = _loginUser;
-      clearLoginAttempts(_loginUser);
-      recordLastLogin(_loginUser);
-      sessionStorage.setItem('ecap_session_fp', getSessionFingerprint());
-      // Enforce concurrent login limit
-      var _concLimit = getConcurrentLimit();
-      if(_concLimit > 0){
-        var _allSessions = getActiveSessions().filter(function(s){ return s.lastActive > Date.now() - 2*60*60*1000; });
-        var _userSessions = _allSessions.filter(function(s){ return s.user === _loginUser; });
-        while(_userSessions.length >= _concLimit){
-          var oldest = _userSessions.sort(function(a,b){return a.loginTime-b.loginTime;})[0];
-          _allSessions = _allSessions.filter(function(s){return s.tabId!==oldest.tabId;});
-          _userSessions = _userSessions.filter(function(s){return s.tabId!==oldest.tabId;});
-          saveActiveSessions(_allSessions);
-        }
+      // Store session — wrap in try/catch: if browser blocks storage, show a clear message
+      try {
+        sessionStorage.setItem(ADMIN_SESSION_KEY, "1");
+        sessionStorage.setItem("ecap_admin_user", _loginUser);
+        sessionStorage.setItem("ecap_admin_role", matched.role||"admin");
+        sessionStorage.setItem('ecap_admin_login_time', Date.now().toString());
+      } catch(storageErr) {
+        errEl.textContent = '\u700f\u89bd\u5668\u5c01\u9396\u4e86\u672c\u7ad9\u7684\u5132\u5b58\u7a7a\u9593\uff0c\u8acb\u5728\u700f\u89bd\u5668\u8a2d\u5b9a\u4e2d\u5141\u8a31\u672c\u7ad9\u4f7f\u7528 Cookies/Storage \u5f8c\u91cd\u8a66\u3002';
+        errEl.style.color='';
+        btn.disabled = false;
+        btn.textContent = CL('login');
+        return;
       }
-      registerSession(_loginUser);
-      addAuditLog('login_success', 'User: '+_loginUser+', 2FA: no');
+      _adminCurrentUser = _loginUser;
+      try{ clearLoginAttempts(_loginUser); }catch(e){}
+      try{ recordLastLogin(_loginUser); }catch(e){}
+      try{ sessionStorage.setItem('ecap_session_fp', getSessionFingerprint()); }catch(e){}
+      // Enforce concurrent login limit
+      try {
+        var _concLimit = getConcurrentLimit();
+        if(_concLimit > 0){
+          var _allSessions = getActiveSessions().filter(function(s){ return s.lastActive > Date.now() - 2*60*60*1000; });
+          var _userSessions = _allSessions.filter(function(s){ return s.user === _loginUser; });
+          while(_userSessions.length >= _concLimit){
+            var oldest = _userSessions.sort(function(a,b){return a.loginTime-b.loginTime;})[0];
+            _allSessions = _allSessions.filter(function(s){return s.tabId!==oldest.tabId;});
+            _userSessions = _userSessions.filter(function(s){return s.tabId!==oldest.tabId;});
+            saveActiveSessions(_allSessions);
+          }
+        }
+      } catch(e){}
+      try{ registerSession(_loginUser); }catch(e){}
+      try{ addAuditLog('login_success', 'User: '+_loginUser+', 2FA: no'); }catch(e){}
       _startSessionTimer();
       window.route();
     } else if(matched && matched.error==='not_found'){

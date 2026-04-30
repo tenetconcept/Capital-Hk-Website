@@ -1151,7 +1151,7 @@ function adminView(){
       +'<div class="login-field" id="totpField" style="display:none"><label>'+CL('twofa_code')+'</label><input type="text" id="adminTOTP" placeholder="\u00B7\u00B7\u00B7\u00B7\u00B7\u00B7" maxlength="6" autocomplete="one-time-code" inputmode="numeric" pattern="[0-9]*" style="letter-spacing:4px;font-size:18px;text-align:center"/></div>'
       +'<button type="button" class="login-btn" id="loginBtn" onclick="window._adminLogin(event)">'+CL('login')+'</button>'
       +'<div class="login-err" id="loginErr"></div>'
-      +'<div style="font-size:10px;color:var(--text-muted);margin-top:8px;text-align:center;opacity:.5">v20260501</div>'
+      +'<div style="font-size:10px;color:var(--text-muted);margin-top:8px;text-align:center;opacity:.6;line-height:1.5">v20260501c · '+(function(){try{sessionStorage.setItem('_t','1');sessionStorage.removeItem('_t');return 'storage:OK';}catch(e){return 'storage:BLOCKED';}})()+' · '+(window.crypto&&window.crypto.subtle?'crypto:OK':'crypto:NO')+'</div>'
       +'</form>'
       +'</div></section>';
   }
@@ -1479,13 +1479,21 @@ window._cmsForce2FAScreen = function(username){
 };
 
 window._adminLogin = function(e){
-  e.preventDefault();
-  var user = document.getElementById("adminUser").value.trim();
-  var pass = document.getElementById("adminPass").value;
+  // Top-level safety wrapper — any uncaught error must surface to the user
+  try {
+  if(e && typeof e.preventDefault === 'function') e.preventDefault();
+  var user = (document.getElementById("adminUser")||{}).value;
+  user = user ? user.trim() : '';
+  var pass = (document.getElementById("adminPass")||{}).value || '';
   var btn = document.getElementById("loginBtn");
   var errEl = document.getElementById("loginErr");
+  if(!btn || !errEl){
+    alert('登入元件遺失，請重新整理頁面 (Ctrl+Shift+R)。Login UI missing — please hard-reload.');
+    return false;
+  }
   btn.disabled = true;
   btn.textContent = CL('verifying');
+  errEl.textContent = '';
 
   // Helper: safe sessionStorage access (some browsers block storage — must never throw here)
   function _ss(key, val){
@@ -1733,7 +1741,43 @@ window._adminLogin = function(e){
     btn.textContent = CL('login');
   }); // end IP+whitelist chain
   return false;
+  } catch(_topErr) {
+    // Top-level catch — surface ANY error visibly
+    try {
+      var _e = document.getElementById("loginErr");
+      var _b = document.getElementById("loginBtn");
+      if(_e){ _e.textContent = '登入錯誤 (Login error): ' + (_topErr && _topErr.message ? _topErr.message : String(_topErr)); _e.style.color=''; }
+      if(_b){ _b.disabled = false; _b.textContent = '登入'; }
+      console.error('[CMS Login] Top-level error:', _topErr);
+    } catch(_){ alert('Login crashed: ' + (_topErr && _topErr.message || _topErr)); }
+    return false;
+  }
 };
+
+// Global error reporter — surface ANY uncaught error to the login screen
+window.addEventListener('error', function(ev){
+  try {
+    var el = document.getElementById('loginErr');
+    if(el && (!el.textContent || el.textContent === '')) {
+      el.textContent = 'JS 錯誤 (JS Error): ' + (ev.message || 'unknown') + (ev.filename ? ' @ ' + ev.filename.split('/').pop() + ':' + ev.lineno : '');
+      el.style.color = '';
+      var btn = document.getElementById('loginBtn');
+      if(btn){ btn.disabled = false; btn.textContent = '登入'; }
+    }
+  } catch(_){}
+});
+window.addEventListener('unhandledrejection', function(ev){
+  try {
+    var el = document.getElementById('loginErr');
+    if(el && (!el.textContent || el.textContent === '')) {
+      var msg = ev.reason && ev.reason.message ? ev.reason.message : String(ev.reason);
+      el.textContent = 'Promise 錯誤 (Promise error): ' + msg;
+      el.style.color = '';
+      var btn = document.getElementById('loginBtn');
+      if(btn){ btn.disabled = false; btn.textContent = '登入'; }
+    }
+  } catch(_){}
+});
 
 // Session timeout management
 var _sessionTimerHandle = null;

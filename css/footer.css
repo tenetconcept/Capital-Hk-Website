@@ -8,7 +8,8 @@
   position: relative;
   color: var(--text);
 }
-/* Gradient top border (rd.group signature) */
+/* Gradient top border (rd.group signature) — temporarily disabled, uncomment to restore */
+/*
 .footer::before {
   content: '';
   position: absolute;
@@ -18,6 +19,7 @@
   height: 4px;
   background: var(--brand-gradient);
 }
+*/
 .footer-main {
   padding: 64px 0 40px;
 }

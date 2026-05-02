@@ -1535,7 +1535,7 @@ window._adminLogin = function(e){
       if(stored) return Promise.resolve();
       // Skip IP fetch entirely if no whitelist is active — don't block login
       var _wl; try{ _wl=getIpWhitelist(); }catch(e){ _wl=[]; }
-      if(!_wl.length) { _ss('ecap_client_ip', 'unavailable'); return Promise.resolve(); }
+      if(!_wl.length) { return Promise.resolve(); }
       // Fetch with a 5-second timeout
       function fetchWithTimeout(url, ms){
         return Promise.race([
@@ -2832,7 +2832,7 @@ window._cmsAddIp = function(){
 };
 window._cmsAddMyIp = function(){
   var ip = sessionStorage.getItem('ecap_client_ip');
-  if(!ip){
+  if(!ip || ip === 'unavailable'){
     fetch('https://api.ipify.org?format=json').then(function(r){return r.json();}).then(function(d){
       sessionStorage.setItem('ecap_client_ip', d.ip);
       document.getElementById('newIpAddr').value = d.ip;

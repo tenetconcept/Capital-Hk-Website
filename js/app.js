@@ -937,13 +937,13 @@ function route(){
   buildNav();
 
   if(hash === "#/" || hash === "#" || hash === ""){
-    app.innerHTML = homeView() + footerView();
+    app.innerHTML = homeView();
     updateSEO(null, null, "");
     window.scrollTo(0,0);
     if(typeof window.initHomeAnimations === 'function') requestAnimationFrame(function(){ setTimeout(window.initHomeAnimations, 10); });
   } else if(hash.indexOf("#/page/") === 0){
     var slug = hash.replace("#/page/","").split("?")[0];
-    app.innerHTML = pageView(slug) + footerView();
+    app.innerHTML = pageView(slug);
     var pg = getPage(slug, currentLang);
     updateSEO(pg ? pg.title : slug, pg ? (pg.body||"").replace(/<[^>]*>/g,"").substring(0,160) : null, "#/page/" + slug);
     // Disable legacy forms and ASPX links
@@ -973,7 +973,7 @@ function route(){
     var navEl = document.getElementById('mainNav');
     if(navEl) navEl.classList.remove('scrolled');
   } else {
-    app.innerHTML = pageView('__404__') + footerView();
+    app.innerHTML = pageView('__404__');
     updateSEO("404 Not Found", null, "");
     window.scrollTo(0,0);
   }
